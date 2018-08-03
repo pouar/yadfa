@@ -29,7 +29,7 @@
         :name "Dress"
         :plural-name "Dresses"
         :value 150
-        :description "A Dress"
+        :description "A cute dress."
         :bulge-text (list
                         (* 4 25)
                         "The bottom of your dress has poofed out humorously"
@@ -45,7 +45,7 @@
         :name "Sundress"
         :plural-name "Sundresses"
         :value 200
-        :description "A loose fitting dress"
+        :description "A loose fitting dress."
         :bulge-text (list
                         480
                         "Your padding is completely visible"
@@ -61,7 +61,7 @@
         :name "Toddler's Dress"
         :plural-name "Toddler Dresses"
         :value 600
-        :description "A frilly pink toddler's dress"
+        :description "A frilly pink dress fit for a big toddler."
         :bulge-text (list
                         75
                         "Your padding is clearly visible under your dress"
@@ -78,13 +78,13 @@
     (:default-initargs
         :name "T-Shirt"
         :value 50
-        :description "A T-shirt"))
+        :description "A simple plain t-shirt."))
 (defclass jeans (pants) ()
     (:default-initargs
         :name "Jeans"
         :plural-name "Jeans"
         :value 100
-        :description "A pair of jeans."
+        :description "A simple pair of jeans."
         :bulge-text (list
                         12
                         "Your padding keeps poking out of the top of your pants"

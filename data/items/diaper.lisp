@@ -97,7 +97,7 @@
         :messiness-capacity 10000
         :name "Diaper"
         :disposable t
-        :description "Your average diaper (Not by American standards)"
+        :description "A poofy diaper that can hold an accident."
         :wear-wet-text (list
                            "You can barely tell you wet it"
                            "It squishes when you walk"
