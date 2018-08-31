@@ -89,42 +89,4 @@
                         :lambda '(lambda
                                      (prop &rest keys &key &allow-other-keys)
                                      (declare (ignore prop))
-                                     (format t "Instructor: Today's topic is Linear Recursion and Iteration, let's look at the following factorial function~%~%*writes
-(define (factorial n)
-    (if (= n 1)
-        1
-        (* n (factorial (- n 1)))))
-on the blackboard, then walks through the process in the following substitution model
-
-(factorial 6)
-(* 6 (factorial 5))
-(* 6 (* 5 (factorial 4)))
-(* 6 (* 5 (* 4 (factorial 3))))
-(* 6 (* 5 (* 4 (* 3 (factorial 2)))))
-(* 6 (* 5 (* 4 (* 3 (* 2 (factorial 1))))))
-(* 6 (* 5 (* 4 (* 3 (* 2 1)))))
-(* 6 (* 5 (* 4 (* 3 2))))
-(* 6 (* 5 (* 4 6)))
-(* 6 (* 5 24))
-(* 6 120)
-720
-on the blackboard*~%~%Instructor: This is a recursive process, but isn't very efficient though, as the interpreter needs to keep track of all the operations, instead we can redefine the function as follows~%~%*writes
-(define (factorial n)
-    (define (iter product counter)
-        (if (> counter n)
-            product
-            (iter (* counter product)
-                (+ counter 1))))
-    (iter 1 1))
-on the chalkboard, then walks through the process
-(factorial 6)
-(iter 1 1)
-(iter 1 2)
-(iter 2 3)
-(iter 6 4)
-(iter 24 5)
-(iter 120 6)
-(iter 720 7)
-720
-on the blackboard*
-Instructor: This is an iterative process, as the interpreter now only needs to keep track of the variables product and counter for each n"))))))))
+                                     (format t "I~%structor: Today's topic is Li~%ear Recursio~% a~%d Iteratio~%, let's look at the followi~%g factorial fu~%ctio~%~%~%*writes~%(defi~%e (factorial ~%)~%    (if (= ~% 1)~%        1~%        (* ~% (factorial (- ~% 1)))))~%o~% the blackboard, the~% walks through the process i~% the followi~%g substitutio~% model~%~%(factorial 6)~%(* 6 (factorial 5))~%(* 6 (* 5 (factorial 4)))~%(* 6 (* 5 (* 4 (factorial 3))))~%(* 6 (* 5 (* 4 (* 3 (factorial 2)))))~%(* 6 (* 5 (* 4 (* 3 (* 2 (factorial 1))))))~%(* 6 (* 5 (* 4 (* 3 (* 2 1)))))~%(* 6 (* 5 (* 4 (* 3 2))))~%(* 6 (* 5 (* 4 6)))~%(* 6 (* 5 24))~%(* 6 120)~%720~%o~% the blackboard*~%~%I~%structor: This is a recursive process, but is~%'t very efficie~%t though, as the i~%terpreter ~%eeds to keep track of all the operatio~%s, i~%stead we ca~% redefi~%e the fu~%ctio~% as follows~%~%*writes~%(defi~%e (factorial ~%)~%    (defi~%e (iter product cou~%ter)~%        (if (> cou~%ter ~%)~%            product~%            (iter (* cou~%ter product)~%                (+ cou~%ter 1))))~%    (iter 1 1))~%o~% the chalkboard, the~% walks through the process~%(factorial 6)~%(iter 1 1)~%(iter 1 2)~%(iter 2 3)~%(iter 6 4)~%(iter 24 5)~%(iter 120 6)~%(iter 720 7)~%720~%o~% the blackboard*~%I~%structor: This is a~% iterative process, as the i~%terpreter ~%ow o~%ly ~%eeds to keep track of the variables product a~%d cou~%ter for each ~%"))))))))
