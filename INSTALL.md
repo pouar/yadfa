@@ -8,6 +8,10 @@ The rest of the world will probably want Steel Bank Common Lisp
 
 http://sbcl.org
 
+Also, if you're on Windows, you need to install an X Server. VcXsrv is a pretty good one
+
+https://sourceforge.net/projects/vcxsrv
+
 I think the minimum version of ASDF required for this game is 3.3.2.4. You can download the latest version here
 
 https://gitlab.common-lisp.net/asdf/asdf/tags
