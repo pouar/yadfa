@@ -1,7 +1,7 @@
 To compile, you need a decent CL implementation, a recent version of ASDF (newer versions fix a few bugs that affect my game) and QuickLisp
 If you're on Windows, you probably want Clozure CL
 https://ccl.clozure.com
-The rest of the world will probably want SBCL
+The rest of the world will probably want Steel Bank Common Lisp
 http://sbcl.org
 
 I think the minimum version of ASDF required for this game is 3.3.2.4. You can download the latest version here
