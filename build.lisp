@@ -16,4 +16,5 @@
     (pushnew :yadfa/docs *features*))
 (when (position "mods" (uiop:command-line-arguments) :test #'string=)
     (pushnew :yadfa/mods *features*))
+(ql:quickload :yadfa)
 (asdf:make :yadfa :force (when (position "force" (uiop:command-line-arguments) :test #'string=) t))
