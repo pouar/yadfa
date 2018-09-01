@@ -1,4 +1,4 @@
-To compile, you need a decent CL implementation, a recent version of ASDF (newer versions fix a few bugs that affect my game) and QuickLisp
+To compile, you need a decent CL implementation, a recent version of ASDF (newer versions fix a few bugs that affect my game) and Quicklisp (for dependency management)
 
 If you're on Windows, you probably want Clozure CL
 
