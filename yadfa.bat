@@ -1,1 +1,0 @@
-yadfa.exe ltk
