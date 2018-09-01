@@ -34,7 +34,7 @@ After which, either run `sbcl --script build.lisp mods` or `ccl -l build.lisp --
 
 To generate the docs, run
 ```
-sbcl --script run.lisp mods texi;makeinfo --html --no-split yadfa.texi;makeinfo --pdf --no-split yadfa.texi;makeinfo --no-split yadfa.texi
+sbcl --script run.lisp mods texi;makeinfo --css-include=style-common.css --css-include=style-single.css --html --no-split yadfa.texi;makeinfo --pdf --no-split yadfa.texi;makeinfo --no-split yadfa.texi
 ```
 The game uses Declt for generating the docs, which only works in SBCL so far
 
