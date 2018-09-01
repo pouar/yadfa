@@ -28,7 +28,7 @@ After which, either place this repo in either `~/common-lisp`, `~/quicklisp/loca
 (:tree "$PATH_TO_THIS_REPOSITORY")
 ```
 
-In Windows, $XDG_CONFIG_HOME is set to "C:/Users/$User/AppData/Local/". Also, when setting the pathname, you need to use what the rest of the world uses as the directory separator, which is `/`, Not what Windows uses, which is `\`.
+In Windows, `$XDG_CONFIG_HOME` is set to `C:/Users/$User/AppData/Local/`. Also, when setting the pathname, you need to use what the rest of the world uses as the directory separator, which is `/`, Not what Windows uses, which is `\`.
 
 After which, either run `sbcl --script build.lisp mods` or `ccl -l build.lisp -- mods` to build
 
