@@ -48,7 +48,14 @@
     (declare (type simple-string path))
     (check-type path simple-string)
     (with-open-file (stream path)
-        (setf *game* (unmarshal (read stream)))))
+        (setf *game* (unmarshal (read stream))))
+    (ensure-zones *game*)
+    (maphash (lambda (a b)
+                 (iter (for (c d) on b by #'cddr)
+                     (unless (member c (finished-inithooks-of (get-zone a)))
+                         (funcall (coerce d 'function) (get-zone a))
+                         (pushnew c (finished-inithooks-of (get-zone a))))))
+        *inithooks/zone*))
 (defun yadfa/bin:toggle-onesie (&key wear user)
     "Open or closes your onesie. WEAR is the index of a onesie. Leave NIL for the outermost onesie. USER is the index of an ally. Leave NIL to refer to yourself"
     (declare (type (or unsigned-byte null) wear user))
@@ -161,7 +168,7 @@
                       (format t "~a~%" (enter-battle-text-of *battle*))
                       (iter (for j in
                                 (iter (for i in (enemies-of *battle*))
-                                    (unless (position (class-name (class-of i)) (seen-enemies-of *game*))
+                                    (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
                                         (format t "~a was added to your pokedex~%" (name-of i))
                                         (push (class-name (class-of i)) (seen-enemies-of *game*))
                                         (collect (class-name (class-of i))))))
@@ -170,7 +177,7 @@
                       (use-package :yadfa/battle :yadfa-user)
                       (return-from yadfa/world:move))
                 ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-                     (when (or (not (position i (finished-events-of *game*))) (event-repeatable i))
+                     (when (or (not (member i (finished-events-of *game*))) (event-repeatable i))
                          (funcall (coerce (event-lambda i) 'function) i)
                          (pushnew i (finished-events-of *game*))
                          (collect i)))
@@ -186,7 +193,7 @@
                                 (format t "~a~%" (enter-battle-text-of *battle*))
                                 (iter (for j in
                                           (iter (for i in (enemies-of *battle*))
-                                              (unless (position (class-name (class-of i)) (seen-enemies-of *game*))
+                                              (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
                                                   (format t "~a was added to your pokedex~%" (name-of i))
                                                   (push (class-name (class-of i)) (seen-enemies-of *game*))
                                                   (collect (class-name (class-of i))))))
@@ -1158,7 +1165,7 @@
 (defun yadfa/bin:pokedex (&optional enemy)
     "Browse enemies in your pokedex, ENEMY is a quoted symbol that is the same as the class name of the enemy you want to view. Leave it to NIL to list available entries"
     (if enemy
-        (let ((a (if (position enemy (seen-enemies-of *game*))
+        (let ((a (if (member enemy (seen-enemies-of *game*))
                      (make-instance enemy)
                      (progn
                          (format t "That enemy isn't in your pokedex~%")

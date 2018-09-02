@@ -240,8 +240,8 @@
                    (make-instance 'yadfa/moves:watersport)
                    (make-instance 'yadfa/moves:mudsport))))
 (defmethod initialize-instance :after
-    ((c base-character) &rest args)
-    (declare (ignorable args))
+    ((c base-character) &rest initargs &key &allow-other-keys)
+    (declare (ignorable initargs))
     (setf (health-of c) (calculate-stat c :health))
     (setf (energy-of c) (calculate-stat c :energy))
     (setf (exp-of c) (calculate-level-to-exp (level-of c))))
@@ -287,6 +287,12 @@
          :accessor description-of
          :type simple-string
          :documentation "room description")
+        (finished-inithooks
+            :initarg :finished-inithooks
+            :initform '()
+            :accessor finished-inithooks-of
+            :type list
+            :documentation "Inithooks that have already run")
         (enter-text
             :initarg :enter-text
             :initform "Seems Pouar didn't make the text for this room yet, get to it you lazy fuck"
@@ -367,19 +373,15 @@
             :documentation "list containing what enemies might show up when you enter an area. Each entry looks like this `(:random random :max-random max-random :enemies enemies)' If RANDOM is specified, then the probability of the enemy being spawn is RANDOM/MAX-RANDOM otherwise it is 1/MAX-RANDOM"))
     (:documentation "A zone on the map"))
 (defmethod initialize-instance :after
-    ((c zone) &rest args)
-    (declare (ignorable args))
+    ((c zone) &rest initargs &key &allow-other-keys)
+    (declare (ignorable initargs))
     (iter (for (a b) on
               (gethash
-                  (intern
-                      (format nil
-                          "INIT-HOOKS/~a"
-                          (class-name (class-of c)))
-                      (symbol-package (class-name (class-of c))))
+                  (getf initargs :position)
                   *inithooks/zone*)
               by #'cddr)
-        (declare (ignorable a))
-        (funcall (coerce b 'function) c)))
+        (funcall (coerce b 'function) c)
+        (pushnew a (finished-inithooks-of c))))
 (defclass stat/move ()
     ((name
          :initarg :name
@@ -661,8 +663,8 @@
 (defclass closed-bottoms (bottoms)
     ())
 (defmethod initialize-instance :after
-    ((c closed-bottoms) &rest args)
-    (declare (ignorable args))
+    ((c closed-bottoms) &rest initargs &key &allow-other-keys)
+    (declare (ignorable initargs))
     (unless (wear-mess-text-of c)
         (setf (wear-mess-text-of c) (mess-text-of c)))
     (unless (wear-wet-text-of c)
@@ -706,14 +708,14 @@
     (setf (waterproofp new) nil)
     (setf (bulge-text-of new) (cdr (slot-value old 'onesie-bulge-text))))
 (defmethod initialize-instance :after
-    ((c onesie/opened) &rest args)
-    (declare (ignorable args))
+    ((c onesie/opened) &rest initargs &key &allow-other-keys)
+    (declare (ignorable initargs))
     (setf (thickness-capacity-of c) (cdr (onesie-thickness-capacity-of c)))
     (setf (waterproofp c) nil)
     (setf (bulge-text-of c) (cdr (onesie-bulge-text-of c))))
 (defmethod initialize-instance :after
-    ((c onesie/closed) &rest args)
-    (declare (ignorable args))
+    ((c onesie/closed) &rest initargs &key &allow-other-keys)
+    (declare (ignorable initargs))
     (setf (thickness-capacity-of c) (car (onesie-thickness-capacity-of c)))
     (setf (waterproofp c) (onesie-waterproof-p c))
     (setf (bulge-text-of c) (car (onesie-bulge-text-of c))))
@@ -1036,8 +1038,8 @@
             :documentation "plist of characters who's values are a plist of conditions that go away after battle"))
     (:documentation "Class that contains the information about the battle"))
 (defmethod initialize-instance :after
-    ((c battle) &rest args)
-    (declare (ignore args))
+    ((c battle) &rest initargs &key &allow-other-keys)
+    (declare (ignore initargs))
     (unless (enter-battle-text-of c)
         (setf
             (enter-battle-text-of c)
@@ -1094,8 +1096,8 @@
             :accessor seen-enemies-of))
     (:documentation "Contains all the information in the game"))
 (defmethod initialize-instance :after
-    ((c game) &rest args)
-    (declare (ignorable args))
+    ((c game) &rest initargs &key &allow-other-keys)
+    (declare (ignorable initargs))
     (setf (events-of c) *events-in-game*)
     (pushnew (player-of c) (team-of c))
     (ensure-zones c))

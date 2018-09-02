@@ -40,7 +40,7 @@
 (defun load-mods (&rest keys &key compiler-verbose &allow-other-keys)
     #-yadfa/mods nil
     #+yadfa/mods (unless
-                     #+yadfa/docs (position "texi" (uiop:command-line-arguments) :test #'string=)
+                     #+yadfa/docs (member "texi" (uiop:command-line-arguments) :test #'string=)
                      #-yadfa/docs nil
                      (unless *game*
                          (when uiop:*image-dumped-p*
@@ -114,8 +114,8 @@
 (defun emacs-prompt (options &optional error-message)
     (eval `(progn
                (,(cond
-                     #+slynk ((position "slynk" (uiop:command-line-arguments) :test #'string=) 'slynk:eval-in-emacs)
-                     #+swank ((position "swank" (uiop:command-line-arguments) :test #'string=) 'swank:eval-in-emacs))
+                     #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=) 'slynk:eval-in-emacs)
+                     #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=) 'swank:eval-in-emacs))
                    '(progn (require 'widget)
                         (eval-when-compile
                             (require 'wid-edit))
@@ -162,11 +162,11 @@
                                                 (list
                                                     :emacs-return
                                                     ,(cond
-                                                         #+yadfa/slynk ((position "slynk"
+                                                         #+yadfa/slynk ((member "slynk"
                                                                             (uiop:command-line-arguments)
                                                                             :test #'string=)
                                                                            (slynk::current-thread-id))
-                                                         #+yadfa/swank ((position "swank"
+                                                         #+yadfa/swank ((member "swank"
                                                                             (uiop:command-line-arguments)
                                                                             :test #'string=)
                                                                            (swank::current-thread-id)))
@@ -182,9 +182,9 @@
                             nil)
                         (yadfa-widget)))
                (third (,(cond
-                            #+slynk ((position "slynk" (uiop:command-line-arguments) :test #'string=)
+                            #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=)
                                               'slynk::wait-for-event)
-                            #+swank ((position "swank" (uiop:command-line-arguments) :test #'string=)
+                            #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=)
                                               'swank::wait-for-event))
                           '(:emacs-return :yadfa-response result))))))
 (defun prompt-for-values (&rest options)
@@ -227,7 +227,7 @@
     (format t "~a~%" (enter-battle-text-of *battle*))
     (iter (for j in
               (iter (for i in (enemies-of *battle*))
-                  (unless (position (class-name (class-of i)) (seen-enemies-of *game*))
+                  (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
                       (format t "~a was added to your pokedex~%" (name-of i))
                       (push (class-name (class-of i)) (seen-enemies-of *game*))
                       (collect (class-name (class-of i))))))
@@ -405,13 +405,7 @@
     (declare (type symbol key))
     `(progn
          (setf (getf (gethash
-                         ',(intern
-                               (string-upcase
-                                   (format nil
-                                       "init-hooks/zone-~{~a~}~a"
-                                       (iter (for i in (butlast position)) (collect (format nil "~a-" i)))
-                                       (fourth position)))
-                               (symbol-package (fourth position)))
+                         ',position
                          *inithooks/zone*)
                    ',key)
              '(lambda (zone) ,@body))))
@@ -430,7 +424,8 @@
                                        "zone-~{~a~}~a"
                                        (iter (for j in (butlast i)) (collect (format nil "~a-" j)))
                                        (fourth i)))
-                               (symbol-package (fourth i)))))))
+                               (symbol-package (fourth i)))
+                         :position ',i))))
         (export (fourth i) (symbol-package (fourth i)))))
 (defmacro defzone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
@@ -446,27 +441,9 @@
                   (symbol-package (fourth position)))
              (zone)
              ,@body)
-         (setf
-             (gethash ',(intern
-                            (string-upcase
-                                (format nil
-                                    "init-hooks/zone-~{~a~}~a"
-                                    (iter (for i in (butlast position)) (collect (format nil "~a-" i)))
-                                    (fourth position)))
-                            (symbol-package (fourth position)))
-                 *inithooks/zone*)
-             ())
-         (export ',(intern
-                       (string-upcase
-                           (format nil
-                               "init-hooks/zone-~{~a~}~a"
-                               (iter (for i in (butlast position)) (collect (format nil "~a-" i)))
-                               (fourth position)))
-                       (symbol-package (fourth position)))
-             ',(symbol-package (fourth position)))
          (pushnew
              ',position
-             *zones-to-initialize*)
+             *zones-to-initialize* :test (lambda (a b) (equal a b)))
          (export ',(fourth position) ',(symbol-package (fourth position)))))
 (defmacro make-pocket-zone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
@@ -533,7 +510,7 @@
                   (format t "~a~%" (enter-battle-text-of *battle*))
                   (iter (for j in
                             (iter (for i in (enemies-of *battle*))
-                                (unless (position (class-name (class-of i)) (seen-enemies-of *game*))
+                                (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
                                     (format t "~a was added to your pokedex~%" (name-of i))
                                     (push (class-name (class-of i)) (seen-enemies-of *game*))
                                     (collect (class-name (class-of i))))))
@@ -542,7 +519,7 @@
                   (use-package :yadfa/battle :yadfa-user)
                   (return-from move-to-secret-underground))
             ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-                 (when (or (not (position i (finished-events-of *game*))) (event-repeatable i))
+                 (when (or (not (member i (finished-events-of *game*))) (event-repeatable i))
                      (funcall (coerce (event-lambda i) 'function) i)
                      (pushnew i (finished-events-of *game*))
                      (collect i)))
@@ -558,7 +535,7 @@
                             (format t "~a~%" (enter-battle-text-of *battle*))
                             (iter (for j in
                                       (iter (for i in (enemies-of *battle*))
-                                          (unless (position (class-name (class-of i)) (seen-enemies-of *game*))
+                                          (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
                                               (format t "~a was added to your pokedex~%" (name-of i))
                                               (push (class-name (class-of i)) (seen-enemies-of *game*))
                                               (collect (class-name (class-of i))))))
@@ -634,7 +611,7 @@
                   (format t "~a~%" (enter-battle-text-of *battle*))
                   (iter (for j in
                             (iter (for i in (enemies-of *battle*))
-                                (unless (position (class-name (class-of i)) (seen-enemies-of *game*))
+                                (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
                                     (format t "~a was added to your pokedex~%" (name-of i))
                                     (push (class-name (class-of i)) (seen-enemies-of *game*))
                                     (collect (class-name (class-of i))))))
@@ -643,7 +620,7 @@
                   (use-package :yadfa/battle :yadfa-user)
                   (return-from move-to-pocket-map))
             ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-                 (when (or (not (position i (finished-events-of *game*))) (event-repeatable i))
+                 (when (or (not (member i (finished-events-of *game*))) (event-repeatable i))
                      (funcall (coerce (event-lambda i) 'function) i)
                      (pushnew i (finished-events-of *game*))
                      (collect i)))
@@ -659,7 +636,7 @@
                             (format t "~a~%" (enter-battle-text-of *battle*))
                             (iter (for j in
                                       (iter (for i in (enemies-of *battle*))
-                                          (unless (position (class-name (class-of i)) (seen-enemies-of *game*))
+                                          (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
                                               (format t "~a was added to your pokedex~%" (name-of i))
                                               (push (class-name (class-of i)) (seen-enemies-of *game*))
                                               (collect (class-name (class-of i))))))
@@ -838,7 +815,7 @@
         (name-of user)
         (if (malep user) "his" "her")
         (if (malep user) "his" "her"))
-    (unless (position (gethash 'yadfa/events:get-diaper-locked-1 (events-of-game)) (finished-events-of *game*))
+    (unless (member (gethash 'yadfa/events:get-diaper-locked-1 (events-of-game)) (finished-events-of *game*))
         (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%"
             (name-of user))
         (push (gethash 'yadfa/events:get-diaper-locked-1 (events-of-game)) (finished-events-of *game*))))
@@ -2312,7 +2289,7 @@
                 (setf *battle* nil)
                 (setf (continue-battle-of (get-zone (position-of (player-of *game*)))) nil)
                 (iter (for i in win-events)
-                    (when (or (not (position i (finished-events-of *game*))) (event-repeatable i))
+                    (when (or (not (member i (finished-events-of *game*))) (event-repeatable i))
                         (funcall (coerce (event-lambda i) 'function) i)
                         (pushnew i (finished-events-of *game*))
                         (collect i)))
@@ -2613,7 +2590,7 @@
                            (format t "~a is unconscious and can't fight~%" (name-of (nth user (team-of *game*))))
                            (pushnew (nth user (team-of *game*)) (members-finished-of *battle*))
                            (return-from process-battle))
-                       ((position (nth user (team-of *game*)) (members-finished-of *battle*))
+                       ((member (nth user (team-of *game*)) (members-finished-of *battle*))
                            (format t "~a has already gone~%" (name-of (nth user (team-of *game*))))
                            (return-from process-battle))
                        (t
@@ -2622,7 +2599,7 @@
                        (for i in (team-of *game*))
                        (when (<= (health-of i) 0)
                            (pushnew i (members-finished-of *battle*)))
-                       (unless (position i (members-finished-of *battle*))
+                       (unless (member i (members-finished-of *battle*))
                            (leave i)))))
               (selected-target
                   (cond
