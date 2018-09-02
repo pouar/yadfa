@@ -12,6 +12,10 @@ Also, if you're on Windows, you need to install an X Server. VcXsrv is a pretty 
 
 https://sourceforge.net/projects/vcxsrv
 
+Note, there is a bug in CCL on Windows that prevents the game from starting, a workaround is listed here
+
+https://trac.clozure.com/ccl/ticket/1370
+
 I think the minimum version of ASDF required for this game is 3.3.2.4. You can download the latest version here
 
 https://gitlab.common-lisp.net/asdf/asdf/tags
