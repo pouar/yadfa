@@ -81,8 +81,7 @@
     (load-mods)
     (unless *game*
         (setf *game* (make-instance 'game)))
-    (setf *events-in-game* nil)
-    (setf *zones-to-initialize* '()))
+    (setf *events-in-game* nil))
 (defun set-status-condition (status-condition user &key duration)
     (let* ((i
                (if (position
@@ -479,9 +478,6 @@
     (when *battle*
         (format t "To avoid breaking the game due to a few assumtpions made in this function, please don't run this in a battle~%")
         (return-from move-to-secret-underground))
-    (when (eql (fourth (position-of (player-of *game*))) :pocket-map)
-        (format t "To avoid breaking the game due to a few assumtpions in the game's code, please don't run this in the pocket map~%")
-        (return-from move-to-secret-underground))
     (let ((new-position
               '(0 0 0 yadfa/zones:secret-underground))
              (wearing-pants nil))
@@ -570,7 +566,7 @@
                             (unuse-package :yadfa/world :yadfa-user)
                             (use-package :yadfa/battle :yadfa-user)
                             (return-from move-to-secret-underground))))))))
-(defun move-to-pocket-map ()
+(defun move-to-pocket-map (item)
     (when *battle*
         (format t "To avoid breaking the game due to a few assumtpions made in this function, please don't run this in a battle~%")
         (return-from move-to-pocket-map))
@@ -580,8 +576,8 @@
             :description "Welcome to the Pocket Map. It's like the secret bases in Pokemon, except you customize it by scripting, and you can take it with you."
             :enter-text "You're at the start of the Pocket Map. Use the Pocket Map machine again at anytime to exit."))
     (let ((new-position
-              (if (pocket-map-point-of (player-of *game*))
-                  (pocket-map-point-of (player-of *game*))
+              (if (eql (fourth (position-of (player-of *game*))) :pocket-map)
+                  (getf (attributes-of item) :pocket-map-position)
                   '(0 0 0 :pocket-map)))
              (wearing-pants nil))
         (when (and
@@ -616,10 +612,8 @@
                 (progn
                     (format t "zone ~a is locked~%" new-position)
                     (return-from move-to-pocket-map))))
-        (setf (pocket-map-point-of (player-of *game*))
-            (if (pocket-map-point-of (player-of *game*))
-                nil
-                (position-of (player-of *game*))))
+        (unless (eql (fourth (position-of (player-of *game*))) :pocket-map)
+            (setf (getf (attributes-of item) :pocket-map-position) (position-of (player-of *game*))))
         (setf (position-of (player-of *game*))
             new-position)
         (when (underwaterp (get-zone (position-of (player-of *game*)))) (swell-up-all))

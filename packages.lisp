@@ -100,6 +100,7 @@
         ;;accessors
         #:name-of
         #:description-of
+        #:attributes-of
         #:target-of
         #:battle-script-of
         #:blocks-turn-of
@@ -113,7 +114,6 @@
         #:malep
         #:wear-of
         #:species-of
-        #:pocket-map-point-of
         #:bladder/contents-of
         #:bladder/fill-rate-of
         #:bladder/need-to-potty-limit-of

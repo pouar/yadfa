@@ -15,6 +15,12 @@
             :accessor description-of
             :type (or simple-string null)
             :documentation "description of status conditions")
+        (attributes
+            :initarg :attributes
+            :initform '()
+            :accessor attributes-of
+            :type list
+            :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
         (target
             :initarg :target
             :initform nil
@@ -251,12 +257,6 @@
             :accessor warp-on-death-point-of
             :type list
             :documentation "Where the player warps to when {s,}he dies")
-        (pocket-map-point
-            :initarg :pocket-map-point
-            :initform nil
-            :accessor pocket-map-point-of
-            :type list
-            :documentation "Contains the current location of the pocket map")
         (learned-moves
             :initarg :learned-moves
             :accessor learned-moves-of
@@ -293,6 +293,12 @@
             :accessor enter-text-of
             :type simple-string
             :documentation "Text that pops up when you enter the room")
+        (attributes
+            :initarg :attributes
+            :initform '()
+            :accessor attributes-of
+            :type list
+            :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
         (name
             :initarg :name
             :initform "Mystery Zone"
@@ -387,6 +393,12 @@
             :accessor description-of
             :type (or simple-string keyword)
             :documentation "Description of move")
+        (attributes
+            :initarg :attributes
+            :initform '()
+            :accessor attributes-of
+            :type list
+            :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
         (energy-cost
             :initarg :energy-cost
             :initform 0
@@ -429,6 +441,12 @@
             :accessor name-of
             :type simple-string
             :documentation "Name of prop")
+        (attributes
+            :initarg :attributes
+            :initform '()
+            :accessor attributes-of
+            :type list
+            :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
         (items
             :initarg :items
             :initform ()
