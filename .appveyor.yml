@@ -1,0 +1,28 @@
+image: Visual Studio 2017
+platform: x64
+
+environment:
+  CACHE: 'c:\cache\'
+
+install:
+  - ps: |
+        If(!(test-path $env:CACHE )) { mkdir $env:CACHE; }
+        Invoke-WebRequest -UserAgent wget -Uri "https://beta.quicklisp.org/quicklisp.lisp" -OutFile $env:CACHE\quicklisp.lisp
+        Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/releases/download/v1.11.5/ccl-1.11.5-windowsx86.zip" -OutFile $env:CACHE\ccl.zip
+        Invoke-WebRequest -UserAgent wget -Uri "https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.2.9/asdf-3.3.2.9.zip"  -OutFile $env:CACHE\asdf.zip
+        Expand-Archive $env:CACHE\ccl.zip -DestinationPath $env:CACHE
+        Expand-Archive $env:CACHE\asdf.zip -DestinationPath $env:CACHE
+        Copy-Item $env:CACHE\asdf-3.3.2.9\ -recurse -destination $env:USERPROFILE\common-lisp\
+        &"$env:CACHE\ccl\wx86cl64.exe" -b -l "$env:CACHE\quicklisp.lisp" -e "(quicklisp-quickstart:install)"  -e "(#__exit 0)"
+        Copy-Item ci\ccl-init.lisp -Destination $env:USERPROFILE\ccl-init.lisp
+        New-Item -Path $env:USERPROFILE\quicklisp\local-projects\yadfa -ItemType SymbolicLink -Value $pwd
+        &"$env:CACHE\ccl\wx86cl64.exe" -b -l appveyor-install.lisp -e "(#__exit 0)"
+
+build_script:
+    - ps: |
+        &"$env:CACHE\ccl\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)"
+        7z a -t7z -mmt=1 -mx=9 -m0=LZMA2:d=200M:fb=273 '-x!.*' yadfa.7z .
+artifacts:
+    - path: yadfa.7z
+      name: yadfa.7z
+test: off
