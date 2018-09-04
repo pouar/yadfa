@@ -16,7 +16,6 @@ install:
         &"$env:CACHE\ccl\wx86cl64.exe" -b -l "$env:CACHE\quicklisp.lisp" -e "(quicklisp-quickstart:install)"  -e "(#__exit 0)"
         Copy-Item ci\ccl-init.lisp -Destination $env:USERPROFILE\ccl-init.lisp
         New-Item -Path $env:USERPROFILE\quicklisp\local-projects\yadfa -ItemType SymbolicLink -Value $pwd
-        &"$env:CACHE\ccl\wx86cl64.exe" -b -l appveyor-install.lisp -e "(#__exit 0)"
 
 build_script:
     - ps: |
