@@ -1,10 +1,10 @@
-To compile, you need a decent CL implementation, a recent version of ASDF (newer versions fix a few bugs that affect my game) and Quicklisp (for dependency management)
+To compile, you need a decent CL implementation, a recent version of ASDF (newer versions fix a few bugs that affect my game) and Quicklisp (for dependency management), and an X Server. If you downloaded a prebuilded version, you only need to install the X Server and not the rest of the stuff listed, then you can just double click yadfa.exe
 
-If you're on Windows, you probably want Clozure CL
+If you're on Windows, you probably want Clozure CL (only needed for compiling)
 
 https://ccl.clozure.com
 
-The rest of the world will probably want Steel Bank Common Lisp
+The rest of the world will probably want Steel Bank Common Lisp (only needed for compiling)
 
 http://sbcl.org
 
@@ -12,21 +12,21 @@ Also, if you're on Windows, you need to install an X Server. VcXsrv is a pretty 
 
 https://sourceforge.net/projects/vcxsrv
 
-Note, there is a bug in CCL on Windows that prevents the game from starting, a workaround is listed here
+Note, there is a bug in CCL on Windows that prevents the game from starting, a workaround is listed here (only needed for compiling)
 
 https://trac.clozure.com/ccl/ticket/1370
 
-I think the minimum version of ASDF required for this game is 3.3.2.4. You can download the latest version here
+I think the minimum version of ASDF required for this game is 3.3.2.4. You can download the latest version here (only needed for compiling)
 
 https://gitlab.common-lisp.net/asdf/asdf/tags
 
-create a directory called `~/common-lisp`. (In Windows, the equivelant of `~` is `C:\Users\$User`) extract ASDF in there.
+create a directory called `~/common-lisp`. (In Windows, the equivelant of `~` is `C:\Users\$User`) extract ASDF in there. (only needed for compiling)
 
-You will also need to install Quicklisp, which can be downloaded from here
+You will also need to install Quicklisp, which can be downloaded from here (only needed for compiling)
 
 https://www.quicklisp.org
 
-After which, either place this repo in either `~/common-lisp`, `~/quicklisp/local-projects`, or create a text file called `$XDG_CONFIG_HOME/common-lisp/source-registry.conf.d/50-yadfa.conf` with the following in it
+After which, either place this repo in either `~/common-lisp`, `~/quicklisp/local-projects`, or create a text file called `$XDG_CONFIG_HOME/common-lisp/source-registry.conf.d/50-yadfa.conf` with the following in it (only needed for compiling)
 
 ```
 (:tree "$PATH_TO_THIS_REPOSITORY")
@@ -45,3 +45,5 @@ The game uses Declt for generating the docs, which only works in SBCL so far
 To build with SLIME/SWANK support, run `sbcl --script build.lisp mods swank` or `ccl -l build.lisp -- mods swank`, then run `./yadfa swank` to launch the game
 
 To build with Sly/Slynk support, run `sbcl --script build.lisp mods slynk` or `ccl -l build.lisp -- mods slynk`, then run `./yadfa slynk` to launch the game
+
+To run, just run ./yadfa (or yadfa.exe in Windows)
