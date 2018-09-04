@@ -48,6 +48,7 @@ deploy:
       repo: yadfa
       package: yadfa
       artifact: yadfa.7z
+      version: latest
       publish: true
       override: true
       on:
