@@ -35,9 +35,10 @@ artifacts:
     - path: yadfa.7z
       name: yadfa.7z
 test_script:
-    - ps: If(!(test-path C:\projects\yadfa\yadfa.exe )) { exit 1 }
-    - ps: If(!(test-path C:\projects\yadfa\yadfa.html )) { exit 1 }
-    - ps: If(!(test-path C:\projects\yadfa\yadfa.7z )) { exit 1 }
+    - ps: |
+            If(!(test-path C:\projects\yadfa\yadfa.exe )) { exit 1 }
+            If(!(test-path C:\projects\yadfa\yadfa.html )) { exit 1 }
+            If(!(test-path C:\projects\yadfa\yadfa.7z )) { exit 1 }
 deploy:
     - provider: BinTray
       username: pouar
