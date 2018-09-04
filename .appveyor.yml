@@ -37,3 +37,17 @@ artifacts:
 test_script:
     - ps: If(!(test-path C:\projects\yadfa\yadfa.exe )) { exit 1 }
     - ps: If(!(test-path C:\projects\yadfa\yadfa.html )) { exit 1 }
+    - ps: If(!(test-path C:\projects\yadfa\yadfa.7z )) { exit 1 }
+deploy:
+    - provider: BinTray
+      username: pouar
+      api_key:
+          secure: F9a/ovGdrNBCv734A6okyGjBiCk3ByYE3wJ7j7ACbIJEhG9anJP1l6Kxs3BYQtEV
+      subject: pouar
+      repo: yadfa
+      package: yadfa
+      artifact: yadfa.7z
+      publish: true
+      override: true
+      on:
+          branch: master
