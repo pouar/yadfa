@@ -45,3 +45,18 @@ test_script:
     Else { echo "yadfa.html was built"; }
     If(!(test-path C:\projects\yadfa\yadfa.7z )) { echo "yadfa.7z was not built";exit 1; }
     Else { echo "yadfa.7z was built"; }
+
+deploy:
+- provider: BinTray
+  username: pouar
+  api_key:
+    secure: mCeKhLvAxW58ECp6C4lsCWyUxc0Fsh5JLfZU1ix188mlkrO+AX3BBn/K9b41An67
+  subject: pouar
+  repo: yadfa
+  package: yadfa
+  version: latest
+  artifact: yadfa.7z
+  publish: true
+  override: true
+  on:
+    branch: master
