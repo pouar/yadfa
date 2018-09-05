@@ -8,6 +8,5 @@
 #+(and sbcl gmp) (sb-gmp:install-gmp-funs)
 (pushnew :yadfa/mods *features*)
 (handler-bind ((error #'(lambda (c) (continue))))
-    (ql:quickload :yadfa)
     (asdf:make :yadfa))
 (#__exit 0)
