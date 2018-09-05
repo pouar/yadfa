@@ -5,6 +5,10 @@ environment:
   CACHE: 'c:\cache\'
   SBCL_HOME: 'C:\Program Files\Steel Bank Common Lisp\1.4.2\'
 
+branches:
+  only:
+  - master
+
 install:
 - ps: If(!(test-path $env:CACHE )) { mkdir $env:CACHE; }
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://beta.quicklisp.org/quicklisp.lisp" -OutFile $env:CACHE\quicklisp.lisp
@@ -47,6 +51,7 @@ test_script:
     If(!(test-path C:\projects\yadfa\yadfa.7z )) { echo "yadfa.7z was not built";exit 1; }
 
     Else { echo "yadfa.7z was built"; }
+
 deploy:
 - provider: BinTray
   username: pouar
