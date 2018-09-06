@@ -38,7 +38,9 @@ To generate the docs, run
 
 sbcl --script run.lisp mods texi;makeinfo --css-include=style-common.css --css-include=style-single.css --html --no-split yadfa.texi;makeinfo --pdf --no-split yadfa.texi;makeinfo --no-split yadfa.texi
 
-The game uses Declt for generating the docs, which only works in SBCL so far
+The game uses Declt for generating the docs, which only works in SBCL so far. Right now the version in Quicklisp is too old, so you gotta get that here and put it in "~/quicklisp/local-projects"
+
+https://github.com/didierverna/declt.git
 
 To build with SLIME/SWANK support, run "sbcl --script build.lisp mods swank" or "ccl -l build.lisp -- mods swank", then run "./yadfa swank" to launch the game
 
