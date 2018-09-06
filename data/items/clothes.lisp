@@ -169,7 +169,7 @@
                         0
                         "It fits snuggly")
         :name "Orca Suit"
-        :description "An orca suit similar to the one Gabby wears, minus the swim boots and arm covers. You don't need 'em"))
+        :description "An orca suit similar to the one Gabby wears."))
 (defclass stretchable-orca-suit (closed-full-outfit)
     ()
     (:default-initargs
@@ -185,6 +185,36 @@
                         "It fits snuggly")
         :name "Stretchable Orca Suit"
         :description "A variant of the Orca Suit that stretches to fit your humongous diapers"))
+(defclass orca-suit-lite (closed-full-outfit)
+    ()
+    (:default-initargs
+        :waterproof t
+        :value 1000
+        :thickness-capacity (* 16 25.4)
+        :bulge-text (list
+                        60
+                        "You look like one of those pictures drawn by Kurikia"
+                        20
+                        "The diaper bulge makes it clear what you're wearing under there"
+                        0
+                        "It fits snuggly")
+        :name "Orca Suit Lite"
+        :description "An orca suit similar to the one Gabby wears, minus the swim boots and arm covers. You don't need 'em"))
+(defclass stretchable-orca-suit-lite (closed-full-outfit)
+    ()
+    (:default-initargs
+        :waterproof t
+        :value 1000
+        :thickness-capacity t
+        :bulge-text (list
+                        60
+                        "You look like one of those pictures drawn by Kurikia"
+                        20
+                        "The diaper bulge makes it clear what you're wearing under there"
+                        0
+                        "It fits snuggly")
+        :name "Stretchable Orca Suit Lite"
+        :description "A variant of the Orca Suit Lite that stretches to fit your humongous diapers"))
 (defclass boxers (undies) ()
     (:default-initargs
         :name "Boxers"

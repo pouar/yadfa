@@ -5,12 +5,12 @@
     (:export
         ;;variables
         #:*battle*
-        #:*events-in-game*
+        #:*events-to-ensure*
         #:*zones-to-initialize*
         #:*game*
         #:*inithooks/zone*
         ;;macros
-        #:ensure-event
+        #:defevent
         #:defzone
         #:setf-init-hook/zone
         #:defonesie
@@ -22,12 +22,18 @@
         #:set-new-battle
         #:get-inventory-list
         #:get-zone
+        #:get-destination
+        #:get-path-end
+        #:getf-direction
+        #:setf-direction
+        #:remf-direction
         #:wearingp
         #:thickest
         #:total-thickness
         #:thickest-sort
         #:wet
         #:mess
+        #:get-event
         #:random-from-range
         #:move-to-pocket-map
         #:move-to-secret-underground
@@ -48,7 +54,6 @@
         #:go-to-sleep
         #:shopfun
         #:ally-join
-        #:events-of-game
         #:pushnewmove
         #:get-move
         ;;constructors
@@ -101,6 +106,7 @@
         #:name-of
         #:description-of
         #:attributes-of
+        #:direction-attributes-of
         #:target-of
         #:battle-script-of
         #:blocks-turn-of
@@ -144,6 +150,9 @@
         #:warp-points-of
         #:diapers-only-p
         #:lockedp
+        #:sellablep
+        #:tossablep
+        #:placeablep
         #:no-puddles-p
         #:enemy-spawn-list-of
         #:energy-cost-of
@@ -198,7 +207,7 @@
     (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:set-player #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files)
     (:documentation "Commands that the player can run anytime"))
 (uiop:define-package #:yadfa/world
-    (:export #:move #:interact #:save-game #:load-game #:go-potty #:tickle #:wash-all-in #:use-item #:add-ally-to-team #:remove-ally-from-team #:swap-team-member #:stats)
+    (:export #:move #:interact #:save-game #:load-game #:go-potty #:tickle #:wash-all-in #:use-item #:add-ally-to-team #:remove-ally-from-team #:swap-team-member #:stats #:place)
     (:documentation "contains the commands when in the open world (assuming that's what it's called) (and not in something like a battle). The player probably shouldn't call these with the package prefix unless they're developing"))
 (uiop:define-package #:yadfa/battle
     (:export #:fight #:run #:use-item #:stats)
@@ -313,12 +322,14 @@
         #:bandits-domain
         #:|1|
         #:|2|
-        #:downtown
+        #:ironside
+        #:silver-cape
         #:bandits-way
         #:cave-entrance
         #:descend
         #:bandits-entrance
-        #:secret-underground)
+        #:secret-underground
+        #:your-ship)
     (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package #:yadfa/events
     (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:ironclad #:trivial-garbage)

@@ -3,6 +3,8 @@
     (:default-initargs
         :sogginess-capacity 100
         :messiness-capacity 200
+        :sellable nil
+        :disposable t
         :name "Store Brand Diapers"
         :plural-name "Store Brand Diapers"
         :wear-wet-text (list
@@ -31,6 +33,8 @@
         :messiness-capacity 200
         :name "Store Brand Pullons"
         :plural-name "Store Brand Pullons"
+        :sellable nil
+        :disposable t
         :wear-wet-text (list
                            "Not leaking yet"
                            "This thing might not last much longer"
@@ -56,6 +60,7 @@
         :sogginess-capacity 1000
         :messiness-capacity 1000
         :name "Incontinence Pad"
+        :sellable nil
         :disposable t
         :wear-wet-text (list
                            "You can barely tell you wet it"
@@ -97,6 +102,7 @@
         :messiness-capacity 10000
         :name "Diaper"
         :disposable t
+        :sellable nil
         :description "A poofy diaper that can hold an accident."
         :wear-wet-text (list
                            "You can barely tell you wet it"
@@ -139,6 +145,7 @@
         :value 60
         :thickness 300
         :thickness-capacity 100
+        :sellable nil
         :disposable t
         :wear-wet-text (list
                            "The pee seems to have disappeared into the diaper"
@@ -193,6 +200,7 @@
         :thickness 1000
         :thickness-capacity 380
         :disposable t
+        :sellable nil
         :wear-wet-text (list
                            "The pee seems to have disappeared into the diaper"
                            "It sloshes when you walk"
@@ -242,6 +250,7 @@
         :sogginess-capacity 800
         :messiness-capacity 10000
         :disposable t
+        :sellable nil
         :name "Pullup"
         :description "Wear this and pretend to be a big kid"))
 (defclass pullups-package (item) ()

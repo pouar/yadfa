@@ -10,6 +10,7 @@
                             :description "Pouar wasn't sure what design to put on the sheets, so he decided to leave that up to the player's interpretation.")
                    :dresser (make-instance 'prop
                                 :name "Dresser"
+                                :placeable t
                                 :description "Has all your clothes and diapers in here, until you take them out.")
                    :checkpoint (make-instance 'checkpoint))))
 (defzone (1 0 0 home) ()
@@ -23,6 +24,7 @@
                                :description "You can use this so you don't wet or mess yourself")
                    :cupboard (make-instance 'prop
                                  :name "Cupboard"
+                                 :placeable t
                                  :description "A cupboard located over the sink")
                    :washer (make-instance 'washer
                                  :name "Washer"
@@ -32,7 +34,7 @@
         :name "Street"
         :description "Your typical suburban street. Some furries are driving in cars, some are walking, and some are riding on top of other furries treating them like a horse."
         :enter-text "You enter the street outside your house"
-        :warp-points '(downtown (0 0 0 downtown))))
+        :warp-points '(ironside (0 0 0 ironside))))
 (defzone (0 2 0 home) ()
     (:default-initargs
         :name "Pool area"

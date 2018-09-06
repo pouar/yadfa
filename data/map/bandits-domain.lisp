@@ -8,7 +8,7 @@
                             :name "Bandit's Way"
                             :description "A path filled with bandits"
                             :enter-text "You follow the path"
-                            :warp-points ',(when (= i 0) '(downtown (2 0 0 downtown)))
+                            :warp-points ',(when (= i 0) '(ironside (2 0 0 ironside)))
                             :enemy-spawn-list
                             '((:max-random 8
                                   :enemies ((yadfa/enemies:female-diapered-raccoon-bandit .
@@ -54,8 +54,10 @@
                                                   (yadfa/items:ak47)
                                                   (yadfa/items:pink-sword)
                                                   (yadfa/items:toddler-dress)))
-                   :changing-table (make-instance 'automatic-changing-table))
-        :events (iter (for i in '(yadfa/events:enter-bandits-shop-1 yadfa/events:obtain-diaper-lock-1)) (collect (gethash i (events-of-game))))))
+                   :changing-table (make-instance 'automatic-changing-table)
+                   :bed (make-instance 'bed)
+                   :checkpoint (make-instance 'checkpoint))
+        :events '(yadfa/events:enter-bandits-shop-1 yadfa/events:obtain-diaper-lock-1)))
 (setf-init-hook/zone (-3 22 0 bandits-domain) :ask-for-bathroom-1
     (setf
         (getf (actions-of (getf (props-of zone) :shop)) :ask-for-bathroom)
@@ -87,14 +89,14 @@
         :name "Bandit's Kennel"
         :description "A grungey looking kennel where the Raccoon Bandits keep their `pets'. Negleted so much that they literally forgot about their existence"
         :enter-text "You enter the kennel"
-        :events (list (gethash 'yadfa/events:enter-bandits-kennel-1 (events-of-game)))))
+        :events '(yadfa/events:enter-bandits-kennel-1)))
 (defzone (0 21 0 bandits-domain) ()
     (:default-initargs
         :name "Bandit's Town Entrance"
         :description "The enterance to Bandit Town"
         :enter-text "You're at the enterance of Bandit Town"
         :warp-points '(home (0 1 0 home))
-        :events (list (gethash 'yadfa/events:enter-bandits-village-1 (events-of-game)))))
+        :events '(yadfa/events:enter-bandits-village-1)))
 (macro-level
     `(progn
          ,@(iter (for i from 22 to 30)
@@ -103,7 +105,8 @@
                         (:default-initargs
                             :name "Bandit's Town"
                             :description "A town run by the Raccoon Bandits"
-                            :enter-text "You're wander around Bandit's Town"))))))
+                            :enter-text "You're wander around Bandit's Town"
+                            :warp-points ',(when (= i 30) '(silver-cape (0 0 0 silver-cape)))))))))
 (defzone (1 21 0 bandits-domain) ()
     (:default-initargs
         :name "Bandit's Cove Dock"
@@ -179,4 +182,4 @@
         :enter-text "You Enter the cave"
         :warp-points '(cave-entrance (6 24 0 bandits-domain)
                           descend (6 24 2 bandits-domain))
-        :events (list (gethash 'yadfa/events:decend-bandits-cave-1 (events-of-game)))))
+        :events '(yadfa/events:decend-bandits-cave-1)))

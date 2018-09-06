@@ -1,5 +1,14 @@
 ;;;; files used internally by the game, don't call these unless you're developing (or cheating)
 (in-package :yadfa)
+(defun shl (x width bits)
+  "Compute bitwise left shift of x by 'bits' bits, represented on 'width' bits"
+  (logand (ash x bits)
+          (1- (ash 1 width))))
+
+(defun shr (x width bits)
+  "Compute bitwise right shift of x by 'bits' bits, represented on 'width' bits"
+  (logand (ash x (- bits))
+          (1- (ash 1 width))))
 (defun lambda-list (lambda-exp)
     (declare (type (or list function) lambda-exp))
     (check-type lambda-exp (or list function))
@@ -80,8 +89,22 @@
 (defun init-game ()
     (load-mods)
     (unless *game*
-        (setf *game* (make-instance 'game)))
-    (setf *events-in-game* nil))
+        (setf *game* (make-instance 'game))))
+(defun setf-direction (position direction attribute new-value)
+    (setf (getf (getf (direction-attributes-of (get-zone position)) direction) attribute) new-value))
+(defun getf-direction (position direction attribute)
+    (unless (iter (for (a b) on (getf (direction-attributes-of (get-zone position)) direction) by #'cddr)
+                (if b
+                    (leave t)
+                    (remf
+                        (getf (direction-attributes-of (get-zone position)) direction)
+                        a)))
+        (remf (direction-attributes-of (get-zone position)) direction))
+    (getf (getf (direction-attributes-of (get-zone position)) direction) attribute))
+(defun remf-direction (position direction attribute)
+    (remf (getf (direction-attributes-of (get-zone position)) direction) attribute)
+    (unless (getf (direction-attributes-of (get-zone position)) direction)
+        (remf (direction-attributes-of (get-zone position)) direction)))
 (defun set-status-condition (status-condition user &key duration)
     (let* ((i
                (if (position
@@ -183,9 +206,9 @@
                         (yadfa-widget)))
                (third (,(cond
                             #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=)
-                                              'slynk::wait-for-event)
+                                        'slynk::wait-for-event)
                             #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=)
-                                              'swank::wait-for-event))
+                                        'swank::wait-for-event))
                           '(:emacs-return :yadfa-response result))))))
 (defun prompt-for-values (&rest options)
     (cond
@@ -245,33 +268,135 @@
         (funcall
             (coerce (wield-script-of (wield-of user)) 'function)
             (wield-of user)
-            user)))
+            user)))(defun get-warp-point (direction position)
+    (declare (type symbol direction))
+    (getf (warp-points-of (get-zone position))
+        (if (typep direction 'keyword)
+            (first (member direction (warp-points-of (get-zone position))
+                       :test (lambda (a b)
+                                 (when (typep b 'symbol)
+                                     (string= a b)))))
+            direction)))
+(defun get-destination (direction position)
+    (macrolet ((a (pos x y z)
+                   `(append
+                        (mapcar #'+ (butlast ,pos) '(,x ,y ,z))
+                        (last ,pos))))
+        (case direction
+            (:north (a position 0 -1 0))
+            (:south (a position 0 1 0))
+            (:east (a position 1 0 0))
+            (:west (a position -1 0 0))
+            (:up (a position 0 0 1))
+            (:down (a position 0 0 -1))
+            (otherwise (get-warp-point direction position)))))
+(defun get-path-end (destination &optional position direction)
+    (unless (get-zone destination)
+        (return-from get-path-end (values nil (format nil "Pick a direction the game knows about~%"))))
+    (when (or (hiddenp (get-zone destination)) (and position direction (getf-direction position direction :hidden)))
+        (return-from get-path-end (values nil (format nil "Pick a direction the game knows about~%"))))
+    (let ((wearing-pants nil))
+        (when (and
+                  (diapers-only-p (get-zone destination))
+                  (setf wearing-pants
+                      (iter (for i in (append (list (player-of *game*)) (allies-of *game*)))
+                          (when (or
+                                    (<
+                                        (list-length (wearingp (wear-of i) 'incontinence-product))
+                                        (list-length (wearingp (wear-of i) 'bottoms)))
+                                    (< (list-length (wearingp (wear-of i) 'padding)) 1))
+                              (collect (name-of i))))))
+            (return-from get-path-end
+                (values
+                    nil
+                    (format nil "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.~%The following characters are currently not compliant with this rule:~{~a~}~%"
+                        (iter (for i in wearing-pants) (collect " ") (collect i)))))))
+    (when (or
+              (and (lockedp (get-zone destination))
+                  (not
+                      (member-if
+                          (lambda (a)
+                              (typep a (lockedp (get-zone destination))))
+                          (append
+                              (inventory-of (player-of *game*))
+                              (list (wield-of (player-of *game*)))
+                              (wear-of (player-of *game*))
+                              (let ((a ()))
+                                  (iter (for i in (allies-of *game*))
+                                      (push (wield-of i) a)
+                                      (iter (for j in (wear-of i))
+                                          (push j a)))
+                                  a)))))
+              (and
+                  position
+                  direction
+                  (getf-direction position direction :locked)
+                  (not
+                      (member-if
+                          (lambda (a)
+                              (typep a (getf-direction position direction :locked)))
+                          (append
+                              (inventory-of (player-of *game*))
+                              (list (wield-of (player-of *game*)))
+                              (wear-of (player-of *game*))
+                              (let ((a ()))
+                                  (iter (for i in (allies-of *game*))
+                                      (push (wield-of i) a)
+                                      (iter (for j in (wear-of i))
+                                          (push j a)))
+                                  a))))))
+        (return-from get-path-end
+            (values nil (format nil "zone ~a is locked~%" destination))))
+    destination)
 (defun print-map (position)
-    (iter (for y
-              from (- (second position) 15)
-              to (+ (second position) 15))
-        (iter (for x
-                  from (- (first position) 15)
-                  to (+ (first position) 15))
-            (format t "~a"
-                (cond
-                    ((and
-                         (= x (first (position-of (player-of *game*))))
-                         (= y (second (position-of (player-of *game*))))
-                         (= (third position) (third (position-of (player-of *game*))))
-                         (equal (fourth position) (fourth (position-of (player-of *game*)))))
-                        "@")
-                    ((and
-                         (get-zone (list x y (third position) (fourth position)))
-                         (hiddenp (get-zone (list x y (third position) (fourth position))))) " ")
-                    ((and
-                         (get-zone (list x y (third position) (fourth position)))
-                         (warp-points-of (get-zone (list x y (third position) (fourth position)))))
-                        "W")
-                    ((get-zone (list x y (third position) (fourth position)))
-                        ".")
-                    (t " "))))
-        (format t "~%")))
+    (labels ((travelablep (position direction)
+                 (or
+                     (getf-direction position direction :hidden)
+                     (not (get-zone (get-destination direction position)))
+                     (hiddenp (get-zone (get-destination direction position)))))
+                (a (position)
+               (let ((b 0))
+                   (when (travelablep position :north)
+                       (setf b (logior b (shl 1 8 5))))
+                   (when (travelablep position :south)
+                       (setf b (logior b (shl 1 8 4))))
+                   (when (travelablep position :west)
+                       (setf b (logior b (shl 1 8 3))))
+                   (when (travelablep position :east)
+                       (setf b (logior b (shl 1 8 2))))
+                   (when (travelablep position :up)
+                       (setf b (logior b (shl 1 8 1))))
+                   (when (travelablep position :down)
+                       (setf b (logior b (shl 1 8 0))))
+                   (aref
+                       #1A("╋" "╋" "╋" "┼" "┫" "┫" "┫" "┤" "┣" "┣" "┣" "├" "┃" "┃" "┃" "│" "┻" "┻" "┻" "┴" "┛" "┛" "┛" "┘" "┗" "┗" "┗" "└" "╹" "╹" "╹" "╵" "┳" "┳" "┳" "┬" "┓" "┓" "┓" "┐" "┏" "┏" "┏" "┌" "╻" "╻" "╻" "╷" "━" "━" "━" "─" "╸" "╸" "╸" "╴" "╺" "╺" "╺" "╶" "▮" "▮" "▮" "▯")
+                       b))
+               ))
+        (iter (for y
+                  from (- (second position) 15)
+                  to (+ (second position) 15))
+            (iter (for x
+                      from (- (first position) 15)
+                      to (+ (first position) 15))
+                (format t "~a"
+                    (cond
+                        ((and
+                             (= x (first (position-of (player-of *game*))))
+                             (= y (second (position-of (player-of *game*))))
+                             (= (third position) (third (position-of (player-of *game*))))
+                             (equal (fourth position) (fourth (position-of (player-of *game*)))))
+                            "@")
+                        ((and
+                             (get-zone (list x y (third position) (fourth position)))
+                             (hiddenp (get-zone (list x y (third position) (fourth position))))) " ")
+                        ((and
+                             (get-zone (list x y (third position) (fourth position)))
+                             (warp-points-of (get-zone (list x y (third position) (fourth position)))))
+                            "▒")
+                        ((get-zone (list x y (third position) (fourth position)))
+                            (a (list x y (third position) (fourth position))))
+                        (t " "))))
+            (format t "~%"))))
 (defun print-enter-text (position)
     (format t "~a~%" (enter-text-of (get-zone position)))
     (flet ((z (delta direction)
@@ -296,19 +421,23 @@
     (format t "~%"))
 (defun get-inventory-list ()
     (loop for i in (inventory-of (player-of *game*)) collect (symbol-name (type-of i))))
-(defmacro ensure-event (event-id &rest args)
-    `(progn (unless (gethash
-                        ',event-id
-                        (events-of-game))
-                (setf (gethash
-                          ',event-id
-                          (events-of-game))
-                    (make-event :id ',event-id ,@args))
-                (export ',event-id ',(symbol-package event-id)))))
-(defun events-of-game ()
-    (cond
-        (*events-in-game* *events-in-game*)
-        (t (events-of *game*))))
+(defmacro defevent (event-id &rest args)
+    `(progn
+         (setf (gethash
+                   ',event-id
+                   *events-to-ensure*)
+             (make-event :id ',event-id ,@args))
+         (export ',event-id ',(symbol-package event-id))))
+(defun get-event (event-id)
+    (gethash event-id (events-of *game*)))
+(defun ensure-events (game)
+    (maphash (lambda (a b)
+                 (unless (gethash a (events-of game))
+                     (setf (gethash a (events-of game)) b)))
+        *events-to-ensure*))
+(defun (setf get-event) (new-value event-id)
+    (setf (gethash event-id (events-of *game*))
+        new-value))
 (defun get-zone (position)
     (declare (type list position))
     (gethash position
@@ -341,15 +470,6 @@
 (defun swell-up-all ()
     (swell-up (player-of *game*))
     (loop for i in (allies-of *game*) do (swell-up i)))
-(defun get-warp-point (direction position)
-    (declare (type symbol direction))
-    (getf (warp-points-of (get-zone position))
-        (if (typep direction 'keyword)
-            (first (member direction (warp-points-of (get-zone position))
-                       :test (lambda (a b)
-                                 (when (typep b 'symbol)
-                                     (string= a b)))))
-            direction)))
 (defun thickest (clothing)
     "returns the greatest thickess value of a list of clothes passed as the CLOTHING parameter"
     (declare (type list clothing))
@@ -455,94 +575,69 @@
     (when *battle*
         (format t "To avoid breaking the game due to a few assumtpions made in this function, please don't run this in a battle~%")
         (return-from move-to-secret-underground))
-    (let ((new-position
-              '(0 0 0 yadfa/zones:secret-underground))
-             (wearing-pants nil))
-        (when (and
-                  (diapers-only-p (get-zone new-position))
-                  (setf wearing-pants
-                      (iter (for i in (append (list (player-of *game*)) (allies-of *game*)))
-                          (when (or
-                                    (<
-                                        (list-length (wearingp (wear-of i) 'incontinence-product))
-                                        (list-length (wearingp (wear-of i) 'bottoms)))
-                                    (< (list-length (wearingp (wear-of i) 'padding)) 1))
-                              (collect (name-of i))))))
-            (format t "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.~%The following characters are currently not compliant with this rule:~{~a~}~%"
-                (iter (for i in wearing-pants) (collect " ") (collect i)))
+    (unless (get-path-end '(0 0 0 yadfa/zones:secret-underground))
+        (format t "~a"
+            (second
+                (multiple-value-list
+                    (get-path-end
+                        '(0 0 0 yadfa/zones:secret-underground)))))
+        (return-from move-to-secret-underground))
+    (when (lockedp (get-zone '(0 0 0 yadfa/zones:secret-underground)))
+        (format t "You unlock zone ~a~%" '(0 0 0 yadfa/zones:secret-underground))
+        (setf (lockedp (get-zone '(0 0 0 yadfa/zones:secret-underground))) nil))
+    (setf (position-of (player-of *game*))
+        '(0 0 0 yadfa/zones:secret-underground))
+    (when (underwaterp (get-zone (position-of (player-of *game*)))) (swell-up-all))
+    (process-potty)
+    (run-equip-effects (player-of *game*))
+    (loop for i in (allies-of *game*) do
+        (process-potty i)
+        (run-equip-effects i))
+    (print-enter-text (position-of (player-of *game*)))
+    (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
+              (setf *battle* (make-instance 'battle))
+              (iter
+                  (for i in (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies))
+                  (push (apply #'make-instance (car i) (eval (cdr i))) (enemies-of *battle*))
+                  (setf
+                      (win-events-of *battle*)
+                      (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :win-events)))
+              (format t "~a~%" (enter-battle-text-of *battle*))
+              (iter (for j in
+                        (iter (for i in (enemies-of *battle*))
+                            (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
+                                (format t "~a was added to your pokedex~%" (name-of i))
+                                (push (class-name (class-of i)) (seen-enemies-of *game*))
+                                (collect (class-name (class-of i))))))
+                  (yadfa/bin:pokedex j))
+              (unuse-package :yadfa/world :yadfa-user)
+              (use-package :yadfa/battle :yadfa-user)
+              (return-from move-to-secret-underground))
+        ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
+             (when (or (not (member i (finished-events-of *game*))) (event-repeatable (get-event i)))
+                 (funcall (coerce (event-lambda (get-event i)) 'function) i)
+                 (pushnew i (finished-events-of *game*))
+                 (collect i)))
             (return-from move-to-secret-underground))
-        (when (lockedp (get-zone new-position))
-            (if (position-if (lambda (a)
-                                 (typep a (lockedp (get-zone new-position))))
-                    (append
-                        (inventory-of (player-of *game*))
-                        (list (wield-of (player-of *game*)))
-                        (wear-of (player-of *game*))
-                        (let ((a ()))
-                            (iter (for i in (allies-of *game*))
-                                (push (wield-of i) a)
-                                (iter (for j in (wear-of i))
-                                    (push j a)))
-                            a)))
-                (progn
-                    (setf (lockedp (get-zone new-position)) nil)
-                    (format t "You unlock zone ~a~%" new-position))
-                (progn
-                    (format t "zone ~a is locked~%" new-position)
-                    (return-from move-to-secret-underground))))
-        (setf (position-of (player-of *game*))
-            new-position)
-        (when (underwaterp (get-zone (position-of (player-of *game*)))) (swell-up-all))
-        (process-potty)
-        (run-equip-effects (player-of *game*))
-        (loop for i in (allies-of *game*) do
-            (process-potty i)
-            (run-equip-effects i))
-        (print-enter-text (position-of (player-of *game*)))
-        (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
-                  (setf *battle* (make-instance 'battle))
-                  (iter
-                      (for i in (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies))
-                      (push (apply #'make-instance (car i) (eval (cdr i))) (enemies-of *battle*))
-                      (setf
-                          (win-events-of *battle*)
-                          (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :win-events)))
-                  (format t "~a~%" (enter-battle-text-of *battle*))
-                  (iter (for j in
-                            (iter (for i in (enemies-of *battle*))
-                                (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
-                                    (format t "~a was added to your pokedex~%" (name-of i))
-                                    (push (class-name (class-of i)) (seen-enemies-of *game*))
-                                    (collect (class-name (class-of i))))))
-                      (yadfa/bin:pokedex j))
-                  (unuse-package :yadfa/world :yadfa-user)
-                  (use-package :yadfa/battle :yadfa-user)
-                  (return-from move-to-secret-underground))
-            ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-                 (when (or (not (member i (finished-events-of *game*))) (event-repeatable i))
-                     (funcall (coerce (event-lambda i) 'function) i)
-                     (pushnew i (finished-events-of *game*))
-                     (collect i)))
-                (return-from move-to-secret-underground))
-            ((enemy-spawn-list-of (get-zone (position-of (player-of *game*))))
-                (iter
-                    (for i in (enemy-spawn-list-of (get-zone (position-of (player-of *game*)))))
-                    (let ((random (if (getf i :random) (getf i :random) 1)))
-                        (when (< (strong-random (getf i :max-random)) random)
-                            (setf *battle* (make-instance 'battle
-                                               :enemies (iter (for j in (getf i :enemies))
-                                                            (collect (apply #'make-instance (car j) (eval (cdr j)))))))
-                            (format t "~a~%" (enter-battle-text-of *battle*))
-                            (iter (for j in
-                                      (iter (for i in (enemies-of *battle*))
-                                          (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
-                                              (format t "~a was added to your pokedex~%" (name-of i))
-                                              (push (class-name (class-of i)) (seen-enemies-of *game*))
-                                              (collect (class-name (class-of i))))))
-                                (yadfa/bin:pokedex j))
-                            (unuse-package :yadfa/world :yadfa-user)
-                            (use-package :yadfa/battle :yadfa-user)
-                            (return-from move-to-secret-underground))))))))
+        ((enemy-spawn-list-of (get-zone (position-of (player-of *game*))))
+            (iter
+                (for i in (enemy-spawn-list-of (get-zone (position-of (player-of *game*)))))
+                (let ((random (if (getf i :random) (getf i :random) 1)))
+                    (when (< (strong-random (getf i :max-random)) random)
+                        (setf *battle* (make-instance 'battle
+                                           :enemies (iter (for j in (getf i :enemies))
+                                                        (collect (apply #'make-instance (car j) (eval (cdr j)))))))
+                        (format t "~a~%" (enter-battle-text-of *battle*))
+                        (iter (for j in
+                                  (iter (for i in (enemies-of *battle*))
+                                      (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
+                                          (format t "~a was added to your pokedex~%" (name-of i))
+                                          (push (class-name (class-of i)) (seen-enemies-of *game*))
+                                          (collect (class-name (class-of i))))))
+                            (yadfa/bin:pokedex j))
+                        (unuse-package :yadfa/world :yadfa-user)
+                        (use-package :yadfa/battle :yadfa-user)
+                        (return-from move-to-secret-underground)))))))
 (defun move-to-pocket-map (item)
     (when *battle*
         (format t "To avoid breaking the game due to a few assumtpions made in this function, please don't run this in a battle~%")
@@ -555,42 +650,19 @@
     (let ((new-position
               (if (eql (fourth (position-of (player-of *game*))) :pocket-map)
                   (getf (attributes-of item) :pocket-map-position)
-                  '(0 0 0 :pocket-map)))
-             (wearing-pants nil))
-        (when (and
-                  (diapers-only-p (get-zone new-position))
-                  (setf wearing-pants
-                      (iter (for i in (append (list (player-of *game*)) (allies-of *game*)))
-                          (when (or
-                                    (<
-                                        (list-length (wearingp (wear-of i) 'incontinence-product))
-                                        (list-length (wearingp (wear-of i) 'bottoms)))
-                                    (< (list-length (wearingp (wear-of i) 'padding)) 1))
-                              (collect (name-of i))))))
-            (format t "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.~%The following characters are currently not compliant with this rule:~{~a~}~%"
-                (iter (for i in wearing-pants) (collect " ") (collect i)))
+                  '(0 0 0 :pocket-map))))
+        (unless (get-path-end new-position)
+            (format t "~a"
+                (second
+                    (multiple-value-list
+                        (get-path-end
+                            '(0 0 0 pocket-map)))))
             (return-from move-to-pocket-map))
-        (when (lockedp (get-zone new-position))
-            (if (position-if (lambda (a)
-                                 (typep a (lockedp (get-zone new-position))))
-                    (append
-                        (inventory-of (player-of *game*))
-                        (list (wield-of (player-of *game*)))
-                        (wear-of (player-of *game*))
-                        (let ((a ()))
-                            (iter (for i in (allies-of *game*))
-                                (push (wield-of i) a)
-                                (iter (for j in (wear-of i))
-                                    (push j a)))
-                            a)))
-                (progn
-                    (setf (lockedp (get-zone new-position)) nil)
-                    (format t "You unlock zone ~a~%" new-position))
-                (progn
-                    (format t "zone ~a is locked~%" new-position)
-                    (return-from move-to-pocket-map))))
         (unless (eql (fourth (position-of (player-of *game*))) :pocket-map)
             (setf (getf (attributes-of item) :pocket-map-position) (position-of (player-of *game*))))
+        (when (lockedp (get-zone new-position))
+            (format t "You unlock zone ~a~%" new-position)
+            (setf (lockedp (get-zone new-position)) nil))
         (setf (position-of (player-of *game*))
             new-position)
         (when (underwaterp (get-zone (position-of (player-of *game*)))) (swell-up-all))
@@ -620,8 +692,8 @@
                   (use-package :yadfa/battle :yadfa-user)
                   (return-from move-to-pocket-map))
             ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-                 (when (or (not (member i (finished-events-of *game*))) (event-repeatable i))
-                     (funcall (coerce (event-lambda i) 'function) i)
+                 (when (or (not (member i (finished-events-of *game*))) (event-repeatable (get-event i)))
+                     (funcall (coerce (event-lambda (get-event i)) 'function) i)
                      (pushnew i (finished-events-of *game*))
                      (collect i)))
                 (return-from move-to-pocket-map))
@@ -815,10 +887,10 @@
         (name-of user)
         (if (malep user) "his" "her")
         (if (malep user) "his" "her"))
-    (unless (member (gethash 'yadfa/events:get-diaper-locked-1 (events-of-game)) (finished-events-of *game*))
+    (unless (member 'yadfa/events:get-diaper-locked-1 (finished-events-of *game*))
         (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%"
             (name-of user))
-        (push (gethash 'yadfa/events:get-diaper-locked-1 (events-of-game)) (finished-events-of *game*))))
+        (push 'yadfa/events:get-diaper-locked-1 (finished-events-of *game*))))
 (defun potty-on-toilet (prop &key wet mess pants-down (user (player-of *game*)))
     (declare
         (type toilet prop)
@@ -2289,8 +2361,9 @@
                 (setf *battle* nil)
                 (setf (continue-battle-of (get-zone (position-of (player-of *game*)))) nil)
                 (iter (for i in win-events)
-                    (when (or (not (member i (finished-events-of *game*))) (event-repeatable i))
-                        (funcall (coerce (event-lambda i) 'function) i)
+                    (when (or (not (member i (finished-events-of *game*)))
+                              (event-repeatable (get-event i)))
+                        (funcall (coerce (event-lambda (get-event i)) 'function) i)
                         (pushnew i (finished-events-of *game*))
                         (collect i)))
                 (when *battle* (return-from finish-battle)))))
@@ -2663,20 +2736,20 @@
                     (format t "~a has a blowout and leaves a mess~%"
                         (name-of selected-user))))
             (cond ((and (not (eq (player-of *game*) selected-user))
-                     (or (eq (potty-training-of user) :rebel))
-                     (not (typep (get-move attack selected-user)
-                              'yadfa/moves:watersport))
-                     (>= (bladder/contents-of selected-user) (bladder/need-to-potty-limit-of selected-user)))
-                    (let ((a (make-instance 'yadfa/moves:watersport)))
-                        (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of selected-user))
-                        (format t "*~a uses ~a instead*~%~%" (name-of selected-user) (name-of a))
-                        (funcall
-                            (coerce
-                                (attack-of a)
-                                'function)
-                            selected-target
-                            selected-user
-                            a)))
+                       (or (eq (potty-training-of user) :rebel))
+                       (not (typep (get-move attack selected-user)
+                                'yadfa/moves:watersport))
+                       (>= (bladder/contents-of selected-user) (bladder/need-to-potty-limit-of selected-user)))
+                      (let ((a (make-instance 'yadfa/moves:watersport)))
+                          (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of selected-user))
+                          (format t "*~a uses ~a instead*~%~%" (name-of selected-user) (name-of a))
+                          (funcall
+                              (coerce
+                                  (attack-of a)
+                                  'function)
+                              selected-target
+                              selected-user
+                              a)))
                 ((and (not (eq (player-of *game*) selected-user))
                      (or (eq (potty-training-of user) :rebel))
                      (not (typep (get-move attack selected-user) 'yadfa/moves:mudsport))
@@ -2711,8 +2784,8 @@
                         (mess :messer selected-user)
                         (set-status-condition 'yadfa/status-conditions:messing selected-user)))
                 ((iter (for j in (getf (status-conditions-of *battle*) selected-user))
-                       (when (blocks-turn-of j)
-                           (leave t))))
+                     (when (blocks-turn-of j)
+                         (leave t))))
                 ((and
                      (or
                          (>= (bladder/contents-of selected-user) (bladder/potty-dance-limit-of selected-user))
@@ -2815,24 +2888,24 @@
                 (incf (bladder/contents-of i) (* (bladder/fill-rate-of i) 5))
                 (incf (bowels/contents-of i) (* (bowels/fill-rate-of i) 5))
                 (cond ((or
-                         (>= (bladder/contents-of i) (bladder/maximum-limit-of i))
-                         (>= (bowels/contents-of i) (bowels/maximum-limit-of i)))
-                        (when (>= (bladder/contents-of i) (bladder/maximum-limit-of i))
-                            (format t
-                                "~a lets out a quiet moan as ~a accidentally wets ~aself in battle~%"
-                                (name-of i)
-                                (if (malep i) "he" "she")
-                                (if (malep i) "him" "her"))
-                            (wet :wetter i)
-                            (set-status-condition 'yadfa/status-conditions:wetting i))
-                        (when (>= (bowels/contents-of i) (bowels/maximum-limit-of i))
-                            (format t
-                                "~a instinctively squats down as ~a accidentally messes ~aself in battle~%"
-                                (name-of i)
-                                (if (malep i) "he" "she")
-                                (if (malep i) "him" "her"))
-                            (mess :messer i)
-                            (set-status-condition 'yadfa/status-conditions:messing i)))
+                           (>= (bladder/contents-of i) (bladder/maximum-limit-of i))
+                           (>= (bowels/contents-of i) (bowels/maximum-limit-of i)))
+                          (when (>= (bladder/contents-of i) (bladder/maximum-limit-of i))
+                              (format t
+                                  "~a lets out a quiet moan as ~a accidentally wets ~aself in battle~%"
+                                  (name-of i)
+                                  (if (malep i) "he" "she")
+                                  (if (malep i) "him" "her"))
+                              (wet :wetter i)
+                              (set-status-condition 'yadfa/status-conditions:wetting i))
+                          (when (>= (bowels/contents-of i) (bowels/maximum-limit-of i))
+                              (format t
+                                  "~a instinctively squats down as ~a accidentally messes ~aself in battle~%"
+                                  (name-of i)
+                                  (if (malep i) "he" "she")
+                                  (if (malep i) "him" "her"))
+                              (mess :messer i)
+                              (set-status-condition 'yadfa/status-conditions:messing i)))
                     ((and
                          (watersport-limit-of i)
                          (<= (- (bladder/maximum-limit-of i) (bladder/contents-of i)) (watersport-limit-of i))
@@ -2846,8 +2919,8 @@
                         (let ((a (make-instance 'yadfa/moves:mudsport)))
                             (funcall (coerce (attack-of a) 'function) (player-of *game*) i a)))
                     ((iter (for j in (getf (status-conditions-of *battle*) i))
-                           (when (blocks-turn-of j)
-                               (leave t))))
+                         (when (blocks-turn-of j)
+                             (leave t))))
                     ((and
                          (or
                              (>= (bladder/contents-of i) (bladder/potty-dance-limit-of i))

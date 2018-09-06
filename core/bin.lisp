@@ -5,7 +5,15 @@
     "Intended for developers. Use this to recompile the game without having to close it. Accepts the same keyword arguments as asdf:load-system and asdf:operate. Set COMPILER-VERBOSE to T to print the compiling messages. setting LOAD-SOURCE t T will avoid creating fasls"
     (let ((*compile-verbose* compiler-verbose) (*compile-print* compiler-verbose))
         (apply #'asdf:load-system :yadfa :allow-other-keys t keys)
-        (apply #'load-mods :allow-other-keys t keys)))
+        (apply #'load-mods :allow-other-keys t keys))
+    (ensure-zones *game*)
+    (maphash (lambda (a b)
+                 (iter (for (c d) on b by #'cddr)
+                     (unless (member c (finished-inithooks-of (get-zone a)))
+                         (funcall (coerce d 'function) (get-zone a))
+                         (pushnew c (finished-inithooks-of (get-zone a))))))
+        *inithooks/zone*)
+    (ensure-events *game*))
 (defun yadfa/bin:enable-mod (system)
     "Enable a mod, the modding system is mostly just asdf, SYSTEM is a keyword which is the name of the system you want to enable"
     (declare (ignorable system))
@@ -55,7 +63,8 @@
                      (unless (member c (finished-inithooks-of (get-zone a)))
                          (funcall (coerce d 'function) (get-zone a))
                          (pushnew c (finished-inithooks-of (get-zone a))))))
-        *inithooks/zone*))
+        *inithooks/zone*)
+    (ensure-events *game*))
 (defun yadfa/bin:toggle-onesie (&key wear user)
     "Open or closes your onesie. WEAR is the index of a onesie. Leave NIL for the outermost onesie. USER is the index of an ally. Leave NIL to refer to yourself"
     (declare (type (or unsigned-byte null) wear user))
@@ -83,73 +92,40 @@
             (with j = 1)
             (when (typep i 'onesie) (leave (toggle-onesie% i (nthcdr j (wear-of (player-of *game*))) (player-of *game*))))
             (incf j) (finally (format t "You're not wearing a onesie~%")))))
-(defun yadfa/world:move (&rest direction)
+(defun yadfa/world:move (&rest directions)
     "type in the direction as a keyword to move in that direction, valid directions can be found with `(lst :directions t)'. you can also specify multiple directions, for example `(move :south :south)' will move 2 zones south. `(move :south :west :south)' will move south, then west, then south."
-    (declare (type list direction))
-    (check-type direction list)
-    (loop for i in direction do
-        (let ((direction-exists t) (xinc 0) (yinc 0) (zinc 0) (warp nil) (new-position nil) (wearing-pants nil))
-            (case i
-                (:north (decf yinc))
-                (:south (incf yinc))
-                (:east (incf xinc))
-                (:west (decf xinc))
-                (:up (incf zinc))
-                (:down (decf zinc))
-                (otherwise (if
-                               (get-warp-point i (position-of (player-of *game*)))
-                               (setf warp (get-warp-point i (position-of (player-of *game*))))
-                               (setf direction-exists nil))))
-            (cond ((not direction-exists)
-                      (format t "Pick a direction the game knows about~%")
-                      (return-from yadfa/world:move))
-                ((not (get-zone (append
-                                    (mapcar #'+ (butlast (position-of (player-of *game*))) (list xinc yinc zinc))
-                                    (last (position-of (player-of *game*))))))
-                    (format t "That zone doesn't exist~%")
-                    (return-from yadfa/world:move)))
-            (setf new-position
-                (if warp
-                    warp
-                    (append (mapcar #'+ (butlast (position-of (player-of *game*))) (list xinc yinc zinc))
-                        (last (position-of (player-of *game*))))))
-            (when (hiddenp (get-zone new-position))
-                (format t "That zone doesn't exist~%")
+    (declare (type list directions))
+    (check-type directions list)
+    (loop for direction in directions do
+        (let ((new-position (get-path-end
+                                (get-destination direction (position-of (player-of *game*)))
+                                (position-of (player-of *game*))
+                                direction)))
+            (unless (get-path-end
+                        (get-destination direction (position-of (player-of *game*)))
+                        (position-of (player-of *game*))
+                        direction)
+                (format t "~a"
+                    (second
+                        (multiple-value-list
+                            (get-path-end
+                                (get-destination direction (position-of (player-of *game*)))
+                                (position-of (player-of *game*))
+                                direction))))
                 (return-from yadfa/world:move))
-            (when (and
-                      (diapers-only-p (get-zone new-position))
-                      (setf wearing-pants
-                          (iter (for i in (append (list (player-of *game*)) (allies-of *game*)))
-                              (when (or
-                                        (<
-                                            (list-length (wearingp (wear-of i) 'incontinence-product))
-                                            (list-length (wearingp (wear-of i) 'bottoms)))
-                                        (< (list-length (wearingp (wear-of i) 'padding)) 1))
-                                  (collect (name-of i))))))
-                (format t "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.~%The following characters are currently not compliant with this rule:~{~a~}~%"
-                    (iter (for i in wearing-pants) (collect " ") (collect i)))
-                (return-from yadfa/world:move))
+            (when (or
+                      (lockedp (get-zone new-position))
+                      (getf (getf (direction-attributes-of
+                                      (get-zone (position-of (player-of *game*))))
+                                direction)
+                          :locked))
+                (format t "You unlock zone ~a~%" new-position))
             (when (lockedp (get-zone new-position))
-                (if (position-if (lambda (a)
-                                     (typep a (lockedp (get-zone new-position))))
-                        (append
-                            (inventory-of (player-of *game*))
-                            (list (wield-of (player-of *game*)))
-                            (wear-of (player-of *game*))
-                            (let ((a ()))
-                                (iter (for i in (allies-of *game*))
-                                    (push (wield-of i) a)
-                                    (iter (for j in (wear-of i))
-                                        (push j a)))
-                                a)))
-                    (progn
-                        (setf (lockedp (get-zone new-position)) nil)
-                        (format t "You unlock zone ~a~%" new-position))
-                    (progn
-                        (format t "zone ~a is locked~%" new-position)
-                        (return-from yadfa/world:move))))
+                (setf (lockedp (get-zone new-position)) nil))
+            (when (getf-direction (position-of (player-of *game*)) direction :locked)
+                (remf-direction (position-of (player-of *game*)) direction :locked))
             (setf (position-of (player-of *game*))
-                new-position)
+                (get-destination direction (position-of (player-of *game*))))
             (when (underwaterp (get-zone (position-of (player-of *game*)))) (swell-up-all))
             (process-potty)
             (run-equip-effects (player-of *game*))
@@ -177,8 +153,9 @@
                       (use-package :yadfa/battle :yadfa-user)
                       (return-from yadfa/world:move))
                 ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-                     (when (or (not (member i (finished-events-of *game*))) (event-repeatable i))
-                         (funcall (coerce (event-lambda i) 'function) i)
+                     (when (or (not (member i (finished-events-of *game*)))
+                               (event-repeatable (get-event i)))
+                         (funcall (coerce (event-lambda (get-event i)) 'function) i)
                          (pushnew i (finished-events-of *game*))
                          (collect i)))
                     (return-from yadfa/world:move))
@@ -991,18 +968,48 @@
             (wash (inventory-of (player-of *game*)))
             (format t "You washed all your soggy and messy clothing. Try not to wet and mess them next time~%"))
         (t (wash-in-washer (getf (get-props-from-zone (position-of (player-of *game*))) prop)))))
-(defun yadfa/bin:toss (item)
+(defun yadfa/bin:toss (&rest items)
     "Throw an item in your inventory away. ITEM is the index of the item in your inventory"
-    (declare (type integer item))
-    (check-type item integer)
-    (when (>= item (list-length (inventory-of (player-of *game*))))
-        (format t "That item isn't in your inventory~%")
+    (declare (type list items))
+    (check-type items list)
+    (iter (for i in items) (check-type i integer))
+    (when (>= (first (sort items #'>)) (list-length (inventory-of (player-of *game*))))
+        (format t "You only have ~d items~%" (list-length (inventory-of (player-of *game*))))
         (return-from yadfa/bin:toss))
-    (unless (tossablep (nth item (inventory-of (player-of *game*))))
-        (format t "To avoid breaking the game, you can't toss that item.")
+    (when (iter (for i in items)
+              (unless (tossablep (nth i (inventory-of (player-of *game*))))
+                  (format t "To avoid breaking the game, you can't toss your ~a."
+                      (name-of (nth i (inventory-of (player-of *game*)))))
+                  (leave t)))
         (return-from yadfa/bin:toss))
-    (format t "You send ~a straight to /dev/null~%" (name-of (nth item (inventory-of (player-of *game*)))))
-    (setf (inventory-of (player-of *game*)) (remove-nth item (inventory-of (player-of *game*)))))
+    (format t "You send ~a straight to /dev/null~%"
+        (iter (for i in items)
+            (collect (name-of i))))
+    (iter (for i in (sort items #'>))
+        (setf (inventory-of (player-of *game*)) (remove-nth i (inventory-of (player-of *game*))))))
+(defun yadfa/world:place (prop &rest items)
+    "Store items in a prop. ITEMS is a list of indexes of the items in your inventory. PROP is a keyword"
+    (declare (type list items) (type symbol prop))
+    (check-type items list)
+    (check-type prop symbol)
+    (iter (for i in items) (check-type i integer))
+    (when (>= (first (sort items #'>)) (list-length (inventory-of (player-of *game*))))
+        (format t "You only have ~d items~%" (list-length (inventory-of (player-of *game*))))
+        (return-from yadfa/world:place))
+    (unless (getf (get-props-from-zone (position-of (player-of *game*))) prop)
+        (format t "That prop doesn't exist")
+        (return-from yadfa/world:place))
+    (unless (placeablep (getf (get-props-from-zone (position-of (player-of *game*))) prop))
+        (format t "To avoid breaking the game, you can't place that item here.")
+        (return-from yadfa/world:place))
+    (iter (for i in (sort items #'>))
+        (format t "You place your ~a on the ~a~%"
+            (name-of (nth i (inventory-of (player-of *game*))))
+            (name-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)))
+        (push
+            (nth i (inventory-of (player-of *game*)))
+            (get-items-from-prop prop (position-of (player-of *game*))))
+        (setf (inventory-of (player-of *game*)) (remove-nth i (inventory-of (player-of *game*))))))
 (defun yadfa/bin:toggle-full-repl ()
     "don't block unknown symbols in the LTK repl"
     (if (full-repl-of (config-of *game*))

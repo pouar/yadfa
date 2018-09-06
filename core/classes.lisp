@@ -359,6 +359,12 @@
             :accessor hiddenp
             :type boolean
             :documentation "When true, the game pretends this room doesn't exist. This is for when certain events in the game makes certain zones disappear from the map and to avoid making them be in the exact same state as in the beginning of the game when they reappear")
+        (direction-attributes
+            :initarg :direction-attributes
+            :initform ()
+            :accessor direction-attributes-of
+            :type list
+            :documentation "Contains attributes based on the direction rather than the zone itself")
         (no-puddles
             :initarg :no-puddles
             :initform nil
@@ -443,6 +449,12 @@
             :accessor name-of
             :type simple-string
             :documentation "Name of prop")
+        (placeable
+            :initarg :placeable
+            :initform nil
+            :accessor placeablep
+            :type boolean
+            :documentation "Whether you can place items here")
         (attributes
             :initarg :attributes
             :initform '()
@@ -523,6 +535,12 @@
             :accessor default-move-of
             :type stat/move
             :documentation "Default move this weapon uses")
+        (attributes
+            :initarg :attributes
+            :initform '()
+            :accessor attributes-of
+            :type list
+            :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
         (wear-stats
             :initarg :wear-stats
             :initform ()
@@ -837,12 +855,12 @@
                                      (name-of j)
                                      (if (malep j) "him" "her"))
                                  (unless (position
-                                             (gethash :get-diaper-locked-1 (events-of-game))
+                                             (gethash :get-diaper-locked-1 (events-of *game*))
                                              (finished-events-of *game*))
                                      (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%"
                                          (name-of j))
                                      (push
-                                         (gethash :get-diaper-locked-1 (events-of-game))
+                                         (gethash :get-diaper-locked-1 (events-of *game*))
                                          (finished-events-of *game*))))))))))
     (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 (defclass checkpoint (prop) ()
@@ -855,7 +873,8 @@
                                                         (prop &rest keys &key &allow-other-keys)
                                                         (declare (type prop prop) (ignore prop))
                                                         (check-type prop prop)
-                                                        (setf (warp-on-death-point-of (player-of *game*)) (position-of (player-of *game*)))))))
+                                                        (setf (warp-on-death-point-of (player-of *game*)) (position-of (player-of *game*)))
+                                                        (format t "You will now teleport here when you black out")))))
     (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 (defclass shop (prop)
     ((items-for-sale
@@ -1098,6 +1117,6 @@
 (defmethod initialize-instance :after
     ((c game) &rest initargs &key &allow-other-keys)
     (declare (ignorable initargs))
-    (setf (events-of c) *events-in-game*)
+    (ensure-events c)
     (pushnew (player-of c) (team-of c))
     (ensure-zones c))
