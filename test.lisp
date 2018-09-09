@@ -6,6 +6,8 @@
         (load quicklisp-init)))
 #+(and gmp sbcl) (require 'sb-gmp)
 #+(and sbcl gmp) (sb-gmp:install-gmp-funs)
+(handler-bind ((error #'(lambda (c) (continue))))
+    (ql:quickload :clim-listener))
 (ql:quickload :yadfa)
 (in-package #:yadfa)
 (init-game)
