@@ -24,10 +24,10 @@ install:
 - ps: Expand-Archive $env:CACHE\declt.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\FantasqueSansMono-Normal.zip -DestinationPath $env:CACHE\FantasqueSansMono\
 - cmd: 'start /wait msiexec /i %CACHE%\sbcl.msi /quiet /qn /norestart /log sbcl-install.log'
-- ps: Copy-Item $env:CACHE\asdf-3.3.2.9\TTF\FantasqueSansMono-Regular.ttf -recurse -destination C:\projects\yadfa\FantasqueSansMono-Regular.ttf
+- ps: Copy-Item $env:CACHE\asdf-3.3.2.9\ -recurse -destination $env:USERPROFILE\common-lisp\
 - cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l "%CACHE%\quicklisp.lisp" -e "(quicklisp-quickstart:install)"  -e "(#__exit 0)"'
 - ps: Copy-Item ci\ccl-init.lisp -Destination $env:USERPROFILE\ccl-init.lisp
-- ps: Copy-Item $env:CACHE\FantasqueSansMono\ -Destination $env:USERPROFILE\ccl-init.lisp
+- ps: Copy-Item $env:CACHE\FantasqueSansMono\TTF\FantasqueSansMono-Regular.ttf -Destination C:\projects\yadfa\FantasqueSansMono-Regular.ttf
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\yadfa -ItemType SymbolicLink -Value $pwd
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\sly -ItemType SymbolicLink -Value $env:CACHE\sly-master
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\declt -ItemType SymbolicLink -Value $env:CACHE\declt-master
