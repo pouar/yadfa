@@ -45,8 +45,6 @@ test_script:
     Else { echo "yadfa.html was built"; }
     If(!(test-path C:\projects\yadfa\yadfa.7z )) { echo "yadfa.7z was not built";exit 1; }
     Else { echo "yadfa.7z was built"; }
-    If(!(test-path C:\projects\yadfa\FantasqueSansMono-Regular.ttf )) { echo "yadfa.7z was not built";exit 1; }
-    Else { echo "yadfa.7z was built"; }
 deploy:
 - provider: BinTray
   username: pouar
