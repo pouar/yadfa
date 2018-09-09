@@ -28,8 +28,8 @@
                               (if uiop:*image-dumped-p*
                                   (pathname (directory-namestring (truename (uiop:argv0))))
                                   (asdf:system-source-directory :yadfa)))
-    (setf clim:*default-text-style*
-        (clim:make-text-style "Fantasque Sans Mono" "Regular" :normal))
+    (setf clim-listener::*default-text-style*
+        (clim-listener::make-text-style "Fantasque Sans Mono" "Regular" 12))
     (clim-listener:run-listener
         :package :yadfa-user
         :process-name "yadfa"
