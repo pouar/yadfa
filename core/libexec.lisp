@@ -392,9 +392,11 @@
                         ((and
                              (get-zone (list x y (third position) (fourth position)))
                              (warp-points-of (get-zone (list x y (third position) (fourth position)))))
-                            "▒")
+                            #+mcclim-ffi-freetype "▒"
+                            #-mcclim-ffi-freetype "W")
                         ((get-zone (list x y (third position) (fourth position)))
-                            (a (list x y (third position) (fourth position))))
+                            #+mcclim-ffi-freetype (a (list x y (third position) (fourth position)))
+                            #-mcclim-ffi-freetype ".")
                         (t " "))))
             (format t "~%"))))
 (defun print-enter-text (position)

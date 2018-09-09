@@ -24,12 +24,7 @@
                      (uiop:quit))
     (use-package :yadfa/world :yadfa-user)
     #+mcclim-ffi-freetype (setf freetype2:*library* (freetype2:make-freetype))
-    #-mcclim-ffi-freetype (mcclim-truetype::register-all-ttf-fonts (clim:find-port)
-                              (if uiop:*image-dumped-p*
-                                  (pathname (directory-namestring (truename (uiop:argv0))))
-                                  (asdf:system-source-directory :yadfa)))
-    (setf clim-listener::*default-text-style*
-        (clim-listener::make-text-style "Fantasque Sans Mono" "Regular" 12))
+    (setf clim:*default-text-style* (clim:make-text-style :fix :roman :normal))
     (clim-listener:run-listener
         :package :yadfa-user
         :process-name "yadfa"
