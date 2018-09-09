@@ -50,7 +50,6 @@ test_script:
     Else { echo "yadfa.7z was built"; }
     If(!(test-path C:\projects\yadfa\FantasqueSansMono-Regular.ttf )) { echo "yadfa.7z was not built";exit 1; }
     Else { echo "yadfa.7z was built"; }
-- cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l test.lisp -e "(#__exit 0)"'
 deploy:
 - provider: BinTray
   username: pouar
