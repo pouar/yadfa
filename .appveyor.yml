@@ -48,7 +48,7 @@ deploy:
 - provider: BinTray
   username: pouar
   api_key:
-    secure: mCeKhLvAxW58ECp6C4lsCWyUxc0Fsh5JLfZU1ix188mlkrO+AX3BBn/K9b41An67
+    secure: O42a6FepgN/X3CzWpPbJkuKRhmENlIwBfbtMVQLKSWR/annp514THuh4Dynu6xLZ
   subject: pouar
   repo: yadfa
   package: yadfa
