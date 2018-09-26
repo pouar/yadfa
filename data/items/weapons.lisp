@@ -22,3 +22,22 @@
         :description "'Cause it looks cute on the character"
         :default-move (make-instance 'yadfa/moves:weapon-default
                           :power 80)))
+(defclass hammer-gun (item) ()
+    (:default-initargs
+        :name "Hammer Gun"
+        :value 1000
+        :description "As seen in One Piece"
+        :default-move (make-instance 'yadfa/moves:weapon-default
+                          :power 20)))
+(defclass three-swords (item) ()
+    (:default-initargs
+        :name "AK-47"
+        :value 10000
+        :description "You're just like Roronoa Zoro with these"
+        :default-move (make-instance 'yadfa/moves:weapon-default
+                          :power 150
+                          :attack '(lambda (target user self)
+                                       (let ((a (calculate-damage target user (power-of self))))
+                                           (format t "Three Sword Style!!!!~%")
+                                           (decf (health-of target) a)
+                                           (format t "~a received ~a damage~%" (name-of target) a))))))
