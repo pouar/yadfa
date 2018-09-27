@@ -1,7 +1,8 @@
 (in-package :cl-user)
 (uiop:define-package #:yadfa
-    (:use #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:ironclad #:trivial-garbage)
+    (:use #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:import-from #:macro-level #:macro-level)
+    (:import-from #:ironclad #:strong-random)
     (:export
         ;;variables
         #:*battle*
@@ -215,7 +216,8 @@
     (:documentation "Contains the commands used when battling. The player probably shouldn't call these with the package prefix unless they're developing"))
 (uiop:define-package #:yadfa/moves
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:ironclad #:trivial-garbage)
+    (:import-from #:ironclad #:strong-random)
+    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:kamehameha
         #:superglitch
@@ -229,8 +231,9 @@
     (:documentation "Contains all the moves in the game"))
 (uiop:define-package #:yadfa/items
     (:import-from #:macro-level #:macro-level)
+    (:import-from #:ironclad #:strong-random)
     (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:incontinence-pad)
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:ironclad #:trivial-garbage)
+    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:pacifier
         #:gold-pacifier
@@ -299,7 +302,8 @@
     (:documentation "Contains all the items in the game"))
 (uiop:define-package #:yadfa/enemies
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:ironclad #:trivial-garbage)
+    (:import-from #:ironclad #:strong-random)
+    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:diapered-raccoon-bandit
         #:rookie-diapered-raccoon-bandit
@@ -307,7 +311,8 @@
     (:documentation "Contains all the enemies in the game"))
 (uiop:define-package #:yadfa/status-conditions
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:ironclad #:trivial-garbage)
+    (:import-from #:ironclad #:strong-random)
+    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:wetting
         #:messing
@@ -316,7 +321,8 @@
     (:documentation "Contains all the status condtions in the game"))
 (uiop:define-package #:yadfa/zones
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:ironclad #:trivial-garbage)
+    (:import-from #:ironclad #:strong-random)
+    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:home
         #:debug-map
@@ -333,7 +339,8 @@
         #:your-ship)
     (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package #:yadfa/events
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:ironclad #:trivial-garbage)
+    (:import-from #:ironclad #:strong-random)
+    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:enter-bandits-village-1
         #:enter-bandits-village-2
@@ -343,5 +350,6 @@
         #:enter-bandits-kennel-1)
     (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package #:yadfa-user
-    (:use #:yadfa #:yadfa/bin #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:ironclad #:trivial-garbage)
+    (:import-from #:ironclad #:strong-random)
+    (:use #:yadfa #:yadfa/bin #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:documentation "The package that the player typically executes commands from"))
