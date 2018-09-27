@@ -98,6 +98,7 @@
         #:automatic-changing-table
         #:checkpoint
         #:shop
+        #:debug-shop
         #:bed
         #:enemy
         #:potty-enemy
