@@ -2088,7 +2088,7 @@
         (incf (getf j :messiness-capacity) (messiness-capacity-of i))
         (finally (return j))))
 (defun calculate-level-to-exp (level)
-    (expt level 3))
+    (floor (/ (* 4 (expt level 3)) 5)))
 (defun calculate-exp-yield (target)
     ($ (exp-yield-of target) * (level-of target) / 7))
 (defun calculate-wear-stats (user)
