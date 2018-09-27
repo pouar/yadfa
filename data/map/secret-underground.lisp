@@ -16,22 +16,7 @@
                           ironside (0 0 0 ironside)
                           bandits-domain (-3 21 0 bandits-domain))
         :props (list
-                   :shop (make-instance 'shop
-                             :items-for-sale (let ((a ()))
-                                                 (iter
-                                                     (for i in (list-all-packages))
-                                                     (unless
-                                                         (equal i (find-package :yadfa))
-                                                         (do-external-symbols
-                                                             (s i)
-                                                             (when (and
-                                                                       (find-class s nil)
-                                                                       (subclassp
-                                                                           (find-class s)
-                                                                           (find-class 'item))
-                                                                       (tossablep (make-instance s)))
-                                                                 (push (cons s nil) a)))))
-                                                 a))
+                   :shop (make-instance 'debug-shop)
                    :changing-table (make-instance 'automatic-changing-table)
                    :bed (make-instance 'bed)
                    :chest (make-instance 'prop

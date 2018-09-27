@@ -915,6 +915,85 @@
                                                       :items-to-sell items
                                                       :user (player-of *game*))))))
     (:documentation "Class for shops, you can buy stuff from these."))
+(defclass debug-shop (prop)
+    (:default-initargs
+        :name "Shop"
+        :description "A place to buy crap with your bitcoins"
+        :actions (list
+                     :list-items-for-sale (make-action
+                                              :documentation "List items for sale"
+                                              :lambda '(lambda
+                                                           (prop &rest keys &key &allow-other-keys)
+                                                           (declare (type prop prop))
+                                                           (check-type prop prop)
+                                                           (shopfun
+                                                               (let ((a ()))
+                                                                   (iter
+                                                                       (for i in (list-all-packages))
+                                                                       (unless
+                                                                           (equal i (find-package :yadfa))
+                                                                           (do-external-symbols
+                                                                               (s i)
+                                                                               (when (and
+                                                                                         (find-class s nil)
+                                                                                         (subclassp
+                                                                                             (find-class s)
+                                                                                             (find-class 'item))
+                                                                                         (tossablep (make-instance s)))
+                                                                                   (push (cons s nil) a)))))
+                                                                   a)
+                                                               :format-items t)))
+                     :buy-items (make-action
+                                    :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
+                                    :lambda '(lambda
+                                                 (prop &rest keys &key items &allow-other-keys)
+                                                 (declare (type prop prop) (type list items))
+                                                 (check-type prop prop)
+                                                 (check-type items list)
+                                                 (shopfun
+                                                     (let ((a ()))
+                                                         (iter
+                                                             (for i in (list-all-packages))
+                                                             (unless
+                                                                 (equal i (find-package :yadfa))
+                                                                 (do-external-symbols
+                                                                     (s i)
+                                                                     (when (and
+                                                                               (find-class s nil)
+                                                                               (subclassp
+                                                                                   (find-class s)
+                                                                                   (find-class 'item))
+                                                                               (tossablep (make-instance s)))
+                                                                         (push (cons s nil) a)))))
+                                                         a)
+                                                     :items-to-buy items
+                                                     :user (player-of *game*))))
+                     :sell-items (make-action
+                                     :documentation "Sell items. ITEMS is a list of indexes where each index corrisponds to an item in your inventory"
+                                     :lambda '(lambda
+                                                  (prop &rest keys &key items &allow-other-keys)
+                                                  (declare (type prop prop) (type list items))
+                                                  (check-type prop prop)
+                                                  (check-type items list)
+                                                  (shopfun
+                                                      (let ((a ()))
+                                                          (iter
+                                                              (for i in (list-all-packages))
+                                                              (unless
+                                                                  (equal i (find-package :yadfa))
+                                                                  (do-external-symbols
+                                                                      (s i)
+                                                                      (when (and
+                                                                                (find-class s nil)
+                                                                                (subclassp
+                                                                                    (find-class s)
+                                                                                    (find-class 'item))
+                                                                                (tossablep (make-instance s)))
+                                                                          (push (cons s nil) a)))))
+                                                          a)
+                                                      :items-to-sell items
+                                                      :user (player-of *game*))))))
+    (:documentation "Class for shops, you can buy stuff from these."))
 (defclass bed (prop) ()
     (:default-initargs
         :name "Bed"
