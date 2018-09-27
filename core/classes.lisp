@@ -915,7 +915,7 @@
                                                       :items-to-sell items
                                                       :user (player-of *game*))))))
     (:documentation "Class for shops, you can buy stuff from these."))
-(defclass debug-shop (prop)
+(defclass debug-shop (prop) ()
     (:default-initargs
         :name "Shop"
         :description "A place to buy crap with your bitcoins"
