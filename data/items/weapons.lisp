@@ -31,7 +31,7 @@
                           :power 20)))
 (defclass three-swords (item) ()
     (:default-initargs
-        :name "AK-47"
+        :name "Three Swords"
         :value 10000
         :description "You're just like Roronoa Zoro with these"
         :default-move (make-instance 'yadfa/moves:weapon-default
