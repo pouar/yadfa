@@ -50,8 +50,8 @@ deploy:
   api_key:
     secure: O42a6FepgN/X3CzWpPbJkuKRhmENlIwBfbtMVQLKSWR/annp514THuh4Dynu6xLZ
   subject: pouar
-  repo: yadfa
-  package: yadfa
+  repo: yadfa-win
+  package: win64
   version: latest
   artifact: yadfa.7z
   publish: true
