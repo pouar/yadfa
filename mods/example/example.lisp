@@ -1,6 +1,6 @@
 (in-package #:yadfa-mod-example)
 (defun test () (print 1))
-(ensure-event test-4
+(defevent test-4
     :lambda '(lambda (self)
                  (declare (ignore self))
                  (format t "Print some text~%")))
