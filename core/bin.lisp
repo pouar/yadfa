@@ -22,9 +22,7 @@
         (progn
             (pushnew (asdf:coerce-name system) *mods* :test #'string=)
             (with-open-file (stream (uiop:merge-pathnames* "mods.conf"
-                                        (if uiop:*image-dumped-p*
-                                            (pathname (directory-namestring (truename (uiop:argv0))))
-                                            (asdf:system-source-directory :yadfa)))
+                                         (uiop:xdg-config-home "yadfa/"))
                                 :if-does-not-exist :create
                                 :if-exists :supersede
                                 :direction :output)
@@ -35,11 +33,9 @@
     "Disable a mod, the modding system is mostly just asdf, SYSTEM is a keyword which is the name of the system you want to enable"
     (declare (ignorable system))
     #+yadfa/mods (progn
-                     (removef (asdf:coerce-name system) *mods* :test #'string=)
+                     (removef *mods* (asdf:coerce-name system) :test #'string=)
                      (with-open-file (stream (uiop:merge-pathnames* "mods.conf"
-                                                 (if uiop:*image-dumped-p*
-                                                     (pathname (directory-namestring (truename (uiop:argv0))))
-                                                     (asdf:system-source-directory :yadfa)))
+                                         (uiop:xdg-config-home "yadfa/"))
                                          :if-does-not-exist :create
                                          :if-exists :supersede
                                          :direction :output)

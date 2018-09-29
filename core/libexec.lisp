@@ -34,11 +34,11 @@
                          old)
                      (t new))))
         (iter (for i in (uiop:directory-files
-                            (format nil "*.asd")
-                            (merge-pathnames "mods/**/" (pathname (directory-namestring (truename (uiop:argv0)))))))
-            (when (string= (pathname-type i) "asd")
-                (setf (gethash (pathname-name i) *mod-registry*)
-                    (preferred-mod (gethash (pathname-name i) *mod-registry*) i))))))
+                                    (format nil "*.asd")
+                                    (merge-pathnames "mods/**/" (uiop:xdg-data-home "yadfa/"))))
+                (when (string= (pathname-type i) "asd")
+                    (setf (gethash (pathname-name i) *mod-registry*)
+                        (preferred-mod (gethash (pathname-name i) *mod-registry*) i))))))
 (defun clear-mod-registry ()
     (setf *mod-registry* nil))
 #+yadfa/mods
@@ -58,11 +58,10 @@
                                  asdf:*system-definition-search-functions*)
                              (uiop:register-clear-configuration-hook 'clear-mod-registry))
                          (asdf:clear-configuration)
-                         (let ((file (merge-pathnames "mods.conf"
-                                         (if uiop:*image-dumped-p*
-                                             (pathname (directory-namestring (truename (uiop:argv0))))
-                                             (asdf:system-source-directory :yadfa))))
-                                  (mods '()))
+                         (let* ((file (uiop:merge-pathnames* "mods.conf"
+                                         (uiop:xdg-config-home "yadfa/")))
+                                   (mods '()))
+                             (ensure-directories-exist (uiop:xdg-config-home "yadfa/"))
                              (handler-case (with-open-file (stream file :if-does-not-exist :error)
                                                (setf mods (read stream)))
                                  (file-error ()
