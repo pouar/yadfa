@@ -4,7 +4,7 @@
     :lambda '(lambda (self)
                  (declare (ignore self))
                  (format t "Print some text~%")))
-(setf-init-hook/zone (0 0 0 "debug") :mod-1
+(setf-init-hook/zone (0 0 0 yadfa/zones:debug-map) :mod-1
     (setf
         (getf (actions-of (getf (props-of zone) :shop)) :mod)
         (make-action
@@ -13,7 +13,7 @@
                          (prop &rest keys &key &allow-other-keys)
                          (declare (ignore prop))
                          (format t "Hello World~%")))))
-(setf-init-hook/zone (0 0 -1 "debug") :mod-2
+(setf-init-hook/zone (0 0 -1 yadfa/zones:debug-map) :mod-2
     (pushnew 'test-4 (events-of zone)))
 (defclass yadfa-mod-example:celebrate (stat/move) ()
     (:default-initargs
