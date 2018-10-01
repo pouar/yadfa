@@ -1,0 +1,27 @@
+image: fedora:latest
+
+run:
+  only:
+    - master
+  script:
+    - dnf -y install flatpak flatpak-builder sbcl openssl compat-openssl10-devel gpg
+    - echo $GPGKEY|base64 -d|gpg --import
+    - gpg --keyserver keys.fedoraproject.org --recv-keys 59B78A2D752B9794D2F74774BB18B49A57C49940
+    - flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    - flatpak install -y flathub org.freedesktop.Platform//1.6 org.freedesktop.Sdk//1.6 
+    - curl -fL https://getcli.jfrog.io | sh
+    - mv jfrog /usr/local/bin/jfrog
+    - flatpak-builder --force-clean build net.pouar.yadfa.yml
+    - flatpak build-export --gpg-sign=59B78A2D752B9794D2F74774BB18B49A57C49940 repo build
+    - tar -cf repo.tar repo
+    - curl -L https://beta.quicklisp.org/quicklisp.lisp > /tmp/quicklisp.lisp
+    - mkdir -p ~/quicklisp/local-projects
+    - git clone --depth 1 https://github.com/cl-plus-ssl/cl-plus-ssl.git ~/quicklisp/local-projects/cl-plus-ssl
+    - sbcl --quit --load /tmp/quicklisp.lisp --eval "(quicklisp-quickstart:install)" --eval '(ql:quickload :drakma)' --eval '(ql:quickload :cl-json)'
+    - version=$(date +%s)
+    - jfrog bt vc --user pouar --key $BINTRAYKEY pouar/yadfa-flatpak/repo/$version
+    - jfrog bt u --override=true --user pouar --key $BINTRAYKEY --explode repo.tar pouar/yadfa-flatpak/repo/$version
+    - jfrog bt vp --user pouar --key $BINTRAYKEY pouar/yadfa-flatpak/repo/$version
+    - sbcl --script .clean-old-bintray-versions.lisp
+  environment:
+    name: production

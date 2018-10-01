@@ -1,0 +1,8 @@
+[Flatpak Repo]
+Title=yadfa
+Url=https://dl.bintray.com/pouar/yadfa-flatpak/repo
+Homepage=https://cgit.pouar.net/yadfa.git/about
+Comment=Flatpak Repository for Yet Another Diaperfur Adventure
+Description=Flatpak Repository for Yet Another Diaperfur Adventure
+Icon=https://www.pouar.net/diapericonarch_5.png
+GPGKey=59B78A2D752B9794D2F74774BB18B49A57C49940

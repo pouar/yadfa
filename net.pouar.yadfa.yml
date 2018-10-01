@@ -1,0 +1,121 @@
+app-id: net.pouar.yadfa
+runtime: org.freedesktop.Platform
+runtime-version: '1.6'
+sdk: org.freedesktop.Sdk
+command: yadfa
+cleanup:
+  - /tmp
+  - /lib/yadfa/ci
+  - /lib/yadfa/.*
+  - /lib/yadfa/appveyor-*.lisp
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --share=network
+  - --device=dri
+build-options:
+  build-args:
+    - --share=network
+modules:
+  - name: sbcl-bin
+    buildsystem: simple
+    build-commands:
+      - INSTALL_ROOT="/app/tmp/sbcl-bin" sh install.sh
+      - printf "#!/bin/sh\necho net.pouar.yadfa\n"  > /app/tmp/sbcl-bin/bin/hostname
+      - chmod +x /app/tmp/sbcl-bin/bin/hostname
+    sources:
+      - type: archive
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.12/sbcl-1.4.12-x86-64-linux-binary.tar.bz2
+        sha256: 48cd06f90fbf52e6e04dcbe712664d883a8088838528ef93fc6539355db75c4d
+  - name: sbcl
+    buildsystem: simple
+    build-commands:
+      - sh -c 'echo "root:x:0:0:root,,,,:/root:/bin/sh" >> /etc/passwd;echo "root:x:0:root" >> /etc/group;SBCL_HOME="/app/tmp/sbcl-bin/lib/sbcl" PATH="$PATH:/app/tmp/sbcl-bin/bin" HOME="/app/tmp/home/" sh make.sh sbcl --fancy --with-sb-fasteval --without-sb-eval --with-sb-unicode --with-largefile'
+      - INSTALL_ROOT="/app/tmp/sbcl" HOME="/app/tmp/home/" sh install.sh
+    sources:
+      - type: archive
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.12/sbcl-1.4.12-source.tar.bz2
+        sha256: eaf889e6d4070de1487330e391d79986c2464ee365e206410178faf60b244a55
+  - name: yadfa-deps
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/tmp/home/common-lisp
+      - cp -R asdf-*/ /app/tmp/home/common-lisp/asdf/
+      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --load "quicklisp.lisp" --eval "(quicklisp-quickstart:install)"
+      - mkdir -p /app/tmp/home/quicklisp/local-projects /app/share/fonts/TTF /app/etc/fonts/conf.d
+      - cp -R declt-master/ /app/tmp/home/quicklisp/local-projects/declt/
+      - cp -R McCLIM-master/ /app/tmp/home/quicklisp/local-projects/McCLIM/
+      - cp -R ironclad-*/ /app/tmp/home/quicklisp/local-projects/ironclad/
+      - cp -R nibbles-*/ /app/tmp/home/quicklisp/local-projects/nibbles/
+      - cp -R sly-*/ /app/tmp/home/quicklisp/local-projects/sly/
+      - cp -R dejavu-fonts-ttf-*/ttf/ /app/share/fonts/TTF/
+      - cp -R dejavu-fonts-ttf-*/fontconfig/ /app/etc/fonts/conf.d/
+      - fc-cache -s
+    sources:
+      - type: file
+        url: https://beta.quicklisp.org/quicklisp.lisp
+        sha256: 4a7a5c2aebe0716417047854267397e24a44d0cce096127411e9ce9ccfeb2c17
+      - type: archive
+        url: https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.2.9/asdf-3.3.2.9.tar.gz
+        strip-components: 0
+        dest-filename: asdf.tar.gz
+        sha256: 60a28cd173f47645bea76b439d8868cd5b974e5af58f09b99b515eeccc5d7d1a
+      - type: archive
+        url: https://github.com/didierverna/declt/archive/master.tar.gz
+        strip-components: 0
+        dest-filename: declt.tar.gz
+        sha256: f64b6d3415fc898eafe1912806bcfc964364a02b43b9ec21fd18a5d087eebd0f
+      - type: archive
+        strip-components: 0
+        url: https://github.com/McCLIM/McCLIM/archive/master.tar.gz
+        dest-filename: mcclim.tar.gz
+        sha256: cf43ba5a2d08be94cea0551971081ad1d53b434aae7836fcf163eece8421f4c5
+      - type: archive
+        url: https://downloads.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip
+        strip-components: 0
+        dest-filename: dejavu.zip
+        sha256: 7576310b219e04159d35ff61dd4a4ec4cdba4f35c00e002a136f00e96a908b0a
+      - type: archive
+        url: https://github.com/sharplispers/ironclad/archive/v0.43.tar.gz
+        strip-components: 0
+        dest-filename: ironclad.tar.gz
+        sha256: 0e728a7e2ab6f5df0b92d4b0315a1dcdff1c3a6ec727b5378a2dcab8e7f09699
+      - type: archive
+        url: https://github.com/sharplispers/nibbles/archive/v0.14.tar.gz
+        strip-components: 0
+        dest-filename: nibbles.tar.gz
+        sha256: 25e3fbf07b6e7ac16acd933ed90c9aea14ed00af64bdefd5c54e4306595fb1de
+      - type: archive
+        url: https://github.com/joaotavora/sly/archive/master.tar.gz
+        strip-components: 0
+        dest-filename: sly.tar.gz
+        sha256: 762b3cf9c322aba4bd3979bc646385a81d369b34258c7a6c3c783e01d43f0a42
+  - name: yadfa-cache
+    buildsystem: simple
+    build-commands:
+      - ln -s $PWD /app/tmp/home/quicklisp/local-projects/yadfa
+      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --eval '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' --eval '(ql:update-client)'  --eval '(ql:update-all-dists)'
+      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script run.lisp mods texi ft
+      - rm /app/tmp/home/quicklisp/local-projects/yadfa
+    sources:
+      - type: git
+        branch: master
+        url: https://gitlab.com/pouar/yadfa.git
+  - name: yadfa
+    buildsystem: simple
+    build-commands:
+      - ln -s $PWD /app/tmp/home/quicklisp/local-projects/yadfa
+      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script build.lisp mods texi ft
+      - HOME="/app/tmp/home/" ./yadfa texi
+      - HOME="/app/tmp/home/" makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa.texi
+      - HOME="/app/tmp/home/" makeinfo --no-split ./yadfa.texi
+      - cp -a $PWD/ /app/lib/yadfa/
+      - rm /app/tmp/home/quicklisp/local-projects/yadfa
+      - mkdir -p /app/bin /app/share/doc/yadfa /app/share/info
+      - install -Dm644 /app/lib/yadfa/yadfa.html /app/share/doc/yadfa/
+      - gzip -c /app/lib/yadfa/yadfa.info > /app/share/info/yadfa.info.gz
+      - ln -s /app/lib/yadfa/yadfa /app/bin/yadfa
+    sources:
+      - type: git
+        branch: master
+        url: https://gitlab.com/pouar/yadfa.git
