@@ -45,8 +45,6 @@ modules:
       - mkdir -p /app/tmp/home/quicklisp/local-projects /app/share/fonts/TTF /app/etc/fonts/conf.d
       - cp -R declt-master/ /app/tmp/home/quicklisp/local-projects/declt/
       - cp -R McCLIM-master/ /app/tmp/home/quicklisp/local-projects/McCLIM/
-      - cp -R ironclad-*/ /app/tmp/home/quicklisp/local-projects/ironclad/
-      - cp -R nibbles-*/ /app/tmp/home/quicklisp/local-projects/nibbles/
       - cp -R sly-*/ /app/tmp/home/quicklisp/local-projects/sly/
       - cp -R dejavu-fonts-ttf-*/ttf/ /app/share/fonts/TTF/
       - cp -R dejavu-fonts-ttf-*/fontconfig/ /app/etc/fonts/conf.d/
@@ -75,16 +73,6 @@ modules:
         strip-components: 0
         dest-filename: dejavu.zip
         sha256: 7576310b219e04159d35ff61dd4a4ec4cdba4f35c00e002a136f00e96a908b0a
-      - type: archive
-        url: https://github.com/sharplispers/ironclad/archive/v0.43.tar.gz
-        strip-components: 0
-        dest-filename: ironclad.tar.gz
-        sha256: 0e728a7e2ab6f5df0b92d4b0315a1dcdff1c3a6ec727b5378a2dcab8e7f09699
-      - type: archive
-        url: https://github.com/sharplispers/nibbles/archive/v0.14.tar.gz
-        strip-components: 0
-        dest-filename: nibbles.tar.gz
-        sha256: 25e3fbf07b6e7ac16acd933ed90c9aea14ed00af64bdefd5c54e4306595fb1de
       - type: archive
         url: https://github.com/joaotavora/sly/archive/master.tar.gz
         strip-components: 0
