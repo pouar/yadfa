@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2018 Pouar Dragon -->
 <application>
   <id type="desktop">net.pouar.yadfa.desktop</id>
-  <name>Yet Another Diaperfur Adventure</name>
-  <summary>An experimetnal text based adventure</summary>
+  <name>Yadfa</name>
+  <summary>Yet Another Diaperfur Adventure</summary>
   <metadata_license>CC0-1.0</metadata_license>​
   <categories>
     <category>Game</category>
@@ -12,6 +13,11 @@
   <releases>
     <release version="0.9" type="development" date="2018-10-02" />
 ​  </releases>
+  <screenshots>
+    <screenshot type="default">
+      <image type="source">https://www.pouar.net/downloads/yadfa-screenshot-1.png</image>
+    </screenshot>
+  </screenshots>
   <project_license>GPL-3.0+</project_license>
   <content_rating type="oars-1.1">
     <content_attribute id="violence-cartoon">mild</content_attribute>
@@ -20,6 +26,7 @@
     <content_attribute id="drugs-tobacco">moderate</content_attribute>
     <content_attribute id="language-profanity">moderate</content_attribute>
     <content_attribute id="language-humor">moderate</content_attribute>
+    <content_attribute id="language-discrimination">mild</content_attribute>
   </content_rating>
   <developer_name>Pouar</developer_name>
   <launchable type="desktop-id">net.pouar.yadfa.desktop</launchable>
