@@ -6,6 +6,7 @@ command: yadfa
 cleanup:
   - /tmp
   - /lib/yadfa/ci
+  - /lib/yadfa/flatpak
   - /lib/yadfa/.*
   - /lib/yadfa/appveyor-*.lisp
 finish-args:
@@ -92,11 +93,14 @@ modules:
       - HOME="/app/tmp/home/" makeinfo --no-split ./yadfa.texi
       - cp -a $PWD/ /app/lib/yadfa/
       - rm /app/tmp/home/quicklisp/local-projects/yadfa
-      - mkdir -p /app/bin /app/share/doc/yadfa /app/share/info
+      - mkdir -p /app/bin /app/share/doc/yadfa /app/share/info /app/share/icons/hicolor/scalable/apps /app/share/applications /app/share/metainfo
       - install -Dm644 /app/lib/yadfa/yadfa.html /app/share/doc/yadfa/
       - gzip -c /app/lib/yadfa/yadfa.info > /app/share/info/yadfa.info.gz
+      - cp flatpak/net.pouar.yadfa.svg /app/share/icons/hicolor/scalable/apps/net.pouar.yadfa.svg
+      - cp flatpak/net.pouar.yadfa.appdata.xml /app/share/metainfo/net.pouar.yadfa.appdata.xml
+      - cp flatpak/net.pouar.yadfa.desktop /app/share/applications/net.pouar.yadfa.desktop
       - ln -s /app/lib/yadfa/yadfa /app/bin/yadfa
     sources:
       - type: git
         branch: master
-        url: https://gitlab.com/pouar/yadfa.git
+        url: https://git.pouar.net/yadfa.git

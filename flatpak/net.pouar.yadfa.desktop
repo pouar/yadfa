@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Yet Another Diaperfur Adventure
+Comment=An experimetnal text based adventure
+Exec=yadfa
+Type=Application
+Icon=net.pouar.yadfa
+Categories=Game;AdventureGame;RolePlaying;
+Keywords=yadfa;

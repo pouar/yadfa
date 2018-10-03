@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application>
+  <id type="desktop">net.pouar.yadfa.desktop</id>
+  <name>Yet Another Diaperfur Adventure</name>
+  <summary>An experimetnal text based adventure</summary>
+  <metadata_license>CC0-1.0</metadata_license>​
+  <categories>
+    <category>Game</category>
+    <category>AdventureGame</category>
+    <category>RolePlaying</category>
+​  </categories>
+  <releases>
+    <release version="0.9" type="development" date="2018-10-02" />
+​  </releases>
+  <project_license>GPL-3.0+</project_license>
+  <content_rating type="oars-1.1">
+    <content_attribute id="violence-cartoon">mild</content_attribute>
+    <content_attribute id="drugs-alcohol">moderate</content_attribute>
+    <content_attribute id="drugs-narcotics">moderate</content_attribute>
+    <content_attribute id="drugs-tobacco">moderate</content_attribute>
+    <content_attribute id="language-profanity">moderate</content_attribute>
+    <content_attribute id="language-humor">moderate</content_attribute>
+  </content_rating>
+  <developer_name>Pouar</developer_name>
+  <launchable type="desktop-id">net.pouar.yadfa.desktop</launchable>
+  <description>
+    An experimetnal text based adventure you play by typing in Lisp code in a REPL
+  </description>
+  <url type="homepage">https://cgit.pouar.net/yadfa.git/about</url>
+</application>
