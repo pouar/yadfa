@@ -44,9 +44,9 @@ modules:
       - cp -R asdf-*/ /app/tmp/home/common-lisp/asdf/
       - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --load "quicklisp.lisp" --eval "(quicklisp-quickstart:install)"
       - mkdir -p /app/tmp/home/quicklisp/local-projects /app/share/fonts/TTF /app/etc/fonts/conf.d
-      - cp -R declt-master/ /app/tmp/home/quicklisp/local-projects/declt/
-      - cp -R McCLIM-master/ /app/tmp/home/quicklisp/local-projects/McCLIM/
-      - cp -R sly-*/ /app/tmp/home/quicklisp/local-projects/sly/
+      - cp -R declt/ /app/tmp/home/quicklisp/local-projects/declt/
+      - cp -R McCLIM/ /app/tmp/home/quicklisp/local-projects/McCLIM/
+      - cp -R sly/ /app/tmp/home/quicklisp/local-projects/sly/
       - cp -R dejavu-fonts-ttf-*/ttf/ /app/share/fonts/TTF/
       - cp -R dejavu-fonts-ttf-*/fontconfig/ /app/etc/fonts/conf.d/
       - fc-cache -s
@@ -59,26 +59,20 @@ modules:
         strip-components: 0
         dest-filename: asdf.tar.gz
         sha256: 60a28cd173f47645bea76b439d8868cd5b974e5af58f09b99b515eeccc5d7d1a
-      - type: archive
-        url: https://github.com/didierverna/declt/archive/master.tar.gz
-        strip-components: 0
-        dest-filename: declt.tar.gz
-        sha256: f64b6d3415fc898eafe1912806bcfc964364a02b43b9ec21fd18a5d087eebd0f
-      - type: archive
-        strip-components: 0
-        url: https://github.com/McCLIM/McCLIM/archive/master.tar.gz
-        dest-filename: mcclim.tar.gz
-        sha256: cf43ba5a2d08be94cea0551971081ad1d53b434aae7836fcf163eece8421f4c5
+      - type: git
+        url: https://github.com/didierverna/declt.git
+        dest: declt
+      - type: git
+        dest: McCLIM
+        url: https://github.com/McCLIM/McCLIM.git
       - type: archive
         url: https://downloads.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip
         strip-components: 0
         dest-filename: dejavu.zip
         sha256: 7576310b219e04159d35ff61dd4a4ec4cdba4f35c00e002a136f00e96a908b0a
-      - type: archive
-        url: https://github.com/joaotavora/sly/archive/master.tar.gz
-        strip-components: 0
-        dest-filename: sly.tar.gz
-        sha256: 762b3cf9c322aba4bd3979bc646385a81d369b34258c7a6c3c783e01d43f0a42
+      - type: git
+        dest: sly
+        url: https://github.com/joaotavora/sly.git
   - name: yadfa-cache
     buildsystem: simple
     build-commands:

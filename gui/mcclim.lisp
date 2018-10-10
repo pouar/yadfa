@@ -13,5 +13,9 @@
             :prompt "Species"
             :default (yadfa:species-of (yadfa:player-of yadfa:*game*))))
     (yadfa/bin::set-player name gender species))
+(clim:define-command (yadfa-set-eol-action :command-table yadfa-commands :menu "Set EOL Action")
+    ((keyword '(member :scroll :allow :wrap)
+         :prompt "Keyword"))
+    (setf (stream-end-of-line-action *query-io*) keyword))
 (clim:add-menu-item-to-command-table (clim:find-command-table 'listener) "Yadfa" :menu (clim:find-command-table 'yadfa-commands))
 (pushnew (clim:find-command-table 'yadfa-commands) (clim:command-table-inherit-from (clim:find-command-table 'listener)))
