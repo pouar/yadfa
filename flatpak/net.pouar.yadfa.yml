@@ -47,9 +47,6 @@ modules:
       - cp -R declt/ /app/tmp/home/quicklisp/local-projects/declt/
       - cp -R McCLIM/ /app/tmp/home/quicklisp/local-projects/McCLIM/
       - cp -R sly/ /app/tmp/home/quicklisp/local-projects/sly/
-      - cp -R dejavu-fonts-ttf-*/ttf/ /app/share/fonts/TTF/
-      - cp -R dejavu-fonts-ttf-*/fontconfig/ /app/etc/fonts/conf.d/
-      - fc-cache -s
     sources:
       - type: file
         url: https://beta.quicklisp.org/quicklisp.lisp
@@ -65,11 +62,6 @@ modules:
       - type: git
         dest: McCLIM
         url: https://github.com/McCLIM/McCLIM.git
-      - type: archive
-        url: https://downloads.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip
-        strip-components: 0
-        dest-filename: dejavu.zip
-        sha256: 7576310b219e04159d35ff61dd4a4ec4cdba4f35c00e002a136f00e96a908b0a
       - type: git
         dest: sly
         url: https://github.com/joaotavora/sly.git
