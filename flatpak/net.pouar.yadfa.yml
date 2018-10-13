@@ -87,13 +87,16 @@ modules:
       - HOME="/app/tmp/home/" makeinfo --no-split ./yadfa.texi
       - cp -a $PWD/ /app/lib/yadfa/
       - rm /app/tmp/home/quicklisp/local-projects/yadfa
-      - mkdir -p /app/bin /app/share/doc/yadfa /app/share/info /app/share/icons/hicolor/scalable/apps /app/share/applications /app/share/metainfo
+      - mkdir -p /app/bin /app/share/doc/yadfa /app/share/info /app/share/icons/hicolor/scalable/apps /app/share/applications /app/share/metainfo /app/lib
       - install -Dm644 /app/lib/yadfa/yadfa.html /app/share/doc/yadfa/
       - gzip -c /app/lib/yadfa/yadfa.info > /app/share/info/yadfa.info.gz
       - cp flatpak/net.pouar.yadfa.svg /app/share/icons/hicolor/scalable/apps/net.pouar.yadfa.svg
       - cp flatpak/net.pouar.yadfa.appdata.xml /app/share/metainfo/net.pouar.yadfa.appdata.xml
       - cp flatpak/net.pouar.yadfa.desktop /app/share/applications/net.pouar.yadfa.desktop
       - ln -s /app/lib/yadfa/yadfa /app/bin/yadfa
+      - bash -c 'LIB="$(readlink /lib/x86_64-linux-gnu/libfreetype.so)"; ln -s "/lib/x86_64-linux-gnu/${LIB%.[0-9]*.[0-9]*}" /app/lib/libfreetype.so'
+      - bash -c 'LIB="$(readlink /lib/x86_64-linux-gnu/libfontconfig.so)"; ln -s "/lib/x86_64-linux-gnu/${LIB%.[0-9]*.[0-9]*}" /app/lib/libfontconfig.so'
+      - bash -c 'LIB="$(readlink /lib/x86_64-linux-gnu/libharfbuzz.so)"; ln -s "/lib/x86_64-linux-gnu/${LIB%.[0-9]*.[0-9]*}" /app/lib/libharfbuzz.so'
     sources:
       - type: git
         branch: master
