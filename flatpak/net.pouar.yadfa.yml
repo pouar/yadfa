@@ -18,6 +18,20 @@ build-options:
   build-args:
     - --share=network
 modules:
+  - name: wget
+    buildsystem: autotools
+    sources:
+      - type: archive
+        url: https://ftp.gnu.org/gnu/wget/wget-1.19.tar.xz
+        sha256: 0f1157bbf4daae19f3e1ddb70c6ccb2067feb834a6aa23c9d9daa7f048606384
+  - name: tinytex
+    buildsystem: simple
+    build-commands:
+      - bash -c 'TEXDIR=/app/tmp/texlive;wget -qO- https://github.com/yihui/tinytex/raw/master/tools/install-base.sh | sh -s - "$@";rm -rf $TEXDIR;mkdir -p $TEXDIR;mv texlive/* $TEXDIR;rm -r texlive;$TEXDIR/bin/*/tlmgr install $(wget -qO- https://github.com/yihui/tinytex/raw/master/tools/pkgs-custom.txt | tr "\n" " ") texinfo;$TEXDIR/bin/*/tlmgr path add'
+    sources:
+      - type: archive
+        sha256: 263eebeff43968478e1fe433db52a17759233933c72d59cfbf6be91c1e5611f6
+        url: https://github.com/yihui/tinytex/archive/v0.8.tar.gz
   - name: sbcl-bin
     buildsystem: simple
     build-commands:
@@ -76,11 +90,13 @@ modules:
       - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script build.lisp mods texi ft
       - HOME="/app/tmp/home/" ./yadfa texi
       - HOME="/app/tmp/home/" makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa.texi
+      - bash -c 'export HOME="/app/tmp/home/";export PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH";makeinfo --no-split --pdf ./yadfa.texi'
       - HOME="/app/tmp/home/" makeinfo --no-split ./yadfa.texi
       - cp -a $PWD/ /app/lib/yadfa/
       - rm /app/tmp/home/quicklisp/local-projects/yadfa
       - mkdir -p /app/bin /app/share/doc/yadfa /app/share/info /app/share/icons/hicolor/scalable/apps /app/share/applications /app/share/metainfo /app/lib
       - install -Dm644 /app/lib/yadfa/yadfa.html /app/share/doc/yadfa/
+      - install -Dm644 /app/lib/yadfa/yadfa.pdf /app/share/doc/yadfa/
       - gzip -c /app/lib/yadfa/yadfa.info > /app/share/info/yadfa.info.gz
       - cp flatpak/net.pouar.yadfa.svg /app/share/icons/hicolor/scalable/apps/net.pouar.yadfa.svg
       - cp flatpak/net.pouar.yadfa.appdata.xml /app/share/metainfo/net.pouar.yadfa.appdata.xml
