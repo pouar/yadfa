@@ -92,12 +92,14 @@ modules:
       - HOME="/app/tmp/home/" makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa.texi
       - bash -c 'export HOME="/app/tmp/home/";export PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH";makeinfo --no-split --pdf ./yadfa.texi'
       - HOME="/app/tmp/home/" makeinfo --no-split ./yadfa.texi
-      - cp -a $PWD/ /app/lib/yadfa/
+      - install -dm755 /app/lib/yadfa
+      - git archive HEAD|tar -xf - -C /app/lib/yadfa/
+      - cp yadfa /app/lib/yadfa/
       - rm /app/tmp/home/quicklisp/local-projects/yadfa
       - mkdir -p /app/bin /app/share/doc/yadfa /app/share/info /app/share/icons/hicolor/scalable/apps /app/share/applications /app/share/metainfo /app/lib
-      - install -Dm644 /app/lib/yadfa/yadfa.html /app/share/doc/yadfa/
-      - install -Dm644 /app/lib/yadfa/yadfa.pdf /app/share/doc/yadfa/
-      - gzip -c /app/lib/yadfa/yadfa.info > /app/share/info/yadfa.info.gz
+      - install -Dm644 yadfa.html /app/share/doc/yadfa/
+      - install -Dm644 yadfa.pdf /app/share/doc/yadfa/
+      - gzip -c yadfa.info > /app/share/info/yadfa.info.gz
       - cp flatpak/net.pouar.yadfa.svg /app/share/icons/hicolor/scalable/apps/net.pouar.yadfa.svg
       - cp flatpak/net.pouar.yadfa.appdata.xml /app/share/metainfo/net.pouar.yadfa.appdata.xml
       - cp flatpak/net.pouar.yadfa.desktop /app/share/applications/net.pouar.yadfa.desktop
