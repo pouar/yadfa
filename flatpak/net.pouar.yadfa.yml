@@ -90,7 +90,7 @@ modules:
       - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script build.lisp mods texi ft
       - HOME="/app/tmp/home/" ./yadfa texi
       - HOME="/app/tmp/home/" makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa.texi
-      - bash -c 'export HOME="/app/tmp/home/";export PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH";makeinfo --no-split --pdf ./yadfa.texi'
+      - bash -c 'export HOME="/app/tmp/home/" PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH" PDFTEX=xetex PDFLATEX=xelatex;makeinfo --no-split --pdf ./yadfa.texi'
       - HOME="/app/tmp/home/" makeinfo --no-split ./yadfa.texi
       - install -dm755 /app/lib/yadfa
       - git archive HEAD|tar -xf - -C /app/lib/yadfa/
