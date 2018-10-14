@@ -1,7 +1,7 @@
 ;;;; -*- Mode: Common-Lisp; -*-
 (defsystem "yadfa"
     :name "YADFA"
-    :version "1.0"
+    :version "0.9"
     :author "Pouar"
     :mailto "pouar@pouar.net"
     :licence "GPL"
