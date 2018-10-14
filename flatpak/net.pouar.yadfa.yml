@@ -5,6 +5,12 @@ sdk: org.freedesktop.Sdk
 command: yadfa
 cleanup:
   - /tmp
+  - /bin/wget
+  - /etc/wgetrc
+  - /share/runtime
+  - /share/locale
+  - /share/man
+  - /lib/debug
   - /lib/yadfa/ci
   - /lib/yadfa/flatpak
   - /lib/yadfa/.*
