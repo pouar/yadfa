@@ -1,4 +1,4 @@
-(in-package #:yadfa-mod-example)
+(in-package #:yadfa.furaffinity.pouar.myawesomemod)
 (defun test () (print 1))
 (defevent test-4
     :lambda '(lambda (self)
@@ -13,7 +13,7 @@
                      (declare (ignore prop))
                      (format t "Hello World~%"))))
 (pushnew 'test-4 (events-of (get-zone '(0 0 -1 yadfa/zones:debug-map))))
-(defclass yadfa-mod-example:celebrate (stat/move) ()
+(defclass celebrate (stat/move) ()
     (:default-initargs
         :description "The Pokémon congratulates you on your special day!"
         :name "Celebrate"

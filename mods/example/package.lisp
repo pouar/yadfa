@@ -1,3 +1,3 @@
 (in-package #:cl-user)
-(uiop:define-package #:yadfa-mod-example (:use #:closer-common-lisp #:yadfa)
+(uiop:define-package #:yadfa.furaffinity.pouar.myawesomemod (:use #:closer-common-lisp #:yadfa)
     (:export :celebrate))
