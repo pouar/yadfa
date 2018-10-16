@@ -1,5 +1,5 @@
 (in-package :yadfa/zones)
-(defzone (0 0 0 home) ()
+(ensure-zone (0 0 0 home) ()
     (:default-initargs
         :name "Bedroom"
         :description "Your house only has a bedroom and a bathroom. Because Pouar was too lazy to code you a real house."
@@ -13,7 +13,7 @@
                                 :placeable t
                                 :description "Has all your clothes and diapers in here, until you take them out.")
                    :checkpoint (make-instance 'checkpoint))))
-(defzone (1 0 0 home) ()
+(ensure-zone (1 0 0 home) ()
     (:default-initargs
         :name "Bathroom"
         :description "Your bathroom"
@@ -29,18 +29,18 @@
                    :washer (make-instance 'washer
                                  :name "Washer"
                                  :description "A place to wash all the clothes that you've ruined"))))
-(defzone (0 1 0 home) ()
+(ensure-zone (0 1 0 home) ()
     (:default-initargs
         :name "Street"
         :description "Your typical suburban street. Some furries are driving in cars, some are walking, and some are riding on top of other furries treating them like a horse."
         :enter-text "You enter the street outside your house"
         :warp-points '(ironside (0 0 0 ironside))))
-(defzone (0 2 0 home) ()
+(ensure-zone (0 2 0 home) ()
     (:default-initargs
         :name "Pool area"
         :description "A pool to go swimming in"
         :enter-text "You enter the pool area"))
-(defzone (0 2 -1 home) ()
+(ensure-zone (0 2 -1 home) ()
     (:default-initargs
         :name "Pool"
         :description "A pool"

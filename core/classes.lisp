@@ -279,7 +279,8 @@
 (defmethod initialize-instance :after
     ((c player) &rest args)
     (declare (ignorable args))
-    (setf (warp-on-death-point-of c) (position-of c)))
+    (setf (warp-on-death-point-of c) (position-of c))
+    (pushnew (player-of *game*) (team-of *game*)))
 (defclass zone ()
     ((description
          :initarg :description
@@ -378,16 +379,6 @@
             :accessor enemy-spawn-list-of
             :documentation "list containing what enemies might show up when you enter an area. Each entry looks like this `(:random random :max-random max-random :enemies enemies)' If RANDOM is specified, then the probability of the enemy being spawn is RANDOM/MAX-RANDOM otherwise it is 1/MAX-RANDOM"))
     (:documentation "A zone on the map"))
-(defmethod initialize-instance :after
-    ((c zone) &rest initargs &key &allow-other-keys)
-    (declare (ignorable initargs))
-    (iter (for (a b) on
-              (gethash
-                  (getf initargs :position)
-                  *inithooks/zone*)
-              by #'cddr)
-        (funcall (coerce b 'function) c)
-        (pushnew a (finished-inithooks-of c))))
 (defclass stat/move ()
     ((name
          :initarg :name
@@ -1153,8 +1144,8 @@
          :documentation "Zones in the game")
         (player
             :initarg :player
-            :initform (make-instance 'player)
-            :type player
+            :initform nil
+            :type (or null player)
             :accessor player-of
             :documentation "The Player")
         (allies
@@ -1193,9 +1184,4 @@
             :type list
             :accessor seen-enemies-of))
     (:documentation "Contains all the information in the game"))
-(defmethod initialize-instance :after
-    ((c game) &rest initargs &key &allow-other-keys)
-    (declare (ignorable initargs))
-    (ensure-events c)
-    (pushnew (player-of c) (team-of c))
-    (ensure-zones c))
+(defvar *game* (make-instance 'game))

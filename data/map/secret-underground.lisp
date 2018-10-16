@@ -1,5 +1,5 @@
 (in-package :yadfa/zones)
-(defzone (0 0 0 secret-underground) ()
+(ensure-zone (0 0 0 secret-underground) ()
     (:default-initargs
         :name "Secret Underground"
         :description "You see several warp pipes in here going to various places"
@@ -7,7 +7,7 @@
         :warp-points '(home (0 1 0 home)
                           ironside (2 0 0 ironside)
                           bandits-domain (-3 21 0 bandits-domain))))
-(defzone (0 1 0 secret-underground) ()
+(ensure-zone (0 1 0 secret-underground) ()
     (:default-initargs
         :name "Secret Underground Path"
         :description ""

@@ -75,4 +75,5 @@
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/status-conditions/*.lisp")))))))
+                                                                  "data/status-conditions/*.lisp")))
+                                        (:file "player")))))

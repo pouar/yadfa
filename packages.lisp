@@ -6,14 +6,10 @@
     (:export
         ;;variables
         #:*battle*
-        #:*events-to-ensure*
-        #:*zones-to-initialize*
         #:*game*
-        #:*inithooks/zone*
         ;;macros
         #:defevent
-        #:defzone
-        #:setf-init-hook/zone
+        #:ensure-zone
         #:defonesie
         #:make-pocket-zone
         ;;functions

@@ -3,7 +3,7 @@
     `(progn
          ,@(iter (for y from 0 to 2)
                (iter (for x from (- y) to y)
-                   (collect `(defzone (,x ,y 0 your-ship) ()
+                   (collect `(ensure-zone (,x ,y 0 your-ship) ()
                                  (:default-initargs
                                      :name "Scourge Of Iron"
                                      :description "The bow of your ship"
@@ -15,7 +15,7 @@
 (macro-level
     `(progn
          ,@(iter (for i from -2 to 2)
-                   (collect `(defzone (,i 11 0 your-ship) ()
+                   (collect `(ensure-zone (,i 11 0 your-ship) ()
                                  (:default-initargs
                                      :name "Scourge Of Iron"
                                      :description "The stern of your ship"
@@ -25,21 +25,21 @@
 (macro-level
     `(progn
          ,@(iter (for i from 3 to 10)
-               (collect `(defzone (-2 ,i 0 your-ship) ()
+               (collect `(ensure-zone (-2 ,i 0 your-ship) ()
                              (:default-initargs
                                  :name "Scourge Of Iron"
                                  :description "The port of your ship"
                                  :direction-attributes '(:east (:hidden ,(not (= i 6)))
                                                                 :down (:hidden t)
                                                                 :up (:hidden t)))))
-               (collect `(defzone (2 ,i 0 your-ship) ()
+               (collect `(ensure-zone (2 ,i 0 your-ship) ()
                              (:default-initargs
                                  :name "Scourge Of Iron"
                                  :description "The starboard of your ship"
                                  :direction-attributes '(:west (:hidden ,(not (= i 6)))
                                                                 :down (:hidden t)
                                                                 :up (:hidden t)))))
-               (collect `(defzone (0 ,i 0 your-ship) ()
+               (collect `(ensure-zone (0 ,i 0 your-ship) ()
                              (:default-initargs
                                  :name "Passage Way"
                                  :description "The passage way of your ship"
@@ -47,7 +47,7 @@
                                                              (= i 3)
                                                              '(:down (:hidden t)
                                                                   :up (:hidden t)))))))))
-(defzone (0 3 1 your-ship) ()
+(ensure-zone (0 3 1 your-ship) ()
     (:default-initargs
         :name "Bridge"
         :description "You can steer your ship from here"
@@ -110,7 +110,7 @@
                                                     :your-ship)
                                                 '(-1 6 0 your-ship)))
                                         (format t "That's not a valid destination~%")))))))))
-(defzone (0 3 -1 your-ship) ()
+(ensure-zone (0 3 -1 your-ship) ()
     (:default-initargs
         :name "Hold"
         :description "You have a chest here that can hold your crap"
@@ -123,7 +123,7 @@
     `(progn
          ,@(iter (for i from -1 to 1)
                (unless (= i 0)
-                   (collect `(defzone (,i 6 0 your-ship) ()
+                   (collect `(ensure-zone (,i 6 0 your-ship) ()
                                  (:default-initargs
                                      :name "Passage Way"
                                      :description "The passage way of your ship"
@@ -133,7 +133,7 @@
                                                                 :up (:hidden t))
                                      :warp-points ',(when (= i -1)
                                                         '(:exit (0 21 0 silver-cape))))))))))
-(defzone (-1 5 0 your-ship) ()
+(ensure-zone (-1 5 0 your-ship) ()
     (:default-initargs
         :name "Cabin"
         :description "A Cabin of your ship"
@@ -142,7 +142,7 @@
                                    :west (:hidden t)
                                    :down (:hidden t)
                                    :up (:hidden t))))
-(defzone (1 5 0 your-ship) ()
+(ensure-zone (1 5 0 your-ship) ()
     (:default-initargs
         :name "Cabin"
         :description "A Cabin of your ship"
@@ -151,7 +151,7 @@
                                    :east (:hidden t)
                                    :down (:hidden t)
                                    :up (:hidden t))))
-(defzone (-1 6 0 your-ship) ()
+(ensure-zone (-1 6 0 your-ship) ()
     (:default-initargs
         :name "Cabin"
         :description "A Cabin of your ship"
@@ -160,7 +160,7 @@
                                    :west (:hidden t)
                                    :down (:hidden t)
                                    :up (:hidden t))))
-(defzone (1 6 0 your-ship) ()
+(ensure-zone (1 6 0 your-ship) ()
     (:default-initargs
         :name "Galley"
         :description "A Cabin of your ship"
@@ -169,7 +169,7 @@
                                    :east (:hidden t)
                                    :down (:hidden t)
                                    :up (:hidden t))))
-(defzone (-1 7 0 your-ship) ()
+(ensure-zone (-1 7 0 your-ship) ()
     (:default-initargs
         :name "Cabin"
         :description "A Cabin of your ship"
@@ -178,7 +178,7 @@
                                    :west (:hidden t)
                                    :down (:hidden t)
                                    :up (:hidden t))))
-(defzone (1 7 0 your-ship) ()
+(ensure-zone (1 7 0 your-ship) ()
     (:default-initargs
         :name "Cabin"
         :description "A Cabin of your ship"
@@ -186,7 +186,7 @@
                                    :south (:hidden t)
                                    :east (:hidden t)
                                    :down (:hidden t))))
-(defzone (-1 8 0 your-ship) ()
+(ensure-zone (-1 8 0 your-ship) ()
     (:default-initargs
         :name "Cabin"
         :description "A Cabin of your ship"
@@ -195,7 +195,7 @@
                                    :west (:hidden t)
                                    :down (:hidden t)
                                    :up (:hidden t))))
-(defzone (1 8 0 your-ship) ()
+(ensure-zone (1 8 0 your-ship) ()
     (:default-initargs
         :name "Cabin"
         :description "A Cabin of your ship"
@@ -203,7 +203,7 @@
                                    :south (:hidden t)
                                    :east (:hidden t)
                                    :down (:hidden t))))
-(defzone (-1 9 0 your-ship) ()
+(ensure-zone (-1 9 0 your-ship) ()
     (:default-initargs
         :name "Cabin"
         :description "A Cabin of your ship"
@@ -211,7 +211,7 @@
                                    :south (:hidden t)
                                    :west (:hidden t)
                                    :down (:hidden t))))
-(defzone (1 9 0 your-ship) ()
+(ensure-zone (1 9 0 your-ship) ()
     (:default-initargs
         :name "Cabin"
         :description "A Cabin of your ship"
@@ -219,7 +219,7 @@
                                    :south (:hidden t)
                                    :east (:hidden t)
                                    :down (:hidden t))))
-(defzone (-1 10 0 your-ship) ()
+(ensure-zone (-1 10 0 your-ship) ()
     (:default-initargs
         :name "Cabin"
         :description "A Cabin of your ship"
@@ -227,7 +227,7 @@
                                    :south (:hidden t)
                                    :west (:hidden t)
                                    :down (:hidden t))))
-(defzone (1 10 0 your-ship) ()
+(ensure-zone (1 10 0 your-ship) ()
     (:default-initargs
         :name "Cabin"
         :description "A Cabin of your ship"

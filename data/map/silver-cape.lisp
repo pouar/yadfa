@@ -3,7 +3,7 @@
     `(progn
          ,@(iter (for i from 0 to 20)
                (collect
-                   `(defzone (0 ,i 0 silver-cape) ()
+                   `(ensure-zone (0 ,i 0 silver-cape) ()
                         (:default-initargs
                             :name "Silver Cape Street"
                             :description "A busy street with various furries moving back and forth"
@@ -16,12 +16,12 @@
          ,@(iter (for i from -10 to 10)
                (unless (= i 0)
                    (collect
-                       `(defzone (,i 10 0 silver-cape) ()
+                       `(ensure-zone (,i 10 0 silver-cape) ()
                             (:default-initargs
                                 :name "Silver Cape Street"
                                 :description "A busy street with various furries moving back and forth"
                                 :enter-text "You enter the street")))))))
-(defzone (1 5 0 silver-cape) ()
+(ensure-zone (1 5 0 silver-cape) ()
     (:default-initargs
         :name "Silver Cape Pokemon Center"
         :description "A place to heal your pokemon"
@@ -41,7 +41,7 @@
                                                           (format t "~a~%" "https://youtu.be/wcg5n2UVMss?t=134")
     (setf (health-of user) (calculate-stat user :health))
     (setf (energy-of user) (calculate-stat user :energy)))))))))
-(defzone (0 21 0 silver-cape) ()
+(ensure-zone (0 21 0 silver-cape) ()
     (:default-initargs
         :name "Silver Cape Dock"
         :description "A Dock that heads to the ocean"

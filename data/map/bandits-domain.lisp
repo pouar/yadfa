@@ -3,7 +3,7 @@
     `(progn
          ,@(iter (for i from 0 to 20)
                (collect
-                   `(defzone (0 ,i 0 bandits-domain) ()
+                   `(ensure-zone (0 ,i 0 bandits-domain) ()
                         (:default-initargs
                             :name "Bandit's Way"
                             :description "A path filled with bandits"
@@ -21,12 +21,12 @@
     `(progn
          ,@(iter (for i from -1 downto -10)
                (collect
-                   `(defzone (,i 21 0 bandits-domain) ()
+                   `(ensure-zone (,i 21 0 bandits-domain) ()
                         (:default-initargs
                             :name "Bandit's Town"
                             :description "A town run by the Raccoon Bandits"
                             :enter-text "You're wander around Bandit's Town"))))))
-(defzone (-3 22 0 bandits-domain) ()
+(ensure-zone (-3 22 0 bandits-domain) ()
     (:default-initargs
         :name "Bandit's Shop"
         :description "A local shop"
@@ -58,39 +58,38 @@
                    :bed (make-instance 'bed)
                    :checkpoint (make-instance 'checkpoint))
         :events '(yadfa/events:enter-bandits-shop-1 yadfa/events:obtain-diaper-lock-1)))
-(setf-init-hook/zone (-3 22 0 bandits-domain) :ask-for-bathroom-1
-    (setf
-        (getf (actions-of (getf (props-of zone) :shop)) :ask-for-bathroom)
-        (make-action
-            :documentation "Ask the raccoons if you can use the bathroom."
-            :lambda '(lambda
-                         (prop &rest keys &key &allow-other-keys)
-                         (declare (ignore prop))
-                         (format t "Diapered Raccon Bandit Shop Owner: Sorry, only I'm allowed in there. Everyone else can just use their diapers. Isn't that right mushbutt?~%~%*The Shop Owner slaps the back of the Rookie's diaper*~%~%*Rookie yelps then grabs the back of his diaper and struggles to unmush it*~%~%*The Shop Owner laughs*~%~%Rookie Raccoon: Can I please get a diaper change now?~%~%Shop Owner: Keep asking me that and I'll make you sit in it in timeout again.~%~%Rookie Raccoon: NO! PLEASE! I'LL BE GOOD!~%~%")))
-        (getf (actions-of (getf (props-of zone) :shop)) :ask-why-youre-allowed-to-shop)
-        (make-action
-            :documentation "Ask the raccoons why you're allowed to shop here without the gang attacking you"
-            :lambda '(lambda
-                         (prop &rest keys &key &allow-other-keys)
-                         (declare (ignore prop))
-                         (format t "~a: You know how the gang seems to attack me everywhere I show up?~%~%"
-                             (name-of (player-of *game*)))
-                         (format t "Shop Owner: Yeah?~%~%")
-                         (format t "~a: Well how come they're letting me shop here without attacking me?~%~%"
-                             (name-of (player-of *game*)))
-                         (format t "Shop Owner: Because money stupid.")))))
-(defzone (-3 23 0 bandits-domain) ()
+(setf
+    (getf (actions-of (getf (props-of (get-zone '(-3 22 0 bandits-domain))) :shop)) :ask-for-bathroom)
+    (make-action
+        :documentation "Ask the raccoons if you can use the bathroom."
+        :lambda '(lambda
+                     (prop &rest keys &key &allow-other-keys)
+                     (declare (ignore prop))
+                     (format t "Diapered Raccon Bandit Shop Owner: Sorry, only I'm allowed in there. Everyone else can just use their diapers. Isn't that right mushbutt?~%~%*The Shop Owner slaps the back of the Rookie's diaper*~%~%*Rookie yelps then grabs the back of his diaper and struggles to unmush it*~%~%*The Shop Owner laughs*~%~%Rookie Raccoon: Can I please get a diaper change now?~%~%Shop Owner: Keep asking me that and I'll make you sit in it in timeout again.~%~%Rookie Raccoon: NO! PLEASE! I'LL BE GOOD!~%~%")))
+    (getf (actions-of (getf (props-of (get-zone '(-3 22 0 bandits-domain))) :shop)) :ask-why-youre-allowed-to-shop)
+    (make-action
+        :documentation "Ask the raccoons why you're allowed to shop here without the gang attacking you"
+        :lambda '(lambda
+                     (prop &rest keys &key &allow-other-keys)
+                     (declare (ignore prop))
+                     (format t "~a: You know how the gang seems to attack me everywhere I show up?~%~%"
+                         (name-of (player-of *game*)))
+                     (format t "Shop Owner: Yeah?~%~%")
+                     (format t "~a: Well how come they're letting me shop here without attacking me?~%~%"
+                         (name-of (player-of *game*)))
+                     (format t "Shop Owner: Because money stupid."))))
+(ensure-zone (-3 23 0 bandits-domain) ()
     (:default-initargs
         :name "Bandit's Shop Bathroom"
         :description "CLOSED FOREVER!!!!! MUAHAHAHAHA!!!!"
         :locked '(or nil)))
-(defzone (-5 22 0 bandits-domain) ()
+(ensure-zone (-5 22 0 bandits-domain) ()
     (:default-initargs
         :name "Bandit's Kennel"
         :description "A grungey looking kennel where the Raccoon Bandits keep their `pets'. Negleted so much that they literally forgot about their existence"
         :enter-text "You enter the kennel"
         :events '(yadfa/events:enter-bandits-kennel-1)))
-(defzone (0 21 0 bandits-domain) ()
+(ensure-zone (0 21 0 bandits-domain) ()
     (:default-initargs
         :name "Bandit's Town Entrance"
         :description "The enterance to Bandit Town"
@@ -101,13 +100,13 @@
     `(progn
          ,@(iter (for i from 22 to 30)
                (collect
-                   `(defzone (0 ,i 0 bandits-domain) ()
+                   `(ensure-zone (0 ,i 0 bandits-domain) ()
                         (:default-initargs
                             :name "Bandit's Town"
                             :description "A town run by the Raccoon Bandits"
                             :enter-text "You're wander around Bandit's Town"
                             :warp-points ',(when (= i 30) '(silver-cape (0 0 0 silver-cape)))))))))
-(defzone (1 21 0 bandits-domain) ()
+(ensure-zone (1 21 0 bandits-domain) ()
     (:default-initargs
         :name "Bandit's Cove Dock"
         :description "The dock of Bandit's Cove"
@@ -122,7 +121,7 @@
                            (iter
                                (for x from 2 to 6)
                                (collect
-                                   `(defzone (,x ,y 0 bandits-domain) ()
+                                   `(ensure-zone (,x ,y 0 bandits-domain) ()
                                         (:default-initargs
                                             :name "Bandit's Cove"
                                             :description "A cove filled with bandits"
@@ -170,12 +169,12 @@
                                                                             :messiness (strong-random 6000)))
                                                               :level (random-from-range 2 5)))))))))))))
                a)))
-(defzone (6 24 0 bandits-domain) ()
+(ensure-zone (6 24 0 bandits-domain) ()
     (:default-initargs
         :name "Bandit's Cave Entrance"
         :description "A mysterious cave"
         :enter-text "You Enter the cave"))
-(defzone (6 24 -2 bandits-domain) ()
+(ensure-zone (6 24 -2 bandits-domain) ()
     (:default-initargs
         :name "Bandit's Cave"
         :description "A mysterious cave"

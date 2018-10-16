@@ -426,16 +426,11 @@
     `(progn
          (setf (gethash
                    ',event-id
-                   *events-to-ensure*)
+                   (events-of *game*))
              (make-event :id ',event-id ,@args))
          (export ',event-id ',(symbol-package event-id))))
 (defun get-event (event-id)
     (gethash event-id (events-of *game*)))
-(defun ensure-events (game)
-    (maphash (lambda (a b)
-                 (unless (gethash a (events-of game))
-                     (setf (gethash a (events-of game)) b)))
-        *events-to-ensure*))
 (defun (setf get-event) (new-value event-id)
     (setf (gethash event-id (events-of *game*))
         new-value))
@@ -522,14 +517,7 @@
              (change-class self ',(intern (format nil "~a/CLOSED" (symbol-name base-class)) (symbol-package base-class))))
          (defmethod toggle-onesie%% ((self ,(intern (format nil "~a/CLOSED" (symbol-name base-class)) (symbol-package base-class))))
              (change-class self ',(intern (format nil "~a/OPENED" (symbol-name base-class)) (symbol-package base-class))))))
-(defmacro setf-init-hook/zone (position key &body body)
-    (declare (type symbol key))
-    `(progn
-         (setf (getf (gethash
-                         ',position
-                         *inithooks/zone*)
-                   ',key)
-             '(lambda (zone) ,@body))))
+
 (defun ensure-zones (c)
     (iter (for i in *zones-to-initialize*)
         (unless
@@ -548,7 +536,7 @@
                                (symbol-package (fourth i)))
                          :position ',i))))
         (export (fourth i) (symbol-package (fourth i)))))
-(defmacro defzone (position &body body)
+(defmacro ensure-zone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
     (declare (type list position))
     `(progn
@@ -562,9 +550,19 @@
                   (symbol-package (fourth position)))
              (zone)
              ,@body)
-         (pushnew
-             ',position
-             *zones-to-initialize* :test (lambda (a b) (equal a b)))
+         (unless
+             (gethash ',position
+                 (zones-of *game*))
+             (setf (gethash ',position
+                       (zones-of *game*))
+                 (make-instance
+                          ',(intern
+                                (string-upcase
+                                    (format nil
+                                        "zone-~{~a~}~a"
+                                        (iter (for j in (butlast position)) (collect (format nil "~a-" j)))
+                                        (fourth position)))
+                                (symbol-package (fourth position))))))
          (export ',(fourth position) ',(symbol-package (fourth position)))))
 (defmacro make-pocket-zone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
