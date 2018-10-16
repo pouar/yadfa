@@ -5,6 +5,10 @@
   (logand (ash x bits)
           (1- (ash 1 width))))
 
+#-ironclad
+(defun strong-random (limit &optional ignored)
+    (declare (ignore ignored))
+    (random limit))
 (defun shr (x width bits)
   "Compute bitwise right shift of x by 'bits' bits, represented on 'width' bits"
   (logand (ash x (- bits))

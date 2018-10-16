@@ -7,6 +7,8 @@
         (load quicklisp-init)))
 #+(and gmp sbcl) (require 'sb-gmp)
 #+(and sbcl gmp) (sb-gmp:install-gmp-funs)
+(when (position "ironclad" (uiop:command-line-arguments) :test #'string=)
+    (pushnew :ironclad *features*))
 (ql:quickload :slynk)
 (ql:quickload :swank)
 (when (position "slynk" (uiop:command-line-arguments) :test #'string=)
