@@ -1,18 +1,18 @@
 ;;;; files used internally by the game, don't call these unless you're developing (or cheating)
 (in-package :yadfa)
 (defun shl (x width bits)
-  "Compute bitwise left shift of x by 'bits' bits, represented on 'width' bits"
-  (logand (ash x bits)
-          (1- (ash 1 width))))
+    "Compute bitwise left shift of x by 'bits' bits, represented on 'width' bits"
+    (logand (ash x bits)
+        (1- (ash 1 width))))
 
 #-ironclad
 (defun strong-random (limit &optional ignored)
     (declare (ignore ignored))
     (random limit))
 (defun shr (x width bits)
-  "Compute bitwise right shift of x by 'bits' bits, represented on 'width' bits"
-  (logand (ash x (- bits))
-          (1- (ash 1 width))))
+    "Compute bitwise right shift of x by 'bits' bits, represented on 'width' bits"
+    (logand (ash x (- bits))
+        (1- (ash 1 width))))
 (defun lambda-list (lambda-exp)
     (declare (type (or list function) lambda-exp))
     (check-type lambda-exp (or list function))
@@ -38,11 +38,11 @@
                          old)
                      (t new))))
         (iter (for i in (uiop:directory-files
-                                    (format nil "*.asd")
-                                    (merge-pathnames "mods/**/" (uiop:xdg-data-home "yadfa/"))))
-                (when (string= (pathname-type i) "asd")
-                    (setf (gethash (pathname-name i) *mod-registry*)
-                        (preferred-mod (gethash (pathname-name i) *mod-registry*) i))))))
+                            (format nil "*.asd")
+                            (merge-pathnames "mods/**/" (uiop:xdg-data-home "yadfa/"))))
+            (when (string= (pathname-type i) "asd")
+                (setf (gethash (pathname-name i) *mod-registry*)
+                    (preferred-mod (gethash (pathname-name i) *mod-registry*) i))))))
 (defun clear-mod-registry ()
     (setf *mod-registry* nil))
 #+yadfa/mods
@@ -63,7 +63,7 @@
                              (uiop:register-clear-configuration-hook 'clear-mod-registry))
                          (asdf:clear-configuration)
                          (let* ((file (uiop:merge-pathnames* "mods.conf"
-                                         (uiop:xdg-config-home "yadfa/")))
+                                          (uiop:xdg-config-home "yadfa/")))
                                    (mods '()))
                              (ensure-directories-exist (uiop:xdg-config-home "yadfa/"))
                              (handler-case (with-open-file (stream file :if-does-not-exist :error)
@@ -358,23 +358,23 @@
                      (not (get-zone (get-destination direction position)))
                      (hiddenp (get-zone (get-destination direction position)))))
                 (a (position)
-               (let ((b 0))
-                   (when (travelablep position :north)
-                       (setf b (logior b (shl 1 8 5))))
-                   (when (travelablep position :south)
-                       (setf b (logior b (shl 1 8 4))))
-                   (when (travelablep position :west)
-                       (setf b (logior b (shl 1 8 3))))
-                   (when (travelablep position :east)
-                       (setf b (logior b (shl 1 8 2))))
-                   (when (travelablep position :up)
-                       (setf b (logior b (shl 1 8 1))))
-                   (when (travelablep position :down)
-                       (setf b (logior b (shl 1 8 0))))
-                   (aref
-                       #1A("╋" "╋" "╋" "┼" "┫" "┫" "┫" "┤" "┣" "┣" "┣" "├" "┃" "┃" "┃" "│" "┻" "┻" "┻" "┴" "┛" "┛" "┛" "┘" "┗" "┗" "┗" "└" "╹" "╹" "╹" "╵" "┳" "┳" "┳" "┬" "┓" "┓" "┓" "┐" "┏" "┏" "┏" "┌" "╻" "╻" "╻" "╷" "━" "━" "━" "─" "╸" "╸" "╸" "╴" "╺" "╺" "╺" "╶" "▮" "▮" "▮" "▯")
-                       b))
-               ))
+                    (let ((b 0))
+                        (when (travelablep position :north)
+                            (setf b (logior b (shl 1 8 5))))
+                        (when (travelablep position :south)
+                            (setf b (logior b (shl 1 8 4))))
+                        (when (travelablep position :west)
+                            (setf b (logior b (shl 1 8 3))))
+                        (when (travelablep position :east)
+                            (setf b (logior b (shl 1 8 2))))
+                        (when (travelablep position :up)
+                            (setf b (logior b (shl 1 8 1))))
+                        (when (travelablep position :down)
+                            (setf b (logior b (shl 1 8 0))))
+                        (aref
+                            #1A("╋" "╋" "╋" "┼" "┫" "┫" "┫" "┤" "┣" "┣" "┣" "├" "┃" "┃" "┃" "│" "┻" "┻" "┻" "┴" "┛" "┛" "┛" "┘" "┗" "┗" "┗" "└" "╹" "╹" "╹" "╵" "┳" "┳" "┳" "┬" "┓" "┓" "┓" "┐" "┏" "┏" "┏" "┌" "╻" "╻" "╻" "╷" "━" "━" "━" "─" "╸" "╸" "╸" "╴" "╺" "╺" "╺" "╶" "▮" "▮" "▮" "▯")
+                            b))
+                    ))
         (iter (for y
                   from (- (second position) 15)
                   to (+ (second position) 15))
@@ -560,13 +560,13 @@
              (setf (gethash ',position
                        (zones-of *game*))
                  (make-instance
-                          ',(intern
-                                (string-upcase
-                                    (format nil
-                                        "zone-~{~a~}~a"
-                                        (iter (for j in (butlast position)) (collect (format nil "~a-" j)))
-                                        (fourth position)))
-                                (symbol-package (fourth position))))))
+                     ',(intern
+                           (string-upcase
+                               (format nil
+                                   "zone-~{~a~}~a"
+                                   (iter (for j in (butlast position)) (collect (format nil "~a-" j)))
+                                   (fourth position)))
+                           (symbol-package (fourth position))))))
          (export ',(fourth position) ',(symbol-package (fourth position)))))
 (defmacro make-pocket-zone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"

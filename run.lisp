@@ -22,7 +22,7 @@
 (when (position "mods" (uiop:command-line-arguments) :test #'string=)
     (pushnew :yadfa/mods *features*))
 (when (position "wait" (uiop:command-line-arguments) :test #'string=)
-        (sleep 2))
+    (sleep 2))
 (ql:quickload :yadfa)
 (in-package :yadfa)
 (yadfa::main)
