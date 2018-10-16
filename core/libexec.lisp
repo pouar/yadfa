@@ -9,6 +9,12 @@
 (defun strong-random (limit &optional ignored)
     (declare (ignore ignored))
     (random limit))
+(defun trigger-event (event-id)
+    (when (or (not (member event-id (finished-events-of *game*)))
+              (event-repeatable (get-event event-id)))
+        (funcall (coerce (event-lambda (get-event event-id)) 'function) i)
+        (pushnew event-id (finished-events-of *game*))
+        event-id))
 (defun shr (x width bits)
     "Compute bitwise right shift of x by 'bits' bits, represented on 'width' bits"
     (logand (ash x (- bits))
@@ -56,11 +62,11 @@
                      #+yadfa/docs (member "texi" (uiop:command-line-arguments) :test #'string=)
                      #-yadfa/docs nil
                      (when uiop:*image-dumped-p*
-                             (pushnew
-                                 'yadfa::find-mod
-                                 asdf:*system-definition-search-functions*)
-                             (uiop:register-clear-configuration-hook 'clear-mod-registry))
-                         (asdf:clear-configuration)
+                         (pushnew
+                             'yadfa::find-mod
+                             asdf:*system-definition-search-functions*)
+                         (uiop:register-clear-configuration-hook 'clear-mod-registry))
+                     (asdf:clear-configuration)
                      (let* ((file (uiop:merge-pathnames* "mods.conf"
                                       (uiop:xdg-config-home "yadfa/")))
                                (mods '()))
@@ -612,9 +618,7 @@
               (use-package :yadfa/battle :yadfa-user)
               (return-from move-to-secret-underground))
         ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-             (when (or (not (member i (finished-events-of *game*))) (event-repeatable (get-event i)))
-                 (funcall (coerce (event-lambda (get-event i)) 'function) i)
-                 (pushnew i (finished-events-of *game*))
+             (when (trigger-event i)
                  (collect i)))
             (return-from move-to-secret-underground))
         ((enemy-spawn-list-of (get-zone (position-of (player-of *game*))))
@@ -690,9 +694,7 @@
                   (use-package :yadfa/battle :yadfa-user)
                   (return-from move-to-pocket-map))
             ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-                 (when (or (not (member i (finished-events-of *game*))) (event-repeatable (get-event i)))
-                     (funcall (coerce (event-lambda (get-event i)) 'function) i)
-                     (pushnew i (finished-events-of *game*))
+                 (when (trigger-event i)
                      (collect i)))
                 (return-from move-to-pocket-map))
             ((enemy-spawn-list-of (get-zone (position-of (player-of *game*))))

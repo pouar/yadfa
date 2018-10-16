@@ -5,15 +5,7 @@
     "Intended for developers. Use this to recompile the game without having to close it. Accepts the same keyword arguments as asdf:load-system and asdf:operate. Set COMPILER-VERBOSE to T to print the compiling messages. setting LOAD-SOURCE t T will avoid creating fasls"
     (let ((*compile-verbose* compiler-verbose) (*compile-print* compiler-verbose))
         (apply #'asdf:load-system :yadfa :allow-other-keys t keys)
-        (apply #'load-mods :allow-other-keys t keys))
-    (ensure-zones *game*)
-    (maphash (lambda (a b)
-                 (iter (for (c d) on b by #'cddr)
-                     (unless (member c (finished-inithooks-of (get-zone a)))
-                         (funcall (coerce d 'function) (get-zone a))
-                         (pushnew c (finished-inithooks-of (get-zone a))))))
-        *inithooks/zone*)
-    (ensure-events *game*))
+        (apply #'load-mods :allow-other-keys t keys)))
 (defun yadfa/bin:enable-mod (system)
     "Enable a mod, the modding system is mostly just asdf, SYSTEM is a keyword which is the name of the system you want to enable"
     (declare (ignorable system))
@@ -22,7 +14,7 @@
         (progn
             (pushnew (asdf:coerce-name system) *mods* :test #'string=)
             (with-open-file (stream (uiop:merge-pathnames* "mods.conf"
-                                         (uiop:xdg-config-home "yadfa/"))
+                                        (uiop:xdg-config-home "yadfa/"))
                                 :if-does-not-exist :create
                                 :if-exists :supersede
                                 :direction :output)
@@ -36,7 +28,7 @@
     #+yadfa/mods (progn
                      (removef *mods* (asdf:coerce-name system) :test #'string=)
                      (with-open-file (stream (uiop:merge-pathnames* "mods.conf"
-                                         (uiop:xdg-config-home "yadfa/"))
+                                                 (uiop:xdg-config-home "yadfa/"))
                                          :if-does-not-exist :create
                                          :if-exists :supersede
                                          :direction :output)
@@ -53,15 +45,7 @@
     (declare (type simple-string path))
     (check-type path simple-string)
     (with-open-file (stream path)
-        (setf *game* (unmarshal (read stream))))
-    (ensure-zones *game*)
-    (maphash (lambda (a b)
-                 (iter (for (c d) on b by #'cddr)
-                     (unless (member c (finished-inithooks-of (get-zone a)))
-                         (funcall (coerce d 'function) (get-zone a))
-                         (pushnew c (finished-inithooks-of (get-zone a))))))
-        *inithooks/zone*)
-    (ensure-events *game*))
+        (setf *game* (unmarshal (read stream)))))
 (defun yadfa/bin:toggle-onesie (&key wear user)
     "Open or closes your onesie. WEAR is the index of a onesie. Leave NIL for the outermost onesie. USER is the index of an ally. Leave NIL to refer to yourself"
     (declare (type (or unsigned-byte null) wear user))
@@ -150,10 +134,7 @@
                       (use-package :yadfa/battle :yadfa-user)
                       (return-from yadfa/world:move))
                 ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-                     (when (or (not (member i (finished-events-of *game*)))
-                               (event-repeatable (get-event i)))
-                         (funcall (coerce (event-lambda (get-event i)) 'function) i)
-                         (pushnew i (finished-events-of *game*))
+                     (when (trigger-event i)
                          (collect i)))
                     (return-from yadfa/world:move))
                 ((enemy-spawn-list-of (get-zone (position-of (player-of *game*))))
