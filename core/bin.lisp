@@ -26,7 +26,8 @@
                                 :if-does-not-exist :create
                                 :if-exists :supersede
                                 :direction :output)
-                (write *mods* :stream stream)))
+                (write *mods* :stream stream))
+            (asdf:load-system system))
         (format t "That system doesn't exist~%"))
     #-yadfa/mods (format t "Mod support is not enabled for this build~%"))
 (defun yadfa/bin:disable-mod (system)

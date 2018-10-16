@@ -17,7 +17,7 @@
     (in-package #:yadfa)
     (when (position "wait" (uiop:command-line-arguments) :test #'string=)
         (sleep 2))
-    (init-game)
+    (load-mods)
     (in-package :yadfa-user)
     #+yadfa/docs (when (position "texi" (uiop:command-line-arguments) :test #'string=)
                      (net.didierverna.declt:declt :yadfa :license :gpl :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically")

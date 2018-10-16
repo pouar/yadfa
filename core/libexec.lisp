@@ -55,44 +55,39 @@
     #+yadfa/mods (unless
                      #+yadfa/docs (member "texi" (uiop:command-line-arguments) :test #'string=)
                      #-yadfa/docs nil
-                     (unless *game*
-                         (when uiop:*image-dumped-p*
+                     (when uiop:*image-dumped-p*
                              (pushnew
                                  'yadfa::find-mod
                                  asdf:*system-definition-search-functions*)
                              (uiop:register-clear-configuration-hook 'clear-mod-registry))
                          (asdf:clear-configuration)
-                         (let* ((file (uiop:merge-pathnames* "mods.conf"
-                                          (uiop:xdg-config-home "yadfa/")))
-                                   (mods '()))
-                             (ensure-directories-exist (uiop:xdg-config-home "yadfa/"))
-                             (handler-case (with-open-file (stream file :if-does-not-exist :error)
-                                               (setf mods (read stream)))
-                                 (file-error ()
-                                     (format t "The configuration file containing the list of enabled mods seems missing, creating a new one~%")
-                                     (with-open-file (stream file
-                                                         :if-does-not-exist :create
-                                                         :direction :output
-                                                         :if-exists :supersede)
-                                         (write *mods* :stream stream)))
-                                 (error ()
-                                     (format t "The configuration file containing the list of enabled mods seems broken, ignoring~%")))
-                             (if (and
-                                     (typep mods 'list)
-                                     (iter (for i in mods)
-                                         (unless (typep i '(or string symbol asdf/component:component))
-                                             (leave nil))
-                                         (finally (return t))))
-                                 (setf *mods* mods)
-                                 (format t "The configuration file containing the list of enabled mods isn't valid, ignoring~%"))))
+                     (let* ((file (uiop:merge-pathnames* "mods.conf"
+                                      (uiop:xdg-config-home "yadfa/")))
+                               (mods '()))
+                         (ensure-directories-exist (uiop:xdg-config-home "yadfa/"))
+                         (handler-case (with-open-file (stream file :if-does-not-exist :error)
+                                           (setf mods (read stream)))
+                             (file-error ()
+                                 (format t "The configuration file containing the list of enabled mods seems missing, creating a new one~%")
+                                 (with-open-file (stream file
+                                                     :if-does-not-exist :create
+                                                     :direction :output
+                                                     :if-exists :supersede)
+                                     (write *mods* :stream stream)))
+                             (error ()
+                                 (format t "The configuration file containing the list of enabled mods seems broken, ignoring~%")))
+                         (if (and
+                                 (typep mods 'list)
+                                 (iter (for i in mods)
+                                     (unless (typep i '(or string symbol asdf/component:component))
+                                         (leave nil))
+                                     (finally (return t))))
+                             (setf *mods* mods)
+                             (format t "The configuration file containing the list of enabled mods isn't valid, ignoring~%")))
                      (let ((*compile-verbose* compiler-verbose) (*compile-print* compiler-verbose))
                          (iter (for i in *mods*)
                              (when (asdf:find-system i nil)
                                  (apply #'asdf:load-system i :allow-other-keys t keys))))))
-(defun init-game ()
-    (load-mods)
-    (unless *game*
-        (setf *game* (make-instance 'game))))
 (defun setf-direction (position direction attribute new-value)
     (setf (getf (getf (direction-attributes-of (get-zone position)) direction) attribute) new-value))
 (defun getf-direction (position direction attribute)

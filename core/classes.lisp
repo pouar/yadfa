@@ -1184,4 +1184,3 @@
             :type list
             :accessor seen-enemies-of))
     (:documentation "Contains all the information in the game"))
-(defvar *game* (make-instance 'game))

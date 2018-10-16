@@ -10,7 +10,6 @@
     :build-operation :program-op
     :build-pathname "yadfa"
     :entry-point "yadfa::main"
-    :serial t
     :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria"
                     (:feature :ironclad "ironclad")
                     (:feature :sbcl "sb-aclrepl") (:feature :slynk "slynk")
@@ -24,8 +23,9 @@
                         :components (
                                         (:file "structs")
                                         (:file "init")
-                                        (:file "libexec" :depends-on ("classes"))
+                                        (:file "libexec" :depends-on ("classes" "init"))
                                         (:file "classes")
+                                        (:file "game" :depends-on ("classes"))
                                         (:file "bin")))
                     (:module "data"
                         :depends-on ("core")
@@ -76,5 +76,5 @@
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/status-conditions/*.lisp")))
-                                        (:file "player")))))
+                                                                  "data/status-conditions/*.lisp")))))
+                    (:file "core/player" :depends-on ("data"))))
