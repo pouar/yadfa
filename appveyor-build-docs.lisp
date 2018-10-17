@@ -8,6 +8,7 @@
 #+(and sbcl gmp) (sb-gmp:install-gmp-funs)
 (pushnew :yadfa/mods *features*)
 (pushnew :yadfa/docs *features*)
+(pushnew :ironclad *features*)
 (handler-bind ((error #'(lambda (c) (continue))))
     (ql:quickload :yadfa))
 (in-package :yadfa)
