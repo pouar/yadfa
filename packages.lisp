@@ -203,7 +203,7 @@
         #:event-repeatable)
     (:documentation "Yet Another Diaperfur Adventure"))
 (uiop:define-package #:yadfa/bin
-    (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:set-player #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files)
+    (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files)
     (:documentation "Commands that the player can run anytime"))
 (uiop:define-package #:yadfa/world
     (:export #:move #:interact #:save-game #:load-game #:go-potty #:tickle #:wash-all-in #:use-item #:add-ally-to-team #:remove-ally-from-team #:swap-team-member #:stats #:place)

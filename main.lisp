@@ -25,7 +25,6 @@
                      (uiop:quit))
     (use-package :yadfa/world :yadfa-user)
     #+mcclim-ffi-freetype (setf freetype2:*library* (freetype2:make-freetype))
-    (setf clim:*default-text-style* (clim:make-text-style :fix :roman :normal))
     (clim-listener:run-listener
         :package :yadfa-user
         :process-name "yadfa"

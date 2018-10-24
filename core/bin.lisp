@@ -1237,12 +1237,3 @@
                     (name-of selected-user)
                     (name-of (nth wear (wear-of selected-user))))
                 (setf (lockedp (nth wear (wear-of selected-user))) t)))))
-(defun yadfa/bin:set-player (name malep species)
-    "Sets the name, gender, and species of the player"
-    (declare (type simple-string species name) (type boolean malep))
-    (check-type malep boolean)
-    (check-type name simple-string)
-    (check-type species simple-string)
-    (setf (name-of (player-of *game*)) name)
-    (setf (species-of (player-of *game*)) species)
-    (setf (malep (player-of *game*)) malep))

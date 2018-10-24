@@ -261,8 +261,8 @@
                      (format t "*the 2 wag their tails happily*~%~%")
                      (format t "~a: Mind telling me your names?~%~%" (name-of (player-of *game*)))
                      (let ((c (prompt-for-values
-                                  '(string :prompt "Fox Name" :default "Chris")
-                                  '(string :prompt "Vixen Name" :default "Kristy"))))
+                                  (string :prompt "Fox Name" :default "Chris")
+                                  (string :prompt "Vixen Name" :default "Kristy"))))
                          (setf a (make-instance 'ally
                                      :name (first c)
                                      :male t

@@ -1,14 +1,13 @@
-;;;; files used internally by the game, don't call these unless you're developing (or cheating)
+;;;; files used internally by the game, don't call these unless you're developing/modding (or cheating)
 (in-package :yadfa)
 (defun shl (x width bits)
     "Compute bitwise left shift of x by 'bits' bits, represented on 'width' bits"
     (logand (ash x bits)
         (1- (ash 1 width))))
-
 #-ironclad
 (defun strong-random (limit &optional ignored)
-    (declare (ignore ignored))
-    (random limit))
+        (declare (ignore ignored))
+        (random limit))
 (defun trigger-event (event-id)
     (when (or (not (member event-id (finished-events-of *game*)))
               (event-repeatable (get-event event-id)))
@@ -214,30 +213,35 @@
                             #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=)
                                         'swank::wait-for-event))
                           '(:emacs-return :yadfa-response result))))))
-(defun prompt-for-values (&rest options)
-    (cond
-        #+(or slynk swank)
-        ((not clim-listener::*application-frame*)
-            (eval `(let ((out (emacs-prompt ',options))
-                            (err nil))
-                       (iter (while
-                                 (iter (for i in out) (for j in ',options)
-                                     (unless (typep i (first j))
-                                         (setf err (format nil "~a isn't of type ~a" i (first j)))
-                                         (leave t))))
-                           (setf out (emacs-prompt ',options err)))
-                       out)))
-        (clim-listener::*application-frame*
-            (eval `(let ((a (make-list ,(list-length options))))
-                       (clim:accepting-values (*query-io* :resynchronize-every-pass t)
-                           ,@(iter (for i from 0 to (1- (list-length options)))
-                                 (collect '(fresh-line *query-io*))
-                                 (collect `(setf
-                                               (nth ,i a)
-                                               (clim:accept ',(first (nth i options))
-                                                   :prompt ,(getf (rest (nth i options)) :prompt)
-                                                   :default ,(getf (rest (nth i options)) :default) :stream *query-io*)))))
-                       a)))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+    (defun prompt-for-values% (&rest options)
+        (cond
+            #+(or slynk swank)
+            ((not clim-listener::*application-frame*)
+                (eval `(let ((out (emacs-prompt ',options))
+                                (err nil))
+                           (iter (while
+                                     (iter (for i in out) (for j in ',options)
+                                         (unless (typep i (first j))
+                                             (setf err (format nil "~a isn't of type ~a" i (first j)))
+                                             (leave t))))
+                               (setf out (emacs-prompt ',options err)))
+                           out)))
+            (clim-listener::*application-frame*
+                (eval `(let ((a (make-list ,(list-length options))))
+                           (clim:accepting-values (*query-io* :resynchronize-every-pass t)
+                               ,@(iter (for i from 0 to (1- (list-length options)))
+                                     (collect '(fresh-line *query-io*))
+                                     (collect `(setf
+                                                   (nth ,i a)
+                                                   (clim:accept ',(first (nth i options))
+                                                       :prompt ,(getf (rest (nth i options)) :prompt)
+                                                       :default ,(getf (rest (nth i options)) :default) :stream *query-io*)))))
+                           a))))))
+(defmacro prompt-for-values (&rest options)
+    `(prompt-for-values% ,@(iter (for i in options)
+                                       (collect
+                                           `(list ',(car i) ,@(cdr i))))))
 (defun set-new-battle (enemies &key win-events enter-battle-text continuable)
     (when continuable
         (setf
@@ -433,7 +437,8 @@
                    ',event-id
                    (events-of *game*))
              (make-event :id ',event-id ,@args))
-         (export ',event-id ',(symbol-package event-id))))
+         (export ',event-id ',(symbol-package event-id))
+         ',event-id))
 (defun get-event (event-id)
     (gethash event-id (events-of *game*)))
 (defun (setf get-event) (new-value event-id)
@@ -2992,3 +2997,27 @@
                 (when (consumablep item)
                     (removef item (inventory-of user))))
             (format t "You can't do that with that item~%"))))
+
+(defun set-player (name malep species)
+    "Sets the name, gender, and species of the player"
+    (declare (type simple-string species name) (type boolean malep))
+    (check-type malep boolean)
+    (check-type name simple-string)
+    (check-type species simple-string)
+    (setf (name-of (player-of *game*)) name)
+    (setf (species-of (player-of *game*)) species)
+    (setf (malep (player-of *game*)) malep))
+(defun intro-function (query-io)
+    (setf (clim:stream-end-of-line-action query-io) :wrap)
+    (apply #'set-player
+        (prompt-for-values
+            (string
+                :prompt "Name"
+                :default (name-of (player-of *game*)))
+            (boolean
+                :prompt "Is Male"
+                :default (malep (player-of *game*)))
+            (string
+                :prompt "Species"
+                :default (species-of (player-of *game*)))))
+    (format query-io "You wake up from sleeping, the good news is that you managed to stay dry through out the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. You quickly get up and start to make a dash for the bathroom, but it seems you put off the needs of your bladder for too long and flood your diapers right in front of the bathroom door like a 5 year old who didn't make it. What a great way to start the game piddle ~a. The intro text didn't even finish printing yet and you're already soggy.~%" (species-of (player-of *game*))))

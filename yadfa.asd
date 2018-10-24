@@ -16,8 +16,7 @@
                     (:feature :swank "swank") (:feature :yadfa/docs "net.didierverna.declt"))
     :components (
                     (:file "packages")
-                    (:file "gui/mcclim")
-                    (:file "main" :depends-on ("packages" "gui/mcclim"))
+                    (:file "main" :depends-on ("packages"))
                     (:module "core"
                         :depends-on ("packages" "main")
                         :components (
@@ -26,7 +25,8 @@
                                         (:file "libexec" :depends-on ("classes" "init"))
                                         (:file "classes")
                                         (:file "game" :depends-on ("classes"))
-                                        (:file "bin")))
+                                        (:file "bin")
+                                        (:file "mcclim" :depends-on ("game" "libexec"))))
                     (:module "data"
                         :depends-on ("core")
                         :components (

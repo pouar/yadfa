@@ -11,7 +11,11 @@
                    :dresser (make-instance 'prop
                                 :name "Dresser"
                                 :placeable t
-                                :description "Has all your clothes and diapers in here, until you take them out.")
+                                :description "Has all your clothes and diapers in here, until you take them out."
+                                :items (append
+                                           (iter (for i from 1 to (strong-random 10))
+                                               (collect (make-instance 'yadfa/items:diaper)))
+                                           (list (make-instance 'yadfa/items:tshirt))))
                    :checkpoint (make-instance 'checkpoint))))
 (ensure-zone (1 0 0 home) ()
     (:default-initargs
@@ -25,7 +29,8 @@
                    :cupboard (make-instance 'prop
                                  :name "Cupboard"
                                  :placeable t
-                                 :description "A cupboard located over the sink")
+                                 :description "A cupboard located on the sink"
+                                 :items (list (make-instance 'yadfa/items:potion)))
                    :washer (make-instance 'washer
                                  :name "Washer"
                                  :description "A place to wash all the clothes that you've ruined"))))

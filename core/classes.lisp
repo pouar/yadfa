@@ -77,6 +77,12 @@
             :accessor description-of
             :type (or simple-string keyword null)
             :documentation "Description of the character")
+        (attributes
+            :initarg :attributes
+            :initform '()
+            :accessor attributes-of
+            :type list
+            :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
         (health
             :initarg :health
             :accessor health-of
@@ -272,7 +278,7 @@
         :species "Fox"
         :bladder/fill-rate (* (/ 2000 24 60) 2)
         :bowels/fill-rate (* (/ 12000 24 60) 2)
-        :wear (list (make-instance 'yadfa/items:diaper))
+        :wear (list (make-instance 'yadfa/items:diaper :sogginess 600))
         :moves (list
                    (make-instance 'yadfa/moves:watersport)
                    (make-instance 'yadfa/moves:mudsport))))
