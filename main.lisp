@@ -17,6 +17,7 @@
     (in-package #:yadfa)
     (when (position "wait" (uiop:command-line-arguments) :test #'string=)
         (sleep 2))
+    #+ironclad (setf ironclad:*prng* (ironclad:make-prng :os)) ; work around crash
     (load-mods)
     (in-package :yadfa-user)
     #+yadfa/docs (when (position "texi" (uiop:command-line-arguments) :test #'string=)
