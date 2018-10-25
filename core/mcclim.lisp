@@ -71,6 +71,7 @@
 (clim:define-command (yadfa-about :command-table yadfa-commands :menu "About Yadfa")
     ()
     (dolist (i '("README" "AUTHORS"))
+        (format t "~a:~%" i)
         (with-open-file (s (uiop:merge-pathnames*
                                i
                                (if uiop:*image-dumped-p*
