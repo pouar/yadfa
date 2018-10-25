@@ -22,7 +22,7 @@
                         :components (
                                         (:file "structs")
                                         (:file "init")
-                                        (:file "libexec" :depends-on ("classes" "init"))
+                                        (:file "libexec" :depends-on ("classes" "init" "structs"))
                                         (:file "classes")
                                         (:file "game" :depends-on ("classes"))
                                         (:file "bin")
