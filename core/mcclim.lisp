@@ -3,7 +3,7 @@
 
 (setf *default-text-style* (make-text-style :fix :roman :normal))
 (defmethod default-frame-top-level
-    ((frame application-frame)
+    ((frame listener)
         &key (command-parser 'command-line-command-parser)
         (command-unparser 'command-line-command-unparser)
         (partial-command-parser
