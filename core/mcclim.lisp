@@ -68,5 +68,17 @@
     ((keyword '(member :scroll :allow :wrap)
          :prompt "Keyword"))
     (setf (stream-end-of-line-action *query-io*) keyword))
+(clim:define-command (yadfa-about :command-table yadfa-commands :menu "About Yadfa")
+    ()
+    (dolist (i '("README" "AUTHORS"))
+        (with-open-file (s (uiop:merge-pathnames*
+                               i
+                               (if uiop:*image-dumped-p*
+                                   (pathname (directory-namestring (truename (uiop:argv0))))
+                                   (asdf:system-source-directory :yadfa)))
+                            :direction :input)
+            (loop until (let ((ret (multiple-value-list (read-line s nil))))
+                            (format t "~a~%" (if (first ret) (first ret) ""))
+                            (second ret))))))
 (clim:add-menu-item-to-command-table (clim:find-command-table 'listener) "Yadfa" :menu (clim:find-command-table 'yadfa-commands))
 (pushnew (clim:find-command-table 'yadfa-commands) (clim:command-table-inherit-from (clim:find-command-table 'listener)))
