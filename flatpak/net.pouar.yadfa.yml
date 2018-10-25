@@ -63,7 +63,7 @@ modules:
       - mkdir -p /app/tmp/home/common-lisp
       - cp -R asdf-*/ /app/tmp/home/common-lisp/asdf/
       - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --load "quicklisp.lisp" --eval "(quicklisp-quickstart:install)"
-      - mkdir -p /app/tmp/home/quicklisp/local-projects /app/share/fonts/TTF /app/etc/fonts/conf.d
+      - mkdir -p /app/tmp/home/quicklisp/local-projects
       - cp -R declt/ /app/tmp/home/quicklisp/local-projects/declt/
       - cp -R McCLIM/ /app/tmp/home/quicklisp/local-projects/McCLIM/
       - cp -R sly/ /app/tmp/home/quicklisp/local-projects/sly/
