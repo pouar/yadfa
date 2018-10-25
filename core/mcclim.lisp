@@ -64,17 +64,6 @@
                             (format *query-io* "~&Command aborted.~&")
                             (beep))))))))
 (clim:define-command-table yadfa-commands)
-(clim:define-command (yadfa-set-player :command-table yadfa-commands :menu "Set Player")
-    ((name 'string
-         :prompt "Name"
-         :default (yadfa:name-of (yadfa:player-of yadfa:*game*)))
-        (gender 'boolean
-            :prompt "Is Male"
-            :default (yadfa:malep (yadfa:player-of yadfa:*game*)))
-        (species 'string
-            :prompt "Species"
-            :default (yadfa:species-of (yadfa:player-of yadfa:*game*))))
-    (yadfa/bin::set-player name gender species))
 (clim:define-command (yadfa-set-eol-action :command-table yadfa-commands :menu "Set EOL Action")
     ((keyword '(member :scroll :allow :wrap)
          :prompt "Keyword"))
