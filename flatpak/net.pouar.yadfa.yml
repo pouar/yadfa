@@ -6,7 +6,7 @@ command: yadfa
 cleanup:
   - /tmp
   - /bin/wget
-  - /etc/wgetrc
+  - /etc
   - /share/runtime
   - /share/locale
   - /share/man
