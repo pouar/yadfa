@@ -278,7 +278,7 @@
         :species "Fox"
         :bladder/fill-rate (* (/ 2000 24 60) 2)
         :bowels/fill-rate (* (/ 12000 24 60) 2)
-        :wear (list (make-instance 'yadfa/items:diaper :sogginess 600))
+        :wear (list (make-instance 'yadfa/items:diaper))
         :moves (list
                    (make-instance 'yadfa/moves:watersport)
                    (make-instance 'yadfa/moves:mudsport))))
@@ -851,14 +851,7 @@
                                      (if (malep j) "him" "her")
                                      (name-of j)
                                      (if (malep j) "him" "her"))
-                                 (unless (position
-                                             (gethash :get-diaper-locked-1 (events-of *game*))
-                                             (finished-events-of *game*))
-                                     (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%"
-                                         (name-of j))
-                                     (push
-                                         (gethash :get-diaper-locked-1 (events-of *game*))
-                                         (finished-events-of *game*))))))))))
+                                 (trigger-event 'yadfa/events:get-diaper-locked-1))))))))
     (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 (defclass checkpoint (prop) ()
     (:default-initargs
@@ -1180,10 +1173,16 @@
             :documentation "hash table containing all the events in the game")
         (finished-events
             :initarg :finished-events
-            :initform ()
+            :initform '()
             :type list
             :accessor finished-events-of
-            :documentation "A list containing all the events the player has finished")
+            :documentation "A list containing all the symbols of events the player has finished")
+        (major-event
+            :initarg :major-event
+            :initform nil
+            :type symbol
+            :accessor major-event-of
+            :documentation "Contains the current major event")
         (seen-enemies
             :initarg :seen-enemies
             :initform '()

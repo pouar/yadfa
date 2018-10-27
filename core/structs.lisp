@@ -1,7 +1,14 @@
 (in-package :yadfa)
 (defstruct event
     "An event in the game"
-    (id nil :type symbol) (lambda '(lambda (self))) (repeatable nil :type boolean))
+    (id nil :type symbol)
+    (lambda '(lambda (self) nil) :type list)
+    (predicate '(lambda (self) t) :type list)
+    (repeatable nil :type boolean)
+    (major nil :type boolean)
+    (major-depends nil :type symbol)
+    (optional nil)
+    (finished-depends '() :type list))
 (defstruct action
     "An action for a prop or item"
     (documentation nil :type simple-string) (lambda '(lambda (prop))))

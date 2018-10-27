@@ -9,7 +9,9 @@
 (defevent enter-bandits-shop-1
     :lambda '(lambda (self)
                  (declare (ignore self))
-                 (format t "Diapered Raccoon Bandit Shop Owner: Hey, we got a customer. Stop dancing around pulling on a locked bathroom door and help him out.~%~%Rookie Diapered Raccoon Bandit Servant: But I really gotta gooooo!!!!! *hops from foot to foot holding the front of his diaper*~%~%*The shop owner walks over to the servant and starts tickling him*~%~%Rookie Diapered Raccoon Bandit Servant: NOOOO!!! STOP!!!! I CAN'T HOLD IT!!!!~%~%*The rookie starts laughing and thrashing about, the insignia that doubles as a wetness indicator on the front of his diaper then turns from blue to yellow.*~%~%Shop Owner: There, you went, now go see to the customer.~%~%*The now blushy Rookie Diapered Raccoon Bandit waddles and squshes over to the back of the counter*~%~%")))
+                 (format t "Diapered Raccoon Bandit Shop Owner: Hey, we got a customer. Stop dancing around pulling on a locked bathroom door and help him out.~%~%Rookie Diapered Raccoon Bandit Servant: But I really gotta gooooo!!!!! *hops from foot to foot holding the front of his diaper*~%~%*The shop owner walks over to the servant and starts tickling him*~%~%Rookie Diapered Raccoon Bandit Servant: NOOOO!!! STOP!!!! I CAN'T HOLD IT!!!!~%~%*The rookie starts laughing and thrashing about, the insignia that doubles as a wetness indicator on the front of his diaper then turns from blue to yellow.*~%~%Shop Owner: There, you went, now go see to the customer.~%~%*The now blushy Rookie Diapered Raccoon Bandit waddles and squshes over to the back of the counter*~%~%")
+                 (pushnew (event-id self) (finished-events-of *game*))
+                 (setf nil (major-event-of *game*))))
 (defevent decend-bandits-cave-1
     :repeatable t
     :lambda '(lambda (self)
@@ -114,129 +116,114 @@
                              '((yadfa/enemies:diapered-raccoon-bandit .
                                    (list :level (random-from-range 2 5)))))))))
 (defevent obtain-diaper-lock-1
-    :repeatable t
+    :finished-depends '(enter-bandits-shop-1 get-diaper-locked-1)
+    :predicate '(lambda (self)
+                    (and
+                        (lockedp (car (last (wear-of (player-of *game*)))))
+                        (>= (bitcoins-of (player-of *game*)) 10000)
+                        (or
+                            (>
+                                (bladder/contents-of (player-of *game*))
+                                (* (bladder/maximum-limit-of (player-of *game*)) 5/6))
+                            (>
+                                (bowels/contents-of (player-of *game*))
+                                (* (bowels/maximum-limit-of (player-of *game*)) 5/6)))
+                        (and
+                            (<
+                                (getf (calculate-diaper-usage (player-of *game*)) :sogginess)
+                                (/ (getf (calculate-diaper-usage (player-of *game*)) :sogginess-capacity) 4))
+                            (<
+                                (getf (calculate-diaper-usage (player-of *game*)) :messiness)
+                                (/ (getf (calculate-diaper-usage (player-of *game*)) :messiness-capacity) 4)))))
     :lambda '(lambda (self)
-                 (when (and
-                           (lockedp (car (last (wear-of (player-of *game*)))))
-                           (>= (bitcoins-of (player-of *game*)) 10000)
-                           (or
-                               (>
-                                   (bladder/contents-of (player-of *game*))
-                                   (* (bladder/maximum-limit-of (player-of *game*)) 5/6))
-                               (>
-                                   (bowels/contents-of (player-of *game*))
-                                   (* (bowels/maximum-limit-of (player-of *game*)) 5/6)))
-                           (and
-                               (<
-                                   (getf (calculate-diaper-usage (player-of *game*)) :sogginess)
-                                   (/ (getf (calculate-diaper-usage (player-of *game*)) :sogginess-capacity) 4))
-                               (<
-                                   (getf (calculate-diaper-usage (player-of *game*)) :messiness)
-                                   (/ (getf (calculate-diaper-usage (player-of *game*)) :messiness-capacity) 4))))
-                     (pushnew '(yadfa/items:magic-diaper-key . (list :value 10000)) (items-for-sale-of (getf (get-props-from-zone '(-3 22 0 yadfa/zones:bandits-domain)) :shop)))
-                     (format t "Shop owner: Seems you're stuck in a locked diaper. I can help.~%~%")
-                     (format t "~a: I'm listenening~%~%" (name-of (player-of *game*)))
-                     (format t "I got one of those special artifacts that is used to lock and unlock these diapers. I can give it to you for 10000 bitcoins. Better pay up before you ~a yourself~%~%"
-                         (cond
-                             ((and
-                                  (>
-                                      (bladder/contents-of (player-of *game*))
-                                      (* (bladder/maximum-limit-of (player-of *game*)) 5/6))
-                                  (>
-                                      (bowels/contents-of (player-of *game*))
-                                      (* (bowels/maximum-limit-of (player-of *game*)) 5/6)))
-                                 "flood and mess")
-                             ((>
+                 (pushnew '(yadfa/items:magic-diaper-key . (list :value 10000)) (items-for-sale-of (getf (get-props-from-zone '(-3 22 0 yadfa/zones:bandits-domain)) :shop)))
+                 (format t "Shop owner: Seems you're stuck in a locked diaper. I can help.~%~%")
+                 (format t "~a: I'm listenening~%~%" (name-of (player-of *game*)))
+                 (format t "I got one of those special artifacts that is used to lock and unlock these diapers. I can give it to you for 10000 bitcoins. Better pay up before you ~a yourself~%~%"
+                     (cond
+                         ((and
+                              (>
                                   (bladder/contents-of (player-of *game*))
                                   (* (bladder/maximum-limit-of (player-of *game*)) 5/6))
-                                 "flood")
-                             ((>
+                              (>
                                   (bowels/contents-of (player-of *game*))
-                                  (* (bowels/maximum-limit-of (player-of *game*)) 5/6))
-                                 "mess")))
-                     (format t "~a: Forget it!!! I don't need your help!!!~%~%" (name-of (player-of *game*)))
-                     (format t "*~a starts to waddle out the door, stops, then ~a*~%~%"
-                         (name-of (player-of *game*))
-                         (if (>
-                                 (bladder/contents-of (player-of *game*))
-                                 (* (bladder/maximum-limit-of (player-of *game*)) 5/6))
-                             (format nil "crosses ~a legs and clenches the front of ~a diaper"
-                                 (if (malep (player-of *game*)) "his" "her")
-                                 (if (malep (player-of *game*)) "his" "her"))
-                             (format nil "grabs the back of ~a diaper while clenching ~a butt cheeks"
+                                  (* (bowels/maximum-limit-of (player-of *game*)) 5/6)))
+                             "flood and mess")
+                         ((>
+                              (bladder/contents-of (player-of *game*))
+                              (* (bladder/maximum-limit-of (player-of *game*)) 5/6))
+                             "flood")
+                         ((>
+                              (bowels/contents-of (player-of *game*))
+                              (* (bowels/maximum-limit-of (player-of *game*)) 5/6))
+                             "mess")))
+                 (format t "~a: Forget it!!! I don't need your help!!!~%~%" (name-of (player-of *game*)))
+                 (format t "*~a starts to waddle out the door, stops, then ~a*~%~%"
+                     (name-of (player-of *game*))
+                     (if (>
+                             (bladder/contents-of (player-of *game*))
+                             (* (bladder/maximum-limit-of (player-of *game*)) 5/6))
+                         (format nil "crosses ~a legs and clenches the front of ~a diaper"
+                             (if (malep (player-of *game*)) "his" "her")
+                             (if (malep (player-of *game*)) "his" "her"))
+                         (format nil "grabs the back of ~a diaper while clenching ~a butt cheeks"
+                             (if (malep (player-of *game*)) "his" "her")
+                             (if (malep (player-of *game*)) "his" "her"))))
+                 (format t "~a: On second thought, GIVE ME THAT KEY!!!!~%~%" (name-of (player-of *game*)))
+                 (format t "*~a pays up*~%~%" (name-of (player-of *game*)))
+                 (format t "Shop Owner: Thank you for your business, but before I hand you the key~%~%")
+                 (let ((a (cons
+                              (when
+                                  (>
+                                      (bladder/contents-of (player-of *game*))
+                                      (bladder/potty-dance-limit-of (player-of *game*)))
+                                  (wet))
+                              (when
+                                  (>
+                                      (bowels/contents-of (player-of *game*))
+                                      (bowels/potty-dance-limit-of (player-of *game*)))
+                                  (mess)))))
+                     (cond
+                         ((and
+                              (car a)
+                              (cdr a))
+                             (format t "*The raccoon puts on earplugs, then turns on the speakers in the room which starts playing the brown note, then starts tickling ~a~%~%"
+                                 (name-of (player-of *game*)))
+                             (format t "~a: ACK!!! NO!!! STOP!!!~%~%" (name-of (player-of *game*)))
+                             (format t "*~a starts squirming and giggling then wets and messes ~a diapers*~%~%"
+                                 (name-of (player-of *game*))
+                                 (if (malep (player-of *game*)) "his" "her")))
+                         ((car a)
+                             (format t "*The raccoon starts tickling ~a~%~%"
+                                 (name-of (player-of *game*)))
+                             (format t "~a: ACK!!! NO!!! STOP!!!~%~%" (name-of (player-of *game*)))
+                             (format t "*~a starts squirming and giggling then wets ~a diapers*~%~%"
+                                 (name-of (player-of *game*))
+                                 (if (malep (player-of *game*)) "his" "her")))
+                         ((cdr a)
+                             (format t "*The raccoon puts on earplugs, thenturns on the speakers in the room which starts playing the brown note~%~%")
+                             (format t "*~a quickly grabs the back of ~a diapers before messing ~aself*~%~%"
+                                 (name-of (player-of *game*))
                                  (if (malep (player-of *game*)) "his" "her")
                                  (if (malep (player-of *game*)) "his" "her"))))
-                     (format t "~a: On second thought, GIVE ME THAT KEY!!!!~%~%" (name-of (player-of *game*)))
-                     (format t "*~a pays up*~%~%" (name-of (player-of *game*)))
-                     (format t "Shop Owner: Thank you for your business, but before I hand you the key~%~%")
-                     (let ((a (cons
-                                  (when
-                                      (>
-                                          (bladder/contents-of (player-of *game*))
-                                          (bladder/potty-dance-limit-of (player-of *game*)))
-                                      (wet))
-                                  (when
-                                      (>
-                                          (bowels/contents-of (player-of *game*))
-                                          (bowels/potty-dance-limit-of (player-of *game*)))
-                                      (mess)))))
-                         (cond
-                             ((and
-                                  (car a)
-                                  (cdr a))
-                                 (format t "*The raccoon puts on earplugs, then turns on the speakers in the room which starts playing the brown note, then starts tickling ~a~%~%"
-                                     (name-of (player-of *game*)))
-                                 (format t "~a: ACK!!! NO!!! STOP!!!~%~%" (name-of (player-of *game*)))
-                                 (format t "*~a starts squirming and giggling then wets and messes ~a diapers*~%~%"
-                                     (name-of (player-of *game*))
-                                     (if (malep (player-of *game*)) "his" "her")))
-                             ((car a)
-                                 (format t "*The raccoon starts tickling ~a~%~%"
-                                     (name-of (player-of *game*)))
-                                 (format t "~a: ACK!!! NO!!! STOP!!!~%~%" (name-of (player-of *game*)))
-                                 (format t "*~a starts squirming and giggling then wets ~a diapers*~%~%"
-                                     (name-of (player-of *game*))
-                                     (if (malep (player-of *game*)) "his" "her")))
-                             ((cdr a)
-                                 (format t "*The raccoon puts on earplugs, thenturns on the speakers in the room which starts playing the brown note~%~%")
-                                 (format t "*~a quickly grabs the back of ~a diapers before messing ~aself*~%~%"
-                                     (name-of (player-of *game*))
-                                     (if (malep (player-of *game*)) "his" "her")
-                                     (if (malep (player-of *game*)) "his" "her"))))
-                         (format t "*The raccoon starts laughing*~%~%")
-                         (format t "Shop Owner: That never gets old. Here's the key as promised, enjoy ~abutt~%~%"
-                             (if (car a)
-                                 "sog"
-                                 "mush"))
-                         (when
-                             (cdr a)
-                             (format t "*The Rookie Raccoon waddles in*~%~%")
-                             (format t "Rookie Raccoon: I wish you wouldn't play that. You made me mess my diapers again~%~%")
-                             (format t
-                                 "Shop Owner: Ha, you were gonna mess yourself anyway, so it's not like it matters.~%~%"))
-                         (format t "*After laughing his ass off, he suddenly stops and a soft hiss can be heard, the raccoon's face turns bright red and he quickly grabs the front of his diaper. The hissing continues for 10 seconds while everyone in the room stares at him while he floods his diapers.*~%~%")
-                         (format t "*~a lifts up the raccoon's tunic and squishes the front of his diaper*~%~%"
-                             (name-of (player-of *game*)))
-                         (format t "~a: Seems you've had an accident too~%~%"
-                             (name-of (player-of *game*)))
-                         (format t "Shop Owner: Shut up!!! *pulls his tunic back down while blushing bright red*~%~%")
-                         (setf (event-repeatable self) nil)))))
-(defevent get-warp-pipe-summoner-1
-    :lambda '(lambda (self)
-                 (declare (ignorable self))
-                 (format t "*You enter the shop to find the whimpering Rookie still in a toddler's dress thrashing around and bouncing up and down in a baby bouncer*~%~%")
-                 (format t "Shop Owner: The baby decided to flood his diapers while I was giving him knee bounces, so I decided to reward him with happy bouncy fun time in the baby bouncer~%~%")
-                 (format t "Rookie: You wouldn't let me go and I couldn't hold it any longer!!!!~%~%")
-                 (format t "Shop Owner: A likely story. Anyway, before you go, I'd like to show you something. It's based on a dream the creator of this game had.~%~%")
-                 (format t "*The shop owner brings out a warp device and summons a warp pipe.*~%~%")
-                 (format t "Shop Owner: This warp pipe leads to the secret underground. In there is an infinite supply of several resources, a place where abdls can be themselves, and more warp pipes that let you warp just about anywhere in the game, though to avoid breaking the storyline, the creator of the game limited these warp pipes to the places you've already been~%~%")
-                 (format t "~a: Why are you giving me this?~%~%" (name-of (player-of *game*)))
-                 (format t "Shop Owner: Easy way to get back to this shop, so you can buy more crap from us.~%~%")
-                 (format t "~a: Ok *grabs the device and puts it in ~a inventory*~%~%"
-                     (name-of (player-of *game*))
-                     (if (malep (player-of *game*)) "his" "her"))
-                 (push (make-instance 'yadfa/items:warp-device) (inventory-of (player-of *game*)))
-                 (setf (hiddenp (get-zone '(0 0 0 yadfa/zones:silver-cape))) nil)))
+                     (format t "*The raccoon starts laughing*~%~%")
+                     (format t "Shop Owner: That never gets old. Here's the key as promised, enjoy ~abutt~%~%"
+                         (if (car a)
+                             "sog"
+                             "mush"))
+                     (when
+                         (cdr a)
+                         (format t "*The Rookie Raccoon waddles in*~%~%")
+                         (format t "Rookie Raccoon: I wish you wouldn't play that. You made me mess my diapers again~%~%")
+                         (format t
+                             "Shop Owner: Ha, you were gonna mess yourself anyway, so it's not like it matters.~%~%"))
+                     (format t "*After laughing his ass off, he suddenly stops and a soft hiss can be heard, the raccoon's face turns bright red and he quickly grabs the front of his diaper. The hissing continues for 10 seconds while everyone in the room stares at him while he floods his diapers.*~%~%")
+                     (format t "*~a lifts up the raccoon's tunic and squishes the front of his diaper*~%~%"
+                         (name-of (player-of *game*)))
+                     (format t "~a: Seems you've had an accident too~%~%"
+                         (name-of (player-of *game*)))
+                     (format t "Shop Owner: Shut up!!! *pulls his tunic back down while blushing bright red*~%~%")
+                     (setf (event-repeatable self) nil))))
 (defevent enter-bandits-kennel-1
     :lambda '(lambda (self)
                  (declare (ignorable self))
@@ -291,5 +278,21 @@
                          (format t "~a: I'm ~a. Now lets get you dressed~%~%"
                              (name-of (player-of *game*))
                              (name-of (player-of *game*)))
-                         (format t "*~a puts the new clothes and diapers on the foxes*~%~%" (name-of a)))
-                     (pushnew 'get-warp-pipe-summoner-1 (events-of (get-zone '(0 21 0 yadfa/zones:bandits-domain)))))))
+                         (format t "*~a puts the new clothes and diapers on the foxes*~%~%" (name-of a))))))
+(defevent get-warp-pipe-summoner-1
+    :finished-depends '(enter-bandits-shop-1 enter-bandits-kennel-1)
+    :lambda '(lambda (self)
+                 (declare (ignorable self))
+                 (format t "*You enter the shop to find the whimpering Rookie still in a toddler's dress thrashing around and bouncing up and down in a baby bouncer*~%~%")
+                 (format t "Shop Owner: The baby decided to flood his diapers while I was giving him knee bounces, so I decided to reward him with happy bouncy fun time in the baby bouncer~%~%")
+                 (format t "Rookie: You wouldn't let me go and I couldn't hold it any longer!!!!~%~%")
+                 (format t "Shop Owner: A likely story. Anyway, before you go, I'd like to show you something. It's based on a dream the creator of this game had.~%~%")
+                 (format t "*The shop owner brings out a warp device and summons a warp pipe.*~%~%")
+                 (format t "Shop Owner: This warp pipe leads to the secret underground. In there is an infinite supply of several resources, a place where abdls can be themselves, and more warp pipes that let you warp just about anywhere in the game, though to avoid breaking the storyline, the creator of the game limited these warp pipes to the places you've already been~%~%")
+                 (format t "~a: Why are you giving me this?~%~%" (name-of (player-of *game*)))
+                 (format t "Shop Owner: Easy way to get back to this shop, so you can buy more crap from us.~%~%")
+                 (format t "~a: Ok *grabs the device and puts it in ~a inventory*~%~%"
+                     (name-of (player-of *game*))
+                     (if (malep (player-of *game*)) "his" "her"))
+                 (push (make-instance 'yadfa/items:warp-device) (inventory-of (player-of *game*)))
+                 (setf (hiddenp (get-zone '(0 0 0 yadfa/zones:silver-cape))) nil)))

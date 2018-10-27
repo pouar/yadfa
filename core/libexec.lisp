@@ -8,16 +8,15 @@
 (defun strong-random (limit &optional ignored)
         (declare (ignore ignored))
         (random limit))
-(defun trigger-event (event-id)
-    (when (or (not (member event-id (finished-events-of *game*)))
-              (event-repeatable (get-event event-id)))
-        (funcall (coerce (event-lambda (get-event event-id)) 'function) i)
-        (pushnew event-id (finished-events-of *game*))
-        event-id))
 (defun shr (x width bits)
     "Compute bitwise right shift of x by 'bits' bits, represented on 'width' bits"
     (logand (ash x (- bits))
         (1- (ash 1 width))))
+(defun finished-events (events)
+    (not
+         (iter (for i in events)
+             (unless (member i (finished-events-of *game*))
+                 (leave t)))))
 (defun lambda-list (lambda-exp)
     (declare (type (or list function) lambda-exp))
     (check-type lambda-exp (or list function))
@@ -213,12 +212,11 @@
                             #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=)
                                         'swank::wait-for-event))
                           '(:emacs-return :yadfa-response result))))))
-(eval-when (:compile-toplevel :load-toplevel :execute)
-    (defun prompt-for-values% (&rest options)
-        (cond
+(defmacro prompt-for-values (&rest options)
+    `(cond
             #+(or slynk swank)
             ((not clim-listener::*application-frame*)
-                (eval `(let ((out (emacs-prompt ',options))
+                (let ((out (emacs-prompt ',options))
                                 (err nil))
                            (iter (while
                                      (iter (for i in out) (for j in ',options)
@@ -226,10 +224,11 @@
                                              (setf err (format nil "~a isn't of type ~a" i (first j)))
                                              (leave t))))
                                (setf out (emacs-prompt ',options err)))
-                           out)))
+                           out))
             (clim-listener::*application-frame*
-                (eval `(let ((a (make-list ,(list-length options))))
-                           (clim:accepting-values (*query-io* :resynchronize-every-pass t)
+                (let ((a (make-list ,(list-length options))))
+                           (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept"))
+)
                                ,@(iter (for i from 0 to (1- (list-length options)))
                                      (collect '(fresh-line *query-io*))
                                      (collect `(setf
@@ -237,11 +236,19 @@
                                                    (clim:accept ',(first (nth i options))
                                                        :prompt ,(getf (rest (nth i options)) :prompt)
                                                        :default ,(getf (rest (nth i options)) :default) :stream *query-io*)))))
-                           a))))))
-(defmacro prompt-for-values (&rest options)
-    `(prompt-for-values% ,@(iter (for i in options)
-                                       (collect
-                                           `(list ',(car i) ,@(cdr i))))))
+                    a))))
+(defun trigger-event (event-id)
+    (when (and
+              (not (and (major-event-of *game*) (event-major (get-event event-id))))
+              (funcall (coerce (event-predicate (get-event event-id)) 'function)
+                  (get-event event-id))
+              (or (event-repeatable (get-event event-id)) (not (finished-events (list event-id))))
+              (or (not (event-optional (get-event event-id))) (car (prompt-for-values (boolean :prompt "accept quest" :default t)))))
+        (setf (major-event-of *game*) event-id)
+        (funcall (coerce (event-lambda (get-event event-id)) 'function) (get-event event-id))
+        (unless (event-major (get-event event-id))
+            (pushnew event-id (finished-events-of *game*)))
+        event-id))
 (defun set-new-battle (enemies &key win-events enter-battle-text continuable)
     (when continuable
         (setf
@@ -527,25 +534,6 @@
              (change-class self ',(intern (format nil "~a/CLOSED" (symbol-name base-class)) (symbol-package base-class))))
          (defmethod toggle-onesie%% ((self ,(intern (format nil "~a/CLOSED" (symbol-name base-class)) (symbol-package base-class))))
              (change-class self ',(intern (format nil "~a/OPENED" (symbol-name base-class)) (symbol-package base-class))))))
-
-(defun ensure-zones (c)
-    (iter (for i in *zones-to-initialize*)
-        (unless
-            (gethash i
-                (zones-of c))
-            (setf (gethash i
-                      (zones-of c))
-                (eval
-                    `(make-instance
-                         ',(intern
-                               (string-upcase
-                                   (format nil
-                                       "zone-~{~a~}~a"
-                                       (iter (for j in (butlast i)) (collect (format nil "~a-" j)))
-                                       (fourth i)))
-                               (symbol-package (fourth i)))
-                         :position ',i))))
-        (export (fourth i) (symbol-package (fourth i)))))
 (defmacro ensure-zone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
     (declare (type list position))
@@ -892,10 +880,7 @@
         (name-of user)
         (if (malep user) "his" "her")
         (if (malep user) "his" "her"))
-    (unless (member 'yadfa/events:get-diaper-locked-1 (finished-events-of *game*))
-        (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%"
-            (name-of user))
-        (push 'yadfa/events:get-diaper-locked-1 (finished-events-of *game*))))
+    (trigger-event 'yadfa/events:get-diaper-locked-1))
 (defun potty-on-toilet (prop &key wet mess pants-down (user (player-of *game*)))
     (declare
         (type toilet prop)
@@ -3008,7 +2993,13 @@
     (setf (species-of (player-of *game*)) species)
     (setf (malep (player-of *game*)) malep))
 (defun intro-function (query-io)
-    (setf (clim:stream-end-of-line-action query-io) :wrap)
+    (setf (clim:stream-end-of-line-action query-io) :wrap
+        (player-of *game*) (make-instance 'player
+                               :wear (list
+                                         (make-instance
+                                             'yadfa/items:diaper
+                                             :sogginess 600))))
+    (format query-io "Enter your character's name, gender, and species~%")
     (apply #'set-player
         (prompt-for-values
             (string

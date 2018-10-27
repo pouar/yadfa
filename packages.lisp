@@ -14,6 +14,8 @@
         #:make-pocket-zone
         ;;functions
         #-ironclad #:strong-random
+        #:intro-function
+        #:set-player
         #:prompt-for-values
         #:color-format
         #:set-status-condition
