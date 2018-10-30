@@ -283,7 +283,8 @@
         (funcall
             (coerce (wield-script-of (wield-of user)) 'function)
             (wield-of user)
-            user)))(defun get-warp-point (direction position)
+            user)))
+(defun get-warp-point (direction position)
     (declare (type symbol direction))
     (getf (warp-points-of (get-zone position))
         (if (typep direction 'keyword)
@@ -294,9 +295,12 @@
             direction)))
 (defun get-destination (direction position)
     (macrolet ((a (pos x y z)
-                   `(append
-                        (mapcar #'+ (butlast ,pos) '(,x ,y ,z))
-                        (last ,pos))))
+                   `(let ((b
+                              (append
+                                  (mapcar #'+ (butlast ,pos) '(,x ,y ,z))
+                                  (last ,pos))))
+                        (when (get-zone b)
+                            b))))
         (case direction
             (:north (a position 0 -1 0))
             (:south (a position 0 1 0))
