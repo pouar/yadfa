@@ -12,6 +12,7 @@
         #:ensure-zone
         #:defonesie
         #:make-pocket-zone
+        #:do-push
         ;;functions
         #-ironclad #:strong-random
         #:intro-function

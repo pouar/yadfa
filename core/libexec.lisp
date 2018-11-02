@@ -187,11 +187,11 @@
                                                 (list
                                                     :emacs-return
                                                     ,(cond
-                                                         #+yadfa/slynk ((member "slynk"
+                                                         #+slynk ((member "slynk"
                                                                             (uiop:command-line-arguments)
                                                                             :test #'string=)
                                                                            (slynk::current-thread-id))
-                                                         #+yadfa/swank ((member "swank"
+                                                         #+swank ((member "swank"
                                                                             (uiop:command-line-arguments)
                                                                             :test #'string=)
                                                                            (swank::current-thread-id)))
