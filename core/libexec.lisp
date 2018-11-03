@@ -6,17 +6,17 @@
         (1- (ash 1 width))))
 #-ironclad
 (defun strong-random (limit &optional ignored)
-        (declare (ignore ignored))
-        (random limit))
+    (declare (ignore ignored))
+    (random limit))
 (defun shr (x width bits)
     "Compute bitwise right shift of x by 'bits' bits, represented on 'width' bits"
     (logand (ash x (- bits))
         (1- (ash 1 width))))
 (defun finished-events (events)
     (not
-         (iter (for i in events)
-             (unless (member i (finished-events-of *game*))
-                 (leave t)))))
+        (iter (for i in events)
+            (unless (member i (finished-events-of *game*))
+                (leave t)))))
 (defun lambda-list (lambda-exp)
     (declare (type (or list function) lambda-exp))
     (check-type lambda-exp (or list function))
@@ -145,99 +145,99 @@
                                              #'slynk::wait-for-event)
                                  #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=)
                                              #'swank::wait-for-event))))
-               (funcall eval-in-emacs
-                   `(progn (require 'widget)
-                        (eval-when-compile
-                            (require 'wid-edit))
-                        (defvar yadfa-contents nil)
-                        (defun yadfa-widget ()
-                            "Widget generated from the CL side as a dialog for my game"
-                            (interactive)
-                            ,(if error-message '(switch-to-buffer "*YADFA*") '(switch-to-buffer-other-window "*YADFA*"))
-                            (kill-all-local-variables)
-                            (let ((inhibit-read-only t))
-                                (erase-buffer))
-                            (remove-overlays)
-                            (widget-insert
-                                ,(if error-message
-                                     (format nil "~a~%" error-message)
-                                     (format nil "Please answer in this \"Window\"~%")))
-                            ,@(iter (with j = 0)
-                                  (for i in options)
-                                  (cond ((equal (first i) 'boolean)
-                                            (collect `(widget-insert ,(format nil "~a: " (getf (rest i) :prompt))))
-                                            (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                                          (widget-create 'checkbox
-                                                              ,(getf (rest i) :default)))))
-                                      ((equal (first i) 'string)
-                                          (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                                        (widget-create 'editable-field
-                                                            :format ,(format nil "~a: %v" (getf (rest i) :prompt))
-                                                            ,(getf (rest i) :default)))))
-                                      ((equal (first i) 'integer)
-                                          (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                                        (widget-create 'integer
-                                                            :format ,(format nil "~a: %v" (getf (rest i) :prompt))
-                                                            ,(getf (rest i) :default)))))
-                                      ((equal (first i) 'number)
-                                          (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                                        (widget-create 'number
-                                                            :format ,(format nil "~a: %v" (getf (rest i) :prompt))
-                                                            ,(getf (rest i) :default))))))
-                                  (collect `(widget-insert ,#\linefeed))
-                                  (incf j))
-                            (widget-create 'push-button
-                                :notify (lambda (top widget &optional reason)
-                                            (sly-send
-                                                (list
-                                                    :emacs-return
-                                                    ,(cond
-                                                         #+slynk ((member "slynk"
-                                                                            (uiop:command-line-arguments)
-                                                                            :test #'string=)
-                                                                           (slynk::current-thread-id))
-                                                         #+swank ((member "swank"
-                                                                            (uiop:command-line-arguments)
-                                                                            :test #'string=)
-                                                                           (swank::current-thread-id)))
-                                                    :yadfa-response
-                                                    (list ,@(iter (with j = 0) (for i in options)
-                                                                (declare (ignorable i))
-                                                                (collect `(widget-value ,(intern (format nil "a~d" j))))
-                                                                (incf j)))))
-                                            (kill-buffer))
-                                "Apply")
-                            (use-local-map widget-keymap)
-                            (widget-setup)
-                            nil)
-                        (yadfa-widget)))
-               (third (funcall wait-for-event
-                          '(:emacs-return :yadfa-response result)))))
+        (funcall eval-in-emacs
+            `(progn (require 'widget)
+                 (eval-when-compile
+                     (require 'wid-edit))
+                 (defvar yadfa-contents nil)
+                 (defun yadfa-widget ()
+                     "Widget generated from the CL side as a dialog for my game"
+                     (interactive)
+                     ,(if error-message '(switch-to-buffer "*YADFA*") '(switch-to-buffer-other-window "*YADFA*"))
+                     (kill-all-local-variables)
+                     (let ((inhibit-read-only t))
+                         (erase-buffer))
+                     (remove-overlays)
+                     (widget-insert
+                         ,(if error-message
+                              (format nil "~a~%" error-message)
+                              (format nil "Please answer in this \"Window\"~%")))
+                     ,@(iter (with j = 0)
+                           (for i in options)
+                           (cond ((equal (first i) 'boolean)
+                                     (collect `(widget-insert ,(format nil "~a: " (getf (rest i) :prompt))))
+                                     (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
+                                                   (widget-create 'checkbox
+                                                       ,(getf (rest i) :default)))))
+                               ((equal (first i) 'string)
+                                   (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
+                                                 (widget-create 'editable-field
+                                                     :format ,(format nil "~a: %v" (getf (rest i) :prompt))
+                                                     ,(getf (rest i) :default)))))
+                               ((equal (first i) 'integer)
+                                   (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
+                                                 (widget-create 'integer
+                                                     :format ,(format nil "~a: %v" (getf (rest i) :prompt))
+                                                     ,(getf (rest i) :default)))))
+                               ((equal (first i) 'number)
+                                   (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
+                                                 (widget-create 'number
+                                                     :format ,(format nil "~a: %v" (getf (rest i) :prompt))
+                                                     ,(getf (rest i) :default))))))
+                           (collect `(widget-insert ,#\linefeed))
+                           (incf j))
+                     (widget-create 'push-button
+                         :notify (lambda (top widget &optional reason)
+                                     (sly-send
+                                         (list
+                                             :emacs-return
+                                             ,(cond
+                                                  #+slynk ((member "slynk"
+                                                               (uiop:command-line-arguments)
+                                                               :test #'string=)
+                                                              (slynk::current-thread-id))
+                                                  #+swank ((member "swank"
+                                                               (uiop:command-line-arguments)
+                                                               :test #'string=)
+                                                              (swank::current-thread-id)))
+                                             :yadfa-response
+                                             (list ,@(iter (with j = 0) (for i in options)
+                                                         (declare (ignorable i))
+                                                         (collect `(widget-value ,(intern (format nil "a~d" j))))
+                                                         (incf j)))))
+                                     (kill-buffer))
+                         "Apply")
+                     (use-local-map widget-keymap)
+                     (widget-setup)
+                     nil)
+                 (yadfa-widget)))
+        (third (funcall wait-for-event
+                   '(:emacs-return :yadfa-response result)))))
 (defmacro prompt-for-values (&rest options)
     `(cond
-            #+(or slynk swank)
-            ((not clim-listener::*application-frame*)
-                (let ((out (emacs-prompt ',options))
-                                (err nil))
-                           (iter (while
-                                     (iter (for i in out) (for j in ',options)
-                                         (unless (typep i (first j))
-                                             (setf err (format nil "~a isn't of type ~a" i (first j)))
-                                             (leave t))))
-                               (setf out (emacs-prompt ',options err)))
-                           out))
-            (clim-listener::*application-frame*
-                (let ((a (make-list ,(list-length options))))
-                           (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept"))
-)
-                               ,@(iter (for i from 0 to (1- (list-length options)))
-                                     (collect '(fresh-line *query-io*))
-                                     (collect `(setf
-                                                   (nth ,i a)
-                                                   (clim:accept ',(first (nth i options))
-                                                       :prompt ,(getf (rest (nth i options)) :prompt)
-                                                       :default ,(getf (rest (nth i options)) :default) :stream *query-io*)))))
-                    a))))
+         #+(or slynk swank)
+         ((not clim-listener::*application-frame*)
+             (let ((out (emacs-prompt ',options))
+                      (err nil))
+                 (iter (while
+                           (iter (for i in out) (for j in ',options)
+                               (unless (typep i (first j))
+                                   (setf err (format nil "~a isn't of type ~a" i (first j)))
+                                   (leave t))))
+                     (setf out (emacs-prompt ',options err)))
+                 out))
+         (clim-listener::*application-frame*
+             (let ((a (make-list ,(list-length options))))
+                 (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept"))
+                                            )
+                     ,@(iter (for i from 0 to (1- (list-length options)))
+                           (collect '(fresh-line *query-io*))
+                           (collect `(setf
+                                         (nth ,i a)
+                                         (clim:accept ',(first (nth i options))
+                                             :prompt ,(getf (rest (nth i options)) :prompt)
+                                             :default ,(getf (rest (nth i options)) :default) :stream *query-io*)))))
+                 a))))
 (defun trigger-event (event-id)
     (when (and
               (not (and (major-event-of *game*) (event-major (get-event event-id))))
