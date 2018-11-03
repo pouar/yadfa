@@ -137,11 +137,16 @@
             (clim:with-drawing-options (*standard-output* :ink (eval (intern (format nil "+~a+" color) "CLIM")))
                 (apply #'format t body)))))
 (defun emacs-prompt (options &optional error-message)
-    (eval `(progn
-               (,(cond
-                     #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=) 'slynk:eval-in-emacs)
-                     #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=) 'swank:eval-in-emacs))
-                   '(progn (require 'widget)
+    (let ((eval-in-emacs (cond
+                             #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=) #'slynk:eval-in-emacs)
+                             #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=) #'swank:eval-in-emacs)))
+             (wait-for-event (cond
+                                 #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=)
+                                             #'slynk::wait-for-event)
+                                 #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=)
+                                             #'swank::wait-for-event))))
+               (funcall eval-in-emacs
+                   `(progn (require 'widget)
                         (eval-when-compile
                             (require 'wid-edit))
                         (defvar yadfa-contents nil)
@@ -206,12 +211,8 @@
                             (widget-setup)
                             nil)
                         (yadfa-widget)))
-               (third (,(cond
-                            #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=)
-                                        'slynk::wait-for-event)
-                            #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=)
-                                        'swank::wait-for-event))
-                          '(:emacs-return :yadfa-response result))))))
+               (third (funcall wait-for-event
+                          '(:emacs-return :yadfa-response result)))))
 (defmacro prompt-for-values (&rest options)
     `(cond
             #+(or slynk swank)
