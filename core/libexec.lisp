@@ -136,6 +136,8 @@
         (clim-listener::*application-frame*
             (clim:with-drawing-options (*standard-output* :ink (eval (intern (format nil "+~a+" color) "CLIM")))
                 (apply #'format t body)))))
+
+#+(or slynk swank)
 (defun emacs-prompt (options &optional error-message)
     (let ((eval-in-emacs (cond
                              #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=) #'slynk:eval-in-emacs)
