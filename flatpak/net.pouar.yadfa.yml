@@ -36,8 +36,8 @@ modules:
       - bash -c 'TEXDIR=/app/tmp/texlive;wget -qO- https://github.com/yihui/tinytex/raw/master/tools/install-base.sh | sh -s - "$@";rm -rf $TEXDIR;mkdir -p $TEXDIR;mv texlive/* $TEXDIR;rm -r texlive;$TEXDIR/bin/*/tlmgr install $(wget -qO- https://github.com/yihui/tinytex/raw/master/tools/pkgs-custom.txt | tr "\n" " ") texinfo;$TEXDIR/bin/*/tlmgr path add'
     sources:
       - type: archive
-        sha256: 263eebeff43968478e1fe433db52a17759233933c72d59cfbf6be91c1e5611f6
-        url: https://github.com/yihui/tinytex/archive/v0.8.tar.gz
+        sha256: 3ff6c23f51c7cfb40f1fbdfaf25d0c1bfbe08ddea41919d7d1fafcfb953c1b39
+        url: https://github.com/yihui/tinytex/archive/v0.9.tar.gz
   - name: sbcl-bin
     buildsystem: simple
     build-commands:
