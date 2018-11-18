@@ -34,7 +34,7 @@ build_script:
 - cmd: '"C:\Program Files\Steel Bank Common Lisp\1.4.2\sbcl" --script "appveyor-build-docs.lisp" texi'
 - cmd: 'C:\msys64\usr\bin\bash.exe -lc "cd /c/projects/yadfa;makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa.texi;makeinfo --no-split --pdf ./yadfa.texi;makeinfo --no-split ./yadfa.texi"'
 - cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)"'
-- ps: 7z a -t7z -mmt=2 -mx=9 -m0=LZMA2:d=200M:fb=273:mc=1000000000 '-x!yadfa/.*' '-x!yadfa/ci' '-x!yadfa/yadfa.7z' '-x!yadfa/appveyor-build*.lisp' yadfa.7z $PWD
+- ps: 7z a -t7z -mmt=2 -mx=9 -m0=LZMA2:d=200M:fb=273:mc=1000000000 '-x!yadfa/*.aux' '-x!yadfa/*.cps' '-x!yadfa/*.fns' '-x!yadfa/*.vrs' '-x!yadfa/*.tps' '-x!yadfa/*.cp' '-x!yadfa/*.fn' '-x!yadfa/*.vr' '-x!yadfa/*.tp' '-x!yadfa/*.toc' '-x!yadfa/*.log' '-x!yadfa/.*' '-x!yadfa/ci' '-x!yadfa/yadfa.7z' '-x!yadfa/appveyor-build*.lisp' yadfa.7z $PWD
 artifacts:
 - path: yadfa.7z
   name: yadfa.7z
