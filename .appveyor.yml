@@ -19,6 +19,8 @@ install:
 - ps: Expand-Archive $env:CACHE\sly.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\declt.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\mcclim.zip -DestinationPath $env:CACHE
+- ps: choco install -y miktex
+- cmd:  refreshenv
 - cmd: 'start /wait msiexec /i %CACHE%\sbcl.msi /quiet /qn /norestart /log sbcl-install.log'
 - ps: Copy-Item $env:CACHE\asdf-3.3.2.11\ -recurse -destination $env:USERPROFILE\common-lisp\
 - cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l "%CACHE%\quicklisp.lisp" -e "(quicklisp-quickstart:install)"  -e "(#__exit 0)"'
@@ -30,7 +32,7 @@ install:
 
 build_script:
 - cmd: '"C:\Program Files\Steel Bank Common Lisp\1.4.2\sbcl" --script "appveyor-build-docs.lisp" texi'
-- cmd: 'C:\msys64\usr\bin\bash.exe -lc "cd /c/projects/yadfa;makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa.texi"'
+- cmd: 'C:\msys64\usr\bin\bash.exe -lc "cd /c/projects/yadfa;makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa.texi;makeinfo --no-split --pdf ./yadfa.texi;makeinfo --no-split ./yadfa.texi"'
 - cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)"'
 - ps: 7z a -t7z -mmt=2 -mx=9 -m0=LZMA2:d=200M:fb=273:mc=1000000000 '-x!yadfa/.*' '-x!yadfa/ci' '-x!yadfa/yadfa.7z' '-x!yadfa/appveyor-build*.lisp' yadfa.7z $PWD
 artifacts:
@@ -42,6 +44,10 @@ test_script:
     Else { echo "yadfa.exe was built"; }
     If(!(test-path C:\projects\yadfa\yadfa.html )) { echo "yadfa.html was not built";exit 1; }
     Else { echo "yadfa.html was built"; }
+    If(!(test-path C:\projects\yadfa\yadfa.pdf )) { echo "yadfa.pdf was not built";exit 1; }
+    Else { echo "yadfa.pdf was built"; }
+    If(!(test-path C:\projects\yadfa\yadfa.info )) { echo "yadfa.info was not built";exit 1; }
+    Else { echo "yadfa.info was built"; }
     If(!(test-path C:\projects\yadfa\yadfa.7z )) { echo "yadfa.7z was not built";exit 1; }
     Else { echo "yadfa.7z was built"; }
 deploy:
