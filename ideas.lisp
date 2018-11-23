@@ -3,7 +3,17 @@
 ;;;comments are included in this thing for people who are out of the loop
 '(The-Turnip
     ;; Didn't mean for this to be so long, but Windows had so many faults that it was hard not to. This is just the tip of the iceberg.
-     "A new Linux distro has been announced to make it more like Windows since Linux is `too hard'. It has plenty of new Windows-like features. First up is the new package format, an SQL relational database. Based on Windows design principals, those make the perfect package format. The structure is so damn easy and transparent we had to invent an XML to SQL converter to use it. We also simplified the part that determines the directory layout. Instead of storing the files in a directory tree that represents the root directory to figure out where everything goes. You now give each and every file its own sql table where you enter all the details about all those individual files, in that table you give it a reference to an external key which is stored in a separate table called the directory table, where you list every single directory known to man (or at least the package file). As for the package database itself, we'll just do what Windows does and dump the contents of ram to disk because it's faster. Also, the new instalation system is self updating, but can't update itself while it's running, so you need to find some way to run it without running it. How do you use this new easy to use installer to install packages you ask? with this simple and easy to use C function of course:
+     "A new Linux distro has been announced to make it more like Windows since Linux is `too hard'. It has plenty of new Windows-like features.
+
+First up is the new package format, an SQL relational database. Based on Windows design principals, those make the perfect package format.
+
+The structure is so damn easy and transparent we had to invent an XML to SQL converter to use it.
+
+We also simplified the part that determines the directory layout. Instead of storing the files in a directory tree that represents the root directory to figure out where everything goes. You now give each and every file its own sql table where you enter all the details about all those individual files, in that table you give it a reference to an external key which is stored in a separate table called the directory table, where you list every single directory known to man (or at least the package file).
+
+As for the package database itself, we'll just do what Windows does and dump the contents of ram to disk because it's faster. Also, the new instalation system is self updating, but can't update itself while it's running, so you need to find some way to run it without running it.
+
+How do you use this new easy to use installer to install packages you ask? with this simple and easy to use C function of course:
 ```C
 LinInstInstallPackageEx(LPTSTR lpPackageName, LPTSTR lpPackagePath, BOOL sync, BOOL upgrade, DWORD reserved, LPSECURITY_ATTRIBUTES lpSecurityAttributes, LPMYSTERY lpMysteryPointer);
 ```
@@ -27,7 +37,21 @@ here's an example of the function in action
 ```C
 LinInstInstallPackageEx(\"gimp\", NULL, 0, 0, 0, NULL, NULL);
 ```
-Yep, all those NULLs and 0s are totally necessary"
+Yep, all those NULLs and 0s are totally necessary
+
+We even revamped the shell to behave more like cmd.exe since Windows is clearly easier to use, and therefore making the cli like Windows will make it easier
+
+We changed `#' to behave like `:' on some systems but not on other systems
+
+The shell now reads the entire file, executes the first command, reads the entire file again, executes the next command, reads the entire file again, executes the next command, etc.
+
+You're supposed to get to the previous command in the history by hitting down instead of up occasionally right?
+
+Command prompt windows are now limited to 80 columns in width, because nobody uses anything longer than that right?
+
+Instead of putting our executables in one standard location, we decided to spread them out across different directories. so instead of typing `somecommand', you're now typing `/c/Program Files (x86)/My Awesome Program/Some Command'. Isn't that way better?
+
+All that crap and more."
 
      "A new college has opened up, teaching you highly advanced programming skills such as using scanf for input and using Microsoft products"
 
