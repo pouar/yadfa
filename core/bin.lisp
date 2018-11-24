@@ -632,9 +632,10 @@
                     (name-of selected-user)
                     (if (malep selected-user) "his" "her")
                     (name-of item))
-                (setf
-                    (inventory-of (player-of *game*)) (remove-nth inventory (inventory-of (player-of *game*)))
-                    (wear-of selected-user) a)))))
+                (if (= inventory 0)
+                    (pop (inventory-of (player-of *game*)))
+                    (setf (inventory-of (player-of *game*)) (remove-nth inventory (inventory-of (player-of *game*)))))
+                (setf (wear-of selected-user) a)))))
 (defun yadfa/bin:unwear (&key (inventory 0) (wear 0) user)
     "Unwear an item you're wearing. Inventory is the index you want to place this item. WEAR is the index of the item you're wearing that you want to remove. You can also set WEAR to a type specifier for the outer most clothing of that type. USER is a integer referring to the index of an ally. Leave at NIL to refer to yourself"
     (declare
@@ -703,7 +704,9 @@
                            (if (> (list-length (enemies-of *battle*)) 1) "enemies" "enemy")
                            (name-of item)))
         (format t "~a takes off ~a ~a~%" (name-of selected-user) (if (malep selected-user) "his" "her") (name-of item))
-        (setf (wear-of selected-user) (remove-nth wear (wear-of selected-user)))
+        (if (= wear 0)
+            (pop (wear-of selected-user))
+            (setf (wear-of selected-user) (remove-nth wear (wear-of selected-user))))
         (setf (inventory-of (player-of *game*)) (insert (inventory-of (player-of *game*)) item inventory))))
 (defun yadfa/bin:change (&key (inventory 0) (wear 0) user)
     "Change one of the clothes you're wearing with one in your inventory. WEAR is the index of the clothing you want to replace. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to replace it with. You can also give INVENTORY and WEAR a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself."
