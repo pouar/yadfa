@@ -4,14 +4,18 @@
     :lambda '(lambda (self)
                  (declare (ignore self))
                  (format t "Print some text~%")))
-(setf
-    (getf (actions-of (getf (props-of (get-zone '(0 0 0 yadfa/zones:debug-map))) :shop)) :mod)
-    (make-action
-        :documentation "This Mod Works"
-        :lambda '(lambda
-                     (prop &rest keys &key &allow-other-keys)
-                     (declare (ignore prop))
-                     (format t "Hello World~%"))))
+(defevent test-5
+    :lambda '(lambda (self)
+                 (declare (ignore self))
+                 (setf
+                     (getf (actions-of (getf (props-of (get-zone '(0 0 0 yadfa/zones:debug-map))) :shop)) :mod)
+                     (make-action
+                         :documentation "This Mod Works"
+                         :lambda '(lambda
+                                      (prop &rest keys &key &allow-other-keys)
+                                      (declare (ignore prop))
+                                      (format t "Hello World~%"))))))
+(trigger-event 'test-5)
 (pushnew 'test-4 (events-of (get-zone '(0 0 -1 yadfa/zones:debug-map))))
 (defclass celebrate (stat/move) ()
     (:default-initargs

@@ -545,29 +545,13 @@
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
     (declare (type list position))
     `(progn
-         (defclass
-             ,(intern
-                  (string-upcase
-                      (format nil
-                          "zone-~{~a~}~a"
-                          (iter (for i in (butlast position)) (collect (format nil "~a-" i)))
-                          (fourth position)))
-                  (symbol-package (fourth position)))
-             (zone)
-             ,@body)
          (unless
              (gethash ',position
                  (zones-of *game*))
              (setf (gethash ',position
                        (zones-of *game*))
                  (make-instance
-                     ',(intern
-                           (string-upcase
-                               (format nil
-                                   "zone-~{~a~}~a"
-                                   (iter (for j in (butlast position)) (collect (format nil "~a-" j)))
-                                   (fourth position)))
-                           (symbol-package (fourth position))))))
+                     'zone ,@body)))
          (export ',(fourth position) ',(symbol-package (fourth position)))))
 (defmacro make-pocket-zone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
