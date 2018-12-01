@@ -65,8 +65,7 @@
                              asdf:*system-definition-search-functions*)
                          (uiop:register-clear-configuration-hook 'clear-mod-registry))
                      (asdf:clear-configuration)
-                     (let* ((file (uiop:merge-pathnames* "mods.conf"
-                                      (uiop:xdg-config-home "yadfa/")))
+                     (let* ((file (uiop:xdg-config-home "yadfa/mods.conf"))
                                (mods '()))
                          (ensure-directories-exist (uiop:xdg-config-home "yadfa/"))
                          (handler-case (with-open-file (stream file :if-does-not-exist :error)

@@ -13,8 +13,7 @@
     (if (asdf:find-system system nil)
         (progn
             (pushnew (asdf:coerce-name system) *mods* :test #'string=)
-            (with-open-file (stream (uiop:merge-pathnames* "mods.conf"
-                                        (uiop:xdg-config-home "yadfa/"))
+            (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
                                 :if-does-not-exist :create
                                 :if-exists :supersede
                                 :direction :output)
@@ -27,8 +26,7 @@
     (declare (ignorable system))
     #+yadfa/mods (progn
                      (removef *mods* (asdf:coerce-name system) :test #'string=)
-                     (with-open-file (stream (uiop:merge-pathnames* "mods.conf"
-                                                 (uiop:xdg-config-home "yadfa/"))
+                     (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
                                          :if-does-not-exist :create
                                          :if-exists :supersede
                                          :direction :output)
