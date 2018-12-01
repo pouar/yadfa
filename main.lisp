@@ -19,6 +19,9 @@
         (sleep 2))
     #+ironclad (setf ironclad:*prng* (ironclad:make-prng :os)) ; work around crash
     (load-mods)
+    (let ((file (uiop:xdg-config-home "yadfa/yadfarc")))
+        (when (probe-file file)
+            (load file)))
     (in-package :yadfa-user)
     #+yadfa/docs (when (position "texi" (uiop:command-line-arguments) :test #'string=)
                      (net.didierverna.declt:declt :yadfa :license :gpl :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically")
