@@ -122,7 +122,7 @@
                    (make-instance status-condition)))
               (duration (if duration duration (duration-of (make-instance status-condition)))))
         (pushnew i (getf (status-conditions-of *battle*) user))
-        (when (and (not (eql (duration-of i) t)) (< (duration-of i) duration))
+        (when (and (not (eq (duration-of i) t)) (< (duration-of i) duration))
             (setf (duration-of i) duration))))
 (defun pathname<= (pathname1 pathname2)
     (string<= (namestring pathname1) (namestring pathname2)))
@@ -633,7 +633,7 @@
             :description "Welcome to the Pocket Map. It's like the secret bases in Pokemon, except you customize it by scripting, and you can take it with you."
             :enter-text "You're at the start of the Pocket Map. Use the Pocket Map machine again at anytime to exit."))
     (let ((new-position
-              (if (eql (fourth (position-of (player-of *game*))) :pocket-map)
+              (if (eq (fourth (position-of (player-of *game*))) :pocket-map)
                   (getf (attributes-of item) :pocket-map-position)
                   '(0 0 0 :pocket-map))))
         (unless (get-path-end new-position)
@@ -643,7 +643,7 @@
                         (get-path-end
                             '(0 0 0 pocket-map)))))
             (return-from move-to-pocket-map))
-        (unless (eql (fourth (position-of (player-of *game*))) :pocket-map)
+        (unless (eq (fourth (position-of (player-of *game*))) :pocket-map)
             (setf (getf (attributes-of item) :pocket-map-position) (position-of (player-of *game*))))
         (when (lockedp (get-zone new-position))
             (format t "You unlock zone ~a~%" new-position)
@@ -2042,14 +2042,14 @@
 (defun pushnewmove (move* user)
     (pushnew (make-instance move*) (moves-of user)
         :test (lambda (a b)
-                  (eql (class-name (class-of a)) (class-name (class-of b))))))
+                  (eq (class-name (class-of a)) (class-name (class-of b))))))
 (defun get-move (move* user)
     (first
         (member move* (moves-of user)
             :test (lambda (a b)
                       (if (typep a 'keyword)
                           (string= a (class-name (class-of b)))
-                          (eql a (class-name (class-of b))))))))
+                          (eq a (class-name (class-of b))))))))
 (defun random-from-range (start end)
     (+ start (strong-random (+ 1 (- end start)))))
 (defun calculate-diaper-usage (user)
