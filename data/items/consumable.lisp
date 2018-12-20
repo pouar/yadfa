@@ -52,6 +52,15 @@
         :use-script '(lambda (item user)
                          (declare (ignore item))
                          (incf (health-of user) 20))))
+(defclass cannibal-corp-meat (consumable) ()
+    (:default-initargs
+        :name "\"CANNIBAL CORP.\" Brand Meat"
+        :description "Just like in the music video. Heals 50 HP."
+        :value 75
+        :consumable t
+        :use-script '(lambda (item user)
+                         (declare (ignore item))
+                         (incf (health-of user) 50))))
 (defclass maximum-tomato (consumable) ()
     (:default-initargs
         :name "Maximum Tomato"
