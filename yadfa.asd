@@ -26,6 +26,7 @@
                                         (:file "classes")
                                         (:file "game" :depends-on ("classes"))
                                         (:file "bin")
+                                        (:file "marshal")
                                         (:file "mcclim" :depends-on ("game" "libexec"))))
                     (:module "data"
                         :depends-on ("core")
