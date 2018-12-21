@@ -1,10 +1,13 @@
 ;; -*- mode: common-lisp; -*-
-(declaim (optimize (debug 2)))
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
                           (user-homedir-pathname))))
     (when (probe-file quicklisp-init)
         (load quicklisp-init)))
+(macrolet ((a ()
+               (when (position "debug" (uiop:command-line-arguments) :test #'string=)
+                   '(declaim (optimize (debug 3))))))
+    (a))
 #+(and gmp sbcl) (require 'sb-gmp)
 #+(and sbcl gmp) (sb-gmp:install-gmp-funs)
 (when (position "ironclad" (uiop:command-line-arguments) :test #'string=)
