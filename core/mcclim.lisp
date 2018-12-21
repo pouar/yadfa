@@ -8,8 +8,8 @@
     "Specialized for the listener, read a lisp form to eval, or a command."
     (multiple-value-bind (object type)
         (let ((*command-dispatchers* '(#\,)))
-            (with-text-style (stream (make-text-style "DejaVu Sans Mono" "Book" :normal))
-                (accept 'command-or-form :stream stream :prompt nil 
+            (with-text-style (stream *default-text-style*)
+                (accept 'command-or-form :stream stream :prompt nil
                     :default "hello" :default-type 'empty-input)))
         (cond
             ((presentation-subtypep type 'empty-input)
@@ -45,14 +45,19 @@
             (when (boundp symbol)
                 (format stream " = ")
                 (with-drawing-options (stream :ink +olivedrab+ ;; XXX
-                                          :text-style (make-text-style "DejaVu Sans Mono" "Book" :small))
+                                          :text-style (make-text-style
+                                                          (text-style-family *default-text-style*)
+                                                          (text-style-face *default-text-style*)
+                                                          :small))
                     (let ((object (symbol-value symbol)))
                         (present object (presentation-type-of object) :stream stream)))))))
 (defun package-grapher (stream package inferior-fun)
     "Draw package hierarchy graphs for `Show Package Users' and `Show Used Packages'."
     (let ((normal-ink +foreground-ink+)
              (arrow-ink  (make-rgb-color 0.72 0.72 0.72))
-             (text-style (make-text-style "DejaVu Sans Mono" "Book" :normal)))
+             (text-style (make-text-style (text-style-family *default-text-style*)
+                             (text-style-face *default-text-style*)
+                             :normal)))
         (with-drawing-options (stream :text-style text-style)
             (format-graph-from-roots (list package)
                 #'(lambda (package stream)
@@ -74,14 +79,74 @@
                 #'(lambda (stream foo bar x1 y1 x2 y2)
                       (declare (ignore foo bar))
                       (draw-arrow* stream x1 y1 x2 y2 :ink arrow-ink))))))
-(setf *apropos-symbol-unbound-family* "DejaVu Sans Mono")
-(setf *apropos-symbol-unbound-face*   "Book")
-(setf *apropos-symbol-bound-family*   "DejaVu Sans Mono")
-(setf *apropos-symbol-bound-face*     "Book")
-(setf *graph-text-style* (make-text-style "DejaVu Sans Mono" "Book" :normal))
+(setf *apropos-symbol-unbound-family* (text-style-family *default-text-style*))
+(setf *apropos-symbol-unbound-face*   (text-style-face *default-text-style*))
+(setf *apropos-symbol-bound-family*   (text-style-family *default-text-style*))
+(setf *apropos-symbol-bound-face*     (text-style-face *default-text-style*))
+(setf *graph-text-style* *default-text-style*)
 
-;;; same here
-(setf clim-internals::+default-prompt-style+ *default-text-style*)
+;;; add init function
+(defmethod default-frame-top-level
+    ((frame listener)
+     &key (command-parser 'command-line-command-parser)
+          (command-unparser 'command-line-command-unparser)
+          (partial-command-parser
+           'command-line-read-remaining-arguments-for-partial-command)
+          (prompt "Command: "))
+  ;; Give each pane a fresh start first time through.
+  (let ((first-time t))
+    (loop
+       ;; The variables are rebound each time through the loop because the
+       ;; values of frame-standard-input et al. might be changed by a command.
+       (let* ((*standard-input*  (or (frame-standard-input frame)
+                                     *standard-input*))
+              (*standard-output* (or (frame-standard-output frame)
+                                     *standard-output*))
+              (query-io  (frame-query-io frame))
+              (*query-io* (or query-io *query-io*))
+              (*pointer-documentation-output*
+               (frame-pointer-documentation-output frame))
+              ;; during development, don't alter *error-output*
+              ;; (*error-output* (frame-error-output frame))
+              (*command-parser* command-parser)
+              (*command-unparser* command-unparser)
+              (*partial-command-parser* partial-command-parser)
+              (interactorp (typep *query-io* 'interactor-pane)))
+         (restart-case
+             (progn
+                 (redisplay-frame-panes frame :force-p first-time)
+                 (when first-time
+                            (yadfa:intro-function query-io))
+               (setq first-time nil)
+               (if query-io
+                   ;; For frames with an interactor:
+                   (progn
+                     ;; Hide cursor, so we don't need to toggle it during
+                     ;; command output.
+                     (setf (cursor-visibility (stream-text-cursor *query-io*))
+                           nil)
+                     (when (and prompt interactorp)
+                       (with-text-style (*query-io* *default-text-style*)
+                         (if (stringp prompt)
+                             (write-string prompt *query-io*)
+                             (funcall prompt *query-io* frame))
+                         (force-output *query-io*)))
+                     (let ((command (read-frame-command frame
+                                                        :stream *query-io*)))
+                       (when interactorp
+                         (fresh-line *query-io*))
+                       (when command
+                         (execute-frame-command frame command))
+                       (when interactorp
+                         (fresh-line *query-io*))))
+                   ;; Frames without an interactor:
+                   (let ((command (read-frame-command frame :stream nil)))
+                     (when command (execute-frame-command frame command)))))
+           (abort ()
+             :report "Return to application command loop."
+             (if interactorp
+                 (format *query-io* "~&Command aborted.~&")
+                 (beep))))))))
 
 (clim:define-command-table yadfa-commands)
 (clim:define-command (yadfa-set-eol-action :command-table yadfa-commands :menu "Set EOL Action")
