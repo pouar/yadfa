@@ -499,7 +499,7 @@
     (iter (for i in (wearingp clothing 'closed-bottoms)) (with j = 0) (incf j (thickness-of i)) (finally (return j))))
 (defun thickest-sort (clothing)
     (declare (type list clothing))
-    (sort (copy-tree clothing) (lambda (a b) (> (thickness-of a) (thickness-of b)))))
+    (sort (copy-tree clothing) '> :key 'thickness-of))
 (defgeneric toggle-onesie%% (onesie))
 (defun toggle-onesie% (onesie underclothes user)
     (cond ((not (typep onesie 'onesie))
