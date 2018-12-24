@@ -1,7 +1,8 @@
 (in-package :clim-listener)
 ;;;; because it was quicker and easier than trying to write one of these myself from scratch
-
-(setf *default-text-style* (make-text-style "DejaVu Sans Mono" "Book" :normal))
+(macro-level
+    `(setf *default-text-style*
+         (make-text-style ,@(if (member :win32 *features*) '(:fix :roman) '("DejaVu Sans Mono" "Book")) :normal)))
 
 ;;; The CLIM Listener has the fonts hardcoded, the following 8 forms change them
 (defmethod read-frame-command ((frame listener) &key (stream *standard-input*))
