@@ -14,11 +14,14 @@ install:
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/joaotavora/sly/archive/master.zip" -OutFile "$env:CACHE\sly.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/didierverna/declt/archive/master.zip" -OutFile "$env:CACHE\declt.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/McCLIM/McCLIM/archive/master.zip" -OutFile "$env:CACHE\mcclim.zip"
+- ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip" -OutFile $env:CACHE\dejavu.zip
 - ps: Expand-Archive $env:CACHE\ccl.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\asdf.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\sly.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\declt.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\mcclim.zip -DestinationPath $env:CACHE
+- ps: Expand-Archive $env:CACHE\dejavu.zip -DestinationPath $env:CACHE
+- ps: Copy-Item $env:CACHE\dejavu-fonts-ttf-2.37\ttf\*.ttf  -destination C:\Windows\Fonts
 - ps: choco install -y miktex
 - cmd:  refreshenv
 - cmd: 'start /wait msiexec /i %CACHE%\sbcl.msi /quiet /qn /norestart /log sbcl-install.log'

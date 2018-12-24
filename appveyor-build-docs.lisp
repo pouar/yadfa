@@ -9,7 +9,6 @@
 (pushnew :yadfa/mods *features*)
 (pushnew :yadfa/docs *features*)
 (pushnew :ironclad *features*)
-(handler-bind ((error #'(lambda (c) (continue))))
-    (ql:quickload :yadfa))
+(ql:quickload :yadfa)
 (in-package :yadfa)
 (yadfa::main)
