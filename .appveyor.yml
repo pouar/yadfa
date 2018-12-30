@@ -35,9 +35,9 @@ install:
 
 build_script:
 - cmd: '"C:\Program Files\Steel Bank Common Lisp\1.4.2\sbcl" --script "appveyor-build-docs.lisp" texi'
-- cmd: 'C:\msys64\usr\bin\bash.exe -lc "export PDFTEX=xetex PDFLATEX=xelatex;cd /c/projects/yadfa;makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa.texi;makeinfo --no-split --pdf ./yadfa.texi;makeinfo --no-split ./yadfa.texi"'
+- cmd: 'C:\msys64\usr\bin\bash.exe -lc "export PDFTEX=xetex PDFLATEX=xelatex;cd /c/projects/yadfa/docs/reference;makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa-reference.texi;makeinfo --no-split --pdf ./yadfa-reference.texi;makeinfo --no-split ./yadfa-reference.texi"'
 - cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)"'
-- ps: 7z a -t7z -mmt=2 -mx=9 -m0=LZMA2:d=200M:fb=273:mc=1000000000 '-x!yadfa/*.aux' '-x!yadfa/*.cps' '-x!yadfa/*.fns' '-x!yadfa/*.vrs' '-x!yadfa/*.tps' '-x!yadfa/*.cp' '-x!yadfa/*.fn' '-x!yadfa/*.vr' '-x!yadfa/*.tp' '-x!yadfa/*.toc' '-x!yadfa/*.log' '-x!yadfa/.*' '-x!yadfa/ci' '-x!yadfa/yadfa.7z' '-x!yadfa/appveyor-build*.lisp' yadfa.7z $PWD
+- ps: 7z a -t7z -mmt=2 -mx=9 -m0=LZMA2:d=200M:fb=273:mc=1000000000 '-x!yadfa/docs/*/*.aux' '-x!yadfa/docs/*/*.cps' '-x!yadfa/docs/*/*.fns' '-x!yadfa/docs/*/*.vrs' '-x!yadfa/docs/*/*.tps' '-x!yadfa/docs/*/*.cp' '-x!yadfa/docs/*/*.fn' '-x!yadfa/docs/*/*.vr' '-x!yadfa/docs/*/*.tp' '-x!yadfa/docs/*/*.toc' '-x!yadfa/docs/*/*.log' '-x!yadfa/.*' '-x!yadfa/ci' '-x!yadfa/yadfa.7z' '-x!yadfa/appveyor-build*.lisp' yadfa.7z $PWD
 artifacts:
 - path: yadfa.7z
   name: yadfa.7z
@@ -45,12 +45,12 @@ test_script:
 - ps: |
     If(!(test-path C:\projects\yadfa\yadfa.exe )) { echo "yadfa.exe was not built";exit 1; }
     Else { echo "yadfa.exe was built"; }
-    If(!(test-path C:\projects\yadfa\yadfa.html )) { echo "yadfa.html was not built";exit 1; }
-    Else { echo "yadfa.html was built"; }
-    If(!(test-path C:\projects\yadfa\yadfa.pdf )) { echo "yadfa.pdf was not built";exit 1; }
-    Else { echo "yadfa.pdf was built"; }
-    If(!(test-path C:\projects\yadfa\yadfa.info )) { echo "yadfa.info was not built";exit 1; }
-    Else { echo "yadfa.info was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.html )) { echo "yadfa-reference.html was not built";exit 1; }
+    Else { echo "yadfa-reference.html was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.pdf )) { echo "yadfa-reference.pdf was not built";exit 1; }
+    Else { echo "yadfa-reference.pdf was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.info )) { echo "yadfa-reference.info was not built";exit 1; }
+    Else { echo "yadfa-reference.info was built"; }
     If(!(test-path C:\projects\yadfa\yadfa.7z )) { echo "yadfa.7z was not built";exit 1; }
     Else { echo "yadfa.7z was built"; }
 deploy:

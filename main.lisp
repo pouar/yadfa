@@ -24,7 +24,20 @@
             (load file)))
     (in-package :yadfa-user)
     #+yadfa/docs (when (position "texi" (uiop:command-line-arguments) :test #'string=)
-                     (net.didierverna.declt:declt :yadfa :license :gpl :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically")
+                     (ensure-directories-exist (uiop:merge-pathnames*
+                                                   "docs/reference/"
+                                                   (if uiop:*image-dumped-p*
+                                                       (pathname (directory-namestring (truename (uiop:argv0))))
+                                                       (asdf:system-source-directory :yadfa))))
+                     (net.didierverna.declt:declt :yadfa
+                         :license :gpl
+                         :texi-name "yadfa-reference"
+                         :texi-directory (uiop:merge-pathnames*
+                                             "docs/reference/"
+                                             (if uiop:*image-dumped-p*
+                                                 (pathname (directory-namestring (truename (uiop:argv0))))
+                                                 (asdf:system-source-directory :yadfa)))
+                         :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically")
                      (uiop:quit))
     (use-package :yadfa/world :yadfa-user)
     #+mcclim-ffi-freetype (setf freetype2:*library* (freetype2:make-freetype))
