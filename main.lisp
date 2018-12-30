@@ -24,11 +24,6 @@
             (load file)))
     (in-package :yadfa-user)
     #+yadfa/docs (when (position "texi" (uiop:command-line-arguments) :test #'string=)
-                     (ensure-directories-exist (uiop:merge-pathnames*
-                                                   "docs/reference/"
-                                                   (if uiop:*image-dumped-p*
-                                                       (pathname (directory-namestring (truename (uiop:argv0))))
-                                                       (asdf:system-source-directory :yadfa))))
                      (net.didierverna.declt:declt :yadfa
                          :license :gpl
                          :texi-name "yadfa-reference"
