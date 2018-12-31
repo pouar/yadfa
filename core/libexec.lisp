@@ -413,11 +413,11 @@
                         ((and
                              (get-zone (list x y (third position) (fourth position)))
                              (warp-points-of (get-zone (list x y (third position) (fourth position)))))
-                            #+win32 "▒"
-                            #-win32 "W")
+                            #-win32 "▒"
+                            #+win32 "W")
                         ((get-zone (list x y (third position) (fourth position)))
-                            #+win32 (a (list x y (third position) (fourth position)))
-                            #-win32 ".")
+                            #-win32 (a (list x y (third position) (fourth position)))
+                            #+win32 ".")
                         (t " "))))
             (format t "~%"))))
 (defun print-enter-text (position)
