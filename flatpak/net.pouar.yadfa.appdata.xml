@@ -19,15 +19,6 @@
     </screenshot>
   </screenshots>
   <project_license>GPL-3.0+</project_license>
-  <content_rating type="oars-1.0">
-    <content_attribute id="violence-cartoon">mild</content_attribute>
-    <content_attribute id="drugs-alcohol">moderate</content_attribute>
-    <content_attribute id="drugs-narcotics">moderate</content_attribute>
-    <content_attribute id="drugs-tobacco">moderate</content_attribute>
-    <content_attribute id="language-profanity">moderate</content_attribute>
-    <content_attribute id="language-humor">moderate</content_attribute>
-    <content_attribute id="language-discrimination">mild</content_attribute>
-  </content_rating>
   <developer_name>Pouar</developer_name>
   <launchable type="desktop-id">net.pouar.yadfa.desktop</launchable>
   <description>
