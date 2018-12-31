@@ -8,8 +8,10 @@
                (when (position "debug" (uiop:command-line-arguments) :test #'string=)
                    '(declaim (optimize (debug 3))))))
     (a))
-#+(and gmp sbcl) (require 'sb-gmp)
-#+(and sbcl gmp) (sb-gmp:install-gmp-funs)
+#+(and sbcl (not sb-gmp))
+(progn
+    (require 'sb-gmp)
+    (sb-gmp:install-gmp-funs))
 (when (position "ironclad" (uiop:command-line-arguments) :test #'string=)
     (pushnew :ironclad *features*))
 (when (position "slynk" (uiop:command-line-arguments) :test #'string=)
