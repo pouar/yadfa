@@ -96,11 +96,9 @@ modules:
       - ln -s $PWD /app/tmp/home/quicklisp/local-projects/yadfa
       - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script build.lisp mods texi ironclad ft
       - HOME="/app/tmp/home/" ./yadfa texi
-      - pushd docs/reference
-      - HOME="/app/tmp/home/" makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa-reference.texi
-      - bash -c 'export HOME="/app/tmp/home/" PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH" PDFTEX=xetex PDFLATEX=xelatex;makeinfo --no-split --pdf ./yadfa-reference.texi'
-      - HOME="/app/tmp/home/" makeinfo --no-split ./yadfa-reference.texi
-      - popd
+      - bash -c 'cd docs/reference;HOME="/app/tmp/home/" makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa-reference.texi'
+      - bash -c 'cd docs/reference;export HOME="/app/tmp/home/" PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH" PDFTEX=xetex PDFLATEX=xelatex;makeinfo --no-split --pdf ./yadfa-reference.texi'
+      - bash -c 'cd docs/reference;HOME="/app/tmp/home/" makeinfo --no-split ./yadfa-reference.texi'
       - install -dm755 /app/lib/yadfa
       - git archive HEAD|tar -xf - -C /app/lib/yadfa/
       - cp yadfa /app/lib/yadfa/
