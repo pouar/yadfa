@@ -2982,6 +2982,7 @@
     (setf (name-of (player-of *game*)) name)
     (setf (species-of (player-of *game*)) species)
     (setf (malep (player-of *game*)) malep))
+(declaim (notinline intro-function))
 (defun intro-function (query-io)
     (setf (clim:stream-end-of-line-action query-io) :wrap
         (player-of *game*) (make-instance 'player
