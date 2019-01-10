@@ -242,6 +242,7 @@
         #:energizing-pacifier
         #:blanket
         #:plushie
+        #:short-dress
         #:dress
         #:sundress
         #:toddler-dress
@@ -262,6 +263,7 @@
         #:monster-energy-drink
         #:spiked-bottle-of-milk
         #:potion
+        #:cannibal-corp-meat
         #:maximum-tomato
         #:generic-diapers
         #:generic-diapers-package

@@ -1,6 +1,5 @@
 (in-package :yadfa/items)
-(defonesie onesie
-    ()
+(defonesie onesie ()
     (:default-initargs
         :name "Onesie"
         :description "A onesie"
@@ -24,6 +23,26 @@
                                    "The flaps hang over covering your padding like a dress"
                                    0
                                    "The flaps hang over covering your underwear like a dress"))))
+(defclass short-dress (yadfa:dress) ()
+    (:default-initargs
+        :name "Short Dress"
+        :plural-name "Short Dresses"
+        :value 150
+        :description "A short breezy dress."
+        :bulge-text (list
+                        225
+                        "Your padding is clearly visible under your dress"
+                        200
+                        "Your padding is slightly visible under your dress"
+                        175
+                        "The dress does a good job hiding your padding, as long as you're standing still"
+                        162.5
+                        "The dress does a good job hiding your padding, unless a gust of wind happens to blow by"
+                        (* 1/2 25)
+                        "The dress does a good job hiding your padding"
+                        0
+                        "It fits quite loosely")
+        :thickness-capacity (* 16 25.4)))
 (defclass dress (yadfa:dress) ()
     (:default-initargs
         :name "Dress"
@@ -36,7 +55,7 @@
                         (* 3 25)
                         "There is a slight bulge, but it's not too noticeable"
                         (* 1/2 25)
-                        "The dress does a good job hiding your padding" "It fits snuggly"
+                        "The dress does a good job hiding your padding"
                         0
                         "It fits snuggly")
         :thickness-capacity (* 16 25.4)))
@@ -104,8 +123,7 @@
                         0
                         "It fits loosely")
         :thickness-capacity (* 16 25.4)))
-(defonesie latex-onesie
-    ()
+(defonesie latex-onesie ()
     (:default-initargs
         :onesie-waterproof t
         :value 600
@@ -130,8 +148,7 @@
                                    0
                                    "The flaps hang over covering your underwear like a dress"))
         :description "An awesome black latex onesie"))
-(defonesie stretchable-latex-onesie
-    ()
+(defonesie stretchable-latex-onesie ()
     (:default-initargs
         :onesie-waterproof t
         :value 600
@@ -155,8 +172,7 @@
                                    "The flaps hang over covering your underwear like a dress"))
         :name "Black Latex Onesie"
         :description "An awesome black latex onesie that stretches to fit your humongous diapers"))
-(defclass orca-suit (closed-full-outfit)
-    ()
+(defclass orca-suit (closed-full-outfit) ()
     (:default-initargs
         :waterproof t
         :value 1000
@@ -170,8 +186,7 @@
                         "It fits snuggly")
         :name "Orca Suit"
         :description "An orca suit similar to the one Gabby wears."))
-(defclass stretchable-orca-suit (closed-full-outfit)
-    ()
+(defclass stretchable-orca-suit (closed-full-outfit) ()
     (:default-initargs
         :waterproof t
         :value 1000
@@ -185,8 +200,7 @@
                         "It fits snuggly")
         :name "Stretchable Orca Suit"
         :description "A variant of the Orca Suit that stretches to fit your humongous diapers"))
-(defclass orca-suit-lite (closed-full-outfit)
-    ()
+(defclass orca-suit-lite (closed-full-outfit) ()
     (:default-initargs
         :waterproof t
         :value 1000
@@ -200,8 +214,7 @@
                         "It fits snuggly")
         :name "Orca Suit Lite"
         :description "An orca suit similar to the one Gabby wears, minus the swim boots and arm covers. You don't need 'em"))
-(defclass stretchable-orca-suit-lite (closed-full-outfit)
-    ()
+(defclass stretchable-orca-suit-lite (closed-full-outfit) ()
     (:default-initargs
         :waterproof t
         :value 1000
@@ -276,8 +289,7 @@
         :name "Bandit Uniform Sports Bikini Top"
         :value 50
         :description "A sports bikini top that has the Raccoon Bandits' insignia on it."))
-(defonesie bandit-swimsuit
-    ()
+(defonesie bandit-swimsuit ()
     (:default-initargs
         :onesie-waterproof t
         :value 600

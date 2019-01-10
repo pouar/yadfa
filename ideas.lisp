@@ -76,7 +76,10 @@ All that crap and more."
 \\begin{README}
 Good news from Pegasus Sim Lavatories. As part of this new update, We've included a password harvester as \"DRM\" that will run on everyone's ^[^?^[^?every pirate's ^[^?^[^?^[^?this one file sharer's system. It transfers their password database to a secure system securely (Sending it over plain HTTP in base64 to a Windows Server with RDP exposed to the world is considered \"secure\" right?). We promise it won't trigger on our paying customers' systems this time (Not that we actually fixed that). Enjoy our new update!!!^Xh^?Just a normal update, nothing to see here
 \\end{README}
-Looks safe to me *applies the update*
+Looks safe to me
+*tries to apply the update, \"real time\" antivirus goes off*
+Oh who cares what you think, you're just some antivirus that I rely on
+*disables the antivirus and applies it anyway*
 \\end{flashback}
 also, maybe hacking Chromium to act as our password database wasn't such a good idea"
      "Someone invented a time machine and brought an old Lisper from olden times into the future. Here's what he had to say about the wonders of modern technology `What the fuck happened?' He was amazed with today's computer software that is more complex, less customizable and extendable, harder to debug, and lags all the time. But at least hardware got a lot faster.")

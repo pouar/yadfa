@@ -126,7 +126,7 @@
             (setf (duration-of i) duration))))
 (defun pathname<= (pathname1 pathname2)
     (string<= (namestring pathname1) (namestring pathname2)))
-                                        ;(slynk:eval-in-emacs '(with-current-buffer (sly-mrepl--find-buffer) (insert-image (create-image "/tmp/1523307158.liljdude_renamon_boom.jpg"))))
+;;;(slynk:eval-in-emacs '(with-current-buffer (sly-mrepl--find-buffer) (insert-image (create-image "/tmp/1523307158.liljdude_renamon_boom.jpg"))))
 (defun color-format (color &rest body)
     (cond
         #+(or slynk swank)
@@ -135,17 +135,17 @@
         (clim-listener::*application-frame*
             (clim:with-drawing-options (*standard-output* :ink (eval (intern (format nil "+~a+" color) "CLIM")))
                 (apply #'format t body)))))
-
+;;; error handling of these 2 functions could be better
 #+(or slynk swank)
 (defun emacs-prompt (options &optional error-message)
-    (let ((eval-in-emacs (cond
-                             #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=) #'slynk:eval-in-emacs)
-                             #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=) #'swank:eval-in-emacs)))
-             (wait-for-event (cond
-                                 #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=)
-                                             #'slynk::wait-for-event)
-                                 #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=)
-                                             #'swank::wait-for-event))))
+    (let* ((eval-in-emacs (cond
+                              #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=) #'slynk:eval-in-emacs)
+                              #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=) #'swank:eval-in-emacs)))
+              (wait-for-event (cond
+                                  #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=)
+                                              #'slynk::wait-for-event)
+                                  #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=)
+                                              #'swank::wait-for-event))))
         (funcall eval-in-emacs
             `(progn (require 'widget)
                  (eval-when-compile
@@ -154,7 +154,7 @@
                  (defun yadfa-widget ()
                      "Widget generated from the CL side as a dialog for my game"
                      (interactive)
-                     ,(if error-message '(switch-to-buffer "*YADFA*") '(switch-to-buffer-other-window "*YADFA*"))
+                     (switch-to-buffer-other-window "*YADFA*")
                      (kill-all-local-variables)
                      (let ((inhibit-read-only t))
                          (erase-buffer))
@@ -165,26 +165,34 @@
                               (format nil "Please answer in this \"Window\"~%")))
                      ,@(iter (with j = 0)
                            (for i in options)
-                           (cond ((equal (first i) 'boolean)
-                                     (collect `(widget-insert ,(format nil "~a: " (getf (rest i) :prompt))))
-                                     (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                                   (widget-create 'checkbox
-                                                       ,(getf (rest i) :default)))))
-                               ((equal (first i) 'string)
+                           (cond
+                               ((and (typep (first i) 'list) (eq (caar i) 'member))
+                                   (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
+                                                 (widget-create 'menu-choice
+                                                     :tag ,(format nil "~a: " (getf (rest i) :prompt))
+                                                     :value (getf (rest i) :default)
+                                                     ,@(iter (for j in (cdar i))
+                                                           (collect `',(list 'item :value j)))))))
+                               ((eq (first i) 'boolean)
+                                   (collect `(widget-insert ,(format nil "~a: " (getf (rest i) :prompt))))
+                                   (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
+                                                 (widget-create 'checkbox
+                                                     ,@(when (getf (rest i) :default) (list (getf (rest i) :default)))))))
+                               ((eq (first i) 'string)
                                    (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
                                                  (widget-create 'editable-field
                                                      :format ,(format nil "~a: %v" (getf (rest i) :prompt))
-                                                     ,(getf (rest i) :default)))))
-                               ((equal (first i) 'integer)
+                                                     ,@(when (getf (rest i) :default) (list (getf (rest i) :default)))))))
+                               ((eq (first i) 'integer)
                                    (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
                                                  (widget-create 'integer
                                                      :format ,(format nil "~a: %v" (getf (rest i) :prompt))
-                                                     ,(getf (rest i) :default)))))
-                               ((equal (first i) 'number)
+                                                     ,@(when (getf (rest i) :default) (list (getf (rest i) :default)))))))
+                               ((eq (first i) 'number)
                                    (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
                                                  (widget-create 'number
                                                      :format ,(format nil "~a: %v" (getf (rest i) :prompt))
-                                                     ,(getf (rest i) :default))))))
+                                                     ,@(when (getf (rest i) :default) (list (getf (rest i) :default))))))))
                            (collect `(widget-insert ,#\linefeed))
                            (incf j))
                      (widget-create 'push-button
@@ -206,7 +214,7 @@
                                                          (declare (ignorable i))
                                                          (collect `(widget-value ,(intern (format nil "a~d" j))))
                                                          (incf j)))))
-                                     (kill-buffer))
+                                     (kill-buffer-and-window))
                          "Apply")
                      (use-local-map widget-keymap)
                      (widget-setup)
@@ -236,8 +244,7 @@
                            (collect `(setf
                                          (nth ,i a)
                                          (clim:accept ',(first (nth i options))
-                                             :prompt ,(getf (rest (nth i options)) :prompt)
-                                             :default ,(getf (rest (nth i options)) :default) :stream *query-io*)))))
+                                             ,@(rest (nth i options)) :stream *query-io*)))))
                  a))))
 (defun trigger-event (event-id)
     (when (and
@@ -2984,22 +2991,49 @@
     (setf (malep (player-of *game*)) malep))
 (declaim (notinline intro-function))
 (defun intro-function (query-io)
-    (setf (clim:stream-end-of-line-action query-io) :wrap
-        (player-of *game*) (make-instance 'player
-                               :wear (list
-                                         (make-instance
-                                             'yadfa/items:diaper
-                                             :sogginess 600))))
+    (setf (clim:stream-end-of-line-action query-io) :wrap)
     (format query-io "Enter your character's name, gender, and species~%")
-    (apply #'set-player
-        (prompt-for-values
-            (string
-                :prompt "Name"
-                :default (name-of (player-of *game*)))
-            (boolean
-                :prompt "Is Male"
-                :default (malep (player-of *game*)))
-            (string
-                :prompt "Species"
-                :default (species-of (player-of *game*)))))
-    (format query-io "You wake up from sleeping, the good news is that you managed to stay dry through out the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. You quickly get up and start to make a dash for the bathroom, but it seems you put off the needs of your bladder for too long and flood your diapers right in front of the bathroom door like a 5 year old who didn't make it. What a great way to start the game piddle ~a. The intro text didn't even finish printing yet and you're already soggy.~%" (species-of (player-of *game*))))
+    (let* ((default (make-instance 'player))
+              (values
+                  (prompt-for-values
+                      (string
+                          :prompt "Name"
+                          :default (name-of default))
+                      (boolean
+                          :prompt "Is Male"
+                          :default (malep default))
+                      (string
+                          :prompt "Species"
+                          :default (species-of default))
+                      ((clim:completion (:diaper :pullup :pants :none))
+                          :prompt "Bottoms"
+                          :default :diaper :view climi::+pop-up-menu-view+)
+                      (boolean
+                          :prompt "Top"
+                          :default t))))
+        (setf (player-of *game*) (make-instance 'player
+                                     :name (first values)
+                                     :male (second values)
+                                     :species (third values)
+                                     :bladder/contents (bladder/maximum-limit-of default)
+                                     :wear (iter (for i in (list
+                                                               (when (fifth values) (if (second values) 'yadfa/items:tshirt 'yadfa/items:short-dress))
+                                                               (when (and (second values) (eq (fourth values) :pants))
+                                                                   'yadfa/items:jeans)
+                                                               (getf
+                                                                   (list
+                                                                       :diaper 'yadfa/items:diaper
+                                                                       :pullup 'yadfa/items:pullups
+                                                                       :pants (if (second values) 'yadfa/items:boxers 'yadfa/items:panties))
+                                                                   (fourth values))))
+                                               (when i (collect (make-instance i))))))
+        (iter (for i from 1 to (strong-random 20))
+            (push (make-instance (getf
+                                     (list
+                                         :diaper 'yadfa/items:diaper
+                                         :pullup 'yadfa/items:pullups
+                                         :pants (if (second values) 'yadfa/items:boxers 'yadfa/items:panties))
+                                     (fourth values)))
+                (get-items-from-prop :dresser (position-of default)))))
+    (wet)
+    (format query-io "You wake up from sleeping, the good news is that you managed to stay dry through out the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. You quickly get up and start to make a desparate dash for the bathroom, but it seems you put off the needs of your bladder for too long and flood yourself right in front of the bathroom door like a 5 year old who didn't make it. What a great way to start the game piddle ~a. The intro text didn't even finish printing yet and you're already wet.~%" (species-of (player-of *game*))))

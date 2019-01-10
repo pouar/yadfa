@@ -24,14 +24,18 @@
                :checkpoint (make-instance 'checkpoint)
                :diaper-dispenser
                (make-instance 'prop
-                   :name "Diaper Dispenser"
-                   :description "Provides an infinite supply of diapers"
+                   :name "Diaper/Pullup Dispenser"
+                   :description "Provides an infinite supply of diapers and pullups"
                    :actions
                    (list :get-diaper
                        (make-action
-                           :documentation "Get a diaper from the dispenser"
+                           :documentation "Get a diaper from the dispenser, pass :diaper to OUT-ITEM to get a diaper or :pullups to get pullups"
                            :lambda '(lambda
-                                        (prop &rest keys &key &allow-other-keys)
-                                        (declare (type prop prop) (ignore prop))
+                                        (prop &rest keys &key (out-item :diaper) &allow-other-keys)
+                                        (declare (type prop prop) (type (or (eql :diaper) (eql :pullup)) out-item) (ignore prop))
                                         (check-type prop prop)
-                                        (push (make-instance 'diaper) (inventory-of (player-of *game*)))))))))
+                                        (check-type out-item '(or (eql :diaper) (eql :pullup)))
+                                        (push (make-instance (cond
+                                                                 ((eq out-item :diaper) 'yadfa/items:diaper)
+                                                                 ((eq out-item :pullups)  'yadfa/items:pullups)))
+                                            (inventory-of (player-of *game*)))))))))

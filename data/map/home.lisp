@@ -11,10 +11,7 @@
                             :name "Dresser"
                             :placeable t
                             :description "Has all your clothes and diapers in here, until you take them out."
-                            :items (append
-                                       (iter (for i from 1 to (strong-random 10))
-                                           (collect (make-instance 'yadfa/items:diaper)))
-                                       (list (make-instance 'yadfa/items:tshirt))))
+                            :items ())
                :checkpoint (make-instance 'checkpoint)))
 (ensure-zone (1 0 0 home)
     :name "Bathroom"

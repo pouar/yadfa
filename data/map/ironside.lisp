@@ -111,7 +111,7 @@
                :diaper-dispenser
                (make-instance 'prop
                    :name "Diaper Dispenser"
-                   :description "Provides diapers for the students here"
+                   :description "Provides diapers for the students here just in case they can't sit at their desks and hold it."
                    :actions
                    (list :get-diaper
                        (make-action
@@ -120,4 +120,4 @@
                                         (prop &rest keys &key &allow-other-keys)
                                         (declare (type prop prop) (ignore prop))
                                         (check-type prop prop)
-                                        (push (make-instance 'diaper) (inventory-of (player-of *game*)))))))))
+                                        (push (make-instance 'yadfa/items:diaper) (inventory-of (player-of *game*)))))))))
