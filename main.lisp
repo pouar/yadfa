@@ -39,5 +39,5 @@
     (clim-listener:run-listener
         :package :yadfa-user
         :process-name "yadfa"
-        :height 600
-        :width 800))
+        :height 768
+        :width 1024))

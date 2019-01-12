@@ -3010,16 +3010,22 @@
                           :prompt "Species"
                           :default (species-of default))
                       ((clim:completion (:diaper :pullup :pants :none))
-                          :prompt "Bottoms"
+                          :prompt "Bottom clothes"
                           :default :diaper :view climi::+pop-up-menu-view+)
                       (boolean
-                          :prompt "Top"
-                          :default t))))
+                          :prompt "Top clothes"
+                          :default t)
+                      ((clim:completion (:normal :low :overactive))
+                          :prompt "Bladder capacity"
+                          :default :normal :view climi::+pop-up-menu-view+))))
         (setf (player-of *game*) (make-instance 'player
                                      :name (first values)
                                      :male (second values)
                                      :species (third values)
-                                     :bladder/contents (bladder/maximum-limit-of default)
+                                     :bladder/need-to-potty-limit (getf '(:normal 300 :low 200 :overactive 149) (sixth values))
+                                     :bladder/potty-dance-limit (getf '(:normal 450 :low 300 :overactive 150) (sixth values))
+                                     :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) (sixth values))
+                                     :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) (sixth values))
                                      :wear (iter (for i in (list
                                                                (when (fifth values) (if (second values) 'yadfa/items:tshirt 'yadfa/items:short-dress))
                                                                (when (and (second values) (eq (fourth values) :pants))
@@ -3039,5 +3045,4 @@
                                          :pants (if (second values) 'yadfa/items:boxers 'yadfa/items:panties))
                                      (fourth values)))
                 (get-items-from-prop :dresser (position-of default)))))
-    (wet)
-    (format query-io "You wake up from sleeping, the good news is that you managed to stay dry through out the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. You quickly get up and start to make a desparate dash for the bathroom, but it seems you put off the needs of your bladder for too long and flood yourself right in front of the bathroom door like a 5 year old who didn't make it. What a great way to start the game piddle ~a. The intro text didn't even finish printing yet and you're already wet.~%" (species-of (player-of *game*))))
+    (format query-io "You wake up from sleeping, the good news is that you managed to stay dry through out the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time~%" (species-of (player-of *game*))))
