@@ -1,5 +1,4 @@
 ;; -*- mode: common-lisp; -*-
-(declaim (optimize (safety 3)))
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
                           (user-homedir-pathname))))

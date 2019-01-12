@@ -18,7 +18,6 @@
             (unless (member i (finished-events-of *game*))
                 (leave t)))))
 (defun lambda-list (lambda-exp)
-    (declare (type (or list function) lambda-exp))
     (check-type lambda-exp (or list function))
     (cond
         ((typep lambda-exp 'function)
@@ -294,7 +293,7 @@
             (wield-of user)
             user)))
 (defun get-warp-point (direction position)
-    (declare (type symbol direction))
+    (check-type direction symbol)
     (getf (warp-points-of (get-zone position))
         (if (typep direction 'keyword)
             (first (member direction (warp-points-of (get-zone position))
@@ -465,7 +464,7 @@
     (setf (gethash event-id (events-of *game*))
         new-value))
 (defun get-zone (position)
-    (declare (type list position))
+    (check-type position list)
     (gethash position
         (zones-of *game*)))
 (defun (setf get-zone) (new-value position)
@@ -474,7 +473,7 @@
         new-value))
 (defun wearingp (clothing type)
     "This function will return all clothes in the list CLOTHING that is of type TYPE"
-    (declare (type list clothing))
+    (check-type clothing list)
     (iter (for i in clothing)
         (when (typep i type)(collect i))))
 (defun swell-up% (user)
@@ -498,14 +497,14 @@
     (loop for i in (allies-of *game*) do (swell-up i)))
 (defun thickest (clothing)
     "returns the greatest thickess value of a list of clothes passed as the CLOTHING parameter"
-    (declare (type list clothing))
+    (check-type clothing list)
     (cond ((not clothing) -1)
         (t (first (sort (iter (for i in clothing) (collect (thickness-of i))) '>)))))
 (defun total-thickness (clothing)
-    (declare (type list clothing))
+    (check-type clothing list)
     (iter (for i in (wearingp clothing 'closed-bottoms)) (with j = 0) (incf j (thickness-of i)) (finally (return j))))
 (defun thickest-sort (clothing)
-    (declare (type list clothing))
+    (check-type clothing list)
     (sort (copy-tree clothing) '> :key 'thickness-of))
 (defgeneric toggle-onesie%% (onesie))
 (defun toggle-onesie% (onesie underclothes user)
@@ -549,7 +548,7 @@
              (change-class self ',(intern (format nil "~a/OPENED" (symbol-name base-class)) (symbol-package base-class))))))
 (defmacro ensure-zone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
-    (declare (type list position))
+    (check-type position list)
     `(progn
          (unless
              (gethash ',position
@@ -561,7 +560,7 @@
          (export ',(fourth position) ',(symbol-package (fourth position)))))
 (defmacro make-pocket-zone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
-    (declare (type list position))
+    (check-type position list)
     `(setf (gethash '(,@position :pocket-map)
                (zones-of *game*))
          (make-instance 'zone ,@body)))
@@ -709,9 +708,9 @@
 (defmacro do-push (item &rest places)
     `(progn ,@(loop for place in places collect `(push ,item ,place))))
 (defun wet (&key (wet-amount t) force-fill-amount pants-down accident force-wet-amount (wetter (player-of *game*)))
-    (declare
-        (type (or null number) force-fill-amount force-wet-amount)
-        (type (or boolean number) wet-amount))
+    (check-type force-fill-amount (or null number))
+    (check-type force-wet-amount (or null number))
+    (check-type wet-amount  (or boolean number))
     (let* ((return-value ()) (affected-clothes ()) (random (strong-random 4)) (amount nil))
         (when force-fill-amount
             (setf (bladder/contents-of wetter) force-fill-amount))
@@ -760,9 +759,9 @@
         return-value))
 
 (defun mess (&key (mess-amount t) force-fill-amount pants-down accident force-mess-amount (messer (player-of *game*)))
-    (declare
-        (type (or null number) force-fill-amount force-mess-amount)
-        (type (or boolean number) mess-amount))
+    (check-type force-fill-amount (or null number))
+    (check-type force-mess-amount (or null number))
+    (check-type mess-amount (or boolean number))
     (let* ((return-value ()) (affected-clothes ()) (amount nil))
         (when force-fill-amount
             (setf (bowels/contents-of messer) force-fill-amount))
@@ -879,9 +878,9 @@
         (if (malep user) "his" "her"))
     (trigger-event 'yadfa/events:get-diaper-locked-1))
 (defun potty-on-toilet (prop &key wet mess pants-down (user (player-of *game*)))
-    (declare
-        (type toilet prop)
-        (type (or boolean number) wet mess))
+    (check-type prop toilet)
+    (check-type wet (or boolean number))
+    (check-type mess (or boolean number))
     (cond
         ((and (not (eq (player-of *game*) user))
              (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel)))
@@ -945,7 +944,8 @@
                     out)
                 (format t "~a~%" (nth (strong-random (list-length out)) out))))))
 (defun potty-on-self-or-prop (prop &key wet mess pants-down (user (player-of *game*)))
-    (declare (type (or boolean number) wet mess))
+    (check-type wet (or boolean number))
+    (check-type mess (or boolean number))
     (cond ((and (not (eq (player-of *game*) user))
                (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
                pants-down)
@@ -1355,7 +1355,7 @@
                             (trigger-diaper-police user))))))))
 ;;; This long ass function could probably be better
 (defun process-potty (&optional (user (player-of *game*)))
-    (declare (type (or player ally) user))
+    (check-type user (or player ally))
     (incf (bladder/contents-of user) (bladder/fill-rate-of user))
     (incf (bowels/contents-of user) (bowels/fill-rate-of user))
     (let ((had-accident
@@ -2072,7 +2072,7 @@
 (defun calculate-exp-yield (target)
     ($ (exp-yield-of target) * (level-of target) / 7))
 (defun calculate-wear-stats (user)
-    (declare (type base-character user))
+    (check-type user base-character)
     (iter
         (with j = (list :health 0 :attack 0 :defense 0 :energy 0))
         (for i in (wear-of user))
@@ -2081,14 +2081,14 @@
             (incf (getf j a) b))
         (finally (return j))))
 (defun calculate-wield-stats (user)
-    (declare (type base-character user))
+    (check-type user base-character)
     (iter
         (with j = (list :health 0 :attack 0 :defense 0 :energy 0))
         (for (a b) on (if (wield-of user) (wield-stats-of (wield-of user)) ()) by #'cddr)
         (incf (getf j a) b)
         (finally (return j))))
 (defun calculate-stat-delta (user)
-    (declare (type base-character user))
+    (check-type user base-character)
     (iter
         (with j = (list :health 0 :attack 0 :defense 0 :energy 0))
         (for i in (when *battle* (getf (status-conditions-of *battle*) user)))
@@ -2097,7 +2097,7 @@
             (incf (getf j a) b))
         (finally (return j))))
 (defun calculate-stat-multiplier (user)
-    (declare (type base-character user))
+    (check-type user base-character)
     (iter
         (with j = (list :health 1 :attack 1 :defense 1 :energy 1))
         (for i in (when *battle* (getf (status-conditions-of *battle*) user)))
@@ -2107,7 +2107,7 @@
             (setf (getf j a) (* (getf j a))))
         (finally (return j))))
 (defun calculate-stat (user stat-key)
-    (declare (type base-character user))
+    (check-type user base-character)
     (round (if (or (eq stat-key :health) (eq stat-key :energy))
                ($ ($ ($ ($ ($ (getf (base-stats-of user) stat-key) +
                                (getf (iv-stats-of user) stat-key) +
@@ -2131,7 +2131,9 @@
                    + 5))))
 
 (defun calculate-damage (target user attack-base)
-    (declare (type base-character user target) (type number attack-base))
+    (check-type user base-character)
+    (check-type target base-character)
+    (check-type attack-base number)
     (round ($ ($ ($ ($ ($ ($ ($ 2 * (level-of user)) / 5) + 2) * attack-base * ($ (calculate-stat user :attack) / (calculate-stat target :defense)))
                      / 50)
                   + 2)
@@ -2551,10 +2553,10 @@
                         (format t "~a" (nth (strong-random (list-length out)) out))
                         (setf out ())))))))
 (defun shopfun (items-for-sale &key items-to-buy items-to-sell user format-items)
-    (declare
-        (type list items-for-sale)
-        (type (or list null) items-to-buy items-to-sell)
-        (type (or base-character null) user))
+    (check-tyoe user (or base-character null))
+    (check-type items-to-buy (or list null))
+    (check-type items-to-sell (or list null))
+    (check-type items-for-sale list)
     (when items-to-buy
         (iter (for i in items-to-buy)
             (let ((item
@@ -2627,11 +2629,14 @@
     (setf (getf (actions-of (getf (get-props-from-zone position) prop)) action) new-value))
 (defun wash-in-washer (washer)
     "washes your dirty diapers and all the clothes you've ruined. WASHER is an instance of a washer you want to put your clothes in."
-    (declare (type (or washer null) washer) (ignorable washer))
+    (declare (ignorable washer))
+    (check-type washer (or washer null))
     (wash (inventory-of (player-of *game*)))
     (format t "You washed all your soggy and messy clothing. Try not to wet and mess them next time~%"))
 (defun process-battle (&key attack item user target friendly-target)
-    (declare (type (or null integer) user target) (type (or symbol boolean) attack))
+    (check-type user (or null integer))
+    (check-type target (or null integer))
+    (check-type attack (or symbol boolean))
     (when (and (not attack) (not item))
         (format t "You need to either specify an attack or an item to use~%")
         (return-from process-battle))
@@ -2982,7 +2987,6 @@
 
 (defun set-player (name malep species)
     "Sets the name, gender, and species of the player"
-    (declare (type simple-string species name) (type boolean malep))
     (check-type malep boolean)
     (check-type name simple-string)
     (check-type species simple-string)
