@@ -1,3 +1,61 @@
+(in-package :climi)
+(define-presentation-type yadfa::selectable-query () :inherit-from 'query)
+(defclass yadfa::pop-up-menu-view (gadget-dialog-view)
+  ()
+  (:documentation "A dialog view that presents the elements of a
+COMPLETION presentation type as a pop-up menu."))
+(define-presentation-method accept-present-default
+    ((type completion) stream (view yadfa::pop-up-menu-view)
+        default default-supplied-p present-p query-identifier)
+    (declare (ignore present-p))
+    (unless default-supplied-p
+        (setq default (funcall value-key (elt sequence 0))))
+    (let ((record (updating-output (stream :unique-id query-identifier
+                                       :cache-value default
+                                       :record-type 'av-pop-up-menu-record)
+                      (with-output-as-presentation
+                          (stream query-identifier 'yadfa::selectable-query)
+                          (surrounding-output-with-border
+                              (stream :shape :inset :move-cursor t)
+                              (write-string (funcall name-key default) stream))))))
+        (setf (pop-up-sequence record) sequence)
+        (setf (pop-up-test record) test)
+        (setf (pop-up-value-key record) value-key)
+        (setf (pop-up-name-key record) name-key)
+        record))
+(define-presentation-to-command-translator yadfa::com-select-field
+    (yadfa::selectable-query yadfa::com-select-query accept-values
+        :gesture :select
+        :documentation "Select field for input"
+        :pointer-documentation "Select field for input"
+        :echo nil
+        :tester ((object)
+                    (let ((selected (selected-query *accepting-values-stream*)))
+                        (or (null selected)
+                            (not (eq (query-identifier selected) object))))))
+    (object)
+    `(,object))
+(define-command (yadfa::com-select-query :command-table accept-values
+                    :name nil
+                    :provide-output-destination-keyword nil)
+    ((query-identifier t))
+    (when *accepting-values-stream*
+        (with-accessors ((selected-query selected-query))
+            *accepting-values-stream*
+            (let* ((query-list (member query-identifier
+                                   (queries *accepting-values-stream*)
+                                   :key #'query-identifier :test #'equal))
+                      (query (car query-list)))
+                (when selected-query
+                    (unless (equal query-identifier (query-identifier selected-query))
+                        (deselect-query *accepting-values-stream*
+                            selected-query
+                            (record selected-query))))
+                (when query
+                    (setf selected-query query)
+                    (select-query *accepting-values-stream* query (record query))
+                    (let ((command-ptype '(command :command-table accept-values)))
+                        (throw-object-ptype '(com-deselect-query) command-ptype)))))))
 (in-package :clim-listener)
 ;;;; because it was quicker and easier than trying to write one of these myself from scratch
 (macro-level:macro-level

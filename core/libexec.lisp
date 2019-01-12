@@ -3009,15 +3009,21 @@
                       (string
                           :prompt "Species"
                           :default (species-of default))
-                      ((clim:completion (:diaper :pullup :pants :none))
-                          :prompt "Bottom clothes"
-                          :default :diaper :view climi::+pop-up-menu-view+)
-                      (boolean
+                      ((clim:completion (yadfa/items:tshirt yadfa/items:short-dress nil))
                           :prompt "Top clothes"
-                          :default t)
+                          :default 'yadfa/items:tshirt :view (make-instance 'pop-up-menu-view))
+                      ((clim:completion (yadfa/items:bra nil))
+                          :prompt "Top Undies"
+                          :default 'nil :view (make-instance 'pop-up-menu-view))
+                      ((clim:completion (yadfa/items:jeans nil))
+                          :prompt "Bottom Clothes"
+                          :default 'nil :view (make-instance 'pop-up-menu-view))
+                      ((clim:completion (yadfa/items:diaper yadfa/items:pullups yadfa/items:boxers yadfa/items:panties nil))
+                          :prompt "Bottom Undies"
+                          :default 'yadfa/items:diaper :view (make-instance 'pop-up-menu-view))
                       ((clim:completion (:normal :low :overactive))
                           :prompt "Bladder capacity"
-                          :default :normal :view climi::+pop-up-menu-view+))))
+                          :default :normal :view (make-instance 'pop-up-menu-view)))))
         (setf (player-of *game*) (make-instance 'player
                                      :name (first values)
                                      :male (second values)
@@ -3026,23 +3032,10 @@
                                      :bladder/potty-dance-limit (getf '(:normal 450 :low 300 :overactive 150) (sixth values))
                                      :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) (sixth values))
                                      :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) (sixth values))
-                                     :wear (iter (for i in (list
-                                                               (when (fifth values) (if (second values) 'yadfa/items:tshirt 'yadfa/items:short-dress))
-                                                               (when (and (second values) (eq (fourth values) :pants))
-                                                                   'yadfa/items:jeans)
-                                                               (getf
-                                                                   (list
-                                                                       :diaper 'yadfa/items:diaper
-                                                                       :pullup 'yadfa/items:pullups
-                                                                       :pants (if (second values) 'yadfa/items:boxers 'yadfa/items:panties))
-                                                                   (fourth values))))
-                                               (when i (collect (make-instance i))))))
-        (iter (for i from 1 to (strong-random 20))
-            (push (make-instance (getf
-                                     (list
-                                         :diaper 'yadfa/items:diaper
-                                         :pullup 'yadfa/items:pullups
-                                         :pants (if (second values) 'yadfa/items:boxers 'yadfa/items:panties))
-                                     (fourth values)))
-                (get-items-from-prop :dresser (position-of default)))))
+                                     :wear (iter (for i in (cdddr (butlast values)))
+                                               (unless (eq i 'nil) (collect (make-instance i))))))
+        (when (member (seventh values) '(yadfa/items:diaper yadfa/items:pullups))
+            (iter (for i from 1 to (strong-random 20))
+                (push (make-instance (seventh values))
+                    (get-items-from-prop :dresser (position-of default))))))
     (format query-io "You wake up from sleeping, the good news is that you managed to stay dry through out the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time~%" (species-of (player-of *game*))))
