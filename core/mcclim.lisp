@@ -1,41 +1,5 @@
 (in-package :climi)
-(define-presentation-type yadfa::selectable-query () :inherit-from 'query)
-(defclass yadfa::pop-up-menu-view (gadget-dialog-view)
-  ()
-  (:documentation "A dialog view that presents the elements of a
-COMPLETION presentation type as a pop-up menu."))
-(define-presentation-method accept-present-default
-    ((type completion) stream (view yadfa::pop-up-menu-view)
-        default default-supplied-p present-p query-identifier)
-    (declare (ignore present-p))
-    (unless default-supplied-p
-        (setq default (funcall value-key (elt sequence 0))))
-    (let ((record (updating-output (stream :unique-id query-identifier
-                                       :cache-value default
-                                       :record-type 'av-pop-up-menu-record)
-                      (with-output-as-presentation
-                          (stream query-identifier 'yadfa::selectable-query)
-                          (surrounding-output-with-border
-                              (stream :shape :inset :move-cursor t)
-                              (write-string (funcall name-key default) stream))))))
-        (setf (pop-up-sequence record) sequence)
-        (setf (pop-up-test record) test)
-        (setf (pop-up-value-key record) value-key)
-        (setf (pop-up-name-key record) name-key)
-        record))
-(define-presentation-to-command-translator yadfa::com-select-field
-    (yadfa::selectable-query yadfa::com-select-query accept-values
-        :gesture :select
-        :documentation "Select field for input"
-        :pointer-documentation "Select field for input"
-        :echo nil
-        :tester ((object)
-                    (let ((selected (selected-query *accepting-values-stream*)))
-                        (or (null selected)
-                            (not (eq (query-identifier selected) object))))))
-    (object)
-    `(,object))
-(define-command (yadfa::com-select-query :command-table accept-values
+(define-command (com-select-query :command-table accept-values
                     :name nil
                     :provide-output-destination-keyword nil)
     ((query-identifier t))
@@ -55,7 +19,11 @@ COMPLETION presentation type as a pop-up menu."))
                     (setf selected-query query)
                     (select-query *accepting-values-stream* query (record query))
                     (let ((command-ptype '(command :command-table accept-values)))
-                        (throw-object-ptype '(com-deselect-query) command-ptype)))))))
+                        (if (and (cdr query-list) (not (typep (view (cadr query-list)) 'pop-up-menu-view)))
+                            (throw-object-ptype `(com-select-query ,(query-identifier
+                                                                        (cadr query-list)))
+                                command-ptype)
+                            (throw-object-ptype '(com-deselect-query) command-ptype))))))))
 (in-package :clim-listener)
 ;;;; because it was quicker and easier than trying to write one of these myself from scratch
 (macro-level:macro-level
@@ -147,65 +115,65 @@ COMPLETION presentation type as a pop-up menu."))
 ;;; add init function
 (defmethod default-frame-top-level
     ((frame listener)
-     &key (command-parser 'command-line-command-parser)
-          (command-unparser 'command-line-command-unparser)
-          (partial-command-parser
-           'command-line-read-remaining-arguments-for-partial-command)
-          (prompt "Command: "))
-  ;; Give each pane a fresh start first time through.
-  (let ((first-time t))
-    (loop
-       ;; The variables are rebound each time through the loop because the
-       ;; values of frame-standard-input et al. might be changed by a command.
-       (let* ((*standard-input*  (or (frame-standard-input frame)
-                                     *standard-input*))
-              (*standard-output* (or (frame-standard-output frame)
-                                     *standard-output*))
-              (query-io  (frame-query-io frame))
-              (*query-io* (or query-io *query-io*))
-              (*pointer-documentation-output*
-               (frame-pointer-documentation-output frame))
-              ;; during development, don't alter *error-output*
-              ;; (*error-output* (frame-error-output frame))
-              (*command-parser* command-parser)
-              (*command-unparser* command-unparser)
-              (*partial-command-parser* partial-command-parser)
-              (interactorp (typep *query-io* 'interactor-pane)))
-         (restart-case
-             (progn
-                 (redisplay-frame-panes frame :force-p first-time)
-                 (when first-time
+        &key (command-parser 'command-line-command-parser)
+        (command-unparser 'command-line-command-unparser)
+        (partial-command-parser
+            'command-line-read-remaining-arguments-for-partial-command)
+        (prompt "Command: "))
+    ;; Give each pane a fresh start first time through.
+    (let ((first-time t))
+        (loop
+            ;; The variables are rebound each time through the loop because the
+            ;; values of frame-standard-input et al. might be changed by a command.
+            (let* ((*standard-input*  (or (frame-standard-input frame)
+                                          *standard-input*))
+                      (*standard-output* (or (frame-standard-output frame)
+                                             *standard-output*))
+                      (query-io  (frame-query-io frame))
+                      (*query-io* (or query-io *query-io*))
+                      (*pointer-documentation-output*
+                          (frame-pointer-documentation-output frame))
+                      ;; during development, don't alter *error-output*
+                      ;; (*error-output* (frame-error-output frame))
+                      (*command-parser* command-parser)
+                      (*command-unparser* command-unparser)
+                      (*partial-command-parser* partial-command-parser)
+                      (interactorp (typep *query-io* 'interactor-pane)))
+                (restart-case
+                    (progn
+                        (redisplay-frame-panes frame :force-p first-time)
+                        (when first-time
                             (yadfa:intro-function query-io))
-               (setq first-time nil)
-               (if query-io
-                   ;; For frames with an interactor:
-                   (progn
-                     ;; Hide cursor, so we don't need to toggle it during
-                     ;; command output.
-                     (setf (cursor-visibility (stream-text-cursor *query-io*))
-                           nil)
-                     (when (and prompt interactorp)
-                       (with-text-style (*query-io* *default-text-style*)
-                         (if (stringp prompt)
-                             (write-string prompt *query-io*)
-                             (funcall prompt *query-io* frame))
-                         (force-output *query-io*)))
-                     (let ((command (read-frame-command frame
-                                                        :stream *query-io*)))
-                       (when interactorp
-                         (fresh-line *query-io*))
-                       (when command
-                         (execute-frame-command frame command))
-                       (when interactorp
-                         (fresh-line *query-io*))))
-                   ;; Frames without an interactor:
-                   (let ((command (read-frame-command frame :stream nil)))
-                     (when command (execute-frame-command frame command)))))
-           (abort ()
-             :report "Return to application command loop."
-             (if interactorp
-                 (format *query-io* "~&Command aborted.~&")
-                 (beep))))))))
+                        (setq first-time nil)
+                        (if query-io
+                            ;; For frames with an interactor:
+                            (progn
+                                ;; Hide cursor, so we don't need to toggle it during
+                                ;; command output.
+                                (setf (cursor-visibility (stream-text-cursor *query-io*))
+                                    nil)
+                                (when (and prompt interactorp)
+                                    (with-text-style (*query-io* *default-text-style*)
+                                        (if (stringp prompt)
+                                            (write-string prompt *query-io*)
+                                            (funcall prompt *query-io* frame))
+                                        (force-output *query-io*)))
+                                (let ((command (read-frame-command frame
+                                                   :stream *query-io*)))
+                                    (when interactorp
+                                        (fresh-line *query-io*))
+                                    (when command
+                                        (execute-frame-command frame command))
+                                    (when interactorp
+                                        (fresh-line *query-io*))))
+                            ;; Frames without an interactor:
+                            (let ((command (read-frame-command frame :stream nil)))
+                                (when command (execute-frame-command frame command)))))
+                    (abort ()
+                        :report "Return to application command loop."
+                        (if interactorp
+                            (format *query-io* "~&Command aborted.~&")
+                            (beep))))))))
 
 (clim:define-command-table yadfa-commands)
 (clim:define-command (yadfa-set-eol-action :command-table yadfa-commands :menu "Set EOL Action")
