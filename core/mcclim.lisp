@@ -177,7 +177,7 @@
 
 (clim:define-command-table yadfa-commands)
 (clim:define-command (yadfa-set-eol-action :command-table yadfa-commands :menu "Set EOL Action")
-    ((keyword '(member :scroll :allow :wrap)
+    ((keyword '(member :scroll :allow :wrap :wrap*)
          :prompt "Keyword"))
     (setf (stream-end-of-line-action *query-io*) keyword))
 (clim:define-command (yadfa-gc :command-table yadfa-commands :menu "GC")

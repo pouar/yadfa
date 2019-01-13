@@ -2995,7 +2995,7 @@
     (setf (malep (player-of *game*)) malep))
 (declaim (notinline intro-function))
 (defun intro-function (query-io)
-    (setf (clim:stream-end-of-line-action query-io) :wrap)
+    (setf (clim:stream-end-of-line-action query-io) :wrap*)
     (format query-io "Enter your character's name, gender, and species~%")
     (let* ((default (make-instance 'player))
               (values
