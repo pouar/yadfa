@@ -1,4 +1,5 @@
 ;; -*- mode: common-lisp; -*-
+#+sbcl (sb-ext:restrict-compiler-policy 'debug 2)
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
                           (user-homedir-pathname))))
