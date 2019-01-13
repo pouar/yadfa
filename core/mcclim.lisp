@@ -1,29 +1,5 @@
 (in-package :climi)
-(define-command (com-select-query :command-table accept-values
-                    :name nil
-                    :provide-output-destination-keyword nil)
-    ((query-identifier t))
-    (when *accepting-values-stream*
-        (with-accessors ((selected-query selected-query))
-            *accepting-values-stream*
-            (let* ((query-list (member query-identifier
-                                   (queries *accepting-values-stream*)
-                                   :key #'query-identifier :test #'equal))
-                      (query (car query-list)))
-                (when selected-query
-                    (unless (equal query-identifier (query-identifier selected-query))
-                        (deselect-query *accepting-values-stream*
-                            selected-query
-                            (record selected-query))))
-                (when query
-                    (setf selected-query query)
-                    (select-query *accepting-values-stream* query (record query))
-                    (let ((command-ptype '(command :command-table accept-values)))
-                        (if (and (cdr query-list) (not (typep (view (cadr query-list)) 'pop-up-menu-view)))
-                            (throw-object-ptype `(com-select-query ,(query-identifier
-                                                                        (cadr query-list)))
-                                command-ptype)
-                            (throw-object-ptype '(com-deselect-query) command-ptype))))))))
+
 (in-package :clim-listener)
 ;;;; because it was quicker and easier than trying to write one of these myself from scratch
 (macro-level:macro-level

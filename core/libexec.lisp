@@ -3042,25 +3042,25 @@
                           :default (name-of default))
                       (boolean
                           :prompt "Is Male"
-                          :default (malep default))
+                          :default (malep default) :view clim:+toggle-button-view+)
                       (string
                           :prompt "Species"
                           :default (species-of default))
                       ((clim:completion (yadfa/items:tshirt yadfa/items:short-dress nil))
                           :prompt "Top clothes"
-                          :default 'yadfa/items:tshirt :view climi::+pop-up-menu-view+)
+                          :default 'yadfa/items:tshirt :view clim:+option-pane-view+)
                       ((clim:completion (yadfa/items:bra nil))
                           :prompt "Top Undies"
-                          :default 'nil :view climi::+pop-up-menu-view+)
+                          :default 'nil :view clim:+option-pane-view+)
                       ((clim:completion (yadfa/items:jeans nil))
                           :prompt "Bottom Clothes"
-                          :default 'nil :view climi::+pop-up-menu-view+)
+                          :default 'nil :view clim:+option-pane-view+)
                       ((clim:completion (yadfa/items:diaper yadfa/items:pullups yadfa/items:boxers yadfa/items:panties nil))
                           :prompt "Bottom Undies"
-                          :default 'yadfa/items:diaper :view climi::+pop-up-menu-view+)
+                          :default 'yadfa/items:diaper :view clim:+option-pane-view+)
                       ((clim:completion (:normal :low :overactive))
                           :prompt "Bladder capacity"
-                          :default :normal :view climi::+pop-up-menu-view+))))
+                          :default :normal :view clim:+option-pane-view+))))
         (setf (player-of *game*) (make-instance 'player
                                      :name (first values)
                                      :male (second values)
