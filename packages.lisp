@@ -137,6 +137,7 @@
         #:base-stats-of
         #:iv-stats-of
         #:bitcoins-of
+        #:bitcoins-per-level-of
         #:inventory-of
         #:wield-of
         #:learned-moves-of
@@ -309,7 +310,8 @@
     (:export
         #:diapered-raccoon-bandit
         #:rookie-diapered-raccoon-bandit
-        #:female-diapered-raccoon-bandit)
+        #:female-diapered-raccoon-bandit
+        #:giant-diapered-raccoon-bandit)
     (:documentation "Contains all the enemies in the game"))
 (uiop:define-package #:yadfa/status-conditions
     (:import-from #:macro-level #:macro-level)
