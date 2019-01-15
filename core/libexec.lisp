@@ -2553,7 +2553,7 @@
                         (format t "~a" (nth (strong-random (list-length out)) out))
                         (setf out ())))))))
 (defun shopfun (items-for-sale &key items-to-buy items-to-sell user format-items)
-    (check-tyoe user (or base-character null))
+    (check-type user (or base-character null))
     (check-type items-to-buy (or list null))
     (check-type items-to-sell (or list null))
     (check-type items-for-sale list)
