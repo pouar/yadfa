@@ -208,6 +208,9 @@
         :moves (list
                    (make-instance 'yadfa/moves:watersport)
                    (make-instance 'yadfa/moves:mudsport))))
+(defmethod print-object ((obj ally) stream)
+    (print-unreadable-object (obj stream :type t :identity t)
+        (format stream "~w" (name-of obj))))
 (defmethod initialize-instance :after
     ((c base-character) &rest initargs &key &allow-other-keys)
     (declare (ignorable initargs))
@@ -258,6 +261,11 @@
             :initform "Seems Pouar didn't make the text for this room yet, get to it you lazy fuck"
             :accessor enter-text-of
             :documentation "Text that pops up when you enter the room")
+        (position
+            :initarg :position
+            :initform '()
+            :accessor position-of
+            :documentation "Position of the zone. Used when we can't figure out the position of the zone ahead of time and to avoid iterating through the hash table.")
         (attributes
             :initarg :attributes
             :initform '()
@@ -324,6 +332,9 @@
             :accessor enemy-spawn-list-of
             :documentation "list containing what enemies might show up when you enter an area. Each entry looks like this `(:random random :max-random max-random :enemies enemies)' If RANDOM is specified, then the probability of the enemy being spawn is RANDOM/MAX-RANDOM otherwise it is 1/MAX-RANDOM"))
     (:documentation "A zone on the map"))
+(defmethod print-object ((obj zone) stream)
+    (print-unreadable-object (obj stream :type t :identity t)
+        (format stream "~w" (position-of obj))))
 (defclass stat/move ()
     ((name
          :initarg :name
@@ -368,12 +379,12 @@
 (defclass prop ()
     ((description
          :initarg :description
-         :initform "This text is just here to avoid triggering an UNBOUND_VARIABLE condition. Nothing to see here."
+         :initform ""
          :accessor description-of
          :documentation "Description of a prop")
         (name
             :initarg :name
-            :initform "This text is just here to avoid triggering an UNBOUND_VARIABLE condition. Nothing to see here."
+            :initform ""
             :accessor name-of
             :documentation "Name of prop")
         (placeable
@@ -402,6 +413,9 @@
             :accessor actions-of
             :documentation "Plist of actions who's lambda-list is `(prop &key &allow-other-keys)' that the player sees as actions they can perform with the prop, PROP is the instance that this slot belongs to"))
     (:documentation "Tangible objects in the AREA that the player can interact with"))
+(defmethod print-object ((obj prop) stream)
+    (print-unreadable-object (obj stream :type t :identity t)
+        (format stream "~w" (name-of obj))))
 (defclass item ()
     ((description
          :initarg :description

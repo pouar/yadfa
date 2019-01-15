@@ -468,6 +468,9 @@
     (gethash position
         (zones-of *game*)))
 (defun (setf get-zone) (new-value position)
+    (check-type position list)
+    (check-type new-value zone)
+    (setf (position-of new-value) position)
     (setf (gethash position
               (zones-of *game*))
         new-value))
@@ -551,18 +554,15 @@
     (check-type position list)
     `(progn
          (unless
-             (gethash ',position
-                 (zones-of *game*))
-             (setf (gethash ',position
-                       (zones-of *game*))
+             (get-zone ',position)
+             (setf (get-zone ',position)
                  (make-instance
                      'zone ,@body)))
          (export ',(fourth position) ',(symbol-package (fourth position)))))
 (defmacro make-pocket-zone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
     (check-type position list)
-    `(setf (gethash '(,@position :pocket-map)
-               (zones-of *game*))
+    `(setf (get-zone '(,@position :pocket-map))
          (make-instance 'zone ,@body)))
 (defun move-to-secret-underground ()
     (when *battle*
