@@ -909,6 +909,11 @@
          :initform 50
          :accessor exp-yield-of
          :documentation "Integer that is the base exp points that player receives when this guy is defeated")
+        (bitcoins-per-level
+            :initarg :bitcoins-per-level
+            :initform 0
+            :accessor bitcoins-per-level-of
+            :documentation "Bitcoins per level that you get from this enemy per battle")
         (watersport-limit
             :initarg :watersport-limit
             :initform nil
@@ -979,7 +984,7 @@
                                            move-to-use)))))
             :accessor battle-script-of
             :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack"))
-    (:default-initargs :base-stats (list :health 40 :attack 45 :defense 40 :energy 35) :level (random-from-range 2 5))
+    (:default-initargs :base-stats (list :health 40 :attack 45 :defense 40 :energy 35) :level (random-from-range 2 5) :bitcoins nil)
     (:documentation "Class for enemies"))
 (defclass potty-enemy (enemy) ()
     (:default-initargs

@@ -2294,7 +2294,7 @@
                          (iter
                              (for i in (enemies-of *battle*))
                              (with j = 0)
-                             (incf j (bitcoins-of i))
+                             (incf j (if (bitcoins-of i) (bitcoins-of i) (* (bitcoins-per-level-of i) (level-of i))))
                              (finally (return j))))
                      (exp-gained
                          (iter

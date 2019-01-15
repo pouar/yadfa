@@ -3,9 +3,9 @@
     :lambda '(lambda (self)
                  (declare (ignore self))
                  (set-new-battle
-                     '((yadfa/enemies:diapered-raccoon-bandit . (list :level 5)))
+                     '((yadfa/enemies:giant-diapered-raccoon-bandit . '(:level 5)))
                      :continuable t
-                     :enter-battle-text (format nil "Raccoon Bandit: This area is under control of the Raccoon Bandits. If you want in you have to get past me~%*Cue battle transition. You can't see it because this is a text based game, but trust us, it's there.*~%"))))
+                     :enter-battle-text (format nil "Giant Raccoon Bandit: This area is under control of the Raccoon Bandits. If you want in you have to get past me~%*Cue battle transition. You can't see it because this is a text based game, but trust us, it's there.*~%"))))
 (defevent enter-bandits-shop-1
     :lambda '(lambda (self)
                  (declare (ignore self))

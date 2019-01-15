@@ -116,6 +116,7 @@
     (:default-initargs
         :sogginess-capacity 1400
         :messiness-capacity 10000
+        :value 200
         :name "Cloth Diaper"
         :description "A poofy diaper that can hold an accident. Can be reused."
         :wear-wet-text (list
