@@ -15,6 +15,8 @@ install:
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/didierverna/declt/archive/master.zip" -OutFile "$env:CACHE\declt.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/McCLIM/McCLIM/archive/master.zip" -OutFile "$env:CACHE\mcclim.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip" -OutFile $env:CACHE\dejavu.zip
+- cmd: 'C:\cygwin64\setup-x86_64.exe --quiet-mode --no-shortcuts --upgrade-also --packages texinfo-tex,texlive-collection-xetex'
+- cmd: 'C:\cygwin64\bin\cygcheck -c cygwin'
 - ps: Expand-Archive $env:CACHE\ccl.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\asdf.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\sly.zip -DestinationPath $env:CACHE
@@ -22,7 +24,6 @@ install:
 - ps: Expand-Archive $env:CACHE\mcclim.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\dejavu.zip -DestinationPath $env:CACHE
 - ps: Copy-Item $env:CACHE\dejavu-fonts-ttf-2.37\ttf\*.ttf  -destination C:\Windows\Fonts
-- ps: choco install -y miktex
 - cmd:  refreshenv
 - cmd: 'start /wait msiexec /i %CACHE%\sbcl.msi /quiet /qn /norestart /log sbcl-install.log'
 - ps: Copy-Item $env:CACHE\asdf-3.3.2.13\ -recurse -destination $env:USERPROFILE\common-lisp\
@@ -35,7 +36,7 @@ install:
 
 build_script:
 - cmd: '"C:\Program Files\Steel Bank Common Lisp\1.4.2\sbcl" --script "appveyor-build-docs.lisp" texi'
-- cmd: 'C:\msys64\usr\bin\bash.exe -lc "export PDFTEX=xetex PDFLATEX=xelatex;cd /c/projects/yadfa/docs/reference;makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa-reference.texi;makeinfo --no-split --pdf ./yadfa-reference.texi;makeinfo --no-split ./yadfa-reference.texi"'
+- cmd: 'C:\cygwin64\bin\bash.exe -lc "export PDFTEX=xetex PDFLATEX=xelatex;cd /cygdrive/c/projects/yadfa/docs/reference;makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html yadfa-reference.texi;makeinfo --no-split --pdf yadfa-reference.texi;makeinfo --no-split yadfa-reference.texi"'
 - cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)"'
 - ps: 7z a -t7z -mmt=2 -mx=9 -m0=LZMA2:d=200M:fb=273:mc=1000000000 '-x!yadfa/docs/*/*.aux' '-x!yadfa/docs/*/*.cps' '-x!yadfa/docs/*/*.fns' '-x!yadfa/docs/*/*.vrs' '-x!yadfa/docs/*/*.tps' '-x!yadfa/docs/*/*.cp' '-x!yadfa/docs/*/*.fn' '-x!yadfa/docs/*/*.vr' '-x!yadfa/docs/*/*.tp' '-x!yadfa/docs/*/*.toc' '-x!yadfa/docs/*/*.log' '-x!yadfa/.*' '-x!yadfa/ci' '-x!yadfa/yadfa.7z' '-x!yadfa/appveyor-build*.lisp' yadfa.7z $PWD
 artifacts:
