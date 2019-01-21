@@ -2,7 +2,7 @@
 Name=net.pouar.yadfa
 Branch=master
 Title=Yadfa
-Url=https://flatpak.pouar.net/yadfa
+Url=https://flatpak.pouar.net/pouar
 RuntimeRepo=https://dl.flathub.org/repo/flathub.flatpakrepo
 Comment=Yet Another Diaperfur Adventure
 Description=An experimetnal text based adventure you play by typing in Lisp code in a REPL
