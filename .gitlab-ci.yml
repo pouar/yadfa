@@ -21,4 +21,3 @@ pages:
     paths:
       - public/
       - .flatpak-builder/
-      - build/
