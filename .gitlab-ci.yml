@@ -1,0 +1,24 @@
+image: fedora:latest
+
+pages:
+  only:
+    - master
+  script:
+    - dnf -y upgrade
+    - dnf -y install flatpak flatpak-builder gnupg git xz lzip bzip2
+    - printf '%s' "$GPGKEY"|base64 -d|gpg --import
+    - flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    - flatpak install -y flathub org.freedesktop.Platform//18.08 org.freedesktop.Sdk//18.08
+    - flatpak-builder --disable-rofiles-fuse --force-clean build flatpak/net.pouar.yadfa.yml
+    - flatpak build-export --gpg-sign='15BE14266E04C2E3D823DBA86FDC5B86389100FD!' public build
+    - flatpak build-update-repo --gpg-sign='15BE14266E04C2E3D823DBA86FDC5B86389100FD!' --prune-depth=10 --prune --generate-static-deltas public
+  environment:
+    name: production
+  artifacts:
+    paths:
+    - public
+  cache:
+    paths:
+      - public/
+      - .flatpak-builder/
+      - build/
