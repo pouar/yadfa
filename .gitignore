@@ -27,4 +27,5 @@ yadfa
 **/*.wx64fsl
 **/*.wx32fsl
 **/*.dll
+docs/reference/yadfa-reference.*
 mods.conf
