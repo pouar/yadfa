@@ -3,6 +3,8 @@ image: fedora:latest
 pages:
   only:
     - master
+  before_script:
+    - tar -xf cache.tar || true
   script:
     - dnf -y upgrade
     - dnf -y install flatpak flatpak-builder gnupg git xz lzip bzip2
@@ -12,6 +14,8 @@ pages:
     - flatpak-builder --disable-rofiles-fuse --force-clean build flatpak/net.pouar.yadfa.yml
     - flatpak build-export --gpg-sign='15BE14266E04C2E3D823DBA86FDC5B86389100FD!' public build
     - flatpak build-update-repo --gpg-sign='15BE14266E04C2E3D823DBA86FDC5B86389100FD!' --prune-depth=5 --prune --generate-static-deltas public
+  after_script:
+    - tar -cf cache.tar .flatpak-builder public
   environment:
     name: production
   artifacts:
@@ -19,5 +23,4 @@ pages:
     - public
   cache:
     paths:
-      - public/
-      - .flatpak-builder/
+      - cache.tar
