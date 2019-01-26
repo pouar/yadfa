@@ -34,16 +34,19 @@
     #-yadfa/mods (format t "Mod support is not enabled for this build~%"))
 (defun yadfa/world:save-game (path)
     "This function saves current game to PATH"
+    #+sbcl (declare (type simple-string path))
     (check-type path simple-string)
     (with-open-file (s path :direction :output :if-exists :supersede :if-does-not-exist :create)
         (format s "~a" (write-to-string (marshal *game*)))))
 (defun yadfa/world:load-game (path)
     "This function loads a saved game from PATH"
+    #+sbcl (declare (type simple-string path))
     (check-type path simple-string)
     (with-open-file (stream path)
         (setf *game* (unmarshal (read stream)))))
 (defun yadfa/bin:toggle-onesie (&key wear user)
     "Open or closes your onesie. WEAR is the index of a onesie. Leave NIL for the outermost onesie. USER is the index of an ally. Leave NIL to refer to yourself"
+    #+sbcl (declare (type (or unsigned-byte null) user wear))
     (check-type user (or unsigned-byte null))
     (check-type wear (or unsigned-byte null))
     (cond (user
@@ -70,6 +73,7 @@
             (incf j) (finally (format t "You're not wearing a onesie~%")))))
 (defun yadfa/world:move (&rest directions)
     "type in the direction as a keyword to move in that direction, valid directions can be found with `(lst :directions t)'. you can also specify multiple directions, for example `(move :south :south)' will move 2 zones south. `(move :south :west :south)' will move south, then west, then south."
+    #+sbcl (declare (type list directions))
     (check-type directions list)
     (loop for direction in directions do
         (let ((new-position (get-path-end
@@ -190,6 +194,10 @@
                                 (return-from yadfa/world:move)))))))))
 (defun yadfa/bin:lst (&key inventory props wear user directions moves position map descriptions)
     "used to list various objects and properties, INVENTORY takes a type specifier for the items you want to list in your inventory. setting INVENTORY to T will list all the items. WEAR is similar to INVENTORY but lists clothes you're wearing instead. setting DIRECTIONS to non-NIL will list the directions you can walk.setting MOVES to non-NIL will list the moves you know. setting USER to T will cause MOVES and WEAR to apply to the player, setting it to an integer will cause it to apply it to an ally. Leaving it at NIL will cause it to apply to everyone. setting POSITION to true will print your current position. Setting MAP to a number will print the map with the floor number set to MAP, setting MAP to T will print the map of the current floor you're on"
+    #+sbcl (declare
+               (type (or unsigned-byte boolean) user)
+               (type (or boolean integer) map)
+               (type (or null (and symbol (not keyword)) list class) inventory))
     (check-type user (or unsigned-byte boolean))
     (check-type map (or boolean integer))
     (check-type inventory (or null (and symbol (not keyword)) list class))
@@ -360,6 +368,9 @@
                         (description-of i)))))))
 (defun yadfa/bin:get-stats (&key inventory wear prop item attack ally wield)
     "lists stats about various items in various places. INVENTORY is the index of an item in your inventory. WEAR is the index of what you or your ally is wearing. PROP is a keyword that refers to the prop you're selecting. ITEM is the index of an item that a prop has and is used to print information about that prop. ATTACK is a keyword reffering to the move you or your ally has when showing that move. ALLY is the index of an ally on your team when selecting INVENTORY or MOVE, don't set ALLY if you want to select yourself."
+    #+sbcl (declare
+               (type (or null unsigned-byte) ally wear inventory)
+               (type (or null keyword) prop))
     (check-type ally (or null unsigned-byte))
     (check-type wear (or null unsigned-byte))
     (check-type inventory (or null unsigned-byte))
@@ -521,6 +532,11 @@
                                 (messiness-capacity-of i)))))))))
 (defun yadfa/world:interact (prop &rest keys &key list take action describe-action describe &allow-other-keys)
     "interacts with PROP. PROP is a keyword, you can get these with `lst' with the PROPS parameter. setting LIST to non-NIL will list all the items and actions in the prop. you can take the items with the TAKE parameter. Setting this to an integer will take the item at that index, while setting it to :ALL will take all the items, setting it to :BITCOINS will take just the bitcoins. You can get this index with the LIST parameter. ACTION is a keyword referring to an action to perform, can also be found with the LIST parameter. You can also specify other keys when using ACTION and this function will pass those keys to that function. set DESCRIBE-ACTION to the keyword of the action to find out how to use it. Set DESCRIBE to T to print the prop's description."
+    #+sbcl (declare
+               (type (or keyword null) action describe-action)
+               (type symbol prop)
+               (type list describe)
+               (type (or null keyword list) take))
     (check-type action (or keyword null))
     (check-type describe-action (or keyword null))
     (check-type prop symbol)
@@ -566,6 +582,9 @@
         (format t "~a~%" (description-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)))))
 (defun yadfa/bin:wear (&key (inventory 0) (wear 0) user)
     "Wear an item in your inventory. WEAR is the index you want to place this item. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to wear. You can also give it a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself."
+    #+sbcl (declare
+               (type (or null unsigned-byte) user)
+               (type (or (and symbol (not keyword)) list class unsigned-byte) wear inventory))
     (check-type user (or null unsigned-byte))
     (check-type wear (or (and symbol (not keyword)) list class unsigned-byte))
     (check-type inventory (or (and symbol (not keyword)) list class unsigned-byte))
@@ -658,6 +677,9 @@
                 (setf (wear-of selected-user) a)))))
 (defun yadfa/bin:unwear (&key (inventory 0) (wear 0) user)
     "Unwear an item you're wearing. Inventory is the index you want to place this item. WEAR is the index of the item you're wearing that you want to remove. You can also set WEAR to a type specifier for the outer most clothing of that type. USER is a integer referring to the index of an ally. Leave at NIL to refer to yourself"
+    #+sbcl (declare
+               (type (or unsigned-byte null) user)
+               (type (or (and symbol (not keyword)) list class unsigned-byte) inventory wear))
     (check-type user (or unsigned-byte null))
     (check-type inventory (or (and symbol (not keyword)) list class unsigned-byte))
     (check-type wear (or (and symbol (not keyword)) list class unsigned-byte))
@@ -727,6 +749,9 @@
         (setf (inventory-of (player-of *game*)) (insert (inventory-of (player-of *game*)) item inventory))))
 (defun yadfa/bin:change (&key (inventory 0) (wear 0) user)
     "Change one of the clothes you're wearing with one in your inventory. WEAR is the index of the clothing you want to replace. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to replace it with. You can also give INVENTORY and WEAR a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself."
+    #+sbcl (declare
+               (type (or null unsigned-byte) user)
+               (type (or (and symbol (not keyword)) list class unsigned-byte) inventory wear))
     (check-type user (or null unsigned-byte))
     (check-type inventory (or (and symbol (not keyword)) list class unsigned-byte))
     (check-type wear (or (and symbol (not keyword)) list class unsigned-byte))
@@ -855,12 +880,17 @@
                     (wear-of selected-user) a)))))
 (defun yadfa/battle:fight (attack &key user target friendly-target)
     "Use a move on an enemy. ATTACK* is either a keyword which is the indicator to select an attack that you know, or T for default. USER is the index of a member in your team that you want to fight. TARGET is the index of the enemy you're attacking. FRIENDLY-TARGET is a member on your team you're using the move on instead. Only specify either a FRIENDLY-TARGET or TARGET. Setting both might make the game's code unhappy"
+    #+sbcl (declare
+               (type (or null unsigned-byte) user target)
+               (type (or symbol boolean) attack))
     (check-type user (or null unsigned-byte))
     (check-type target (or null unsigned-byte))
     (check-type attack (or symbol boolean))
     (process-battle :attack attack :user user :target target :friendly-target friendly-target))
 (defun yadfa/battle:stats (&key user enemy)
     "Prints the current stats in battle, essentially this game's equivelant of a health and energy bar in battle. USER is the index of the member in your team, ENEMY is the index of the enemy in battle. Set both to NIL to show the stats for everyone."
+    #+sbcl (declare
+               (type (or unsigned-byte null) user enemy))
     (check-type user (or unsigned-byte null))
     (check-type enemy (or unsigned-byte null))
     (cond (user
@@ -876,6 +906,7 @@
                 (format-stats i)))))
 (defun yadfa/world:stats (&optional user)
     "Prints the current stats, essentially this game's equivelant of a health and energy bar in battle. Set USER to the index of an ally to show that ally's stats or set it to T to show your stats, leave it at NIL to show everyone's stats"
+    #+sbcl (declare (type (or unsigned-byte boolean) user))
     (check-type user (or unsigned-byte boolean))
     (cond ((eq user t)
               (format-stats (player-of *game*)))
@@ -886,6 +917,10 @@
                 (format-stats i)))))
 (defun yadfa/world:go-potty (&key prop wet mess pull-pants-down user)
     "Go potty. PROP is a keyword identifying the prop you want to use. If it's a toilet, use the toilet like a big boy. if it's not. Go potty on it like an animal. If you want to wet yourself, leave PROP as NIL. WET is the amount you want to pee in ml. MESS is the amount in cg, set WET and/or MESS to T to empty yourself completely. set PULL-PANTS-DOWN to non-NIL to pull your pants down first. USER is the index value of an ALLY you have. Set this to NIL if you're referring to yourself"
+    #+sbcl (declare
+               (type (or null number) user)
+               (type (or null keyword) prop)
+               (type (or boolean number) wet mess))
     (check-type user (or null number))
     (check-type prop (or null keyword))
     (check-type wet (or boolean number))
@@ -910,6 +945,7 @@
                     :user selected-user)))))
 (defun yadfa/world:tickle (ally)
     "Tickle an ally. ALLY is an integer that is the index of you allies"
+    #+sbcl (declare (type unsigned-byte ally))
     (check-type ally unsigned-byte)
     (when (>= ally (list-length (allies-of *game*)))
         (format t "That ally doesn't exist~%")
@@ -945,6 +981,7 @@
                     (name-of selected-ally))))))
 (defun yadfa/world:wash-all-in (&optional prop)
     "washes your dirty diapers and all the clothes you've ruined. PROP is a keyword identifying the washer you want to put it in. If you're washing it in a body of water, leave PROP out."
+    #+sbcl (declare (type (or keyword null) prop))
     (check-type prop (or keyword null))
     (cond
         ((and prop (not (typep (getf (get-props-from-zone (position-of (player-of *game*))) prop) 'washer)))
@@ -956,6 +993,7 @@
         (t (wash-in-washer (getf (get-props-from-zone (position-of (player-of *game*))) prop)))))
 (defun yadfa/bin:toss (&rest items)
     "Throw an item in your inventory away. ITEM is the index of the item in your inventory"
+    #+sbcl (declare (type list items))
     (check-type items list)
     (iter (for i in items) (check-type i integer))
     (when (>= (first (sort items #'>)) (list-length (inventory-of (player-of *game*))))
@@ -974,6 +1012,9 @@
         (setf (inventory-of (player-of *game*)) (remove-nth i (inventory-of (player-of *game*))))))
 (defun yadfa/world:place (prop &rest items)
     "Store items in a prop. ITEMS is a list of indexes of the items in your inventory. PROP is a keyword"
+    #+sbcl (declare
+               (type list items)
+               (type symbol prop))
     (check-type items list)
     (check-type prop symbol)
     (iter (for i in items) (check-type i integer))
@@ -1047,6 +1088,9 @@
     (use-package :yadfa/world :yadfa-user))
 (defun yadfa/world:use-item (item &rest keys &key user action &allow-other-keys)
     "Uses an item. Item is an index of an item in your inventory. USER is an index of an ally. Setting this to NIL will use it on yourself. ACTION is a keyword when specified will perform a special action with the item, all the other keys specified in this function will be passed to that action. ACTION doesn't work in battle."
+    #+sbcl (declare
+               (type unsigned-byte item)
+               (type (or null keyword) action))
     (check-type item unsigned-byte)
     (check-type action (or null keyword))
     (when (>= item (list-length (inventory-of (player-of *game*))))
@@ -1068,6 +1112,9 @@
         (loop for i in (allies-of *game*) do (process-potty i))))
 (defun yadfa/battle:use-item (item &key target enemy-target)
     "Uses an item. Item is an index of an item in your inventory. TARGET is an index of your team. Setting this to 0 will use it on yourself. ENEMY-TARGET is an index of an enemy in battle if you're using it on an enemy in battle. Only specify either a TARGET or ENEMY-TARGET. Setting both might make the game's code unhappy"
+    #+sbcl (declare
+               (type unsigned-byte item)
+               (type (or null unsigned-byte) target enemy-target))
     (check-type item unsigned-byte)
     (check-type target (or null unsigned-byte))
     (check-type enemy-target (or null unsigned-byte))
@@ -1094,6 +1141,9 @@
                              (t 0))))
 (defun yadfa/bin:wield (&key user inventory)
     "Wield an item. Set INVENTORY to the index or a type specifier of an item in your inventory to wield that item. Set USER to the index of an ally to have them to equip it or leave it NIL for the player."
+    #+sbcl (declare
+               (type (or unsigned-byte null) user)
+               (type (or (and symbol (not keyword)) list class null unsigned-byte) inventory))
     (check-type user (or unsigned-byte null))
     (check-type inventory (or (and symbol (not keyword)) list class null unsigned-byte))
     (let* ((selected-user
@@ -1135,6 +1185,7 @@
         (setf (wield-of selected-user) item)))
 (defun yadfa/bin:unwield (&key user)
     "Unield an item. Set USER to the index of an ally to have them to unequip it or leave it NIL for the player."
+    #+sbcl (declare (type (or integer null) user))
     (check-type user (or integer null))
     (let ((selected-user
               (if
@@ -1163,6 +1214,7 @@
                     (format t "~30a~30a~%" i (name-of a)))))))
 (defun yadfa/world:add-ally-to-team (ally-index)
     "Adds an ally to your battle team. ALLY-INDEX is the index of an ally in your list of allies"
+    #+sbcl (declare (type unsigned-byte ally-index))
     (check-type ally-index unsigned-byte)
     (if (>= ally-index (list-length (allies-of *game*)))
         (format t "You only have ~d allies~%" (list-length (allies-of *game*)))
@@ -1177,6 +1229,7 @@
                           result)))))
 (defun yadfa/world:remove-ally-from-team (team-index)
     "Removes an ally to your battle team. TEAM-INDEX is the index of an ally in your battle team list"
+    #+sbcl (declare (type unsigned-byte team-index))
     (check-type team-index unsigned-byte)
     (cond
         ((>= team-index (list-length (team-of *game*)))
@@ -1188,6 +1241,7 @@
         (t (setf (team-of *game*) (remove-nth team-index (team-of *game*))))))
 (defun yadfa/world:swap-team-member (team-index-1 team-index-2)
     "swap the positions of 2 battle team members. TEAM-INDEX-1 and TEAM-INDEX-2 are the index numbers of these members in your battle team list"
+    #+sbcl (declare (type unsigned-byte team-index-1 team-index-2))
     (check-type team-index-1 unsigned-byte)
     (check-type team-index-2 unsigned-byte)
     (cond
@@ -1205,6 +1259,9 @@
         (t (rotatef (nth team-index-1 (team-of *game*)) (nth team-index-2 (team-of *game*))))))
 (defun yadfa/bin:toggle-lock (wear key &optional user)
     "Toggle the lock on one of the clothes a user is wearing. WEAR is the index of an item a user is wearing, KEY is the index of a key in your inventory, USER is a number that is the index of an ally, leave this to NIL to select the player."
+    #+sbcl (declare
+               (type unsigned-byte wear key)
+               (type (or unsigned-byte null) user))
     (check-type wear unsigned-byte)
     (check-type key unsigned-byte)
     (check-type user (or unsigned-byte null))
