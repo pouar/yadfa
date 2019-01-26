@@ -46,8 +46,8 @@ modules:
       - chmod +x /app/tmp/sbcl-bin/bin/hostname
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.15/sbcl-1.4.15-x86-64-linux-binary.tar.bz2
-        sha256: f3be1d05db692013a8f153bb8ac452d5e34b62a2aab0284a7adaad6966872747
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.16/sbcl-1.4.16-x86-64-linux-binary.tar.bz2
+        sha256: df3d905d37656a7eeeba72d703577afc94a21d756a4dde0949310200f82ce575
   - name: sbcl
     buildsystem: simple
     build-commands:
@@ -56,8 +56,8 @@ modules:
       - INSTALL_ROOT="/app/tmp/sbcl" HOME="/app/tmp/home/" sh install.sh
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.15/sbcl-1.4.15-source.tar.bz2
-        sha256: 486c3bcf1338d0023be93725bac2ac298811cd30a5e2b94d7491ddad1fa1372e
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.16/sbcl-1.4.16-source.tar.bz2
+        sha256: 8d93ad1b64815854d0db042c00473fc04b284316c67734be2dd62ddb2727cfd7
   - name: yadfa-deps
     buildsystem: simple
     build-commands:
