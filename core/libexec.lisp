@@ -2062,6 +2062,7 @@
     (setf (props-of (eval (get-zone position))) new-value))
 (defun remove-nth (n sequence)
     (remove-if (constantly t) sequence :start n :count 1))
+(define-modify-macro insertf (&rest args) insert)
 (defun insert (list value n)
     (if (<= n 0)
         (cons value list)

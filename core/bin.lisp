@@ -643,7 +643,7 @@
                              (name-of item))
                          (leave t))))
                 (return-from yadfa/bin:wear)))
-        (setf a (insert a item wear))
+        (insertf a item wear)
         (setf i
             (iter
                 (for j from (1- (list-length a)) downto 0)
@@ -746,7 +746,7 @@
         (if (= wear 0)
             (pop (wear-of selected-user))
             (setf (wear-of selected-user) (remove-nth wear (wear-of selected-user))))
-        (setf (inventory-of (player-of *game*)) (insert (inventory-of (player-of *game*)) item inventory))))
+        (insertf (inventory-of (player-of *game*)) item inventory)))
 (defun yadfa/bin:change (&key (inventory 0) (wear 0) user)
     "Change one of the clothes you're wearing with one in your inventory. WEAR is the index of the clothing you want to replace. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to replace it with. You can also give INVENTORY and WEAR a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself."
     #+sbcl (declare
