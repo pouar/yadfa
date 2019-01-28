@@ -17,15 +17,10 @@
         (iter (for i in events)
             (unless (member i (finished-events-of *game*))
                 (leave t)))))
-(defun lambda-list (lambda-exp)
-    #+sbcl (declare (type (or list function) lambda-exp))
-    (check-type lambda-exp (or list function))
-    (cond
-        ((typep lambda-exp 'function)
-            (swank-backend:arglist lambda-exp)) ; thanks to the CLIM Listener always being included, so is Swank
-        ((and (typep lambda-exp 'list) (equal (car lambda-exp) 'cl:lambda))
-            (cadr lambda-exp))
-        (t (error "lambda-exp is not a valid Lambda expression"))))
+(defmethod lambda-list ((lambda-exp list))
+    (cadr lambda-exp))
+(defmethod lambda-list ((lambda-exp function))
+    (swank-backend:arglist lambda-exp))
 (defun initialize-mod-registry ()
     (setf *mod-registry* (make-hash-table :test 'equal))
     (labels ((preferred-mod (old new)
@@ -520,27 +515,29 @@
     (check-type clothing list)
     (sort (copy-tree clothing) '> :key 'thickness-of))
 (defgeneric toggle-onesie%% (onesie))
-(defun toggle-onesie% (onesie underclothes user)
-    (cond ((not (typep onesie 'onesie))
-              (write-line "That's not a onesie"))
-        ((and (typep onesie 'onesie/opened)
-             (not (eq t (car (onesie-thickness-capacity-of onesie))))
-             underclothes
-             (> (total-thickness underclothes) (car (onesie-thickness-capacity-of onesie))))
-            (format t
-                "~a struggles to snap the bottom of ~a ~a like a toddler who can't dress ~aself but ~a ~a is too thick~%~%"
-                (name-of user)
-                (if (malep user) "his" "her")
-                (name-of onesie)
-                (if (malep user) "him" "her")
-                (if (malep user) "his" "her")
-                (name-of (first (thickest-sort underclothes)))))
-        ((and (typep onesie 'onesie/closed) (lockedp onesie))
-            (format t "~a can't unsnap ~a ~a as it's locked~%~%"
-                (name-of user)
-                (if (malep user) "his" "her")
-                (name-of onesie)))
-        (t (toggle-onesie%% onesie))))
+(defgeneric toggle-onesie% (onesie underclothes user))
+(defmethod toggle-onesie% (onesie underclothes user)
+    (write-line "That's not a onesie"))
+(defmethod toggle-onesie% ((onesie onesie/opened) underclothes (user base-character))
+    (if (and (not (eq t (car (onesie-thickness-capacity-of onesie))))
+            underclothes
+            (> (total-thickness underclothes) (car (onesie-thickness-capacity-of onesie))))
+        (format t
+            "~a struggles to snap the bottom of ~a ~a like a toddler who can't dress ~aself but ~a ~a is too thick~%~%"
+            (name-of user)
+            (if (malep user) "his" "her")
+            (name-of onesie)
+            (if (malep user) "him" "her")
+            (if (malep user) "his" "her")
+            (name-of (first (thickest-sort underclothes))))
+        (toggle-onesie%% onesie)))
+(defmethod toggle-onesie% ((onesie onesie/closed) underclothes (user base-character))
+    (if (lockedp onesie)
+        (format t "~a can't unsnap ~a ~a as it's locked~%~%"
+            (name-of user)
+            (if (malep user) "his" "her")
+            (name-of onesie))
+        (toggle-onesie%% onesie)))
 (defmacro defonesie (base-class &body body)
     "macro that generates the classes and methods of the onesie used to open and close the snaps of them. method used to toggle the onesie is TOGGLE-ONESIE. BASE-CLASS is the name of the class you want to give the onesie. BODY is the slot specifier and class options of BASE-CLASS"
     `(progn
