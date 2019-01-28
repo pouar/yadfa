@@ -71,14 +71,14 @@
                          (handler-case (with-open-file (stream file :if-does-not-exist :error)
                                            (setf mods (read stream)))
                              (file-error ()
-                                 (format t "The configuration file containing the list of enabled mods seems missing, creating a new one~%")
+                                 (write-line "The configuration file containing the list of enabled mods seems missing, creating a new one")
                                  (with-open-file (stream file
                                                      :if-does-not-exist :create
                                                      :direction :output
                                                      :if-exists :supersede)
                                      (write *mods* :stream stream)))
                              (error ()
-                                 (format t "The configuration file containing the list of enabled mods seems broken, ignoring~%")))
+                                 (write-line "The configuration file containing the list of enabled mods seems broken, ignoring")))
                          (if (and
                                  (typep mods 'list)
                                  (iter (for i in mods)
@@ -86,7 +86,7 @@
                                          (leave nil))
                                      (finally (return t))))
                              (setf *mods* mods)
-                             (format t "The configuration file containing the list of enabled mods isn't valid, ignoring~%")))
+                             (write-line "The configuration file containing the list of enabled mods isn't valid, ignoring")))
                      (let ((*compile-verbose* compiler-verbose) (*compile-print* compiler-verbose))
                          (iter (for i in *mods*)
                              (when (asdf:find-system i nil)
@@ -522,7 +522,7 @@
 (defgeneric toggle-onesie%% (onesie))
 (defun toggle-onesie% (onesie underclothes user)
     (cond ((not (typep onesie 'onesie))
-              (format t "That's not a onesie~%"))
+              (write-line "That's not a onesie"))
         ((and (typep onesie 'onesie/opened)
              (not (eq t (car (onesie-thickness-capacity-of onesie))))
              underclothes
@@ -578,7 +578,7 @@
          (make-instance 'zone ,@body)))
 (defun move-to-secret-underground ()
     (when *battle*
-        (format t "To avoid breaking the game due to a few assumtpions made in this function, please don't run this in a battle~%")
+        (write-line "To avoid breaking the game due to a few assumtpions made in this function, please don't run this in a battle~%")
         (return-from move-to-secret-underground))
     (unless (get-path-end '(0 0 0 yadfa/zones:secret-underground))
         (format t "~a"
@@ -643,7 +643,7 @@
                         (return-from move-to-secret-underground)))))))
 (defun move-to-pocket-map (item)
     (when *battle*
-        (format t "To avoid breaking the game due to a few assumtpions made in this function, please don't run this in a battle~%")
+        (write-line "To avoid breaking the game due to a few assumtpions made in this function, please don't run this in a battle~%")
         (return-from move-to-pocket-map))
     (unless (get-zone '(0 0 0 pocket-map))
         (make-pocket-zone (0 0 0)
@@ -905,7 +905,7 @@
     (cond
         ((and (not (eq (player-of *game*) user))
              (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel)))
-            (format t "Yeah, that's not going to happen~%")
+            (write-line "Yeah, that's not going to happen")
             (return-from potty-on-toilet))
         ((and pants-down
              (iter (for i in (wearingp (wear-of user) 'closed-bottoms))
@@ -971,7 +971,7 @@
     (cond ((and (not (eq (player-of *game*) user))
                (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
                pants-down)
-              (format t "Yeah, that's not going to happen~%")
+              (write-line "Yeah, that's not going to happen")
               (return-from potty-on-self-or-prop))
         ((and (no-puddles-p (get-zone (position-of (player-of *game*)))) pants-down)
             (format t "~a isn't allowed to go potty there, it's against the rules in this zone~%"
@@ -2205,10 +2205,10 @@
                 (calculate-stat user :energy))
             ""))
     (when *battle*
-        (format t "Conditions: ")
+        (write-string "Conditions: ")
         (iter (for i in (getf (status-conditions-of *battle*) user))
             (format t "`~a' " (name-of i)))
-        (format t "~%"))
+        (write-char #\Newline))
     (format t "Stats: ~a~%Base-Stats: ~a~%"
         (let ((wield-stats (calculate-wield-stats user))
                  (wear-stats (calculate-wear-stats user)))
@@ -2249,7 +2249,7 @@
                             (push "Messy" a)))
                     (unless a (push "Clean" a))
                     a))))
-    (format t "Bladder State: ")
+    (write-string "Bladder State: ")
     (color-format (cond ((>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)) :red)
                       ((>= (bladder/contents-of user) (bladder/need-to-potty-limit-of user)) :yellow)
                       (t :green)) "[~{~a~}]~%"
@@ -2257,7 +2257,7 @@
             (while (< i 40))
             (collect (if (< i (* (/ (bladder/contents-of user) (bladder/maximum-limit-of user)) 40)) "#" " "))
             (incf i)))
-    (format t "Bowels State:  ")
+    (write-string "Bowels State: ")
     (color-format (cond ((>= (bowels/contents-of user) (bowels/potty-dance-limit-of user)) :red)
                       ((>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user)) :yellow)
                       (t :green)) "[~{~a~}]~%"
@@ -2669,7 +2669,7 @@
         (ignorable washer))
     (check-type washer (or washer null))
     (wash (inventory-of (player-of *game*)))
-    (format t "You washed all your soggy and messy clothing. Try not to wet and mess them next time~%"))
+    (write-line "You washed all your soggy and messy clothing. Try not to wet and mess them next time"))
 (defun process-battle (&key attack item user target friendly-target)
     #+sbcl (declare
                (type (or null integer) user target)
@@ -2678,7 +2678,7 @@
     (check-type target (or null integer))
     (check-type attack (or symbol boolean))
     (when (and (not attack) (not item))
-        (format t "You need to either specify an attack or an item to use~%")
+        (write-line "You need to either specify an attack or an item to use")
         (return-from process-battle))
     (let* ((selected-user
                (if user
@@ -2704,10 +2704,10 @@
               (selected-target
                   (cond
                       ((and target (>= target (list-length (enemies-of *battle*))))
-                          (format t "That target doesn't exist~%")
+                          (write-line "That target doesn't exist")
                           (return-from process-battle))
                       ((and friendly-target (>= friendly-target (list-length (team-of *game*))))
-                          (format t "That target doesn't exist~%")
+                          (write-line "That target doesn't exist")
                           (return-from process-battle))
                       (target (nth target (enemies-of *battle*)))
                       (friendly-target (nth friendly-target (team-of *game*)))
@@ -3023,7 +3023,7 @@
                 (apply (coerce script 'function) item target (when action keys))
                 (when (consumablep item)
                     (removef item (inventory-of user))))
-            (format t "You can't do that with that item~%"))))
+            (write-line "You can't do that with that item"))))
 
 (defun set-player (name malep species)
     "Sets the name, gender, and species of the player"
@@ -3039,7 +3039,7 @@
 (declaim (notinline intro-function))
 (defun intro-function (query-io)
     (setf (clim:stream-end-of-line-action query-io) :wrap*)
-    (format query-io "Enter your character's name, gender, and species~%")
+    (write-line "Enter your character's name, gender, and species" query-io)
     (let* ((default (make-instance 'player))
               (values
                   (prompt-for-values
@@ -3081,4 +3081,4 @@
             (iter (for i from 1 to (strong-random 20))
                 (push (make-instance (seventh values))
                     (get-items-from-prop :dresser (position-of default))))))
-    (format query-io "You wake up from sleeping, the good news is that you managed to stay dry through out the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time~%"))
+    (write-line "You wake up from sleeping, the good news is that you managed to stay dry through out the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io))

@@ -19,8 +19,8 @@
                                 :direction :output)
                 (write *mods* :stream stream))
             (asdf:load-system system))
-        (format t "That system doesn't exist~%"))
-    #-yadfa/mods (format t "Mod support is not enabled for this build~%"))
+        (write-line "That system doesn't exist"))
+    #-yadfa/mods (write-line "Mod support is not enabled for this build"))
 (defun yadfa/bin:disable-mod (system)
     "Disable a mod, the modding system is mostly just asdf, SYSTEM is a keyword which is the name of the system you want to enable"
     (declare (ignorable system))
@@ -31,13 +31,13 @@
                                          :if-exists :supersede
                                          :direction :output)
                          (write *mods* :stream stream)))
-    #-yadfa/mods (format t "Mod support is not enabled for this build~%"))
+    #-yadfa/mods (write-line "Mod support is not enabled for this build"))
 (defun yadfa/world:save-game (path)
     "This function saves current game to PATH"
     #+sbcl (declare (type simple-string path))
     (check-type path simple-string)
     (with-open-file (s path :direction :output :if-exists :supersede :if-does-not-exist :create)
-        (format s "~a" (write-to-string (marshal *game*)))))
+        (write-string (write-to-string (marshal *game*)) s)))
 (defun yadfa/world:load-game (path)
     "This function loads a saved game from PATH"
     #+sbcl (declare (type simple-string path))
@@ -60,7 +60,7 @@
                          (for i in (wear-of (nth user (allies-of *game*))))
                          (with j = 1)
                          (when (typep i 'onesie) (leave (toggle-onesie% i (nthcdr j (wear-of (nth user (allies-of *game*)))) (nth user (allies-of *game*)))))
-                         (incf j) (finally (format t "You're not wearing a onesie~%")))))))
+                         (incf j) (finally (write-line "You're not wearing a onesie")))))))
     (if wear
         (toggle-onesie%
             (nth wear (wear-of (player-of *game*)))
@@ -70,7 +70,7 @@
             (for i in (wear-of (player-of *game*)))
             (with j = 1)
             (when (typep i 'onesie) (leave (toggle-onesie% i (nthcdr j (wear-of (player-of *game*))) (player-of *game*))))
-            (incf j) (finally (format t "You're not wearing a onesie~%")))))
+            (incf j) (finally (write-line "You're not wearing a onesie")))))
 (defun yadfa/world:move (&rest directions)
     "type in the direction as a keyword to move in that direction, valid directions can be found with `(lst :directions t)'. you can also specify multiple directions, for example `(move :south :south)' will move 2 zones south. `(move :south :west :south)' will move south, then west, then south."
     #+sbcl (declare (type list directions))
@@ -113,7 +113,7 @@
                                    (inventory-of (player-of *game*))
                                    :test (lambda (item key)
                                              (typep key item))))))
-                (format t "That zone is locked and you don't have a key~%")
+                (write-line "That zone is locked and you don't have a key")
                 (return-from yadfa/world:move))
             (when (or
                       (and
@@ -242,7 +242,7 @@
                                              (if (typep i 'closed-bottoms) (messiness-of i) nil)
                                              (if (typep i 'closed-bottoms) (messiness-capacity-of i) nil)))
                                      (incf j))
-                        (format t "~%"))))
+                        (write-char #\Newline))))
             ((typep user 'integer)
                 (when (>= user (list-length (allies-of *game*)))
                     (format t "You only have ~d allies~%~%" (list-length (allies-of *game*)))
@@ -258,7 +258,7 @@
                                          (if (typep i 'closed-bottoms) (messiness-of i) nil)
                                          (if (typep i 'closed-bottoms) (messiness-capacity-of i) nil)))
                                  (incf j))
-                    (format t "~%")))
+                    (write-char #\Newline)))
             (t
                 (format t "~a:~%~%" (name-of (player-of *game*)))
                 (format t "~7a~40a~6a~8a~6a~8a~%" "Index" "Name" "Wet" "Wetcap" "Mess" "Messcap")
@@ -271,7 +271,7 @@
                                          (if (typep i 'closed-bottoms) (messiness-of i) nil)
                                          (if (typep i 'closed-bottoms) (messiness-capacity-of i) nil)))
                                  (incf j))
-                    (format t "~%")))))
+                    (write-char #\Newline)))))
     (when moves
         (cond
             ((typep user 'number)
@@ -286,14 +286,14 @@
                 (iter
                     (for i in (moves-of (player-of *game*)))
                     (when i (format t "~30s~20a~40a~%" (class-name (class-of i)) (name-of i) (description-of i))))
-                (format t "~%")
+                (write-char #\Newline)
                 (loop for k in (allies-of *game*) do
                     (format t "~a:~%~%" (name-of k))
                     (format t "~30a~20a~40a~%" "Symbol" "Name" "Description")
                     (iter
                         (for i in (moves-of k))
                         (when i (format t "~30s~20a~40a~%" (class-name (class-of i)) (name-of i) (description-of i))))
-                    (format t "~%")))
+                    (write-char #\Newline)))
             (t
                 (format t "~a:~%~%" (name-of (player-of *game*)))
                 (format t "~30a~20a~40a~%" "Symbol" "Name" "Description")
@@ -376,7 +376,7 @@
     (check-type inventory (or null unsigned-byte))
     (check-type prop (or null keyword))
     (when (and ally (>= ally (list-length (allies-of *game*))))
-        (format t "That ally doesn't exist~%")
+        (write-line "That ally doesn't exist")
         (return-from yadfa/bin:get-stats))
     (let ((selected-user (if ally (nth ally (allies-of *game*)) (player-of *game*))))
         (when wield
@@ -553,7 +553,7 @@
             (when value
                 (format t "~s "
                     key)
-                (finally (format t "~%")))))
+                (finally (write-char #\Newline)))))
     (when take
         (cond
             ((eq take :all)
@@ -948,7 +948,7 @@
     #+sbcl (declare (type unsigned-byte ally))
     (check-type ally unsigned-byte)
     (when (>= ally (list-length (allies-of *game*)))
-        (format t "That ally doesn't exist~%")
+        (write-line "That ally doesn't exist")
         (return-from yadfa/world:tickle))
     (let ((selected-ally (nth ally (allies-of *game*))))
         (cond
@@ -985,11 +985,11 @@
     (check-type prop (or keyword null))
     (cond
         ((and prop (not (typep (getf (get-props-from-zone (position-of (player-of *game*))) prop) 'washer)))
-            (format t "That's not a washer~%"))
+            (write-line "That's not a washer"))
         ((and (not prop) (not (underwaterp (get-zone (position-of (player-of *game*)))))) (format t "There's no where to wash that~%"))
         ((underwaterp (get-zone (position-of (player-of *game*))))
             (wash (inventory-of (player-of *game*)))
-            (format t "You washed all your soggy and messy clothing. Try not to wet and mess them next time~%"))
+            (write-line "You washed all your soggy and messy clothing. Try not to wet and mess them next time"))
         (t (wash-in-washer (getf (get-props-from-zone (position-of (player-of *game*))) prop)))))
 (defun yadfa/bin:toss (&rest items)
     "Throw an item in your inventory away. ITEM is the index of the item in your inventory"
@@ -1022,10 +1022,10 @@
         (format t "You only have ~d items~%" (list-length (inventory-of (player-of *game*))))
         (return-from yadfa/world:place))
     (unless (getf (get-props-from-zone (position-of (player-of *game*))) prop)
-        (format t "That prop doesn't exist")
+        (write-line "That prop doesn't exist")
         (return-from yadfa/world:place))
     (unless (placeablep (getf (get-props-from-zone (position-of (player-of *game*))) prop))
-        (format t "To avoid breaking the game, you can't place that item here.")
+        (write-line "To avoid breaking the game, you can't place that item here.")
         (return-from yadfa/world:place))
     (iter (for i in (sort items #'>))
         (format t "You place your ~a on the ~a~%"
@@ -1035,16 +1035,11 @@
             (nth i (inventory-of (player-of *game*)))
             (get-items-from-prop prop (position-of (player-of *game*))))
         (setf (inventory-of (player-of *game*)) (remove-nth i (inventory-of (player-of *game*))))))
-(defun yadfa/bin:toggle-full-repl ()
-    "don't block unknown symbols in the LTK repl"
-    (if (full-repl-of (config-of *game*))
-        (setf (full-repl-of (config-of *game*)) nil)
-        (setf (full-repl-of (config-of *game*)) t)))
 (defun yadfa/battle:run ()
     "Run away from a battle like a coward"
     (cond
         ((continue-battle-of (get-zone (position-of (player-of *game*))))
-            (format t "Can't run from this battle~%")
+            (write-line "Can't run from this battle")
             (return-from yadfa/battle:run))
         ((and (>=
                   (bladder/contents-of (player-of *game*))
@@ -1204,7 +1199,7 @@
         (let ((a (if (member enemy (seen-enemies-of *game*))
                      (make-instance enemy)
                      (progn
-                         (format t "That enemy isn't in your pokedex~%")
+                         (write-line "That enemy isn't in your pokedex")
                          (return-from yadfa/bin:pokedex)))))
             (format t "Name: ~a~%Species: ~a~%Description: ~a~%" (name-of a) (species-of a) (description-of a)))
         (progn
@@ -1236,7 +1231,7 @@
             (format t "You only have ~d members in your team~%" (list-length (team-of *game*)))
             (return-from yadfa/world:remove-ally-from-team))
         ((eq (nth team-index (team-of *game*)) (player-of *game*))
-            (format t "You can't remove the player from the team~%")
+            (write-line "You can't remove the player from the team")
             (return-from yadfa/world:remove-ally-from-team))
         (t (setf (team-of *game*) (remove-nth team-index (team-of *game*))))))
 (defun yadfa/world:swap-team-member (team-index-1 team-index-2)
@@ -1254,7 +1249,7 @@
             (format t "You only have ~d members in your team~%" (list-length (team-of *game*)))
             (return-from yadfa/world:swap-team-member))
         ((= team-index-1 team-index-2)
-            (format t "Those refer to the same team member~%")
+            (write-line "Those refer to the same team member")
             (return-from yadfa/world:swap-team-member))
         (t (rotatef (nth team-index-1 (team-of *game*)) (nth team-index-2 (team-of *game*))))))
 (defun yadfa/bin:toggle-lock (wear key &optional user)
@@ -1277,14 +1272,14 @@
                 (format t "You only have ~d items in your inventory~%"
                     (list-length (inventory-of (player-of *game*)))))
             ((not (typep (nth key (inventory-of (player-of *game*))) (key-of (nth wear (wear-of selected-user)))))
-                (format t "That doesn't go with that~%"))
+                (write-line "That doesn't go with that"))
             ((lockedp (nth wear (wear-of selected-user)))
                 (format t "~a's ~a is now unlocked~%"
                     (name-of selected-user)
                     (name-of (nth wear (wear-of selected-user))))
                 (setf (lockedp (nth wear (wear-of selected-user))) nil))
             ((typep (nth wear (wear-of selected-user)) 'closed-bottoms)
-                (format t "That can't be locked~%"))
+                (write-line "That can't be locked"))
             (t
                 (format t "~a's ~a is now locked~%"
                     (name-of selected-user)

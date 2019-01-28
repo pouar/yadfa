@@ -1,6 +1,5 @@
 (in-package #:yadfa)
 (defun main ()
-    #+sbcl (declaim (sb-ext:muffle-conditions sb-kernel:redefinition-warning sb-ext:code-deletion-note))
     #+slynk (when (and
                       #+yadfa/docs (not (position "texi" (uiop:command-line-arguments) :test #'string=))
                       #-yadfa/docs t
