@@ -301,7 +301,9 @@
         #:navy-shirt
         #:navy-pants
         #:navy-skirt
-        #:navy-pullups)
+        #:navy-pullups
+        #:pirate-dress
+        #:pirate-shirt)
     (:documentation "Contains all the items in the game"))
 (uiop:define-package #:yadfa/npcs
     (:import-from #:macro-level #:macro-level)
@@ -311,7 +313,10 @@
         #:rookie-diapered-raccoon-bandit
         #:female-diapered-raccoon-bandit
         #:giant-diapered-raccoon-bandit
-        #:navy-officer)
+        #:navy-officer
+        #:navy-officer*
+        #:diaper-pirate
+        #:thickly-diaper-pirate)
     (:documentation "Contains all the NPCs in the game"))
 (uiop:define-package #:yadfa/status-conditions
     (:import-from #:macro-level #:macro-level)
