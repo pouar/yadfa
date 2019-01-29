@@ -10,10 +10,10 @@
                         :warp-points ',(when (= i 0) '(ironside (2 0 0 ironside)))
                         :enemy-spawn-list
                         '((:max-random 8
-                              :enemies ((yadfa/enemies:female-diapered-raccoon-bandit .
+                              :enemies ((yadfa/npcs:female-diapered-raccoon-bandit .
                                             (list :level (random-from-range 2 5)))))
                              (:max-random 8
-                                 :enemies ((yadfa/enemies:rookie-diapered-raccoon-bandit .
+                                 :enemies ((yadfa/npcs:rookie-diapered-raccoon-bandit .
                                                (list :level (random-from-range 2 5)))))))))))
 
 (macro-level
@@ -120,7 +120,7 @@
                                         :enemy-spawn-list
                                         '((:max-random 10
                                               :enemies
-                                              ((yadfa/enemies:rookie-diapered-raccoon-bandit .
+                                              ((yadfa/npcs:rookie-diapered-raccoon-bandit .
                                                    (list
                                                        :level (random-from-range 2 5)
                                                        :wear (list
@@ -128,12 +128,12 @@
                                                                      'yadfa/items:lower-bandit-swim-diaper-cover)
                                                                  (make-instance
                                                                      'yadfa/items:bandit-diaper
-                                                                     :sogginess (strong-random 1000)
-                                                                     :messiness (strong-random 6000)))
+                                                                     :sogginess (random 1000)
+                                                                     :messiness (random 6000)))
                                                        :level (random-from-range 2 5)))))
                                              (:max-random 10
                                                  :enemies
-                                                 ((yadfa/enemies:diapered-raccoon-bandit .
+                                                 ((yadfa/npcs:diapered-raccoon-bandit .
                                                       (list
                                                           :level (random-from-range 2 5)
                                                           :wear (list
@@ -146,7 +146,7 @@
                                                           :level (random-from-range 2 5)))))
                                              (:max-random 10
                                                  :enemies
-                                                 ((yadfa/enemies:female-diapered-raccoon-bandit .
+                                                 ((yadfa/npcs:female-diapered-raccoon-bandit .
                                                       (list
                                                           :level (random-from-range 2 5)
                                                           :wear (list
@@ -156,8 +156,8 @@
                                                                         'yadfa/items:female-bandit-swim-diaper-cover)
                                                                     (make-instance
                                                                         'yadfa/items:bandit-female-diaper
-                                                                        :sogginess (strong-random 1000)
-                                                                        :messiness (strong-random 6000)))
+                                                                        :sogginess (random 1000)
+                                                                        :messiness (random 6000)))
                                                           :level (random-from-range 2 5))))))))))))
                a)))
 (ensure-zone (6 24 0 bandits-domain)

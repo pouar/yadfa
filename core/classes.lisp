@@ -166,7 +166,7 @@
             :documentation "the base stats of the character")
         (iv-stats
             :initarg :iv-stats
-            :initform (list :health (strong-random 16) :attack (strong-random 16) :defense (strong-random 16) :energy (strong-random 16))
+            :initform (list :health (random 16) :attack (random 16) :defense (random 16) :energy (random 16))
             :accessor iv-stats-of
             :documentation "iv stats of the character")
         (bitcoins
@@ -214,8 +214,12 @@
 (defmethod initialize-instance :after
     ((c base-character) &rest initargs &key &allow-other-keys)
     (declare (ignorable initargs))
-    (setf (health-of c) (calculate-stat c :health))
-    (setf (energy-of c) (calculate-stat c :energy))
+    (unless (iter (for (a b) on initargs)
+                (when (eq a :health) (leave t)))
+        (setf (health-of c) (calculate-stat c :health)))
+    (unless (iter (for (a b) on initargs)
+                (when (eq a :energy) (leave t)))
+        (setf (energy-of c) (calculate-stat c :energy)))
     (setf (exp-of c) (calculate-level-to-exp (level-of c))))
 (defclass player (base-character)
     ((position
@@ -246,9 +250,11 @@
                    (make-instance 'yadfa/moves:watersport)
                    (make-instance 'yadfa/moves:mudsport))))
 (defmethod initialize-instance :after
-    ((c player) &rest args)
-    (declare (ignorable args))
-    (setf (warp-on-death-point-of c) (position-of c))
+    ((c player) &rest initargs)
+    (declare (ignorable initargs))
+    (unless (iter (for (a b) on initargs)
+                (when (eq a :warp-on-death-point) (leave t)))
+        (setf (warp-on-death-point-of c) (position-of c)))
     (pushnew (player-of *game*) (team-of *game*)))
 (defclass zone ()
     ((description
@@ -451,42 +457,42 @@
             :initarg :value
             :initform 0
             :accessor value-of
-                        :documentation "Value of item in bitcoins")
+            :documentation "Value of item in bitcoins")
         (ai-flags
             :initarg :ai-flags
             :initform ()
             :accessor ai-flags-of
-                        :documentation "List of flags that affect the AI")
+            :documentation "List of flags that affect the AI")
         (default-move
             :initarg :default-move
             :initform (make-instance 'yadfa/moves:weapon-default)
             :accessor default-move-of
-                        :documentation "Default move this weapon uses")
+            :documentation "Default move this weapon uses")
         (attributes
             :initarg :attributes
             :initform '()
             :accessor attributes-of
-                        :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
+            :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
         (wear-stats
             :initarg :wear-stats
             :initform ()
             :accessor wear-stats-of
-                        :documentation "stat boost when wearing this item. Is a plist in the form of (list :attack attack :defense defense :health health :energy energy)")
+            :documentation "stat boost when wearing this item. Is a plist in the form of (list :attack attack :defense defense :health health :energy energy)")
         (wield-stats
             :initarg :wield-stats
             :initform ()
             :accessor wield-stats-of
-                        :documentation "stat boost when weilding this item. Is a plist in the form of (list :attack attack :defense defense :health health :energy energy)")
+            :documentation "stat boost when weilding this item. Is a plist in the form of (list :attack attack :defense defense :health health :energy energy)")
         (special-actions
             :initarg :special-actions
             :initform ()
             :accessor special-actions-of
-                        :documentation "Plist of actions that the player sees as actions with a lambda with the lambda-list `(item user &key &allow-other-keys)' they can perform with the item, ITEM is the instance that this slot belongs to, USER is the user using the item")
+            :documentation "Plist of actions that the player sees as actions with a lambda with the lambda-list `(item user &key &allow-other-keys)' they can perform with the item, ITEM is the instance that this slot belongs to, USER is the user using the item")
         (use-script
             :initarg :use-script
             :initform '()
             :accessor use-script-of
-                        :documentation "Function that runs when ITEM is used on USER. The lambda list is `(ITEM USER)' where ITEM is the instance of the item and USER is the user you're using it on.")
+            :documentation "Function that runs when ITEM is used on USER. The lambda list is `(ITEM USER)' where ITEM is the instance of the item and USER is the user you're using it on.")
         (wield-script
             :initarg :wield-script
             :initform '()
@@ -496,7 +502,7 @@
             :initarg :wear-script
             :initform '()
             :accessor wear-script-of
-                        :documentation "Function that runs when USER is wearing ITEM. The lambda list is `(ITEM USER)' where ITEM is the instance of the item and USER is the user you're using it on."))
+            :documentation "Function that runs when USER is wearing ITEM. The lambda list is `(ITEM USER)' where ITEM is the instance of the item and USER is the user you're using it on."))
     (:documentation "Something you can store in your inventory and use"))
 (defclass consumable (item)
     ()
@@ -512,67 +518,67 @@
          :initarg :bulge-text
          :initform ()
          :accessor bulge-text-of
-                  :documentation "A list of pairs containing the different text that describes the appearance that your diapers have on your pants based on the thickness, first one is the minimum thickness needed for the second text. the text for thicker padding must be listed first")
+         :documentation "A list of pairs containing the different text that describes the appearance that your diapers have on your pants based on the thickness, first one is the minimum thickness needed for the second text. the text for thicker padding must be listed first")
         (thickness
             :initarg :thickness
             :initform 1
             :accessor thickness-of
-                        :documentation "the thickness of the undies in mm")
+            :documentation "the thickness of the undies in mm")
         (thickness-capacity
             :initarg :thickness-capacity
             :initform (* (expt 6 1/3) 25.4)
             :accessor thickness-capacity-of
-                        :documentation "The maximum thickness of your diaper that this can fit over. T means infinite")
+            :documentation "The maximum thickness of your diaper that this can fit over. T means infinite")
         (waterproof
             :initarg :waterproof
             :initform nil
             :accessor waterproofp
-                        :documentation "Whether this prevents your diapers from swelling up in water")
+            :documentation "Whether this prevents your diapers from swelling up in water")
         (disposable
             :initarg :disposable
             :initform nil
             :accessor disposablep
-                        :documentation "Whether you clean this or throw it away")
+            :documentation "Whether you clean this or throw it away")
         (sogginess
             :initarg :sogginess
             :initform 0
             :accessor sogginess-of
-                        :documentation "sogginess in ml")
+            :documentation "sogginess in ml")
         (sogginess-capacity
             :initarg :sogginess-capacity
             :initform 10
             :accessor sogginess-capacity-of
-                        :documentation "sogginess capacity in ml")
+            :documentation "sogginess capacity in ml")
         (messiness
             :initarg :messiness
             :initform 0
             :accessor messiness-of
-                        :documentation "messiness in cg")
+            :documentation "messiness in cg")
         (messiness-capacity
             :initarg :messiness-capacity
             :initform 10
             :accessor messiness-capacity-of
-                        :documentation "messiness capacity in cg")
+            :documentation "messiness capacity in cg")
         (mess-text
             :initarg :mess-text
-            :initform (list nil nil nil)
+            :initform '()
             :accessor mess-text-of
-                        :documentation "List containing 3 strings that contain the text that comes up in the description when in the inventory, it based on messiness")
+            :documentation "List containing 3 strings that contain the text that comes up in the description when in the inventory, it based on messiness")
         (wet-text
             :initarg :wet-text
-            :initform (list nil nil nil)
+            :initform '()
             :accessor wet-text-of
-                        :documentation "List containing 3 strings that contain the text that comes up in the description when in the inventory it based on sogginess")
+            :documentation "List containing 3 strings that contain the text that comes up in the description when in the inventory it based on sogginess")
         (wear-mess-text
             :initarg :wear-mess-text
             :initform ()
             :accessor wear-mess-text-of
-                        :documentation "List containing 3 strings that contain the text that comes up in the description when wearing it based on messiness")
+            :documentation "List containing 3 strings that contain the text that comes up in the description when wearing it based on messiness")
         (wear-wet-text
             :initarg :wear-wet-text
             :initform ()
             :accessor wear-wet-text-of
-                        :documentation "List containing 3 strings that contain the text that comes up in the description when wearing it based on sogginess")
+            :documentation "List containing 3 strings that contain the text that comes up in the description when wearing it based on sogginess")
         (key
             :initarg :key
             :initform nil
@@ -582,16 +588,9 @@
             :initarg :locked
             :initform nil
             :accessor lockedp
-                        :documentation "Whether this clothing is locked to prevent removal")))
+            :documentation "Whether this clothing is locked to prevent removal")))
 (defclass closed-bottoms (bottoms)
     ())
-(defmethod initialize-instance :after
-    ((c closed-bottoms) &rest initargs &key &allow-other-keys)
-    (declare (ignorable initargs))
-    (unless (wear-mess-text-of c)
-        (setf (wear-mess-text-of c) (mess-text-of c)))
-    (unless (wear-wet-text-of c)
-        (setf (wear-wet-text-of c) (wet-text-of c))))
 (defclass full-outfit (top bottoms)
     ())
 (defclass closed-pants (closed-bottoms) ())
@@ -602,7 +601,7 @@
          :initarg :onesie-thickness-capacity
          :initform (cons (* 16 25.4) t)
          :accessor onesie-thickness-capacity-of
-                  :documentation "cons of values for the thickness capacity of the onesie, first value is for when it's closed, second for when it's opened")
+         :documentation "cons of values for the thickness capacity of the onesie, first value is for when it's closed, second for when it's opened")
         (onesie-waterproof
             :initarg :onesie-waterproof
             :initform nil
@@ -775,7 +774,7 @@
     ((items-for-sale
          :initarg :items-for-sale
          :initform ()
-                  :accessor items-for-sale-of
+         :accessor items-for-sale-of
          :documentation "Quoted list of class names for sale"))
     (:default-initargs
         :name "Shop"
@@ -903,7 +902,7 @@
     (:documentation "Class for beds, you can sleep in these."))
 (defclass config ()
     ())
-(defclass enemy (base-character)
+(defclass npc (base-character)
     ((exp-yield
          :initarg :exp-yield
          :initform 50
@@ -964,7 +963,7 @@
                                    ((and (<= (health-of self) (/ (calculate-stat self :health) 4))
                                         moves-with-health)
                                        (setf move-to-use
-                                           (nth (strong-random (list-length moves-with-health)) moves-with-health))
+                                           (random-elt moves-with-health))
                                        (funcall
                                            (coerce
                                                (attack-of move-to-use)
@@ -974,7 +973,7 @@
                                            move-to-use))
                                    (t
                                        (setf move-to-use
-                                           (nth (strong-random (list-length moves-can-use)) moves-can-use))
+                                           (random-elt moves-can-use))
                                        (funcall
                                            (coerce
                                                (attack-of move-to-use)
@@ -986,7 +985,10 @@
             :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack"))
     (:default-initargs :base-stats (list :health 40 :attack 45 :defense 40 :energy 35) :level (random-from-range 2 5) :bitcoins nil)
     (:documentation "Class for enemies"))
-(defclass potty-enemy (enemy) ()
+(defmethod print-object ((obj npc) stream)
+    (print-unreadable-object (obj stream :type t :identity t)
+        (format stream "\"~a ~a\"" (if (malep obj) "Male" "Female") (species-of obj))))
+(defclass potty-npc (npc) ()
     (:default-initargs
         :bladder/fill-rate (* (/ 2000 24 60) 2)
         :bowels/fill-rate (* (/ 12000 24 60) 2))

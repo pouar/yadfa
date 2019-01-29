@@ -20,8 +20,6 @@
                           '(asdf:load-system :sb-gmp)))))
     (a))
 #+sb-gmp (sb-gmp:install-gmp-funs)
-(when (position "ironclad" (uiop:command-line-arguments) :test #'string=)
-    (pushnew :ironclad *features*))
 (when (position "slynk" (uiop:command-line-arguments) :test #'string=)
     (pushnew :slynk *features*))
 (when (position "swank" (uiop:command-line-arguments) :test #'string=)

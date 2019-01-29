@@ -11,7 +11,6 @@
     :build-pathname "yadfa"
     :entry-point "yadfa::main"
     :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria"
-                    (:feature :ironclad "ironclad")
                     (:feature :sbcl "sb-aclrepl") (:feature :slynk "slynk")
                     (:feature :swank "swank") (:feature :yadfa/docs "net.didierverna.declt"))
     :components (
@@ -44,29 +43,29 @@
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
                                                                   "data/items/*.lisp")))
-                                        (:module "enemies"
+                                        (:module "npcs"
                                             :depends-on ("moves" "items")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/enemies/*.lisp")))
+                                                                  "data/npcs/*.lisp")))
                                         (:module "props"
-                                            :depends-on ("items" "enemies")
+                                            :depends-on ("items" "npcs")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
                                                                   "data/props/*.lisp")))
                                         (:module "events"
-                                            :depends-on ("moves" "items" "enemies" "props")
+                                            :depends-on ("moves" "items" "npcs" "props")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
                                                                   "data/events/*.lisp")))
                                         (:module "map"
-                                            :depends-on ( "moves" "items" "enemies" "props" "events")
+                                            :depends-on ( "moves" "items" "npcs" "props" "events")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname

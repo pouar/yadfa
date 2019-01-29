@@ -314,3 +314,35 @@
                                    0
                                    "The flaps hang over covering your underwear like a dress"))
         :description "A one piece swimsuit for the higher ups to wear when in the water. It resembles a woman's one piece swimsuit, but has snaps on the bottom to make diaper changes easier. It has the bandits' insignia on the front. This model has a skirt in order to hide the poofiness of their diaper."))
+(defclass navy-skirt (yadfa:skirt) ()
+    (:default-initargs
+        :name "Navy Skirt"
+        :plural-name "Navy Skirts"
+        :value 200
+        :description "A loose fitting skirt part of the Navy uniform for girls."
+        :bulge-text (list
+                        480
+                        "Your padding is completely visible"
+                        430
+                        "Your padding is slightly visible under your dress"
+                        (* 1/2 25)
+                        "The dress does a good job hiding your padding"
+                        0
+                        "It fits quite loosely")
+        :thickness-capacity t))
+(defclass navy-pants (yadfa:pants) ()
+    (:default-initargs
+        :name "Navy Pants"
+        :plural-name "Navy Pants"
+        :value 200
+        :description "The bottom half of a Navy uniform."
+        :bulge-text (list
+                        12
+                        "Your padding keeps poking out of the top of your pants"
+                        0
+                        "It fits snuggly")))
+(defclass navy-shirt (yadfa:shirt) ()
+    (:default-initargs
+        :name "Navy Shirt"
+        :value 200
+        :description "The top half of a Navy uniform"))

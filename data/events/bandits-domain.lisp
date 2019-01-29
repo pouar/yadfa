@@ -3,7 +3,7 @@
     :lambda '(lambda (self)
                  (declare (ignore self))
                  (set-new-battle
-                     '((yadfa/enemies:giant-diapered-raccoon-bandit . '(:level 5)))
+                     '((yadfa/npcs:giant-diapered-raccoon-bandit . '(:level 5)))
                      :continuable t
                      :enter-battle-text (format nil "Giant Raccoon Bandit: This area is under control of the Raccoon Bandits. If you want in you have to get past me~%*Cue battle transition. You can't see it because this is a text based game, but trust us, it's there.*~%"))))
 (defevent enter-bandits-shop-1
@@ -16,7 +16,7 @@
     :repeatable t
     :lambda '(lambda (self)
                  (declare (ignorable self))
-                 (if (< (strong-random 15) 1)
+                 (if (< (random 15) 1)
                      (progn
                          (format t "You found a treasure chest, use `(interact :chest :take :all)' to take all the treasure from it~%")
                          (setf (getf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest)
@@ -24,32 +24,32 @@
                                  :name "Treasure Chest"
                                  :description "A treasure chest"
                                  :items (cond
-                                            ((< (strong-random 10))
+                                            ((< (random 10))
                                                 (list (make-instance 'yadfa/items:gold-collar
                                                           :value (random-from-range 25000 50000))))
-                                            ((< (strong-random 10))
+                                            ((< (random 10))
                                                 (list (make-instance 'yadfa/items:gold-pacifier
                                                           :value (random-from-range 10000 20000))))
-                                            ((< (strong-random 10))
+                                            ((< (random 10))
                                                 (list (make-instance 'yadfa/items:gem
                                                           :value (random-from-range 25000 50000))))
-                                            ((< (strong-random 20))
+                                            ((< (random 20))
                                                 (list (make-instance 'yadfa/items:gold-bar
                                                           :value (random-from-range 50000 100000)))))
                                  :bitcoins (random-from-range 12500 25000))))
                      (remf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest))
                  (cond
-                     ((< (strong-random 12) 1)
+                     ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa/enemies:diapered-raccoon-bandit . (list
+                             '((yadfa/npcs:diapered-raccoon-bandit . (list
                                                                             :level (random-from-range 2 5)
                                                                             :bladder/contents (random-from-range 450 550)))
-                                  (yadfa/enemies:diapered-raccoon-bandit . (list
+                                  (yadfa/npcs:diapered-raccoon-bandit . (list
                                                                                :level (random-from-range 2 5)
-                                                                               :bladder/contents (strong-random 400)
-                                                                               :bowels/contents (strong-random 5000))))
+                                                                               :bladder/contents (random 400)
+                                                                               :bowels/contents (random 5000))))
                              :enter-battle-text (format nil "Random Raccoon 1: Hey, I need to take a break. I really gotta go.~%~%Random Raccoon 2: Well you're gonna have to hold it, as we seem to have an intruder.~%~%Random Raccoon 1: But.. but... ooooohhhh *clutches the front of his diaper pressing his knees together*~%~%Time for battle!!!~%~%")))
-                     ((< (strong-random 12) 1)
+                     ((< (random 12) 1)
                          (format t
                              "*~a hears grunting and looks to find one of the raccoons squating down and messing his pamps. After finishing, he quickly stands up blushing heavily.*~%~%"
                              (name-of (player-of *game*)))
@@ -69,7 +69,7 @@
                                          "giggles"))
                                  (format t "*~a's team mates laugh*~%~%")))
                          (format t "Diapered Raccoon Bandit: You're gonna pay for that!!!!~%~%")
-                         (if (< (strong-random 2) 1)
+                         (if (< (random 2) 1)
                              (progn
                                  (format t
                                      "~a: I think it's you who are going to pay, unless you want me to blab to your friends telling them what you just did.~%~%"
@@ -82,13 +82,13 @@
                                      "~a gets everything the raccoon is carrying except the clothes and diapers the raccoon is wearing. The raccoon then waddles off with his legs spread apart like a 5 year old who didn't make it to the toilet in time.~%~%"
                                      (name-of (player-of *game*)))
                                  (incf (bitcoins-of (player-of *game*)) (random-from-range 50000 100000))
-                                 (iter (for i from 0 to (strong-random 5))
+                                 (iter (for i from 0 to (random 5))
                                      (push (make-instance 'yadfa/items:gold-bar) (inventory-of (player-of *game*))))
-                                 (iter (for i from 0 to (strong-random 5))
+                                 (iter (for i from 0 to (random 5))
                                      (push (make-instance 'yadfa/items:gem) (inventory-of (player-of *game*))))
-                                 (iter (for i from 0 to (strong-random 5))
+                                 (iter (for i from 0 to (random 5))
                                      (push (make-instance 'yadfa/items:bandit-uniform-tunic) (inventory-of (player-of *game*))))
-                                 (iter (for i from 0 to (strong-random 20))
+                                 (iter (for i from 0 to (random 20))
                                      (push
                                          (make-instance 'yadfa/items:bandit-adjustable-diaper)
                                          (inventory-of (player-of *game*))))
@@ -96,24 +96,24 @@
                                      (make-instance 'yadfa/items:bandit-swimsuit/closed)
                                      (inventory-of (player-of *game*))))
                              (set-new-battle
-                                 '((yadfa/enemies:diapered-raccoon-bandit
+                                 '((yadfa/npcs:diapered-raccoon-bandit
                                        . (list :level (random-from-range 2 5)
                                              :bowels/contents 0
                                              :wear (list
                                                        (make-instance 'yadfa/items:bandit-uniform-tunic)
                                                        (make-instance 'yadfa/items:bandit-adjustable-diaper
                                                            :messiness 8000))))))))
-                     ((< (strong-random 12) 1)
+                     ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa/enemies:female-diapered-raccoon-bandit .
+                             '((yadfa/npcs:female-diapered-raccoon-bandit .
                                    (list :level (random-from-range 2 5))))))
-                     ((< (strong-random 12) 1)
+                     ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa/enemies:rookie-diapered-raccoon-bandit .
+                             '((yadfa/npcs:rookie-diapered-raccoon-bandit .
                                    (list :level (random-from-range 2 5))))))
-                     ((< (strong-random 12) 1)
+                     ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa/enemies:diapered-raccoon-bandit .
+                             '((yadfa/npcs:diapered-raccoon-bandit .
                                    (list :level (random-from-range 2 5)))))))))
 (defevent obtain-diaper-lock-1
     :finished-depends '(enter-bandits-shop-1 get-diaper-locked-1)

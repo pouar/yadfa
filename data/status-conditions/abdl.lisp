@@ -36,7 +36,7 @@
                                       (setf
                                           (getf (status-conditions-of *battle*) user)
                                           (remove self (getf (status-conditions-of *battle*) user))))
-                                ((< (strong-random 4) 1)
+                                ((< (random 4) 1)
                                     (format t "~a is too busy grabbing the back of ~a diaper trying to unmush it to fight~%"
                                         (name-of user)
                                         (if (malep user) "his" "her"))

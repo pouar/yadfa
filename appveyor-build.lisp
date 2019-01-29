@@ -8,6 +8,5 @@
 #+(and gmp sbcl) (require 'sb-gmp)
 #+(and sbcl gmp) (sb-gmp:install-gmp-funs)
 (pushnew :yadfa/mods *features*)
-(pushnew :ironclad *features*)
 (asdf:make :yadfa)
 (#__exit 0)

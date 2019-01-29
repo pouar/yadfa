@@ -4,10 +4,6 @@
     "Compute bitwise left shift of x by 'bits' bits, represented on 'width' bits"
     (logand (ash x bits)
         (1- (ash 1 width))))
-#-ironclad
-(defun strong-random (limit &optional ignored)
-    (declare (ignore ignored))
-    (random limit))
 (defun shr (x width bits)
     "Compute bitwise right shift of x by 'bits' bits, represented on 'width' bits"
     (logand (ash x (- bits))
@@ -623,7 +619,7 @@
             (iter
                 (for i in (enemy-spawn-list-of (get-zone (position-of (player-of *game*)))))
                 (let ((random (if (getf i :random) (getf i :random) 1)))
-                    (when (< (strong-random (getf i :max-random)) random)
+                    (when (< (random (getf i :max-random)) random)
                         (setf *battle* (make-instance 'battle
                                            :enemies (iter (for j in (getf i :enemies))
                                                         (collect (apply #'make-instance (car j) (eval (cdr j)))))))
@@ -699,7 +695,7 @@
                 (iter
                     (for i in (enemy-spawn-list-of (get-zone (position-of (player-of *game*)))))
                     (let ((random (if (getf i :random) (getf i :random) 1)))
-                        (when (< (strong-random (getf i :max-random)) random)
+                        (when (< (random (getf i :max-random)) random)
                             (setf *battle* (make-instance 'battle
                                                :enemies (iter (for j in (getf i :enemies))
                                                             (collect (apply #'make-instance (car j) (eval (cdr j)))))))
@@ -723,7 +719,7 @@
     (check-type force-fill-amount (or null number))
     (check-type force-wet-amount (or null number))
     (check-type wet-amount (or boolean number))
-    (let* ((return-value ()) (affected-clothes ()) (random (strong-random 4)) (amount nil))
+    (let* ((return-value ()) (affected-clothes ()) (random (random 4)) (amount nil))
         (when force-fill-amount
             (setf (bladder/contents-of wetter) force-fill-amount))
         (cond (force-wet-amount
@@ -946,13 +942,13 @@
                 (when (and wet-return-value (> (getf wet-return-value :wet-amount) 0))
                     (push (format nil "piddle ~a" (if (malep user) "prince" "princess")) names))
                 (push
-                    (format nil "Looks like you missed a step ~a" (nth (strong-random (list-length names)) names))
+                    (format nil "Looks like you missed a step ~a" (random-elt names))
                     out)
                 (push
                     (format nil "Aww, looks like the little ~a forgot to take ~a ~a first"
                         (let ((a names))
                             (push (format nil "baby ~a" (if (malep user) "boy" "girl")) a)
-                            (nth (strong-random (list-length a)) a))
+                            (random-elt a))
                         (if (malep user) "his" "her")
                         (cond ((wearingp (wear-of user) 'tabbed-briefs)
                                   "diapers")
@@ -960,7 +956,7 @@
                                 "pullups")
                             (t "panties")))
                     out)
-                (format t "~a~%" (nth (strong-random (list-length out)) out))))))
+                (format t "~a~%" (random-elt out))))))
 (defun potty-on-self-or-prop (prop &key wet mess pants-down (user (player-of *game*)))
     #+sbcl (declare (type (or boolean number) wet mess))
     (check-type wet (or boolean number))
@@ -1028,11 +1024,11 @@
                                 (> (getf wet-return-value :wet-amount) 0)
                                 (> (getf mess-return-value :mess-amount) 0)
                                 both-list)
-                               (format t "~a~%" (nth (strong-random (list-length both-list)) both-list)))
+                               (format t "~a~%" (random-elt both-list)))
                            ((and mess-return-value (> (getf mess-return-value :mess-amount) 0) mess-list)
-                               (format t "~a~%" (nth (strong-random (list-length mess-list)) mess-list)))
+                               (format t "~a~%" (random-elt mess-list)))
                            ((and wet-return-value (> (getf wet-return-value :wet-amount) 0) wet-list)
-                               (format t "~a~%" (nth (strong-random (list-length wet-list)) wet-list))))
+                               (format t "~a~%" (random-elt wet-list))))
                        (setf wet-list () mess-list () both-list()))
                       (format-leak-lists ()
                           (cond
@@ -1042,11 +1038,11 @@
                                    (> (getf wet-return-value :leak-amount) 0)
                                    (> (getf mess-return-value :leak-amount) 0)
                                    both-leak-list)
-                                  (format t "~a~%" (nth (strong-random (list-length both-leak-list)) both-leak-list)))
+                                  (format t "~a~%" (random-elt both-leak-list)))
                               ((and mess-return-value (> (getf mess-return-value :leak-amount) 0) mess-leak-list)
-                                  (format t "~a~%" (nth (strong-random (list-length mess-leak-list)) mess-leak-list)))
+                                  (format t "~a~%" (random-elt mess-leak-list)))
                               ((and wet-return-value (> (getf wet-return-value :leak-amount) 0) wet-leak-list)
-                                  (format t "~a~%" (nth (strong-random (list-length wet-leak-list)) wet-leak-list))))
+                                  (format t "~a~%" (random-elt wet-leak-list))))
                           (setf wet-leak-list () mess-leak-list () both-leak-list())))
                 (cond
                     ;; player pulls his pants down then potty
@@ -1055,7 +1051,7 @@
                                      "~a pulled down ~a ~a and went potty on the ~a"
                                      (name-of user)
                                      (if (malep user) "his" "her")
-                                     (nth (strong-random (list-length clothes)) clothes)
+                                     (random-elt clothes)
                                      (if prop
                                          (name-of prop)
                                          "floor"))
@@ -1064,14 +1060,14 @@
                                      "~a pulls down ~a ~a and marks ~a territory"
                                      (name-of user)
                                      (if (malep user) "his" "her")
-                                     (nth (strong-random (list-length clothes)) clothes)
+                                     (random-elt clothes)
                                      (if (malep user) "his" "her"))
                             both-list wet-list mess-list)
                         (push (format nil
                                   "~a pulled down ~a ~a and peed on the ~a"
                                   (name-of user)
                                   (if (malep user) "his" "her")
-                                  (nth (strong-random (list-length clothes)) clothes)
+                                  (random-elt clothes)
                                   (if prop
                                       (name-of prop)
                                       "floor"))
@@ -1080,7 +1076,7 @@
                                   "~a pulled down ~a ~a and squats down and mess"
                                   (name-of user)
                                   (if (malep user) "his" "her")
-                                  (nth (strong-random (list-length clothes)) clothes))
+                                  (random-elt clothes))
                             mess-list)
                         (do-push (format nil
                                      "Bad ~a! No going potty on the ~a!"
@@ -1399,7 +1395,7 @@
                                                      "You think you just leaked a little"
                                                      (format nil
                                                          "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                                         (nth (strong-random 2) (list "groan" "whine")))))
+                                                         (random-elt '("groan" "whine")))))
                                            ((and (<= (getf (car had-accident) :wet-amount) 300) (> (getf (car had-accident) :wet-amount) 10))
                                                (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
                                            ((> (getf (car had-accident) :wet-amount) 300)
@@ -1424,7 +1420,7 @@
                                                       j)))
                                           ((wearingp (wear-of user) 'closed-pants)
                                               '(push "a wet patch forms on the front of your pants" j))))
-                                  (nth (strong-random (list-length j)) j)))
+                                  (random-elt j)))
                           (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
                               (format t "~a~%"
                                   (cond
@@ -1436,7 +1432,7 @@
                                               (push "Your diaper leaks. There goes the carpet." out)
                                               (push "Heh, baby made a puddle" out)
                                               (push "Your diapers sprung a leak" out)
-                                              (nth (strong-random (list-length out)) out)))
+                                              (random-elt out)))
                                       ((wearingp (wear-of user) 'pullon)
                                           (let ((out ()))
                                               (push "Your face turns red as you leak everywhere" out)
@@ -1445,11 +1441,11 @@
                                               (push "Your pullups leak. There goes the carpet." out)
                                               (push "Heh, baby made a puddle" out)
                                               (push "Your pullups sprung a leak" out)
-                                              (nth (strong-random (list-length out)) out)))
+                                              (random-elt out)))
                                       (t
                                           (format nil "~a"
                                               (let ((j (list "Maybe you should start wearing diapers"
-                                                           (format nil "Bad ~a! No going potty in the house!" (if (strong-random 2) (species-of user) (name-of user)))
+                                                           (format nil "Bad ~a! No going potty in the house!" (if (random 2) (species-of user) (name-of user)))
                                                            "A puddle appears on the floor"
                                                            "There goes the carpet"
                                                            "Heh, baby made a puddle")))
@@ -1458,9 +1454,9 @@
                                                       (push (format nil "Heh, baby wet ~a pants" (if (malep user) "his" "her")) j)
                                                       (push (format nil
                                                                 "Bad ~a! Look what you did to your pants!"
-                                                                (if (strong-random 2) (species-of user) (name-of user)))
+                                                                (if (random 2) (species-of user) (name-of user)))
                                                           j))
-                                                  (nth (strong-random (list-length j)) j))))))))
+                                                  (random-elt j))))))))
                     ((>= (bladder/contents-of user) (bladder/potty-dance-limit-of user))
                         (format t "~a~%"
                             (let ((out ()))
@@ -1469,7 +1465,7 @@
                                 (push "You feel like you're going to wet yourself" out)
                                 (push "You whine as you hold yourself in desperation" out)
                                 (push "Aww, does the baby need to potty?~%" out)
-                                (nth (strong-random (list-length out)) out))))
+                                (random-elt out))))
                     ((>= (bladder/contents-of user) (bladder/need-to-potty-limit-of user))
                         (format t "You need to pee~%")))
                 (cond ((and (cdr had-accident) (> (getf (cdr had-accident) :mess-amount) 0))
@@ -1493,7 +1489,7 @@
                                                       j)))
                                           (t
                                               (push "a lump forms at the seat of your pants" j))))
-                                  (nth (strong-random (list-length j)) j)))
+                                  (random-elt j)))
                           (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
                               (format t "~a~%"
                                   (cond
@@ -1505,20 +1501,20 @@
                                               (push "Your diaper leaks. There goes the carpet." out)
                                               (push "Not on the carpet!!!" out)
                                               (push "Blowout!!!!" out)
-                                              (nth (strong-random (list-length out)) out)))
+                                              (random-elt out)))
                                       ((wearingp (wear-of user) 'pullon)
                                           (let ((out ()))
                                               (push "Your face turns red as your mess falls out the leg guards" out)
                                               (push "Your pullups leaks all over the place, You sure you're ready for those?" out)
                                               (push "Your pullups leak. There goes the carpet." out)
                                               (push "Not on the carpet!!!" out)
-                                              (nth (strong-random (list-length out)) out)))
+                                              (random-elt out)))
                                       (t
                                           (format nil "~a"
                                               (let ((j (list "Maybe you should start wearing diapers"
                                                            (format nil
                                                                "Bad ~a! No going potty in the house!"
-                                                               (if (strong-random 2) (species-of user) (name-of user)))
+                                                               (if (random 2) (species-of user) (name-of user)))
                                                            "There goes the carpet"
                                                            "Heh, baby made a mess")))
                                                   (when (wearingp (wear-of user) 'closed-pants)
@@ -1526,9 +1522,9 @@
                                                       (push (format nil "Heh, baby messed ~a pants" (if (malep user) "his" "her")) j)
                                                       (push (format nil
                                                                 "Bad ~a! Look what you did to your pants!"
-                                                                (if (strong-random 2) (species-of user) (name-of user)))
+                                                                (if (random 2) (species-of user) (name-of user)))
                                                           j))
-                                                  (nth (strong-random (list-length j)) j))))))))
+                                                  (random-elt j))))))))
                     ((>= (bowels/contents-of user) (bowels/potty-dance-limit-of user))
                         (format t "~a~%"
                             (let ((out ()))
@@ -1536,7 +1532,7 @@
                                 (push "You clench hard trying to avoid messing" out)
                                 (push "You fart a little due to the pressure" out)
                                 (push "Aww, does the baby need to potty?" out)
-                                (nth (strong-random (list-length out)) out))))
+                                (random-elt out))))
                     ((>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
                         (format t "You need to poo~%"))))
             ((or (eq (potty-training-of user) :last-minute))
@@ -1557,20 +1553,20 @@
                                            ((and
                                                 (car had-accident)
                                                 (> (getf (car had-accident) :leak-amount) 0))
-                                               (format t "~a" (nth (strong-random (list-length wet-leak-list)) wet-leak-list)))
+                                               (format t "~a" (random-elt wet-leak-list)))
                                            ((and
                                                 (car had-accident)
                                                 (> (getf (car had-accident) :wet-amount) 0))
-                                               (format t "~a" (nth (strong-random (list-length wet-list)) wet-list))))
+                                               (format t "~a" (random-elt wet-list))))
                                        (cond
                                            ((and
                                                 (cdr had-accident)
                                                 (> (getf (cdr had-accident) :leak-amount) 0))
-                                               (format t "~a" (nth (strong-random (list-length mess-leak-list)) mess-leak-list)))
+                                               (format t "~a" (random-elt mess-leak-list)))
                                            ((and
                                                 (cdr had-accident)
                                                 (> (getf (cdr had-accident) :mess-amount) 0))
-                                               (format t "~a" (nth (strong-random (list-length mess-list)) mess-list))))
+                                               (format t "~a" (random-elt mess-list))))
                                        )
                                    (cond
                                        ((and (>=
@@ -1589,7 +1585,7 @@
                                                             (bowels/maximum-limit-of user)
                                                             (bowels/potty-dance-limit-of user))
                                                         2))))
-                                           (format t "~a" (nth (strong-random (list-length gotta-both-list)) gotta-both-list)))
+                                           (format t "~a" (random-elt gotta-both-list)))
                                        ((>=
                                             (bladder/contents-of user)
                                             (+ (bladder/potty-dance-limit-of user)
@@ -1598,7 +1594,7 @@
                                                         (bladder/maximum-limit-of user)
                                                         (bladder/potty-dance-limit-of user))
                                                     2)))
-                                           (format t "~a" (nth (strong-random (list-length gotta-pee-list)) gotta-pee-list)))
+                                           (format t "~a" (random-elt gotta-pee-list)))
                                        ((>=
                                             (bowels/contents-of user)
                                             (+ (bowels/potty-dance-limit-of user)
@@ -1607,15 +1603,15 @@
                                                         (bowels/maximum-limit-of user)
                                                         (bowels/potty-dance-limit-of user))
                                                     2)))
-                                           (format t "~a" (nth (strong-random (list-length gotta-poo-list)) gotta-poo-list)))
+                                           (format t "~a" (random-elt gotta-poo-list)))
                                        ((and
                                             (>= (bowels/contents-of user) (bowels/potty-dance-limit-of user))
                                             (>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)))
-                                           (format t "~a" (nth (strong-random (list-length potty-dance-both-list)) potty-dance-both-list)))
+                                           (format t "~a" (random-elt potty-dance-both-list)))
                                        ((>= (bowels/contents-of user) (bowels/potty-dance-limit-of user))
-                                           (format t "~a" (nth (strong-random (list-length potty-dance-poo-list)) potty-dance-poo-list)))
+                                           (format t "~a" (random-elt potty-dance-poo-list)))
                                        ((>= (bladder/contents-of user) (bladder/potty-dance-limit-of user))
-                                           (format t "~a" (nth (strong-random (list-length potty-dance-pee-list)) potty-dance-pee-list)))))))
+                                           (format t "~a" (random-elt potty-dance-pee-list)))))))
                         (cond
                             ((and (car had-accident) (= (getf (car had-accident) :wet-amount) 10))
                                 (do-push (with-output-to-string (s)
@@ -1839,7 +1835,7 @@
                                                  (if (malep user) "he" "she")
                                                  (if (malep user) "he" "she")))
                                     mess-list mess-leak-list)))
-                        (if (= (strong-random 5) 0)
+                        (if (= (random 5) 0)
                             (progn
                                 (do-push (with-output-to-string (s)
                                              (format s "~a: ~a, do you need to potty?~%~%"
@@ -1951,20 +1947,20 @@
                                        ((and
                                             (car had-accident)
                                             (> (getf (car had-accident) :leak-amount) 0))
-                                           (format t "~a" (nth (strong-random (list-length wet-leak-list)) wet-leak-list)))
+                                           (format t "~a" (random-elt wet-leak-list)))
                                        ((and
                                             (car had-accident)
                                             (> (getf (car had-accident) :wet-amount) 0))
-                                           (format t "~a" (nth (strong-random (list-length wet-list)) wet-list))))
+                                           (format t "~a" (random-elt wet-list))))
                                    (cond
                                        ((and
                                             (cdr had-accident)
                                             (> (getf (cdr had-accident) :leak-amount) 0))
-                                           (format t "~a" (nth (strong-random (list-length mess-leak-list)) mess-leak-list)))
+                                           (format t "~a" (random-elt mess-leak-list)))
                                        ((and
                                             (cdr had-accident)
                                             (> (getf (cdr had-accident) :mess-amount) 0))
-                                           (format t "~a" (nth (strong-random (list-length mess-list)) mess-list)))))))
+                                           (format t "~a" (random-elt mess-list)))))))
                         (cond ((eq (potty-training-of user) :rebel)
                                   (do-push (with-output-to-string (s)
                                                (format s "*~a stops in his tracks*~%~%"
@@ -2079,7 +2075,7 @@
                           (string= a (class-name (class-of b)))
                           (eq a (class-name (class-of b))))))))
 (defun random-from-range (start end)
-    (+ start (strong-random (+ 1 (- end start)))))
+    (+ start (random (+ 1 (- end start)))))
 (defun calculate-diaper-usage (user)
     (iter (with j = (list :sogginess 0 :sogginess-capacity 0 :messiness 0 :messiness-capacity 0))
         (for i in (wearingp (wear-of user) 'closed-bottoms))
@@ -2408,7 +2404,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))
                             (progn
                                 (push (format nil
@@ -2423,7 +2419,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))))
                     ((wearingp (wear-of i) 'pullon)
                         (if (> (getf (car return-value) :leak-amount) 0)
@@ -2435,7 +2431,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))
                             (progn
                                 (push (format nil
@@ -2448,7 +2444,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))))
                     ((wearingp (wear-of i) 'incontinence-pad)
                         (if (> (getf (car return-value) :leak-amount) 0)
@@ -2460,7 +2456,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))
                             (progn
                                 (push (format nil
@@ -2470,7 +2466,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))))
                     ((wearingp (wear-of i) 'closed-bottoms)
                         (push (format nil
@@ -2480,7 +2476,7 @@
                                   (if (malep i) "his" "her")
                                   (name-of i))
                             out)
-                        (format t "~a" (nth (strong-random (list-length out)) out))
+                        (format t "~a" (random-elt out))
                         (setf out ()))
                     (t
                         (push (format nil
@@ -2489,7 +2485,7 @@
                                   (if (malep i) "his" "her")
                                   (name-of i))
                             out)
-                        (format t "~a" (nth (strong-random (list-length out)) out))
+                        (format t "~a" (random-elt out))
                         (setf out ()))))
             (when (and (> (getf (cdr return-value) :mess-amount) 0) (> (getf (car return-value) :wet-amount) 0))
                 (format t "~a is also " (name-of i)))
@@ -2505,7 +2501,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))
                             (progn
                                 (push (format nil
@@ -2515,7 +2511,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))))
                     ((wearingp (wear-of i) 'pullon)
                         (if (> (getf (cdr return-value) :leak-amount) 0)
@@ -2527,7 +2523,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))
                             (progn
                                 (push (format nil
@@ -2537,7 +2533,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))))
                     ((wearingp (wear-of i) 'incontinence-pad)
                         (if (> (getf (cdr return-value) :leak-amount) 0)
@@ -2549,7 +2545,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))
                             (progn
                                 (push (format nil
@@ -2559,7 +2555,7 @@
                                           (if (malep i) "his" "her")
                                           (name-of i))
                                     out)
-                                (format t "~a" (nth (strong-random (list-length out)) out))
+                                (format t "~a" (random-elt out))
                                 (setf out ()))))
                     ((wearingp (wear-of i) 'closed-bottoms)
                         (push (format nil
@@ -2569,7 +2565,7 @@
                                   (if (malep i) "his" "her")
                                   (name-of i))
                             out)
-                        (format t "~a" (nth (strong-random (list-length out)) out))
+                        (format t "~a" (random-elt out))
                         (setf out ()))
                     (t
                         (push (format nil
@@ -2579,7 +2575,7 @@
                                   (if (malep i) "his" "her")
                                   (name-of i))
                             out)
-                        (format t "~a" (nth (strong-random (list-length out)) out))
+                        (format t "~a" (random-elt out))
                         (setf out ())))))))
 (defun shopfun (items-for-sale &key items-to-buy items-to-sell user format-items)
     #+sbcl (declare
@@ -2827,7 +2823,7 @@
                                         (when (>=
                                                   (bladder/contents-of selected-user)
                                                   (bladder/potty-dance-limit-of selected-user))
-                                            (push (strong-random (expt ($ x / y * (expt 5 1.3)) (/ 1 1.3)))
+                                            (push (random (expt ($ x / y * (expt 5 1.3)) (/ 1 1.3)))
                                                 a))
                                         (setf
                                             x (-
@@ -2838,7 +2834,7 @@
                                         (when (>=
                                                   (bowels/contents-of selected-user)
                                                   (bowels/potty-dance-limit-of selected-user))
-                                            (push (strong-random (expt ($ x / y * (expt 5 2)) (/ 1 2)))
+                                            (push (random (expt ($ x / y * (expt 5 2)) (/ 1 2)))
                                                 a))
                                         a)
                                   '<))
@@ -2932,13 +2928,13 @@
                     ((and
                          (watersport-limit-of i)
                          (<= (- (bladder/maximum-limit-of i) (bladder/contents-of i)) (watersport-limit-of i))
-                         (< (strong-random (watersport-chance-of i)) 1))
+                         (< (random (watersport-chance-of i)) 1))
                         (let ((a (make-instance 'yadfa/moves:watersport)))
                             (funcall (coerce (attack-of a) 'function) (player-of *game*) i a)))
                     ((and
                          (mudsport-limit-of i)
                          (<= (- (bowels/maximum-limit-of i) (bowels/contents-of i)) (mudsport-limit-of i))
-                         (< (strong-random (mudsport-chance-of i)) 1))
+                         (< (random (mudsport-chance-of i)) 1))
                         (let ((a (make-instance 'yadfa/moves:mudsport)))
                             (funcall (coerce (attack-of a) 'function) (player-of *game*) i a)))
                     ((iter (for j in (getf (status-conditions-of *battle*) i))
@@ -2961,7 +2957,7 @@
                                             (when (>=
                                                       (bladder/contents-of i)
                                                       (bladder/potty-dance-limit-of i))
-                                                (push (strong-random (expt ($ x / y * (expt 5 1.3)) (/ 1 1.3)))
+                                                (push (random (expt ($ x / y * (expt 5 1.3)) (/ 1 1.3)))
                                                     a))
                                             (setf
                                                 x (-
@@ -2972,7 +2968,7 @@
                                             (when (>=
                                                       (bowels/contents-of i)
                                                       (bowels/potty-dance-limit-of i))
-                                                (push (strong-random (expt ($ x / y * (expt 5 2)) (/ 1 2)))
+                                                (push (random (expt ($ x / y * (expt 5 2)) (/ 1 2)))
                                                     a))
                                             a)
                                       '<))
@@ -2982,7 +2978,7 @@
                         (funcall
                             (coerce (battle-script-of i) 'function)
                             i
-                            (nth (strong-random (list-length (team-of *game*))) (team-of *game*)))))
+                            (random-elt (team-of *game*)))))
                 (when (<= (health-of i) 0)
                     (format t "~a has fainted~%" (name-of i))
                     (next-iteration)))
@@ -3076,7 +3072,7 @@
                                      :wear (iter (for i in (cdddr (butlast values)))
                                                (unless (eq i 'nil) (collect (make-instance i))))))
         (when (member (seventh values) '(yadfa/items:diaper yadfa/items:pullups))
-            (iter (for i from 1 to (strong-random 20))
+            (iter (for i from 1 to (random 20))
                 (push (make-instance (seventh values))
                     (get-items-from-prop :dresser (position-of default))))))
     (write-line "You wake up from sleeping, the good news is that you managed to stay dry through out the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io))
