@@ -3,14 +3,14 @@ platform: x64
 clone_depth: 1
 environment:
   CACHE: 'c:\cache\'
-  SBCL_HOME: 'C:\Program Files\Steel Bank Common Lisp\1.4.2\'
+  SBCL_HOME: 'C:\Program Files\Steel Bank Common Lisp\1.4.14\'
 
 install:
 - ps: If(!(test-path $env:CACHE )) { mkdir $env:CACHE; }
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://beta.quicklisp.org/quicklisp.lisp" -OutFile $env:CACHE\quicklisp.lisp
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/releases/download/v1.11.5/ccl-1.11.5-windowsx86.zip" -OutFile $env:CACHE\ccl.zip
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.2.13/asdf-3.3.2.13.zip"  -OutFile $env:CACHE\asdf.zip
-- ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.2/sbcl-1.4.2-x86-64-windows-binary.msi" -OutFile $env:CACHE\sbcl.msi
+- ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.14/sbcl-1.4.14-x86-64-windows-binary.msi" -OutFile $env:CACHE\sbcl.msi
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/joaotavora/sly/archive/master.zip" -OutFile "$env:CACHE\sly.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/didierverna/declt/archive/master.zip" -OutFile "$env:CACHE\declt.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/McCLIM/McCLIM/archive/master.zip" -OutFile "$env:CACHE\mcclim.zip"
@@ -35,7 +35,7 @@ install:
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\McCLIM -ItemType SymbolicLink -Value $env:CACHE\McCLIM-master
 
 build_script:
-- cmd: '"C:\Program Files\Steel Bank Common Lisp\1.4.2\sbcl" --script "appveyor-build-docs.lisp" texi'
+- cmd: '"C:\Program Files\Steel Bank Common Lisp\1.4.14\sbcl" --script "appveyor-build-docs.lisp" texi'
 - cmd: 'C:\cygwin64\bin\bash.exe -lc "export PDFTEX=xetex PDFLATEX=xelatex;cd /cygdrive/c/projects/yadfa/docs/reference;makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html yadfa-reference.texi;makeinfo --no-split --pdf yadfa-reference.texi;makeinfo --no-split yadfa-reference.texi"'
 - cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)"'
 - ps: 7z a -t7z -mmt=2 -mx=9 -m0=LZMA2:d=200M:fb=273:mc=1000000000 '-x!yadfa/docs/*/*.aux' '-x!yadfa/docs/*/*.cps' '-x!yadfa/docs/*/*.fns' '-x!yadfa/docs/*/*.vrs' '-x!yadfa/docs/*/*.tps' '-x!yadfa/docs/*/*.cp' '-x!yadfa/docs/*/*.fn' '-x!yadfa/docs/*/*.vr' '-x!yadfa/docs/*/*.tp' '-x!yadfa/docs/*/*.toc' '-x!yadfa/docs/*/*.log' '-x!yadfa/.*' '-x!yadfa/ci' '-x!yadfa/yadfa.7z' '-x!yadfa/appveyor-build*.lisp' yadfa.7z $PWD
