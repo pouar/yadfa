@@ -48,7 +48,7 @@
                                 (format t "~a: Ok~%" (name-of (player-of *game*)))
                                 (setf (getf-action-from-prop
                                           (position-of (player-of *game*))
-                                          :receptionist-desk
+                                          :receptionist
                                           :tickle)
                                     (make-action
                                         :documentation "Tickle the dolphin"
@@ -83,7 +83,7 @@
                                                  "A dolphin in a diaper so thick it spreads her legs apart forcing her to waddle"))))
                                 (setf (getf-action-from-prop
                                           (position-of (player-of *game*))
-                                          :receptionist-desk
+                                          :receptionist
                                           :give-pad)
                                     (make-action
                                         :documentation "Give the dolphin a stuffer so she can go without ruining her pullups"

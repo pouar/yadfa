@@ -26,6 +26,7 @@
         #:getf-direction
         #:setf-direction
         #:remf-direction
+        #:getf-action-from-prop
         #:wearingp
         #:thickest
         #:total-thickness
