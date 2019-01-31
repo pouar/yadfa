@@ -27,33 +27,34 @@
     :name "Silver Cape Jail"
     :description "The jail beneith Navy HQ"
     :enter-text "You're inside Navy HQ"
+    :locked 'nil
     :events '(yadfa/events:get-location-to-pirate-cove-1))
 (ensure-zone (-2 6 0 silver-cape)
     :name "Silver Cape Navy HQ Lobby"
     :description "The lobby of Navy HQ"
-    :enter-text "You're inside Navy HQ"
+    :enter-text "You're inside Navy HQ. A guard doing a potty dance in a soggy pullup is guarding the entrance to the Jail underneath"
     :props (list
-               :receptionist
+               :guard
                (make-instance 'prop
-                   :name "Dolphin Receptionist"
-                   :description "The dolphin is hopping around while holding the front of her pullups"
+                   :name "Dolphin Navy Guard"
+                   :description "The dolphin is hopping around while holding the front of his soggy pullups squishing with each hop"
                    :actions
                    (list
                        :talk
                        (make-action
-                           :documentation "Talk to the Receptionist"
+                           :documentation "Talk to the guard"
                            :lambda
                            '(lambda
                                 (prop &rest keys &key &allow-other-keys)
                                 (declare (type prop prop) (ignore prop))
                                 (check-type prop prop)
                                 (write-line "Dolphin: Welcome to navy HQ")
-                                (format t "~a: Why don't you go to the bathroom? Or use your pullups?~%" (name-of (player-of *game*)))
-                                (write-line "Dolphin: I'm not allowed to go to the bathroom during my shift and if I have another accident they'll put me back in diapers.")
+                                (format t "~a: Why don't you go to the bathroom and change your pullups?~%" (name-of (player-of *game*)))
+                                (write-line "Dolphin: I'm not allowed to go to the bathroom during my shift and if I leak again they'll put me back in diapers and put me in the nursery.")
                                 (format t "~a: Ok~%" (name-of (player-of *game*)))
                                 (setf (getf-action-from-prop
                                           (position-of (player-of *game*))
-                                          :receptionist
+                                          :guard
                                           :tickle)
                                     (make-action
                                         :documentation "Tickle the dolphin"
@@ -62,36 +63,25 @@
                                              (prop &rest keys &key &allow-other-keys)
                                              (declare (type prop prop) (ignore prop))
                                              (write-line "Dolphin: ACK!! NO!! PLEASE!!! DON'T!!!")
-                                             (write-line "*The dolphin giggles and thrashes about until the wetness indicator on the front changes color*")
+                                             (write-line "*The dolphin giggles and thrashes about then leaves a puddle on the floor*")
                                              (write-line "*One of the Navy orcas take notice and crinkles over*")
-                                             (write-line "Orca: Looks, like the baby dolphin still hasn't learned to keep her pullups dry")
+                                             (write-line "Orca: Looks like the baby dolphin still hasn't learned to not leave puddles everywhere")
                                              (write-line "Dolphin: I'm not a baby!!!")
-                                             (write-line "Orca: Says the baby in soggy pullups. Since you can't keep them dry, we're putting you back in diapers.")
-                                             (write-line "*The Orca sets the dolphin on the desk*")
+                                             (write-line "Orca: Says the baby in leaky pullups. Since you keep leaving puddles, we're putting you back in diapers.")
+                                             (write-line "*The Orca lays the dolphin on the floor*")
                                              (write-line "Dolphin: Please don't change me here!!! Everyone can see me!!!!!")
-                                             (write-line "*The Orca ignores her pleas and changes her soggy pullups and puts her in a thick diaper then puts her back on the floor. The diaper is so thick that her legs are forced apart. The dolphin hides her face in embarrassment*")
-                                             (setf (actions-of
-                                                       (getf (get-props-from-zone (position-of (player-of *game*)))
-                                                           :receptionist))
-                                                 (list
-                                                     :talk
-                                                     (make-action
-                                                         :documentation "Talk to the receptionist"
-                                                         :lambda
-                                                         '(lambda
-                                                              (prop &rest keys &key &allow-other-keys)
-                                                              (declare (type prop prop) (ignore prop))
-                                                              (write-line "Dolphin: Welcome to navy HQ")))))
-                                             (setf (description-of
-                                                       (getf (get-props-from-zone (position-of (player-of *game*)))
-                                                           :receptionist))
-                                                 "A dolphin in a diaper so thick it spreads her legs apart forcing her to waddle"))))
+                                             (write-line "*The Orca ignores his pleas and changes his soggy pullups and puts him in a thick diaper then stands him back up. The diaper is so thick that his legs are forced apart. The dolphin hides his face in embarrassment as he is escorted to a nursery*")
+                                             (write-line "*The Jail beneith the cell is now unguarded and can be entered*")
+                                             (setf (lockedp (get-zone '(-2 6 -1 silver-cape))) nil
+                                                 (enter-text-of (get-zone (-2 6 0 silver-cape))) "You're inside Navy HQ.")
+                                             (remf (get-props-from-zone (position-of (player-of *game*)))
+                                                 :guard))))
                                 (setf (getf-action-from-prop
                                           (position-of (player-of *game*))
-                                          :receptionist
+                                          :guard
                                           :give-pad)
                                     (make-action
-                                        :documentation "Give the dolphin a stuffer so she can go without ruining her pullups"
+                                        :documentation "Give the dolphin a stuffer so he can go without making a puddle"
                                         :lambda
                                         '(lambda
                                              (prop &rest keys &key &allow-other-keys)
@@ -111,28 +101,35 @@
                                                          (write-line "You don't have a clean stuffer to give her")
                                                          (return))
                                                      (write-line "*You hand the dolphin a stuffer*")
-                                                     (format t "~a: Here, you might want this")
-                                                     (write-line "Dolphin: But... but...")
-                                                     (write-line "*Unable hold it much longer, she reluctantly takes the stuffer, pulls her pullups down halfway to her knees, puts the stuffer in, then pulls them back up and floods herself*")
-                                                     (write-line "Dolphin: Well, at least my pullups are dry")
+                                                     (format t "~a: Here, you might want this" (name-of (player-of *game*)))
+                                                     (write-line "Dolphin: I'm no infant. I can hold it in.")
+                                                     (write-line "*The dolphin panics as his bladder leaks a little*")
+                                                     (write-line "Dolphin: Ok ok, I'll take them.")
+                                                     (write-line "*The dolphin pulls his pullups down halfway to his knees, inserts the stuffer, then pulls his pullups back up and floods himself*")
+                                                     (write-line "Dolphin: Don't tell anyone about this incident and I'll let you through")
+                                                     (write-line "*The Jail beneith can now be entered*")
                                                      (removef (inventory-of (player-of *game*)) (car a))
-                                                     (setf (actions-of
-                                                               (getf (get-props-from-zone
-                                                                         (position-of (player-of *game*)))
-                                                                   :receptionist))
+                                                     (setf (lockedp (get-zone '(-2 6 -1 silver-cape)))
+                                                         nil
+                                                         (enter-text-of (get-zone (-2 6 0 silver-cape)))
+                                                         "You're inside Navy HQ."
+                                                         (actions-of
+                                                             (getf (get-props-from-zone
+                                                                       (position-of (player-of *game*)))
+                                                                 :guard))
                                                          (list
                                                              :talk
                                                              (make-action
-                                                                 :documentation "Talk to the receptionist"
+                                                                 :documentation "Talk to the guard"
                                                                  :lambda
                                                                  '(lambda
                                                                       (prop &rest keys &key &allow-other-keys)
                                                                       (declare (type prop prop) (ignore prop))
-                                                                      (write-line "Dolphin: Welcome to navy HQ")))))
-                                                     (setf (description-of
+                                                                      (write-line "Dolphin: Welcome to navy HQ"))))
+                                                         (description-of
                                                                (getf (get-props-from-zone
                                                                          (position-of (player-of *game*)))
-                                                                   :receptionist))
+                                                                   :guard))
                                                          "A dolphin wearing pullups"))))))))))))
 (ensure-zone (1 5 0 silver-cape)
     :name "Silver Cape Pokemon Center"
