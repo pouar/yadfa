@@ -279,7 +279,7 @@
         :messiness-capacity 10000
         :value 200
         :name "Bandit Adjustable Diaper"
-        :description "A special diaper that can be pulled down like normal underwear so the wearer can still use the toilet. It has the bandit's insignia on the front but it doesn't change color when wet in order to make it easier to hide the state of their diaper. It has tabs on the sides for easy removal. Unlike most diapers, these are reusable."
+        :description "A special diaper that can be pulled down like normal underwear so the wearer can still use the toilet. It has the bandit's insignia on the front whcih turns yellow when the diaper is used. It has tabs on the sides for easy removal. Unlike most diapers, these are reusable."
         :wear-wet-text '(1400 "little yellow streams are leaking down from the leg guards"
                             350 "It squishes when you walk"
                             1 "You can barely tell you wet it")

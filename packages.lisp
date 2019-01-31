@@ -344,6 +344,7 @@
         #:descend
         #:bandits-entrance
         #:secret-underground
+        #:pirates-cove
         #:your-ship)
     (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package #:yadfa/events

@@ -4,7 +4,7 @@
          ,@(iter (for y from 0 to 2)
                (iter (for x from (- y) to y)
                    (collect `(ensure-zone (,x ,y 0 your-ship)
-                                 :name "Scourge Of Iron"
+                                 :name "Emacs"
                                  :description "The bow of your ship"
                                  :direction-attributes '(:south (:hidden ,(and
                                                                               (or (= x 1) (= x -1))
@@ -15,7 +15,7 @@
     `(progn
          ,@(iter (for i from -2 to 2)
                (collect `(ensure-zone (,i 11 0 your-ship)
-                             :name "Scourge Of Iron"
+                             :name "Emacs"
                              :description "The stern of your ship"
                              :direction-attributes '(:north (:hidden ,(or (= i 1) (= i -1)))
                                                         :down (:hidden t)
@@ -24,13 +24,13 @@
     `(progn
          ,@(iter (for i from 3 to 10)
                (collect `(ensure-zone (-2 ,i 0 your-ship)
-                             :name "Scourge Of Iron"
+                             :name "Emacs"
                              :description "The port of your ship"
                              :direction-attributes '(:east (:hidden ,(not (= i 6)))
                                                         :down (:hidden t)
                                                         :up (:hidden t))))
                (collect `(ensure-zone (2 ,i 0 your-ship)
-                             :name "Scourge Of Iron"
+                             :name "Emacs"
                              :description "The starboard of your ship"
                              :direction-attributes '(:west (:hidden ,(not (= i 6)))
                                                         :down (:hidden t)
@@ -50,7 +50,7 @@
                (make-instance 'prop
                    :name "Controls"
                    :description "The ships controls"
-                   :attributes '(:destinations ((0 21 0 silver-cape) (1 21 0 bandits-domain)))
+                   :attributes (list :destinations (list '(0 21 0 silver-cape) '(1 21 0 bandits-domain)))
                    :actions
                    (list
                        :list-places-to-sail

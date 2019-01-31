@@ -21,8 +21,13 @@
                             :enter-text "You enter the street"))))))
 (ensure-zone (-1 6 0 silver-cape)
     :name "Silver Cape Navy HQ Entrance"
-    :description "The entrance to Navy HQ"
-    :enter-text "You're inside Navy HQ")
+    :description "The entrance to Navy HQ."
+    :enter-text "You're inside Navy HQ. The navy here seems to mostly consist of various aquatic creatures. They're mostly potty trained but still wear pullups just in case they don't make it in time, or if they don't want to hold it any longer. Due to pullups having a lower capacity than diapers, some of them suppliment pullups with stuffers.")
+(ensure-zone (-2 6 -1 silver-cape)
+    :name "Silver Cape Jail"
+    :description "The jail beneith Navy HQ"
+    :enter-text "You're inside Navy HQ"
+    :events '(yadfa/events:get-location-to-pirate-cove-1))
 (ensure-zone (-2 6 0 silver-cape)
     :name "Silver Cape Navy HQ Lobby"
     :description "The lobby of Navy HQ"
@@ -76,7 +81,7 @@
                                                          '(lambda
                                                               (prop &rest keys &key &allow-other-keys)
                                                               (declare (type prop prop) (ignore prop))
-                                                              (write-line "Dolphin: *diaper squishes* Welcome to navy HQ")))))
+                                                              (write-line "Dolphin: Welcome to navy HQ")))))
                                              (setf (description-of
                                                        (getf (get-props-from-zone (position-of (player-of *game*)))
                                                            :receptionist))
@@ -123,7 +128,7 @@
                                                                  '(lambda
                                                                       (prop &rest keys &key &allow-other-keys)
                                                                       (declare (type prop prop) (ignore prop))
-                                                                      (write-line "Dolphin: *pullups squishes* Welcome to navy HQ")))))
+                                                                      (write-line "Dolphin: Welcome to navy HQ")))))
                                                      (setf (description-of
                                                                (getf (get-props-from-zone
                                                                          (position-of (player-of *game*)))
