@@ -13,7 +13,7 @@ pages:
     - flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     - flatpak-builder --install-deps-from=flathub --disable-rofiles-fuse --force-clean build flatpak/net.pouar.yadfa.yml
     - flatpak build-export --gpg-sign='15BE14266E04C2E3D823DBA86FDC5B86389100FD!' public build
-    - flatpak build-update-repo --gpg-sign='15BE14266E04C2E3D823DBA86FDC5B86389100FD!' --prune-depth=5 --prune --generate-static-deltas public
+    - flatpak build-update-repo --gpg-sign='15BE14266E04C2E3D823DBA86FDC5B86389100FD!' --prune-depth=10 --prune --generate-static-deltas public
   after_script:
     - tar -cf cache.tar .flatpak-builder public
   environment:
