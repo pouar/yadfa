@@ -161,12 +161,12 @@
             :documentation "How many experience points the character has")
         (base-stats
             :initarg :base-stats
-            :initform (list :health 35 :attack 55 :defense 30 :energy 35)
+            :initform (list :health 45 :attack 80 :defense 50 :energy 45 :speed 120)
             :accessor base-stats-of
             :documentation "the base stats of the character")
         (iv-stats
             :initarg :iv-stats
-            :initform (list :health (random 16) :attack (random 16) :defense (random 16) :energy (random 16))
+            :initform (list :health (random 16) :attack (random 16) :defense (random 16) :energy (random 16) :speed (random 16))
             :accessor iv-stats-of
             :documentation "iv stats of the character")
         (bitcoins
@@ -185,7 +185,9 @@
             :accessor wield-of
             :documentation "Item the character is weilding as a weapon"))
     (:documentation "Base class for the characters in the game"))
-(defclass ally (base-character)
+(defclass team-member (base-character) ()
+    (:documentation "Either the player or an ally inherits this class"))
+(defclass ally (team-member)
     ((learned-moves
          :initarg :learned-moves
          :accessor learned-moves-of
@@ -198,7 +200,7 @@
             :documentation "Whether this ally is potty trained. Valid values so far are :NONE, :REBEL, and LAST-MINUTE"))
     (:documentation "Team member that is not the player")
     (:default-initargs
-        :base-stats (list :health 35 :attack 55 :defense 30 :energy 35)
+        :base-stats (list :health 35 :attack 55 :defense 40 :energy 35 :speed 90)
         :name "anon"
         :level 5
         :species "fox"
@@ -214,6 +216,23 @@
 (defmethod initialize-instance :after
     ((c base-character) &rest initargs &key &allow-other-keys)
     (declare (ignorable initargs))
+    (iter (for (a b) on initargs)
+        (cond
+            ((eq a :base-health)
+                (setf (getf (base-stats-of c) :health)
+                    b))
+            ((eq a :base-attack)
+                (setf (getf (base-stats-of c) :attack)
+                    b))
+            ((eq a :base-defence)
+                (setf (getf (base-stats-of c) :defence)
+                    b))
+            ((eq a :base-speed)
+                (setf (getf (base-stats-of c) :speed)
+                    b))
+            ((eq a :base-energy)
+                (setf (getf (base-stats-of c) :energy)
+                    b))))
     (unless (iter (for (a b) on initargs)
                 (when (eq a :health) (leave t)))
         (setf (health-of c) (calculate-stat c :health)))
@@ -221,7 +240,7 @@
                 (when (eq a :energy) (leave t)))
         (setf (energy-of c) (calculate-stat c :energy)))
     (setf (exp-of c) (calculate-level-to-exp (level-of c))))
-(defclass player (base-character)
+(defclass player (team-member)
     ((position
          :initarg :position
          :initform '(0 0 0 yadfa/zones:home)
@@ -238,7 +257,7 @@
             :documentation "Alist of moves the player learns by leveling up, first element is the level when you learn them ove, second is a symbol from the `yadfa/moves'"))
     (:documentation "The player")
     (:default-initargs
-        :base-stats (list :health 35 :attack 55 :defense 30 :energy 35)
+        :base-stats (list :health 45 :attack 80 :defense 50 :energy 45 :speed 120)
         :name "Anon"
         :description "This is you stupid"
         :level 5
@@ -254,8 +273,7 @@
     (declare (ignorable initargs))
     (unless (iter (for (a b) on initargs)
                 (when (eq a :warp-on-death-point) (leave t)))
-        (setf (warp-on-death-point-of c) (position-of c)))
-    (pushnew (player-of *game*) (team-of *game*)))
+        (setf (warp-on-death-point-of c) (position-of c))))
 (defclass zone ()
     ((description
          :initarg :description
@@ -477,12 +495,12 @@
             :initarg :wear-stats
             :initform ()
             :accessor wear-stats-of
-            :documentation "stat boost when wearing this item. Is a plist in the form of (list :attack attack :defense defense :health health :energy energy)")
+            :documentation "stat boost when wearing this item. Is a plist in the form of (list :attack attack :defense defense :health health :energy energy :speed speed)")
         (wield-stats
             :initarg :wield-stats
             :initform ()
             :accessor wield-stats-of
-            :documentation "stat boost when weilding this item. Is a plist in the form of (list :attack attack :defense defense :health health :energy energy)")
+            :documentation "stat boost when weilding this item. Is a plist in the form of (list :attack attack :defense defense :health health :energy energy :speed speed)")
         (special-actions
             :initarg :special-actions
             :initform ()
@@ -983,7 +1001,7 @@
                                            move-to-use)))))
             :accessor battle-script-of
             :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack"))
-    (:default-initargs :base-stats (list :health 40 :attack 45 :defense 40 :energy 35) :level (random-from-range 2 5) :bitcoins nil)
+    (:default-initargs :base-stats (list :health 40 :attack 45 :defense 40 :energy 40 :speed 56) :level (random-from-range 2 5) :bitcoins nil)
     (:documentation "Class for enemies"))
 (defmethod print-object ((obj npc) stream)
     (print-unreadable-object (obj stream :type t :identity t)
@@ -994,11 +1012,11 @@
         :bowels/fill-rate (* (/ 12000 24 60) 2))
     (:documentation "Class for an enemy with a bladder and bowels fill rate. This enemy may {wet,mess} {him,her}self in battle."))
 (defclass battle ()
-    ((members-finished
-         :initarg :members-finished
+    ((current-turn-list
+         :initarg :current-turn-list
          :initform ()
-         :accessor members-finished-of
-         :documentation "List of people in your team that already moved this turn")
+         :accessor current-turn-list-of
+         :documentation "List of characters to move")
         (enter-battle-text
             :initarg :enter-battle-text
             :initform nil
@@ -1028,7 +1046,10 @@
             (enter-battle-text-of c)
             (with-output-to-string (s)
                 (loop for i in (enemies-of c) do
-                    (format s "A Wild ~a Appeared!!!~%" (name-of i)))))))
+                    (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
+    (setf (current-turn-list-of c)
+        (sort (copy-tree (append (enemies-of c) (team-of *game*)))
+            '> :key #'(lambda (a) (calculate-stat a :speed)))))
 (defclass game ()
     ((zones
          :initarg :zones

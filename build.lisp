@@ -1,4 +1,5 @@
 ;; -*- mode: common-lisp; -*-
+#+sbcl
 (declaim (sb-ext:muffle-conditions sb-kernel:redefinition-warning sb-ext:code-deletion-note))
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"

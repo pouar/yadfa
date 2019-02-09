@@ -249,19 +249,19 @@
         (unless (event-major (get-event event-id))
             (pushnew event-id (finished-events-of *game*)))
         event-id))
-(defun set-new-battle (enemies &key win-events enter-battle-text continuable)
+(defun set-new-battle (enemies &rest keys &key win-events enter-battle-text continuable)
     (when continuable
         (setf
             (continue-battle-of (get-zone (position-of (player-of *game*))))
             (list
                 :enemies enemies
-                :win-events win-events)))
+                :win-events win-events
+                :enter-battle-text enter-battle-text)))
     (setf *battle*
-        (make-instance 'battle
+        (apply #'make-instance 'battle
             :enemies (iter (for j in enemies)
                          (collect (apply #'make-instance (car j) (eval (cdr j)))))
-            :win-events win-events
-            :enter-battle-text enter-battle-text))
+            keys))
     (format t "~a~%" (enter-battle-text-of *battle*))
     (iter (for j in
               (iter (for i in (enemies-of *battle*))
@@ -270,6 +270,18 @@
                       (push (class-name (class-of i)) (seen-enemies-of *game*))
                       (collect (class-name (class-of i))))))
         (yadfa/bin:pokedex j))
+    (format t "~a is next in battle~%"
+        (name-of
+            (iter
+                (for i in (if (current-turn-list-of *battle*)
+                              (current-turn-list-of *battle*)
+                              (setf (current-turn-list-of *battle*)
+                                  (sort (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
+                                            (when (> (health-of i) 0)
+                                                (collect i)))
+                                      '> :key #'(lambda (a) (calculate-stat a :speed))))))
+                (when (typep i 'team-member)
+                    (leave i)))))
     (unuse-package :yadfa/world :yadfa-user)
     (use-package :yadfa/battle :yadfa-user))
 (defun run-equip-effects (user)
@@ -593,23 +605,10 @@
         (run-equip-effects i))
     (print-enter-text (position-of (player-of *game*)))
     (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
-              (setf *battle* (make-instance 'battle))
-              (iter
-                  (for i in (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies))
-                  (push (apply #'make-instance (car i) (eval (cdr i))) (enemies-of *battle*))
-                  (setf
-                      (win-events-of *battle*)
-                      (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :win-events)))
-              (format t "~a~%" (enter-battle-text-of *battle*))
-              (iter (for j in
-                        (iter (for i in (enemies-of *battle*))
-                            (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
-                                (format t "~a was added to your pokedex~%" (name-of i))
-                                (push (class-name (class-of i)) (seen-enemies-of *game*))
-                                (collect (class-name (class-of i))))))
-                  (yadfa/bin:pokedex j))
-              (unuse-package :yadfa/world :yadfa-user)
-              (use-package :yadfa/battle :yadfa-user)
+              (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
+                  :win-events (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :win-events)
+                  :continuable t
+                  :enter-battle-text (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enter-battle-text))
               (return-from move-to-secret-underground))
         ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
              (when (trigger-event i)
@@ -620,19 +619,7 @@
                 (for i in (enemy-spawn-list-of (get-zone (position-of (player-of *game*)))))
                 (let ((random (if (getf i :random) (getf i :random) 1)))
                     (when (< (random (getf i :max-random)) random)
-                        (setf *battle* (make-instance 'battle
-                                           :enemies (iter (for j in (getf i :enemies))
-                                                        (collect (apply #'make-instance (car j) (eval (cdr j)))))))
-                        (format t "~a~%" (enter-battle-text-of *battle*))
-                        (iter (for j in
-                                  (iter (for i in (enemies-of *battle*))
-                                      (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
-                                          (format t "~a was added to your pokedex~%" (name-of i))
-                                          (push (class-name (class-of i)) (seen-enemies-of *game*))
-                                          (collect (class-name (class-of i))))))
-                            (yadfa/bin:pokedex j))
-                        (unuse-package :yadfa/world :yadfa-user)
-                        (use-package :yadfa/battle :yadfa-user)
+                        (set-new-battle (getf i :enemies))
                         (return-from move-to-secret-underground)))))))
 (defun move-to-pocket-map (item)
     (when *battle*
@@ -669,23 +656,10 @@
             (run-equip-effects i))
         (print-enter-text (position-of (player-of *game*)))
         (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
-                  (setf *battle* (make-instance 'battle))
-                  (iter
-                      (for i in (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies))
-                      (push (apply #'make-instance (car i) (eval (cdr i))) (enemies-of *battle*))
-                      (setf
-                          (win-events-of *battle*)
-                          (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :win-events)))
-                  (format t "~a~%" (enter-battle-text-of *battle*))
-                  (iter (for j in
-                            (iter (for i in (enemies-of *battle*))
-                                (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
-                                    (format t "~a was added to your pokedex~%" (name-of i))
-                                    (push (class-name (class-of i)) (seen-enemies-of *game*))
-                                    (collect (class-name (class-of i))))))
-                      (yadfa/bin:pokedex j))
-                  (unuse-package :yadfa/world :yadfa-user)
-                  (use-package :yadfa/battle :yadfa-user)
+                  (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
+                      :win-events (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :win-events)
+                      :continuable t
+                      :enter-battle-text (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enter-battle-text))
                   (return-from move-to-pocket-map))
             ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
                  (when (trigger-event i)
@@ -696,19 +670,7 @@
                     (for i in (enemy-spawn-list-of (get-zone (position-of (player-of *game*)))))
                     (let ((random (if (getf i :random) (getf i :random) 1)))
                         (when (< (random (getf i :max-random)) random)
-                            (setf *battle* (make-instance 'battle
-                                               :enemies (iter (for j in (getf i :enemies))
-                                                            (collect (apply #'make-instance (car j) (eval (cdr j)))))))
-                            (format t "~a~%" (enter-battle-text-of *battle*))
-                            (iter (for j in
-                                      (iter (for i in (enemies-of *battle*))
-                                          (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
-                                              (format t "~a was added to your pokedex~%" (name-of i))
-                                              (push (class-name (class-of i)) (seen-enemies-of *game*))
-                                              (collect (class-name (class-of i))))))
-                                (yadfa/bin:pokedex j))
-                            (unuse-package :yadfa/world :yadfa-user)
-                            (use-package :yadfa/battle :yadfa-user)
+                            (set-new-battle (getf i :enemies))
                             (return-from move-to-pocket-map))))))))
 (defmacro do-push (item &rest places)
     `(progn ,@(loop for place in places collect `(push ,item ,place))))
@@ -2092,7 +2054,7 @@
     #+sbcl (declare (type base-character user))
     (check-type user base-character)
     (iter
-        (with j = (list :health 0 :attack 0 :defense 0 :energy 0))
+        (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
         (for i in (wear-of user))
         (iter
             (for (a b) on (wear-stats-of i) by #'cddr)
@@ -2102,7 +2064,7 @@
     #+sbcl (declare (type base-character user))
     (check-type user base-character)
     (iter
-        (with j = (list :health 0 :attack 0 :defense 0 :energy 0))
+        (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
         (for (a b) on (if (wield-of user) (wield-stats-of (wield-of user)) ()) by #'cddr)
         (incf (getf j a) b)
         (finally (return j))))
@@ -2110,7 +2072,7 @@
     #+sbcl (declare (type base-character user))
     (check-type user base-character)
     (iter
-        (with j = (list :health 0 :attack 0 :defense 0 :energy 0))
+        (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
         (for i in (when *battle* (getf (status-conditions-of *battle*) user)))
         (iter
             (for (a b) on (stat-delta-of i) by #'cddr)
@@ -2120,7 +2082,7 @@
     #+sbcl (declare (type base-character user))
     (check-type user base-character)
     (iter
-        (with j = (list :health 1 :attack 1 :defense 1 :energy 1))
+        (with j = (list :health 1 :attack 1 :defense 1 :energy 1 :speed 1))
         (for i in (when *battle* (getf (status-conditions-of *battle*) user)))
         (iter
             (for (a b) on (stat-multiplier-of i) by #'cddr)
@@ -2664,6 +2626,259 @@
     (check-type washer (or washer null))
     (wash (inventory-of (player-of *game*)))
     (write-line "You washed all your soggy and messy clothing. Try not to wet and mess them next time"))
+(defmethod process-battle-turn ((character npc) attack item selected-target)
+    (declare (ignore attack item selected-target))
+    (iter (for i in (copy-tree (getf (status-conditions-of *battle*) character)))
+        (if (or (eq (duration-of i) t) (> (duration-of i) 0))
+            (progn
+                (funcall (coerce (battle-script-of i) 'function) (target-of i) character i)
+                (when (typep (duration-of i) 'number)
+                    (decf (duration-of i))))
+            (removef i (getf (status-conditions-of *battle*) character))))
+    (run-equip-effects character)
+    (when (<= (health-of character) 0)
+        (format t "~a has fainted~%~%" (name-of character))
+        (return-from process-battle-turn))
+    (incf (bladder/contents-of character) (* (bladder/fill-rate-of character) 5))
+    (incf (bowels/contents-of character) (* (bowels/fill-rate-of character) 5))
+    (cond ((or
+               (>= (bladder/contents-of character) (bladder/maximum-limit-of character))
+               (>= (bowels/contents-of character) (bowels/maximum-limit-of character)))
+              (when (>= (bladder/contents-of character) (bladder/maximum-limit-of character))
+                  (format t
+                      "~a lets out a quiet moan as ~a accidentally wets ~aself in battle~%"
+                      (name-of character)
+                      (if (malep character) "he" "she")
+                      (if (malep character) "him" "her"))
+                  (wet :wetter character)
+                  (set-status-condition 'yadfa/status-conditions:wetting character))
+              (when (>= (bowels/contents-of character) (bowels/maximum-limit-of character))
+                  (format t
+                      "~a instinctively squats down as ~a accidentally messes ~aself in battle~%"
+                      (name-of character)
+                      (if (malep character) "he" "she")
+                      (if (malep character) "him" "her"))
+                  (mess :messer character)
+                  (set-status-condition 'yadfa/status-conditions:messing character)))
+        ((and
+             (watersport-limit-of character)
+             (<= (- (bladder/maximum-limit-of character) (bladder/contents-of character)) (watersport-limit-of character))
+             (< (random (watersport-chance-of character)) 1))
+            (let ((a (make-instance 'yadfa/moves:watersport)))
+                (funcall (coerce (attack-of a) 'function) (player-of *game*) character a)))
+        ((and
+             (mudsport-limit-of character)
+             (<= (- (bowels/maximum-limit-of character) (bowels/contents-of character)) (mudsport-limit-of character))
+             (< (random (mudsport-chance-of character)) 1))
+            (let ((a (make-instance 'yadfa/moves:mudsport)))
+                (funcall (coerce (attack-of a) 'function) (player-of *game*) character a)))
+        ((iter (for j in (getf (status-conditions-of *battle*) character))
+             (when (blocks-turn-of j)
+                 (leave t))))
+        ((and
+             (or
+                 (>= (bladder/contents-of character) (bladder/potty-dance-limit-of character))
+                 (>= (bowels/contents-of character) (bowels/potty-dance-limit-of character)))
+             (<
+                 (car (sort (let* ((a ())
+                                      (x
+                                          (-
+                                              (bladder/maximum-limit-of character)
+                                              (bladder/contents-of character)))
+                                      (y
+                                          (-
+                                              (bladder/maximum-limit-of character)
+                                              (bladder/potty-dance-limit-of character))))
+                                (when (>=
+                                          (bladder/contents-of character)
+                                          (bladder/potty-dance-limit-of character))
+                                    (push (random (expt ($ x / y * (expt 5 1.3)) (/ 1 1.3)))
+                                        a))
+                                (setf
+                                    x (-
+                                          (bowels/maximum-limit-of character)
+                                          (bowels/contents-of character))
+                                    y (- (bowels/maximum-limit-of character)
+                                          (bowels/potty-dance-limit-of character)))
+                                (when (>=
+                                          (bowels/contents-of character)
+                                          (bowels/potty-dance-limit-of character))
+                                    (push (random (expt ($ x / y * (expt 5 2)) (/ 1 2)))
+                                        a))
+                                a)
+                          '<))
+                 1))
+            (format t "~a is too busy doing a potty dance to fight~%" (name-of character)))
+        (t
+            (funcall
+                (coerce (battle-script-of character) 'function)
+                character
+                (random-elt (team-of *game*)))))
+    (when (<= (health-of character) 0)
+        (format t "~a has fainted~%" (name-of character))))
+(defmethod process-battle-turn ((character team-member) attack item selected-target)
+    (iter (for i in (copy-tree (getf (status-conditions-of *battle*) character)))
+        (if (or (eq (duration-of i) t) (> (duration-of i) 0))
+            (progn
+                (funcall (coerce (battle-script-of i) 'function) (target-of i) character i)
+                (when (typep (duration-of i) 'number)
+                    (decf (duration-of i))))
+            (removef i (getf (status-conditions-of *battle*) character))))
+    (run-equip-effects character)
+    (when (<= (health-of character) 0)
+        (format t "~a has fainted~%~%" (name-of character))
+        (return-from process-battle-turn))
+    (incf (bladder/contents-of character) (* (bladder/fill-rate-of character) 5))
+    (incf (bowels/contents-of character) (* (bowels/fill-rate-of character) 5))
+    (when (and (not (eq (player-of *game*) character))
+              (or (eq (potty-training-of character) :none))
+              (>= (bladder/contents-of character) (bladder/need-to-potty-limit-of character)))
+        (let ((wet-status (wet :wetter character)))
+            (format t "~a wet ~aself~%"
+                (name-of character)
+                (if (malep character) "him" "her"))
+            (when (> (getf wet-status :leak-amount) 0))
+            (format t "~a leaks and leaves puddles~%"
+                (name-of character))))
+    (when (and (not (eq (player-of *game*) character))
+              (or (eq (potty-training-of character) :none))
+              (>= (bowels/contents-of character) (bowels/need-to-potty-limit-of character)))
+        (let ((mess-status (mess :messer character)))
+            (format t "~a messed ~aself~%"
+                (name-of character)
+                (if (malep character) "him" "her"))
+            (when (> (getf mess-status :leak-amount) 0))
+            (format t "~a has a blowout and leaves a mess~%"
+                (name-of character))))
+    (cond ((and (not (eq (player-of *game*) character))
+               (or (eq (potty-training-of character) :rebel))
+               (not (typep (get-move attack character)
+                        'yadfa/moves:watersport))
+               (>= (bladder/contents-of character) (bladder/need-to-potty-limit-of character)))
+              (let ((a (make-instance 'yadfa/moves:watersport)))
+                  (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of character))
+                  (format t "*~a uses ~a instead*~%~%" (name-of character) (name-of a))
+                  (funcall
+                      (coerce
+                          (attack-of a)
+                          'function)
+                      selected-target
+                      character
+                      a)))
+        ((and (not (eq (player-of *game*) character))
+             (or (eq (potty-training-of character) :rebel))
+             (not (typep (get-move attack character) 'yadfa/moves:mudsport))
+             (>= (bowels/contents-of character) (bowels/need-to-potty-limit-of character)))
+            (let ((a (make-instance 'yadfa/moves:mudsport)))
+                (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of character))
+                (format t "*~a uses ~a instead*~%~%" (name-of character) (name-of a))
+                (funcall
+                    (coerce
+                        (attack-of a)
+                        'function)
+                    selected-target
+                    character
+                    a)))
+        ((or
+             (>= (bladder/contents-of character) (bladder/maximum-limit-of character))
+             (>= (bowels/contents-of character) (bowels/maximum-limit-of character)))
+            (when (>= (bladder/contents-of character) (bladder/maximum-limit-of character))
+                (format t
+                    "~a lets out a quiet moan as ~a accidentally wets ~aself in battle~%"
+                    (name-of character)
+                    (if (malep character) "he" "she")
+                    (if (malep character) "him" "her"))
+                (wet :wetter character)
+                (set-status-condition 'yadfa/status-conditions:wetting character))
+            (when (>= (bladder/contents-of character) (bladder/maximum-limit-of character))
+                (format t
+                    "~a instinctively squats down as ~a accidentally messes ~aself in battle~%"
+                    (name-of character)
+                    (if (malep character) "he" "she")
+                    (if (malep character) "him" "her"))
+                (mess :messer character)
+                (set-status-condition 'yadfa/status-conditions:messing character)))
+        ((iter (for j in (getf (status-conditions-of *battle*) character))
+             (when (blocks-turn-of j)
+                 (leave t))))
+        ((and
+             (or
+                 (>= (bladder/contents-of character) (bladder/potty-dance-limit-of character))
+                 (>= (bowels/contents-of character) (bowels/potty-dance-limit-of character)))
+             (<
+                 (car (sort (let ((a ())
+                                     (x
+                                         (-
+                                             (bladder/maximum-limit-of character)
+                                             (bladder/contents-of character)))
+                                     (y
+                                         (-
+                                             (bladder/maximum-limit-of character)
+                                             (bladder/potty-dance-limit-of character))))
+                                (when (>=
+                                          (bladder/contents-of character)
+                                          (bladder/potty-dance-limit-of character))
+                                    (push (random (expt ($ x / y * (expt 5 1.3)) (/ 1 1.3)))
+                                        a))
+                                (setf
+                                    x (-
+                                          (bowels/maximum-limit-of character)
+                                          (bowels/contents-of character))
+                                    y (- (bowels/maximum-limit-of character)
+                                          (bowels/potty-dance-limit-of character)))
+                                (when (>=
+                                          (bowels/contents-of character)
+                                          (bowels/potty-dance-limit-of character))
+                                    (push (random (expt ($ x / y * (expt 5 2)) (/ 1 2)))
+                                        a))
+                                a)
+                          '<))
+                 1)
+             (not (or
+                      (typep (get-move attack character) 'yadfa/moves:watersport)
+                      (typep (get-move attack character) 'yadfa/moves:mudsport))))
+            (format t "~a is too busy doing a potty dance to fight~%" (name-of character)))
+        (item
+            (format t "~a used ~a ~a on ~a~%"
+                (name-of character)
+                (if (malep character) "his" "her")
+                (name-of (nth item (inventory-of (player-of *game*))))
+                (name-of selected-target))
+            (use-item%
+                (nth item (inventory-of (player-of *game*)))
+                (player-of *game*)
+                :target selected-target)
+            (when (<= (health-of selected-target) 0)
+                (format t "~a has fainted~%" (name-of selected-target))))
+        ((eq attack t)
+            (if (wield-of character)
+                (funcall
+                    (coerce
+                        (attack-of (default-move-of (wield-of character)))
+                        'function)
+                    selected-target
+                    character
+                    (default-move-of (wield-of character)))
+                (let ((a (make-instance 'yadfa/moves:default)))
+                    (funcall
+                        (coerce
+                            (attack-of a)
+                            'function)
+                        selected-target
+                        character
+                        a)))
+            (when (<= (health-of selected-target) 0)
+                (format t "~a has fainted~%" (name-of selected-target))))
+        (attack
+            (funcall
+                (coerce
+                    (attack-of (get-move attack character))
+                    'function)
+                selected-target
+                character
+                (get-move attack character))
+            (when (<= (health-of selected-target) 0)
+                (format t "~a has fainted~%" (name-of selected-target))))))
 (defun process-battle (&key attack item user target friendly-target)
     #+sbcl (declare
                (type (or null integer) user target)
@@ -2674,320 +2889,63 @@
     (when (and (not attack) (not item))
         (write-line "You need to either specify an attack or an item to use")
         (return-from process-battle))
-    (let* ((selected-user
-               (if user
-                   (cond
-                       ((>= user (list-length (team-of *game*)))
-                           (format t "You only have ~d members in your team~%" (list-length (team-of *game*)))
-                           (return-from process-battle))
-                       ((<= (health-of (nth user (team-of *game*))) 0)
-                           (format t "~a is unconscious and can't fight~%" (name-of (nth user (team-of *game*))))
-                           (pushnew (nth user (team-of *game*)) (members-finished-of *battle*))
-                           (return-from process-battle))
-                       ((member (nth user (team-of *game*)) (members-finished-of *battle*))
-                           (format t "~a has already gone~%" (name-of (nth user (team-of *game*))))
-                           (return-from process-battle))
-                       (t
-                           (nth user (team-of *game*))))
-                   (iter
-                       (for i in (team-of *game*))
-                       (when (<= (health-of i) 0)
-                           (pushnew i (members-finished-of *battle*)))
-                       (unless (member i (members-finished-of *battle*))
-                           (leave i)))))
-              (selected-target
-                  (cond
-                      ((and target (>= target (list-length (enemies-of *battle*))))
-                          (write-line "That target doesn't exist")
-                          (return-from process-battle))
-                      ((and friendly-target (>= friendly-target (list-length (team-of *game*))))
-                          (write-line "That target doesn't exist")
-                          (return-from process-battle))
-                      (target (nth target (enemies-of *battle*)))
-                      (friendly-target (nth friendly-target (team-of *game*)))
-                      (t
-                          (iter (for i in (enemies-of *battle*))
-                              (when (>= (health-of i) 0)
-                                  (leave i)))))))
-        (unless (or (eq attack t) (get-move attack selected-user))
-            (format t "~a doesn't know ~a~%" (name-of selected-user) attack)
-            (return-from process-battle))
-        (tagbody
-            (when (>= (list-length (members-finished-of *battle*)) (list-length (team-of *game*)))
-                (go enemies-start-fighting))
-            (iter (for i in (copy-tree (getf (status-conditions-of *battle*) selected-user)))
-                (if (or (eq (duration-of i) t) (> (duration-of i) 0))
-                    (progn
-                        (funcall (coerce (battle-script-of i) 'function) (target-of i) selected-user i)
-                        (when (typep (duration-of i) 'number)
-                            (decf (duration-of i))))
-                    (removef i (getf (status-conditions-of *battle*) selected-user))))
-            (run-equip-effects selected-user)
-            (when (<= (health-of selected-user) 0)
-                (format t "~a has fainted~%~%" (name-of selected-user))
-                (pushnew selected-user (members-finished-of *battle*))
-                (cond
-                    ((not (iter (for i in (team-of *game*)) (when (> (health-of i) 0) (leave t))))
-                        (finish-battle t))
-                    ((>= (list-length (members-finished-of *battle*)) (list-length (team-of *game*)))
-                        (go enemies-start-fighting))
-                    (t
-                        (return-from process-battle))))
-            (incf (bladder/contents-of selected-user) (* (bladder/fill-rate-of selected-user) 5))
-            (incf (bowels/contents-of selected-user) (* (bowels/fill-rate-of selected-user) 5))
-            (when (and (not (eq (player-of *game*) selected-user))
-                      (or (eq (potty-training-of user) :none))
-                      (>= (bladder/contents-of selected-user) (bladder/need-to-potty-limit-of selected-user)))
-                (let ((wet-status (wet :wetter selected-user)))
-                    (format t "~a wet ~aself~%"
-                        (name-of selected-user)
-                        (if (malep selected-user) "him" "her"))
-                    (when (> (getf wet-status :leak-amount) 0))
-                    (format t "~a leaks and leaves puddles~%"
-                        (name-of selected-user))))
-            (when (and (not (eq (player-of *game*) selected-user))
-                      (or (eq (potty-training-of user) :none))
-                      (>= (bowels/contents-of selected-user) (bowels/need-to-potty-limit-of selected-user)))
-                (let ((mess-status (mess :messer selected-user)))
-                    (format t "~a messed ~aself~%"
-                        (name-of selected-user)
-                        (if (malep selected-user) "him" "her"))
-                    (when (> (getf mess-status :leak-amount) 0))
-                    (format t "~a has a blowout and leaves a mess~%"
-                        (name-of selected-user))))
-            (cond ((and (not (eq (player-of *game*) selected-user))
-                       (or (eq (potty-training-of user) :rebel))
-                       (not (typep (get-move attack selected-user)
-                                'yadfa/moves:watersport))
-                       (>= (bladder/contents-of selected-user) (bladder/need-to-potty-limit-of selected-user)))
-                      (let ((a (make-instance 'yadfa/moves:watersport)))
-                          (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of selected-user))
-                          (format t "*~a uses ~a instead*~%~%" (name-of selected-user) (name-of a))
-                          (funcall
-                              (coerce
-                                  (attack-of a)
-                                  'function)
-                              selected-target
-                              selected-user
-                              a)))
-                ((and (not (eq (player-of *game*) selected-user))
-                     (or (eq (potty-training-of user) :rebel))
-                     (not (typep (get-move attack selected-user) 'yadfa/moves:mudsport))
-                     (>= (bowels/contents-of selected-user) (bowels/need-to-potty-limit-of selected-user)))
-                    (let ((a (make-instance 'yadfa/moves:mudsport)))
-                        (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of selected-user))
-                        (format t "*~a uses ~a instead*~%~%" (name-of selected-user) (name-of a))
-                        (funcall
-                            (coerce
-                                (attack-of a)
-                                'function)
-                            selected-target
-                            selected-user
-                            a)))
-                ((or
-                     (>= (bladder/contents-of selected-user) (bladder/maximum-limit-of selected-user))
-                     (>= (bowels/contents-of selected-user) (bowels/maximum-limit-of selected-user)))
-                    (when (>= (bladder/contents-of selected-user) (bladder/maximum-limit-of selected-user))
-                        (format t
-                            "~a lets out a quiet moan as ~a accidentally wets ~aself in battle~%"
-                            (name-of selected-user)
-                            (if (malep selected-user) "he" "she")
-                            (if (malep selected-user) "him" "her"))
-                        (wet :wetter selected-user)
-                        (set-status-condition 'yadfa/status-conditions:wetting selected-user))
-                    (when (>= (bladder/contents-of selected-user) (bladder/maximum-limit-of selected-user))
-                        (format t
-                            "~a instinctively squats down as ~a accidentally messes ~aself in battle~%"
-                            (name-of selected-user)
-                            (if (malep selected-user) "he" "she")
-                            (if (malep selected-user) "him" "her"))
-                        (mess :messer selected-user)
-                        (set-status-condition 'yadfa/status-conditions:messing selected-user)))
-                ((iter (for j in (getf (status-conditions-of *battle*) selected-user))
-                     (when (blocks-turn-of j)
-                         (leave t))))
-                ((and
-                     (or
-                         (>= (bladder/contents-of selected-user) (bladder/potty-dance-limit-of selected-user))
-                         (>= (bowels/contents-of selected-user) (bowels/potty-dance-limit-of selected-user)))
-                     (<
-                         (car (sort (let ((a ())
-                                             (x
-                                                 (-
-                                                     (bladder/maximum-limit-of selected-user)
-                                                     (bladder/contents-of selected-user)))
-                                             (y
-                                                 (-
-                                                     (bladder/maximum-limit-of selected-user)
-                                                     (bladder/potty-dance-limit-of selected-user))))
-                                        (when (>=
-                                                  (bladder/contents-of selected-user)
-                                                  (bladder/potty-dance-limit-of selected-user))
-                                            (push (random (expt ($ x / y * (expt 5 1.3)) (/ 1 1.3)))
-                                                a))
-                                        (setf
-                                            x (-
-                                                  (bowels/maximum-limit-of selected-user)
-                                                  (bowels/contents-of selected-user))
-                                            y (- (bowels/maximum-limit-of selected-user)
-                                                  (bowels/potty-dance-limit-of selected-user)))
-                                        (when (>=
-                                                  (bowels/contents-of selected-user)
-                                                  (bowels/potty-dance-limit-of selected-user))
-                                            (push (random (expt ($ x / y * (expt 5 2)) (/ 1 2)))
-                                                a))
-                                        a)
-                                  '<))
-                         1)
-                     (not (or
-                              (typep (get-move attack selected-user) 'yadfa/moves:watersport)
-                              (typep (get-move attack selected-user) 'yadfa/moves:mudsport))))
-                    (format t "~a is too busy doing a potty dance to fight~%" (name-of selected-user)))
-                (item
-                    (format t "~a used ~a ~a on ~a~%"
-                        (name-of selected-user)
-                        (if (malep selected-user) "his" "her")
-                        (name-of (nth item (inventory-of (player-of *game*))))
-                        (name-of selected-target))
-                    (use-item%
-                        (nth item (inventory-of (player-of *game*)))
-                        (player-of *game*)
-                        :target selected-target)
-                    (when (<= (health-of selected-target) 0)
-                        (format t "~a has fainted~%" (name-of selected-target))))
-                ((eq attack t)
-                    (if (wield-of selected-user)
-                        (funcall
-                            (coerce
-                                (attack-of (default-move-of (wield-of selected-user)))
-                                'function)
-                            selected-target
-                            selected-user
-                            (default-move-of (wield-of selected-user)))
-                        (let ((a (make-instance 'yadfa/moves:default)))
-                            (funcall
-                                (coerce
-                                    (attack-of a)
-                                    'function)
-                                selected-target
-                                selected-user
-                                a)))
-                    (when (<= (health-of selected-target) 0)
-                        (format t "~a has fainted~%" (name-of selected-target))))
-                (attack
-                    (funcall
-                        (coerce
-                            (attack-of (get-move attack selected-user))
-                            'function)
-                        selected-target
-                        selected-user
-                        (get-move attack selected-user))
-                    (when (<= (health-of selected-target) 0)
-                        (format t "~a has fainted~%" (name-of selected-target)))))
-            enemies-start-fighting
-            (unless (iter (for i in (enemies-of *battle*)) (when (> (health-of i) 0) (leave t)))
-                (finish-battle)
-                (return-from process-battle t))
+    (let* ((selected-target
+               (cond
+                   ((and target (>= target (list-length (enemies-of *battle*))))
+                       (write-line "That target doesn't exist")
+                       (return-from process-battle))
+                   ((and friendly-target (>= friendly-target (list-length (team-of *game*))))
+                       (write-line "That target doesn't exist")
+                       (return-from process-battle))
+                   (target (nth target (enemies-of *battle*)))
+                   (friendly-target (nth friendly-target (team-of *game*)))
+                   (t
+                       (iter (for i in (enemies-of *battle*))
+                           (when (>= (health-of i) 0)
+                               (leave i))))))
+              (team-attacked nil))
+        (flet ((check-if-done ()
+                   (unless (iter (for i in (enemies-of *battle*)) (when (> (health-of i) 0) (leave t)))
+                       (finish-battle)
+                       (return-from process-battle t))
+                   (unless (iter (for i in (team-of *game*)) (when (> (health-of i) 0) (leave t)))
+                       (finish-battle t)
+                       (return-from process-battle t))))
+            (check-if-done)
+            (unless (or (eq attack t) (get-move attack (first (current-turn-list-of *battle*))))
+                (format t "~a doesn't know ~a~%" (name-of (first (current-turn-list-of *battle*))) attack)
+                (return-from process-battle))
             (iter
-                (for i in (enemies-of *battle*))
-                (iter (for j in (copy-tree (getf (status-conditions-of *battle*) i)))
-                    (if (or (eq (duration-of j) t) (> (duration-of j) 0))
-                        (progn
-                            (funcall
-                                (coerce (battle-script-of j) 'function)
-                                (target-of j)
-                                i
-                                j)
-                            (when (typep (duration-of j) 'number)
-                                (decf (duration-of j))))
-                        (removef j (getf (status-conditions-of *battle*) i))))
-                (run-equip-effects i)
-                (when (<= (health-of i) 0)
-                    (next-iteration))
-                (incf (bladder/contents-of i) (* (bladder/fill-rate-of i) 5))
-                (incf (bowels/contents-of i) (* (bowels/fill-rate-of i) 5))
-                (cond ((or
-                           (>= (bladder/contents-of i) (bladder/maximum-limit-of i))
-                           (>= (bowels/contents-of i) (bowels/maximum-limit-of i)))
-                          (when (>= (bladder/contents-of i) (bladder/maximum-limit-of i))
-                              (format t
-                                  "~a lets out a quiet moan as ~a accidentally wets ~aself in battle~%"
-                                  (name-of i)
-                                  (if (malep i) "he" "she")
-                                  (if (malep i) "him" "her"))
-                              (wet :wetter i)
-                              (set-status-condition 'yadfa/status-conditions:wetting i))
-                          (when (>= (bowels/contents-of i) (bowels/maximum-limit-of i))
-                              (format t
-                                  "~a instinctively squats down as ~a accidentally messes ~aself in battle~%"
-                                  (name-of i)
-                                  (if (malep i) "he" "she")
-                                  (if (malep i) "him" "her"))
-                              (mess :messer i)
-                              (set-status-condition 'yadfa/status-conditions:messing i)))
-                    ((and
-                         (watersport-limit-of i)
-                         (<= (- (bladder/maximum-limit-of i) (bladder/contents-of i)) (watersport-limit-of i))
-                         (< (random (watersport-chance-of i)) 1))
-                        (let ((a (make-instance 'yadfa/moves:watersport)))
-                            (funcall (coerce (attack-of a) 'function) (player-of *game*) i a)))
-                    ((and
-                         (mudsport-limit-of i)
-                         (<= (- (bowels/maximum-limit-of i) (bowels/contents-of i)) (mudsport-limit-of i))
-                         (< (random (mudsport-chance-of i)) 1))
-                        (let ((a (make-instance 'yadfa/moves:mudsport)))
-                            (funcall (coerce (attack-of a) 'function) (player-of *game*) i a)))
-                    ((iter (for j in (getf (status-conditions-of *battle*) i))
-                         (when (blocks-turn-of j)
-                             (leave t))))
-                    ((and
-                         (or
-                             (>= (bladder/contents-of i) (bladder/potty-dance-limit-of i))
-                             (>= (bowels/contents-of i) (bowels/potty-dance-limit-of i)))
-                         (<
-                             (car (sort (let* ((a ())
-                                                  (x
-                                                      (-
-                                                          (bladder/maximum-limit-of i)
-                                                          (bladder/contents-of i)))
-                                                  (y
-                                                      (-
-                                                          (bladder/maximum-limit-of i)
-                                                          (bladder/potty-dance-limit-of i))))
-                                            (when (>=
-                                                      (bladder/contents-of i)
-                                                      (bladder/potty-dance-limit-of i))
-                                                (push (random (expt ($ x / y * (expt 5 1.3)) (/ 1 1.3)))
-                                                    a))
-                                            (setf
-                                                x (-
-                                                      (bowels/maximum-limit-of i)
-                                                      (bowels/contents-of i))
-                                                y (- (bowels/maximum-limit-of i)
-                                                      (bowels/potty-dance-limit-of i)))
-                                            (when (>=
-                                                      (bowels/contents-of i)
-                                                      (bowels/potty-dance-limit-of i))
-                                                (push (random (expt ($ x / y * (expt 5 2)) (/ 1 2)))
-                                                    a))
-                                            a)
-                                      '<))
-                             1))
-                        (format t "~a is too busy doing a potty dance to fight~%" (name-of i)))
-                    (t
-                        (funcall
-                            (coerce (battle-script-of i) 'function)
-                            i
-                            (random-elt (team-of *game*)))))
-                (when (<= (health-of i) 0)
-                    (format t "~a has fainted~%" (name-of i))
-                    (next-iteration)))
-            (unless (iter (for i in (team-of *game*)) (when (> (health-of i) 0) (leave t)))
-                (finish-battle t)
-                (return-from process-battle t))
-            (unless (iter (for i in (enemies-of *battle*)) (when (> (health-of i) 0) (leave t)))
-                (finish-battle)
-                (return-from process-battle t)))))
+                (until team-attacked)
+                (check-if-done)
+                (process-battle-turn (first (current-turn-list-of *battle*)) attack item selected-target)
+                (when (typep (first (current-turn-list-of *battle*)) 'team-member)
+                    (setf team-attacked t))
+                (setf (current-turn-list-of *battle*) (rest (current-turn-list-of *battle*)))
+                (check-if-done)
+                (unless (current-turn-list-of *battle*)
+                    (appendf (current-turn-list-of *battle*)
+                        (sort (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
+                                  (when (> (health-of i) 0)
+                                      (collect i)))
+                            '> :key #'(lambda (a) (calculate-stat a :speed))))))
+            (let ((a
+                      (iter
+                          (for i in (current-turn-list-of *battle*))
+                          (when (typep i 'team-member)
+                              (leave i)))))
+                (if a
+                    (format t "~a is next in battle~%" (name-of a))
+                    (progn
+                        (appendf (current-turn-list-of *battle*)
+                            (sort (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
+                                      (when (> (health-of i) 0)
+                                          (collect i)))
+                                '> :key #'(lambda (a) (calculate-stat a :speed))))
+                        (format t "~a is next in battle~%" (name-of (iter
+                                                                        (for i in (current-turn-list-of *battle*))
+                                                                        (when (typep i 'team-member)
+                                                                            (leave i)))))))))))
 (defun ally-join (ally)
     (format t "~a Joins the team~%" (name-of ally))
     (when (> (bitcoins-of ally) 0)
@@ -3071,6 +3029,7 @@
                                      :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) (eighth values))
                                      :wear (iter (for i in (cdddr (butlast values)))
                                                (unless (eq i 'nil) (collect (make-instance i))))))
+        (setf (team-of *game*) (list (player-of *game*)))
         (when (member (seventh values) '(yadfa/items:diaper yadfa/items:pullups))
             (iter (for i from 1 to (random 20))
                 (push (make-instance (seventh values))

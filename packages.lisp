@@ -61,6 +61,7 @@
         ;;classes
         #:status-condition
         #:base-character
+        #:team-member
         #:ally
         #:player
         #:zone
@@ -188,7 +189,7 @@
         #:mudsport-limit-of
         #:watersport-chance-of
         #:mudsport-chance-of
-        #:members-finished-of
+        #:current-turn-list-of
         #:enter-battle-text-of
         #:enemies-of
         #:win-events-of
