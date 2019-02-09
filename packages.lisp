@@ -189,7 +189,7 @@
         #:mudsport-limit-of
         #:watersport-chance-of
         #:mudsport-chance-of
-        #:current-turn-list-of
+        #:turn-queue-of
         #:enter-battle-text-of
         #:enemies-of
         #:win-events-of

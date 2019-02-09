@@ -1012,11 +1012,11 @@
         :bowels/fill-rate (* (/ 12000 24 60) 2))
     (:documentation "Class for an enemy with a bladder and bowels fill rate. This enemy may {wet,mess} {him,her}self in battle."))
 (defclass battle ()
-    ((current-turn-list
-         :initarg :current-turn-list
+    ((turn-queue
+         :initarg :turn-queue
          :initform ()
-         :accessor current-turn-list-of
-         :documentation "List of characters to move")
+         :accessor turn-queue-of
+         :documentation "The queue of characters specifing the order of who attacks when in battle")
         (enter-battle-text
             :initarg :enter-battle-text
             :initform nil
@@ -1047,7 +1047,7 @@
             (with-output-to-string (s)
                 (loop for i in (enemies-of c) do
                     (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
-    (setf (current-turn-list-of c)
+    (setf (turn-queue-of c)
         (sort (copy-tree (append (enemies-of c) (team-of *game*)))
             '> :key #'(lambda (a) (calculate-stat a :speed)))))
 (defclass game ()
