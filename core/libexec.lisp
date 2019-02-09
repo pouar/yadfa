@@ -2916,7 +2916,7 @@
                 (format t "~a doesn't know ~a~%" (name-of (first (turn-queue-of *battle*))) attack)
                 (return-from process-battle))
             (iter
-                (until team-attacked)
+                (until (and team-attacked (typep (first (turn-queue-of *battle*)) 'team-member)))
                 (check-if-done)
                 (process-battle-turn (first (turn-queue-of *battle*)) attack item selected-target)
                 (when (typep (first (turn-queue-of *battle*)) 'team-member)
