@@ -191,7 +191,7 @@
     ((learned-moves
          :initarg :learned-moves
          :accessor learned-moves-of
-         :initform (list (cons 100 yadfa/moves:superglitch) (cons 11 yadfa/moves:kamehameha) (cons 7 yadfa/moves:tickle) (cons 8 yadfa/moves:mush))
+         :initform (list (cons 100 'yadfa/moves:superglitch) (cons 11 'yadfa/moves:kamehameha) (cons 7 'yadfa/moves:tickle) (cons 8 'yadfa/moves:mush))
          :documentation "Alist of moves the player learns by leveling up, first element is the level when you learn them ove, second is a symbol from the `yadfa/moves' package")
         (potty-training
             :initarg :potty-training
@@ -253,7 +253,7 @@
         (learned-moves
             :initarg :learned-moves
             :accessor learned-moves-of
-            :initform (list (cons 100 yadfa/moves:superglitch) (cons 11 yadfa/moves:kamehameha) (cons 7 yadfa/moves:tickle) (cons 8 yadfa/moves:mush))
+            :initform (list (cons 100 'yadfa/moves:superglitch) (cons 11 'yadfa/moves:kamehameha) (cons 7 'yadfa/moves:tickle) (cons 8 'yadfa/moves:mush))
             :documentation "Alist of moves the player learns by leveling up, first element is the level when you learn them ove, second is a symbol from the `yadfa/moves'"))
     (:documentation "The player")
     (:default-initargs
