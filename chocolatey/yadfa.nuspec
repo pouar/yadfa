@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>yadfa</id>
+    <version>0.9.1549835500</version>
+    <packageSourceUrl>https://github.com/pouar/yadfa/tree/master/chocolatey</packageSourceUrl>
+    <owners>Pouar</owners>
+    <title>Yadfa (Install)</title>
+    <authors>Pouar</authors>
+    <projectUrl>https://github.com/pouar/yadfa</projectUrl>
+    <iconUrl>https://rawcdn.githack.com/pouar/yadfa/84644543193ad89d0410555b3d8ad6c9b9c0b8ce/chocolatey/icon.png</iconUrl>
+    <licenseUrl>https://rawcdn.githack.com/pouar/yadfa/84644543193ad89d0410555b3d8ad6c9b9c0b8ce/COPYING</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectSourceUrl>https://github.com/pouar/yadfa</projectSourceUrl>
+    <tags>chocolatey yadfa diaperfur diaper furry babyfur</tags>
+    <summary>Yet Another DiaperFur Adventure</summary>
+    <description>A WIP diaperfur adventure game where you play by typing in Lisp commands</description>
+  </metadata>
+  <files>
+    <file src="AUTHORS" target="yadfa" />
+    <file src="COPYING" target="yadfa" />
+    <file src="INSTALL" target="yadfa" />
+    <file src="INSTALL.md" target="yadfa" />
+    <file src="README" target="yadfa" />
+    <file src="README.md" target="yadfa" />
+    <file src="build.lisp" target="yadfa" />
+    <file src="core\**" target="yadfa" />
+    <file src="data\**" target="yadfa" />
+    <file src="docs\reference\style-common.css" target="yadfa" />
+    <file src="docs\reference\style-multi.css" target="yadfa" />
+    <file src="docs\reference\style-single.css" target="yadfa" />
+    <file src="docs\*\*.texi" target="yadfa" />
+    <file src="docs\*\*.pdf" target="yadfa" />
+    <file src="docs\*\*.html" target="yadfa" />
+    <file src="docs\*\*.info" target="yadfa" />
+    <file src="ideas.lisp" target="yadfa" />
+    <file src="main.lisp" target="yadfa" />
+    <file src="mods\**" target="yadfa" />
+    <file src="packages.lisp" target="yadfa" />
+    <file src="run.lisp" target="yadfa" />
+    <file src="yadfa.exe" target="yadfa" />
+    <file src="yadfa.asd" target="yadfa" />
+  </files>
+</package>
