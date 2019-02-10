@@ -13,6 +13,7 @@ cleanup:
   - /lib/debug
   - /lib/yadfa/ci
   - /lib/yadfa/flatpak
+  - /lib/yadfa/chocolatey
   - /lib/yadfa/.*
   - /lib/yadfa/appveyor-*.lisp
 finish-args:
