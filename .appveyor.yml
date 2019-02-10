@@ -6,6 +6,7 @@ environment:
   SBCL_HOME: 'C:\Program Files\Steel Bank Common Lisp\1.4.14\'
 
 install:
+# Like Windows Installer, Chocolatey's build files are apparently incapable of building the sources
 - ps: If(!(test-path $env:CACHE )) { mkdir $env:CACHE; }
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://beta.quicklisp.org/quicklisp.lisp" -OutFile $env:CACHE\quicklisp.lisp
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/releases/download/v1.11.5/ccl-1.11.5-windowsx86.zip" -OutFile $env:CACHE\ccl.zip
@@ -38,10 +39,11 @@ build_script:
 - cmd: '"C:\Program Files\Steel Bank Common Lisp\1.4.14\sbcl" --script "appveyor-build-docs.lisp" texi'
 - cmd: 'C:\cygwin64\bin\bash.exe -lc "export PDFTEX=xetex PDFLATEX=xelatex;cd /cygdrive/c/projects/yadfa/docs/reference;makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html yadfa-reference.texi;makeinfo --no-split --pdf yadfa-reference.texi;makeinfo --no-split yadfa-reference.texi"'
 - cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)"'
-- ps: 7z a -t7z -mmt=2 -mx=9 -m0=LZMA2:d=200M:fb=273:mc=1000000000 '-x!yadfa/docs/*/*.aux' '-x!yadfa/docs/*/*.cps' '-x!yadfa/docs/*/*.fns' '-x!yadfa/docs/*/*.vrs' '-x!yadfa/docs/*/*.tps' '-x!yadfa/docs/*/*.cp' '-x!yadfa/docs/*/*.fn' '-x!yadfa/docs/*/*.vr' '-x!yadfa/docs/*/*.tp' '-x!yadfa/docs/*/*.toc' '-x!yadfa/docs/*/*.log' '-x!yadfa/.*' '-x!yadfa/ci' '-x!yadfa/yadfa.7z' '-x!yadfa/appveyor-build*.lisp' yadfa.7z $PWD
+- ps: cp chocolatey/yadfa.nuspec yadfa.nuspec # for some reason Chocolatey seems to expect the package build file to be in the same directory as the source directory
+- ps: choco pack yadfa.nuspec --version $(Get-Date -UFormat "0.9.%s")
 artifacts:
-- path: yadfa.7z
-  name: yadfa.7z
+- path: yadfa*.nupkg
+  name: NuPKG
 test_script:
 - ps: |
     If(!(test-path C:\projects\yadfa\yadfa.exe )) { echo "yadfa.exe was not built";exit 1; }
@@ -52,19 +54,13 @@ test_script:
     Else { echo "yadfa-reference.pdf was built"; }
     If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.info )) { echo "yadfa-reference.info was not built";exit 1; }
     Else { echo "yadfa-reference.info was built"; }
-    If(!(test-path C:\projects\yadfa\yadfa.7z )) { echo "yadfa.7z was not built";exit 1; }
-    Else { echo "yadfa.7z was built"; }
+    If(!(Get-ChildItem C:\projects\yadfa\yadfa*.nupkg )) { echo "nupkg was not built";exit 1; }
+    Else { echo "nupkg was built"; }
 deploy:
-- provider: BinTray
-  username: pouar
+- provider: NuGet
+  server: https://api.bintray.com/nuget/pouar/yadfa-chocolatey
   api_key:
     secure: O42a6FepgN/X3CzWpPbJkuKRhmENlIwBfbtMVQLKSWR/annp514THuh4Dynu6xLZ
-  subject: pouar
-  repo: yadfa-generic
-  package: win64
-  version: latest
-  artifact: yadfa.7z
-  publish: true
-  override: true
+  artifact: NuPKG
   on:
     branch: master
