@@ -17,12 +17,10 @@
     <description>A WIP diaperfur adventure game where you play by typing in Lisp commands</description>
   </metadata>
   <files>
-    <file src="AUTHORS" target="yadfa" />
-    <file src="COPYING" target="yadfa" />
-    <file src="INSTALL" target="yadfa" />
-    <file src="INSTALL.md" target="yadfa" />
-    <file src="README" target="yadfa" />
-    <file src="README.md" target="yadfa" />
+    <file src="AUTHORS*" target="yadfa" />
+    <file src="COPYING*" target="yadfa" />
+    <file src="INSTALL*" target="yadfa" />
+    <file src="README*" target="yadfa" />
     <file src="build.lisp" target="yadfa" />
     <file src="core\**" target="yadfa" />
     <file src="data\**" target="yadfa" />
