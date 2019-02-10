@@ -270,20 +270,9 @@
                       (push (class-name (class-of i)) (seen-enemies-of *game*))
                       (collect (class-name (class-of i))))))
         (yadfa/bin:pokedex j))
-    (format t "~a is next in battle~%"
-        (name-of
-            (iter
-                (for i in (if (turn-queue-of *battle*)
-                              (turn-queue-of *battle*)
-                              (setf (turn-queue-of *battle*)
-                                  (sort (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
-                                            (when (> (health-of i) 0)
-                                                (collect i)))
-                                      '> :key #'(lambda (a) (calculate-stat a :speed))))))
-                (when (typep i 'team-member)
-                    (leave i)))))
     (unuse-package :yadfa/world :yadfa-user)
-    (use-package :yadfa/battle :yadfa-user))
+    (use-package :yadfa/battle :yadfa-user)
+    (process-battle :attack t :no-team-attack t))
 (defun run-equip-effects (user)
     (iter (for i in (wear-of user))
         (when (wear-script-of i)
@@ -2879,7 +2868,7 @@
                 (get-move attack character))
             (when (<= (health-of selected-target) 0)
                 (format t "~a has fainted~%" (name-of selected-target))))))
-(defun process-battle (&key attack item user target friendly-target)
+(defun process-battle (&key attack item user target friendly-target no-team-attack)
     #+sbcl (declare
                (type (or null integer) user target)
                (type (or symbol boolean) attack))
@@ -2903,7 +2892,7 @@
                        (iter (for i in (enemies-of *battle*))
                            (when (>= (health-of i) 0)
                                (leave i))))))
-              (team-attacked nil))
+              (team-attacked no-team-attack))
         (flet ((check-if-done ()
                    (unless (iter (for i in (enemies-of *battle*)) (when (> (health-of i) 0) (leave t)))
                        (finish-battle)
@@ -2927,24 +2916,9 @@
                         (sort (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
                                   (when (> (health-of i) 0)
                                       (collect i)))
-                            '> :key #'(lambda (a) (calculate-stat a :speed))))))
-            (let ((a
-                      (iter
-                          (for i in (turn-queue-of *battle*))
-                          (when (typep i 'team-member)
-                              (leave i)))))
-                (if a
-                    (format t "~a is next in battle~%" (name-of a))
-                    (progn
-                        (appendf (turn-queue-of *battle*)
-                            (sort (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
-                                      (when (> (health-of i) 0)
-                                          (collect i)))
-                                '> :key #'(lambda (a) (calculate-stat a :speed))))
-                        (format t "~a is next in battle~%" (name-of (iter
-                                                                        (for i in (turn-queue-of *battle*))
-                                                                        (when (typep i 'team-member)
-                                                                            (leave i)))))))))))
+                            '>
+                            :key #'(lambda (a) (calculate-stat a :speed))))))
+            (format t "~a is next in battle~%" (name-of (first (turn-queue-of *battle*)))))))
 (defun ally-join (ally)
     (format t "~a Joins the team~%" (name-of ally))
     (when (> (bitcoins-of ally) 0)
