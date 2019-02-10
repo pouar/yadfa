@@ -16,7 +16,7 @@
                                        (list
                                            (make-instance 'yadfa/items:sundress)
                                            (make-instance 'yadfa/items:toddler-dress)
-                                           '(make-instance 'yadfa/items:latex-onesie))))
+                                           (make-instance 'yadfa/items:latex-onesie))))
                :toilet (make-instance 'toilet)
                :bed (make-instance 'bed)
                :shop (make-instance 'debug-shop
