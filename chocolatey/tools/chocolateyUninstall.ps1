@@ -1,0 +1,1 @@
+Remove-Item $env:ProgramData'\Microsoft\Windows\Start Menu\Programs\yadfa.lnk'

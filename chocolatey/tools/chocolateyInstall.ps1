@@ -1,0 +1,1 @@
+Install-ChocolateyShortcut -IconLocation $env:ChocolateyPackageFolder'\yadfa\icon.ico' -ShortcutFilePath $env:ProgramData'\Microsoft\Windows\Start Menu\Programs\yadfa.lnk' -TargetPath $env:ChocolateyPackageFolder'/yadfa/yadfa.exe'

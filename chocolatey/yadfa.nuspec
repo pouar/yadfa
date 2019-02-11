@@ -22,6 +22,8 @@
     <file src="INSTALL*" target="yadfa" />
     <file src="README*" target="yadfa" />
     <file src="build.lisp" target="yadfa" />
+    <file src="chocolatey\tools\**" target="tools" />
+    <file src="chocolatey\icon.ico" target="yadfa" />
     <file src="core\**" target="yadfa\core" />
     <file src="data\**" target="yadfa\data" />
     <file src="docs\**" target="yadfa\docs" exclude="docs/*/*.toc;docs/*/*.cps;docs/*/*.fns;docs/*/*.tps;docs/*/*.vrs;docs/*/*.aux;docs/*/*.cp;docs/*/*.fn;docs/*/*.log;docs/*/*.tp;docs/*/*.vr;docs/*/*.css" />
