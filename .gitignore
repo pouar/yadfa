@@ -28,4 +28,10 @@ yadfa
 **/*.wx32fsl
 **/*.dll
 docs/reference/yadfa-reference.*
+docs/guide/*.toc
+docs/guide/*.aux
+docs/guide/*.log
+docs/guide/*.html
+docs/guide/*.info
+docs/guide/*.pdf
 mods.conf
