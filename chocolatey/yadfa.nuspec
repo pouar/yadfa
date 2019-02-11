@@ -22,18 +22,12 @@
     <file src="INSTALL*" target="yadfa" />
     <file src="README*" target="yadfa" />
     <file src="build.lisp" target="yadfa" />
-    <file src="core\**" target="yadfa" />
-    <file src="data\**" target="yadfa" />
-    <file src="docs\reference\style-common.css" target="yadfa" />
-    <file src="docs\reference\style-multi.css" target="yadfa" />
-    <file src="docs\reference\style-single.css" target="yadfa" />
-    <file src="docs\*\*.texi" target="yadfa" />
-    <file src="docs\*\*.pdf" target="yadfa" />
-    <file src="docs\*\*.html" target="yadfa" />
-    <file src="docs\*\*.info" target="yadfa" />
+    <file src="core\**" target="yadfa\core" />
+    <file src="data\**" target="yadfa\data" />
+    <file src="docs\**" target="yadfa\docs" exclude="docs/*/*.toc;docs/*/*.cps;docs/*/*.fns;docs/*/*.tps;docs/*/*.vrs;docs/*/*.aux;docs/*/*.cp;docs/*/*.fn;docs/*/*.log;docs/*/*.tp;docs/*/*.vr;docs/*/*.css" />
     <file src="ideas.lisp" target="yadfa" />
     <file src="main.lisp" target="yadfa" />
-    <file src="mods\**" target="yadfa" />
+    <file src="mods\**" target="yadfa\mods" />
     <file src="packages.lisp" target="yadfa" />
     <file src="run.lisp" target="yadfa" />
     <file src="yadfa.exe" target="yadfa" />

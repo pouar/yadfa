@@ -4,6 +4,8 @@ clone_depth: 1
 environment:
   CACHE: 'c:\cache\'
   SBCL_HOME: 'C:\Program Files\Steel Bank Common Lisp\1.4.14\'
+  bintrayapikey:
+    secure: O42a6FepgN/X3CzWpPbJkuKRhmENlIwBfbtMVQLKSWR/annp514THuh4Dynu6xLZ
 
 install:
 # Like Windows Installer, Chocolatey's build files are apparently incapable of building the sources
@@ -56,11 +58,8 @@ test_script:
     Else { echo "yadfa-reference.info was built"; }
     If(!(Get-ChildItem C:\projects\yadfa\yadfa*.nupkg )) { echo "nupkg was not built";exit 1; }
     Else { echo "nupkg was built"; }
-deploy:
-- provider: NuGet
-  server: https://api.bintray.com/nuget/pouar/yadfa-chocolatey
-  api_key:
-    secure: O42a6FepgN/X3CzWpPbJkuKRhmENlIwBfbtMVQLKSWR/annp514THuh4Dynu6xLZ
-  artifact: NuPKG
-  on:
-    branch: master
+deploy_script:
+- ps: |
+    nuget sources Add -Name Bintray -Source https://api.bintray.com/nuget/pouar/yadfa-chocolatey -UserName pouar -Password $env:bintrayapikey
+    nuget setapikey 'pouar:'$env:bintrayapikey -Source Bintray
+    nuget push $([string[]](Get-Item yadfa*.nupkg)) -Source https://api.bintray.com/nuget/pouar/yadfa-chocolatey
