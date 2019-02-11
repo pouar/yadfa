@@ -18,7 +18,7 @@ install:
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/didierverna/declt/archive/master.zip" -OutFile "$env:CACHE\declt.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/McCLIM/McCLIM/archive/master.zip" -OutFile "$env:CACHE\mcclim.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip" -OutFile $env:CACHE\dejavu.zip
-- ps: choco install -y miktex
+- ps: choco install -y miktex jq
 - ps: Expand-Archive $env:CACHE\ccl.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\asdf.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\sly.zip -DestinationPath $env:CACHE
@@ -62,3 +62,5 @@ deploy_script:
     nuget sources Add -Name Bintray -Source https://api.bintray.com/nuget/pouar/yadfa-chocolatey -UserName pouar -Password $env:bintrayapikey
     nuget setapikey 'pouar:'$env:bintrayapikey -Source Bintray
     nuget push $([string[]](Get-Item yadfa*.nupkg)) -Source https://api.bintray.com/nuget/pouar/yadfa-chocolatey
+
+- cmd: 'C:\msys64\usr\bin\bash.exe -lc "export bintrayapikey;/c/projects/yadfa/ci/clear-old-versions.sh"'
