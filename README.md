@@ -10,7 +10,7 @@ So far this has only been tested on Linux and Windows 10, but should be portable
 I've added a flatpak repo, you can add it with
 
 ```
-flatpak remote-add --if-not-exists --no-gpg-verify yadfa https://cgit.pouar.net/yadfa.git/plain/flatpak/yadfa.flatpakrepo
+flatpak remote-add --if-not-exists yadfa https://cgit.pouar.net/yadfa.git/plain/flatpak/yadfa.flatpakrepo
 ```
 
 then install the game with
