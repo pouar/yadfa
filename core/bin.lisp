@@ -582,10 +582,10 @@
         (setf
             a (insert (wear-of selected-user) item wear)
             i (iter
-                  (for (inner outter) on (reverse a))
+                  (for (inner outer) on (reverse a))
                   (when (and
-                            (typep outter 'bottoms)
-                            (not (eq (thickness-capacity-of outter) t))
+                            (typep outer 'bottoms)
+                            (not (eq (thickness-capacity-of outer) t))
                             (>
                                 (total-thickness (member inner a))
                                 (thickness-capacity-of outer)))
@@ -607,7 +607,7 @@
                     (name-of selected-user)
                     (if (malep selected-user) "his" "her")
                     (name-of item))
-                (removef (inventory-of (player-of *game*)) item)
+                (removef (inventory-of (player-of *game*)) item :count 1)
                 (setf (wear-of selected-user) a)))))
 (defun yadfa/bin:unwear (&key (inventory 0) (wear 0) user)
     "Unwear an item you're wearing. Inventory is the index you want to place this item. WEAR is the index of the item you're wearing that you want to remove. You can also set WEAR to a type specifier for the outer most clothing of that type. USER is a integer referring to the index of an ally. Leave at NIL to refer to yourself"
@@ -676,7 +676,7 @@
                            (if (> (list-length (enemies-of *battle*)) 1) "enemies" "enemy")
                            (name-of item)))
         (format t "~a takes off ~a ~a~%" (name-of selected-user) (if (malep selected-user) "his" "her") (name-of item))
-        (removef (wear-of (player-of *game*)) item)
+        (removef (wear-of (player-of *game*)) item :count 1)
         (insertf (inventory-of (player-of *game*)) item inventory)))
 (defun yadfa/bin:change (&key (inventory 0) (wear 0) user)
     "Change one of the clothes you're wearing with one in your inventory. WEAR is the index of the clothing you want to replace. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to replace it with. You can also give INVENTORY and WEAR a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself."
@@ -766,24 +766,24 @@
                          (leave t))))
                 (return-from yadfa/bin:change)))
         (setf
-            a (substitute inventory wear (wear-of selected-user))
+            a (substitute inventory wear (wear-of selected-user) :count 1)
             i (iter
-                  (for (inner outter) on (reverse a))
+                  (for (inner outer) on (reverse a))
                   (when (and
-                            (typep outter 'bottoms)
-                            (not (eq (thickness-capacity-of outter) t))
+                            (typep outer 'bottoms)
+                            (not (eq (thickness-capacity-of outer) t))
                             (>
                                 (total-thickness (member inner a))
-                                (thickness-capacity-of outter)))
-                      (leave (second (thickest-sort (member outter a)))))))
+                                (thickness-capacity-of outer)))
+                      (leave outer))))
         (if i
             (format t
                 "~a struggles to fit ~a ~a over ~a ~a in a hilarious fashion but fail to do so.~%"
                 (name-of selected-user)
                 (if (malep selected-user) "his" "her")
-                (name-of inventory)
+                (name-of i)
                 (if (malep selected-user) "his" "her")
-                (name-of i))
+                (name-of inventory))
             (progn
                 (when *battle* (format t
                                    "The ~a you're battling stops and waits for you to put on your ~a because Pouar never prevented this function from being called in battle~%"
@@ -795,7 +795,7 @@
                     (name-of wear)
                     (if (malep selected-user) "his" "her")
                     (name-of inventory))
-                (substitutef (inventory-of selected-user) wear inventory)
+                (substitutef (inventory-of selected-user) wear inventory :count 1)
                 (setf (wear-of selected-user) a)))))
 (defun yadfa/battle:fight (attack &key user target friendly-target)
     "Use a move on an enemy. ATTACK* is either a keyword which is the indicator to select an attack that you know, or T for default. USER is the index of a member in your team that you want to fight. TARGET is the index of the enemy you're attacking. FRIENDLY-TARGET is a member on your team you're using the move on instead. Only specify either a FRIENDLY-TARGET or TARGET. Setting both might make the game's code unhappy"
@@ -1096,7 +1096,7 @@
             (name-of selected-user)
             (if (malep selected-user) "his" "her")
             (name-of item))
-        (removef (inventory-of (player-of *game*)) item)
+        (removef (inventory-of (player-of *game*)) item :count 1)
         (when (wield-of selected-user)
             (push (wield-of selected-user) (inventory-of (player-of *game*))))
         (setf (wield-of selected-user) item)))
