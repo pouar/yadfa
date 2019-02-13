@@ -43,6 +43,7 @@
                                     (setf (blocks-turn-of self) t))
                                 (t (setf (blocks-turn-of self) nil))))
         :duration t
+        :stat-multiplier (list :speed 0.5)
         :blocks-turn t))
 (defclass tickled (status-condition)
     ()

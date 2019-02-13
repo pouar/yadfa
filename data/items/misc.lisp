@@ -42,3 +42,9 @@
         :use-script '(lambda (item user)
                          (declare (ignore item user))
                          (move-to-secret-underground))))
+(defclass macguffin (item) ()
+    (:default-initargs
+        :name "MacGuffin"
+        :sellable nil
+        :tossable nil
+        :description "Collect as many of these fuckers as you possibly can. Don't ask why, just do it."))

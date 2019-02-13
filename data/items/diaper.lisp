@@ -135,6 +135,7 @@
         :thickness-capacity 100
         :sellable nil
         :disposable t
+        :wear-stats (list :speed -10)
         :wear-wet-text '(10000"Pee flows down with every step"
                             2500 "It sloshes when you walk"
                             1 "The pee seems to have disappeared into the diaper")
@@ -150,6 +151,7 @@
         :value 400
         :thickness 300
         :thickness-capacity 100
+        :wear-stats (list :speed -10)
         :wear-wet-text '(10000 "Pee flows down with every step"
                             2500 "It sloshes when you walk"
                             1 "The pee seems to have disappeared into the diaper")
@@ -166,6 +168,7 @@
         :value 400
         :thickness 300
         :thickness-capacity 100
+        :wear-stats (list :speed -10)
         :wear-wet-text '(1 "The pee seems to have disappeared into the diaper"
                             2500 "It sloshes when you walk"
                             10000 "Pee flows down with every step")
@@ -183,6 +186,7 @@
         :thickness-capacity 380
         :disposable t
         :sellable nil
+        :wear-stats (list :speed -20)
         :wear-wet-text '(50000 "Pee flows down with every step"
                             12500 "It sloshes when you walk"
                             1 "The pee seems to have disappeared into the diaper")
@@ -198,6 +202,7 @@
         :value 1000
         :thickness 1000
         :thickness-capacity 380
+        :wear-stats (list :speed -20)
         :wear-wet-text '(50000 "Pee flows down with every step"
                             12500 "It sloshes when you walk"
                             1 "The pee seems to have disappeared into the diaper")
@@ -214,6 +219,7 @@
         :thickness 1000
         :thickness-capacity 380
         :waterproof t
+        :wear-stats (list :speed -20)
         :wear-wet-text '(1 "The pee seems to have disappeared into the diaper"
                             12500 "It sloshes when you walk"
                             50000 "Pee flows down with every step")
@@ -293,6 +299,7 @@
         :thickness 300
         :thickness-capacity 100
         :value 200
+        :wear-stats (list :speed -10)
         :name "Female's Bandit Diaper"
         :description "A diaper with the Diapered Raccoon Bandits's insignia on the front. the insignia turns yellow when the wearer wets it so the males know when the lower ranks wet their diapers. It is much thicker than what the males wear. Unlike most diapers, these are reusable."
         :wear-wet-text '(10000 "little yellow streams are leaking down from the leg guards"

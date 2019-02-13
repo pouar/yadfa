@@ -12,11 +12,14 @@
         #:defonesie
         #:make-pocket-zone
         #:do-push
+        #:insertf
+        #:substf
         ;;functions
         #:intro-function
         #:set-player
         #:prompt-for-values
         #:color-format
+        #:insert
         #:set-status-condition
         #:set-new-battle
         #:get-inventory-list
@@ -28,7 +31,6 @@
         #:remf-direction
         #:getf-action-from-prop
         #:wearingp
-        #:thickest
         #:total-thickness
         #:thickest-sort
         #:wet

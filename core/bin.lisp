@@ -527,34 +527,27 @@
     "Wear an item in your inventory. WEAR is the index you want to place this item. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to wear. You can also give it a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself."
     #+sbcl (declare
                (type (or null unsigned-byte) user)
-               (type (or (and symbol (not keyword)) list class unsigned-byte) wear inventory))
+               (type unsigned-byte wear)
+               (type (or (and symbol (not keyword)) list unsigned-byte) wear inventory))
     (check-type user (or null unsigned-byte))
-    (check-type wear (or (and symbol (not keyword)) list class unsigned-byte))
-    (check-type inventory (or (and symbol (not keyword)) list class unsigned-byte))
+    (check-type wear unsigned-byte)
+    (check-type inventory (or (and symbol (not keyword)) list unsigned-byte))
     (let* ((selected-user
                (if
                    user
                    (nth user (allies-of *game*))
                    (player-of *game*)))
-              (inventory (if
-                             (typep inventory '(or unsigned-byte null))
-                             inventory
-                             (let ((count 0))
-                                 (iter (for i in (inventory-of (player-of *game*)))
-                                     (if (typep i inventory)
-                                         (leave count)
-                                         (incf count))
-                                     (finally
-                                         (progn
-                                             (format t "~a doesn't name a valid class" inventory)
-                                             (return-from yadfa/bin:wear)))))))
-              (item (nth inventory (inventory-of (player-of *game*))))
+              (item (cond
+                        ((typep inventory 'unsigned-byte)
+                            (nth inventory (inventory-of (player-of *game*))))
+                        ((typep inventory '(or list (and symbol (not keyword))))
+                            (find inventory (inventory-of (player-of *game*))
+                                :test #'(lambda (type-specifier obj)
+                                            (typep obj type-specifier))))))
               (i nil)
-              (a (copy-tree (wear-of selected-user))))
+              (a ()))
         (cond ((not item)
-                  (format t "`:INVENTORY ~d' doesn't refer to a valid item as you only have ~d items~%"
-                      inventory
-                      (list-length (inventory-of (player-of *game*))))
+                  (format t "INVENTORY isn't a valid item ~%")
                   (return-from yadfa/bin:wear))
             ((> wear (list-length (wear-of selected-user)))
                 (format t
@@ -574,29 +567,29 @@
             ((and
                  (> wear 0)
                  (iter
-                     (for i from (1- wear) downto 0)
+                     (for i in (butlast (wear-of selected-user) (- (list-length (wear-of selected-user)) wear)))
                      (when (and
-                               (typep (nth i (wear-of selected-user)) 'closed-bottoms)
-                               (lockedp (nth i (wear-of selected-user))))
+                               (typep i 'closed-bottoms)
+                               (lockedp i))
                          (format t "~a can't remove ~a ~a to put on ~a ~a as it's locked~%"
                              (name-of selected-user)
                              (if (malep selected-user) "his" "her")
-                             (name-of (nth i (wear-of selected-user)))
+                             (name-of i)
                              (if (malep selected-user) "his" "her")
                              (name-of item))
                          (leave t))))
                 (return-from yadfa/bin:wear)))
-        (insertf a item wear)
-        (setf i
-            (iter
-                (for j from (1- (list-length a)) downto 0)
-                (when (and
-                          (typep (nth j a) 'bottoms)
-                          (not (eq (thickness-capacity-of (nth j a)) t))
-                          (>
-                              (total-thickness (nthcdr (1+ j) a))
-                              (thickness-capacity-of (nth j a))))
-                    (leave (nth j a)))))
+        (setf
+            a (insert (wear-of selected-user) item wear)
+            i (iter
+                  (for (inner outter) on (reverse a))
+                  (when (and
+                            (typep outter 'bottoms)
+                            (not (eq (thickness-capacity-of outter) t))
+                            (>
+                                (total-thickness (member inner a))
+                                (thickness-capacity-of outer)))
+                      (leave (first (thickest-sort (member inner a)))))))
         (if i
             (format t
                 "~a struggles to fit ~a ~a over ~a ~a in a hilarious fashion but fail to do so.~%"
@@ -614,37 +607,31 @@
                     (name-of selected-user)
                     (if (malep selected-user) "his" "her")
                     (name-of item))
-                (if (= inventory 0)
-                    (pop (inventory-of (player-of *game*)))
-                    (setf (inventory-of (player-of *game*)) (remove-nth inventory (inventory-of (player-of *game*)))))
+                (removef (inventory-of (player-of *game*)) item)
                 (setf (wear-of selected-user) a)))))
 (defun yadfa/bin:unwear (&key (inventory 0) (wear 0) user)
     "Unwear an item you're wearing. Inventory is the index you want to place this item. WEAR is the index of the item you're wearing that you want to remove. You can also set WEAR to a type specifier for the outer most clothing of that type. USER is a integer referring to the index of an ally. Leave at NIL to refer to yourself"
     #+sbcl (declare
                (type (or unsigned-byte null) user)
-               (type (or (and symbol (not keyword)) list class unsigned-byte) inventory wear))
+               (type (or (and symbol (not keyword)) list unsigned-byte) wear)
+               (type unsigned-byte inventory))
     (check-type user (or unsigned-byte null))
-    (check-type inventory (or (and symbol (not keyword)) list class unsigned-byte))
-    (check-type wear (or (and symbol (not keyword)) list class unsigned-byte))
+    (check-type inventory unsigned-byte)
+    (check-type wear (or (and symbol (not keyword)) list unsigned-byte))
     (let* ((selected-user
                (if
                    user
                    (nth user (allies-of *game*))
                    (player-of *game*)))
-              (wear (if
-                        (typep wear '(or unsigned-byte null))
-                        wear
-                        (let ((count 0))
-                            (iter (for i in (wear-of selected-user))
-                                (if (typep i wear)
-                                    (leave count)
-                                    (incf count))
-                                (finally (progn
-                                             (format t "~a doesn't name a valid class" wear)
-                                             (return-from yadfa/bin:unwear)))))))
-              (item (nth wear (wear-of selected-user))))
+              (item (cond
+                        ((typep wear 'unsigned-byte)
+                            (nth wear (wear-of (player-of *game*))))
+                        ((typep wear '(or list (and symbol (not keyword))))
+                            (find wear (wear-of (player-of *game*))
+                                :test #'(lambda (type-specifier obj)
+                                            (typep obj type-specifier)))))))
         (cond ((not item)
-                  (format t "`:WEAR ~d' doesn't refer to a valid item as you're only wearing ~d items~%" wear (list-length (wear-of selected-user)))
+                  (format t "WEAR isn't a valid item ~%")
                   (return-from yadfa/bin:unwear))
             ((> inventory (list-length (inventory-of (player-of *game*))))
                 (format t
@@ -666,161 +653,150 @@
                  (< (wearingp (wear-of selected-user) 'padding) 2))
                 (format t "~a isn't allowed to take those off here~%" (name-of selected-user))
                 (return-from yadfa/bin:unwear))
-            ((and
-                 (> wear 0)
-                 (iter
-                     (for i from wear downto 0)
-                     (when (and
-                               (typep (nth i (wear-of selected-user)) 'closed-bottoms)
-                               (lockedp (nth i (wear-of selected-user))))
-                         (format t "~a can't remove ~a ~a to take off ~a ~a as it's locked~%"
-                             (name-of selected-user)
-                             (if (malep selected-user) "his" "her")
-                             (name-of (nth i (wear-of selected-user)))
-                             (if (malep selected-user) "his" "her")
-                             (name-of item))
-                         (leave t))))
+            ((iter
+                 (for i in (butlast
+                               (wear-of selected-user)
+                               (-
+                                   (list-length (wear-of selected-user))
+                                   (position item (wear-of selected-user))
+                                   1)))
+                 (when (and
+                           (typep i 'closed-bottoms)
+                           (lockedp i))
+                     (format t "~a can't remove ~a ~a to take off ~a ~a as it's locked~%"
+                         (name-of selected-user)
+                         (if (malep selected-user) "his" "her")
+                         (name-of i)
+                         (if (malep selected-user) "his" "her")
+                         (name-of item))
+                     (leave t)))
                 (return-from yadfa/bin:unwear)))
         (when *battle* (format t
                            "The ~a you're battling stops and waits for you to take off your ~a because Pouar never prevented this function from being called in battle~%"
                            (if (> (list-length (enemies-of *battle*)) 1) "enemies" "enemy")
                            (name-of item)))
         (format t "~a takes off ~a ~a~%" (name-of selected-user) (if (malep selected-user) "his" "her") (name-of item))
-        (if (= wear 0)
-            (pop (wear-of selected-user))
-            (setf (wear-of selected-user) (remove-nth wear (wear-of selected-user))))
+        (removef (wear-of (player-of *game*)) item)
         (insertf (inventory-of (player-of *game*)) item inventory)))
 (defun yadfa/bin:change (&key (inventory 0) (wear 0) user)
     "Change one of the clothes you're wearing with one in your inventory. WEAR is the index of the clothing you want to replace. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to replace it with. You can also give INVENTORY and WEAR a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself."
     #+sbcl (declare
                (type (or null unsigned-byte) user)
-               (type (or (and symbol (not keyword)) list class unsigned-byte) inventory wear))
+               (type (or (and symbol (not keyword)) list unsigned-byte) inventory wear))
     (check-type user (or null unsigned-byte))
-    (check-type inventory (or (and symbol (not keyword)) list class unsigned-byte))
-    (check-type wear (or (and symbol (not keyword)) list class unsigned-byte))
+    (check-type inventory (or (and symbol (not keyword)) list unsigned-byte))
+    (check-type wear (or (and symbol (not keyword)) list unsigned-byte))
     (let* ((selected-user
                (if
                    user
                    (nth user (allies-of *game*))
                    (player-of *game*)))
-              (inventory (if
-                             (typep inventory '(or unsigned-byte null))
-                             inventory
-                             (let ((count 0))
-                                 (iter (for i in (inventory-of (player-of *game*)))
-                                     (if (typep i inventory)
-                                         (leave count)
-                                         (incf count))
-                                     (finally
-                                         (progn
-                                             (format t "~a doesn't name a valid class" inventory)
-                                             (return-from yadfa/bin:change)))))))
-              (wear (if
-                        (typep wear '(or unsigned-byte null))
-                        wear
-                        (let ((count 0))
-                            (iter (for i in (wear-of selected-user))
-                                (if (typep i wear)
-                                    (leave count)
-                                    (incf count))
-                                (finally (progn
-                                             (format t "~a doesn't name a valid class" wear)
-                                             (return-from yadfa/bin:change)))))))
-              (item (nth inventory (inventory-of (player-of *game*))))
+              (inventory (cond
+                             ((typep inventory 'unsigned-byte)
+                                 (nth inventory (inventory-of (player-of *game*))))
+                             ((typep inventory '(or list (and symbol (not keyword))))
+                                 (find inventory (inventory-of (player-of *game*))
+                                     :test #'(lambda (type-specifier obj)
+                                                 (typep obj type-specifier))))))
+              (wear (cond
+                        ((typep wear 'unsigned-byte)
+                            (nth wear (wear-of (player-of *game*))))
+                        ((typep wear '(or list (and symbol (not keyword))))
+                            (find wear (wear-of (player-of *game*))
+                                :test #'(lambda (type-specifier obj)
+                                            (typep obj type-specifier))))))
               (i nil)
-              (a (copy-tree (wear-of selected-user))))
-        (cond ((not item)
-                  (format t "`:INVENTORY ~d' doesn't refer to a valid item as you only have ~d items~%"
-                      inventory
-                      (list-length (inventory-of (player-of *game*))))
+              (a nil))
+        (cond ((not inventory)
+                  (write-line "INVENTORY isn't valid")
                   (return-from yadfa/bin:change))
-            ((>= wear (list-length (wear-of selected-user)))
-                (format t
-                    "`:WEAR ~d' doesn't refer to a valid position as you're only wearing ~d items~%"
-                    wear
-                    (list-length (wear-of selected-user)))
+            ((not wear)
+                (write-line "WEAR isn't valid")
                 (return-from yadfa/bin:change))
             ((< (list-length (wear-of selected-user)) 1)
                 (format t "~a isn't wearing any clothes to change~%" (name-of selected-user)))
-            ((not (typep item 'clothing))
-                (format t "That ~a isn't something you can wear~%" (name-of item))
+            ((not (typep inventory 'clothing))
+                (format t "That ~a isn't something you can wear~%" (name-of inventory))
                 (return-from yadfa/bin:change))
             ((and
                  (diapers-only-p (get-zone (position-of (player-of *game*))))
-                 (typep item 'bottoms)
-                 (not (typep item 'padding)))
+                 (typep inventory 'bottoms)
+                 (not (typep inventory 'padding)))
                 (format t "~a can't change into that as pants are prohibited in this zone.~%" (name-of selected-user)))
             ((and
                  (not (eq (player-of *game*) selected-user))
                  (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
-                 (typep item 'pullon)
-                 (typep (nth wear (wear-of selected-user)) 'tabbed-briefs)
+                 (typep inventory 'pullon)
+                 (typep wear 'tabbed-briefs)
                  (< (list-length (wearingp (wear-of selected-user) 'tabbed-briefs)) 2))
                 (format t "Does ~a look ready for pullups to you?~%" (name-of selected-user))
                 (return-from yadfa/bin:change))
             ((and
                  (not (eq (player-of *game*) selected-user))
                  (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
-                 (not (typep item 'tabbed-briefs))
-                 (typep (nth wear (wear-of selected-user)) 'tabbed-briefs)
+                 (not (typep inventory 'tabbed-briefs))
+                 (typep wear 'tabbed-briefs)
                  (< (list-length (wearingp (wear-of selected-user) 'tabbed-briefs)) 2))
                 (format t "letting ~a go without padding is a really bad idea. Don't do it.~%" (name-of selected-user))
                 (return-from yadfa/bin:change))
             ((and
                  (diapers-only-p (get-zone (position-of (player-of *game*))))
-                 (not (typep item 'padding))
-                 (typep (nth wear (wear-of selected-user)) 'padding)
+                 (not (typep inventory 'padding))
+                 (typep wear 'padding)
                  (< (list-length (wearingp (wear-of selected-user) 'padding)) 2))
                 (format t "~a can't change into that as padding is manditory in this zone.~%" (name-of selected-user))
                 (return-from yadfa/bin:change))
             ((and
-                 (> wear 0)
                  (iter
-                     (for i from wear downto 0)
+                     (for i in (butlast
+                                   (wear-of selected-user)
+                                   (-
+                                       (list-length (wear-of selected-user))
+                                       (position wear (wear-of selected-user))
+                                       1)))
                      (when (and
-                               (typep (nth i (wear-of selected-user)) 'closed-bottoms)
-                               (lockedp (nth i (wear-of selected-user))))
+                               (typep i 'closed-bottoms)
+                               (lockedp i))
                          (format t "~a can't remove ~a ~a to put on ~a ~a as it's locked~%"
                              (name-of selected-user)
                              (if (malep selected-user) "his" "her")
-                             (name-of (nth i (wear-of selected-user)))
+                             (name-of i)
                              (if (malep selected-user) "his" "her")
-                             (name-of item))
+                             (name-of inventory))
                          (leave t))))
                 (return-from yadfa/bin:change)))
-        (setf (nth wear a) item)
-        (setf i
-            (iter
-                (for j from (1- (list-length a)) downto 0)
-                (when (and
-                          (typep (nth j a) 'bottoms)
-                          (not (eq (thickness-capacity-of (nth j a)) t))
-                          (>
-                              (total-thickness (nthcdr (1+ j) a))
-                              (thickness-capacity-of (nth j a))))
-                    (leave (nth j a)))))
+        (setf
+            a (substitute inventory wear (wear-of selected-user))
+            i (iter
+                  (for (inner outter) on (reverse a))
+                  (when (and
+                            (typep outter 'bottoms)
+                            (not (eq (thickness-capacity-of outter) t))
+                            (>
+                                (total-thickness (member inner a))
+                                (thickness-capacity-of outter)))
+                      (leave (second (thickest-sort (member outter a)))))))
         (if i
             (format t
                 "~a struggles to fit ~a ~a over ~a ~a in a hilarious fashion but fail to do so.~%"
                 (name-of selected-user)
                 (if (malep selected-user) "his" "her")
-                (name-of item)
+                (name-of inventory)
                 (if (malep selected-user) "his" "her")
                 (name-of i))
             (progn
                 (when *battle* (format t
                                    "The ~a you're battling stops and waits for you to put on your ~a because Pouar never prevented this function from being called in battle~%"
                                    (if (> (list-length (enemies-of *battle*)) 1) "enemies" "enemy")
-                                   (name-of item)))
+                                   (name-of inventory)))
                 (format t "~a changes out of ~a ~a and into ~a ~a~%"
                     (name-of selected-user)
                     (if (malep selected-user) "his" "her")
-                    (name-of (nth wear (wear-of selected-user)))
+                    (name-of wear)
                     (if (malep selected-user) "his" "her")
-                    (name-of item))
-                (setf
-                    (nth inventory (inventory-of (player-of *game*))) (nth wear (wear-of selected-user))
-                    (wear-of selected-user) a)))))
+                    (name-of inventory))
+                (substitutef (inventory-of selected-user) wear inventory)
+                (setf (wear-of selected-user) a)))))
 (defun yadfa/battle:fight (attack &key user target friendly-target)
     "Use a move on an enemy. ATTACK* is either a keyword which is the indicator to select an attack that you know, or T for default. USER is the index of a member in your team that you want to fight. TARGET is the index of the enemy you're attacking. FRIENDLY-TARGET is a member on your team you're using the move on instead. Only specify either a FRIENDLY-TARGET or TARGET. Setting both might make the game's code unhappy"
     #+sbcl (declare
@@ -1027,56 +1003,69 @@
 (defun yadfa/world:use-item (item &rest keys &key user action &allow-other-keys)
     "Uses an item. Item is an index of an item in your inventory. USER is an index of an ally. Setting this to NIL will use it on yourself. ACTION is a keyword when specified will perform a special action with the item, all the other keys specified in this function will be passed to that action. ACTION doesn't work in battle."
     #+sbcl (declare
-               (type unsigned-byte item)
+               (type (or unsigned-byte (and symbol (not keyword)) list) item)
                (type (or null keyword) action))
-    (check-type item unsigned-byte)
+    (check-type item (or unsigned-byte (and symbol (not keyword)) list))
     (check-type action (or null keyword))
-    (when (>= item (list-length (inventory-of (player-of *game*))))
-        (format t "You only have ~d items~%" (list-length (inventory-of (player-of *game*))))
-        (return-from yadfa/world:use-item))
-    (when (and user (>= user (list-length (allies-of *game*))))
-        (format t "You only have ~d allies~%" (list-length (allies-of *game*)))
-        (return-from yadfa/world:use-item))
-    (let ((this-user (if user
-                         (nth user (allies-of *game*))
-                         (player-of *game*))))
-        (apply #'use-item%
-            (nth item (inventory-of (player-of *game*)))
-            (player-of *game*)
-            :target this-user
-            :action action
-            keys)
-        (process-potty)
-        (loop for i in (allies-of *game*) do (process-potty i))))
+    (let ((selected-item (cond
+                             ((typep item 'unsigned-byte)
+                                 (nth item (inventory-of (player-of *game*))))
+                             ((typep item '(or symbol list))
+                                 (find item (inventory-of (player-of *game*))
+                                     :test #'(lambda (type-specifier obj)
+                                                 (typep obj type-specifier)))))))
+        (unless selected-item
+            (format t "You don't have that item~%")
+            (return-from yadfa/world:use-item))
+        (when (and user (>= user (list-length (allies-of *game*))))
+            (format t "You only have ~d allies~%" (list-length (allies-of *game*)))
+            (return-from yadfa/world:use-item))
+        (let ((this-user (if user
+                             (nth user (allies-of *game*))
+                             (player-of *game*))))
+            (apply #'use-item%
+                selected-item
+                (player-of *game*)
+                :target this-user
+                keys)
+            (process-potty)
+            (loop for i in (allies-of *game*) do (process-potty i)))))
 (defun yadfa/battle:use-item (item &key target enemy-target)
     "Uses an item. Item is an index of an item in your inventory. TARGET is an index of your team. Setting this to 0 will use it on yourself. ENEMY-TARGET is an index of an enemy in battle if you're using it on an enemy in battle. Only specify either a TARGET or ENEMY-TARGET. Setting both might make the game's code unhappy"
     #+sbcl (declare
-               (type unsigned-byte item)
+               (type (or unsigned-byte (and symbol (not keyword)) list) item)
                (type (or null unsigned-byte) target enemy-target))
-    (check-type item unsigned-byte)
+    (check-type item (or unsigned-byte (and symbol (not keyword)) list))
     (check-type target (or null unsigned-byte))
     (check-type enemy-target (or null unsigned-byte))
-    (cond
-        ((>= item (list-length (inventory-of (player-of *game*))))
-            (format t "You only have ~d items~%" (list-length (inventory-of (player-of *game*))))
-            (return-from yadfa/battle:use-item))
-        ((and target (>= target (list-length (team-of *game*))))
-            (format t "You only have ~d team members~%" (list-length (team-of *game*)))
-            (return-from yadfa/battle:use-item))
-        ((and enemy-target (>= enemy-target (list-length (enemies-of *battle*))))
-            (format t "You only have ~d allies~%" (list-length (enemies-of *battle*)))
-            (return-from yadfa/battle:use-item))
-        ((and target enemy-target)
-            (format t "Only specify -TARGET or ENEMY-TARGET. Not both.")))
-    (process-battle
-        :item item
-        :target (cond
-                    (enemy-target enemy-target)
-                    (t nil))
-        :friendly-target (cond
-                             (enemy-target nil)
-                             (target target)
-                             (t 0))))
+    (let ((selected-item (cond
+                             ((typep item 'unsigned-byte)
+                                 (nth item (inventory-of (player-of *game*))))
+                             ((typep item '(or symbol list))
+                                 (find item (inventory-of (player-of *game*))
+                                     :test #'(lambda (type-specifier obj)
+                                                 (typep obj type-specifier)))))))
+        (cond
+            ((not item)
+                (format t "You don't have that item~%")
+                (return-from yadfa/battle:use-item))
+            ((and target (>= target (list-length (team-of *game*))))
+                (format t "You only have ~d team members~%" (list-length (team-of *game*)))
+                (return-from yadfa/battle:use-item))
+            ((and enemy-target (>= enemy-target (list-length (enemies-of *battle*))))
+                (format t "You only have ~d allies~%" (list-length (enemies-of *battle*)))
+                (return-from yadfa/battle:use-item))
+            ((and target enemy-target)
+                (format t "Only specify -TARGET or ENEMY-TARGET. Not both.")))
+        (process-battle
+            :item selected-item
+            :target (cond
+                        (enemy-target enemy-target)
+                        (t nil))
+            :friendly-target (cond
+                                 (enemy-target nil)
+                                 (target target)
+                                 (t 0)))))
 (defun yadfa/bin:wield (&key user inventory)
     "Wield an item. Set INVENTORY to the index or a type specifier of an item in your inventory to wield that item. Set USER to the index of an ally to have them to equip it or leave it NIL for the player."
     #+sbcl (declare
@@ -1089,23 +1078,15 @@
                    user
                    (nth user (allies-of *game*))
                    (player-of *game*)))
-              (inventory (if
-                             (typep inventory '(or null unsigned-byte))
-                             inventory
-                             (let ((count 0))
-                                 (iter (for i in (inventory-of (player-of *game*)))
-                                     (if (typep i inventory)
-                                         (leave count)
-                                         (incf count))
-                                     (finally
-                                         (progn
-                                             (format t "~a doesn't name a valid class" inventory)
-                                             (return-from yadfa/bin:wield)))))))
-              (item (nth inventory (inventory-of (player-of *game*)))))
+              (item (cond
+                        ((typep inventory 'unsigned-byte)
+                            (nth inventory (inventory-of (player-of *game*))))
+                        ((typep inventory '(or list (and symbol (not keyword))))
+                            (find inventory (inventory-of (player-of *game*))
+                                :test #'(lambda (type-specifier obj)
+                                            (typep obj type-specifier)))))))
         (cond ((not item)
-                  (format t "`:INVENTORY ~d' doesn't refer to a valid item as you only have ~d items~%"
-                      inventory
-                      (list-length (inventory-of (player-of *game*))))
+                  (format t "INVENTORY isn't valid~%")
                   (return-from yadfa/bin:wield)))
         (when *battle* (format t
                            "The ~a you're battling stops and waits for you to put on your ~a because Pouar never prevented this function from being called in battle~%"
@@ -1115,9 +1096,7 @@
             (name-of selected-user)
             (if (malep selected-user) "his" "her")
             (name-of item))
-        (setf
-            (inventory-of (player-of *game*))
-            (remove-nth inventory (inventory-of (player-of *game*))))
+        (removef (inventory-of (player-of *game*)) item)
         (when (wield-of selected-user)
             (push (wield-of selected-user) (inventory-of (player-of *game*))))
         (setf (wield-of selected-user) item)))
