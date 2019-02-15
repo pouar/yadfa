@@ -179,7 +179,13 @@
     (when (and (typep user 'unsigned-byte) (>= user (list-length (allies-of *game*))))
         (format t "You only have ~d allies~%" (list-length (allies-of *game*)))
         (return-from yadfa/bin:lst))
-    (when inventory (format t "~7a~30a~6a~8a~6a~8a~%" "Index" "Name" "Wet" "Wetcap" "Mess" "Messcap")
+    (when inventory
+        (format t "Number of items listed: ~a~%" (iter
+                                                     (with j = 0)
+                                                     (for i in (inventory-of (player-of *game*)))
+                                                     (when (typep i inventory) (incf j))
+                                                     (finally (return j))))
+        (format t "~7a~30a~6a~8a~6a~8a~%" "Index" "Name" "Wet" "Wetcap" "Mess" "Messcap")
         (let ((j 0)) (loop for i in (inventory-of (player-of *game*)) do
                          (when (typep i inventory)
                              (format t "~7a~30a~6a~8a~6a~8a~%" j
@@ -193,6 +199,11 @@
     (when wear
         (cond
             ((not user)
+                (format t "Number of items listed: ~a~%" (iter
+                                                             (with j = 0)
+                                                             (for i in (wear-of (player-of *game*)))
+                                                             (when (typep i wear) (incf j))
+                                                             (finally (return j))))
                 (format t "~a:~%~%" (name-of (player-of *game*)))
                 (format t "~7a~40a~6a~8a~6a~8a~%" "Index" "Name" "Wet" "Wetcap" "Mess" "Messcap")
                 (let ((j 0)) (loop for i in (wear-of (player-of *game*)) do
@@ -222,6 +233,11 @@
                 (when (>= user (list-length (allies-of *game*)))
                     (format t "You only have ~d allies~%~%" (list-length (allies-of *game*)))
                     (return-from yadfa/bin:lst))
+                (format t "Number of items listed: ~a~%" (iter
+                                                             (with j = 0)
+                                                             (for i in (wear-of (nth user (allies-of *game*))))
+                                                             (when (typep i wear) (incf j))
+                                                             (finally (return j))))
                 (format t "~a:~%~%" (name-of (nth user (allies-of *game*))))
                 (format t "~7a~40a~6a~8a~6a~8a~%" "Index" "Name" "Wet" "Wetcap" "Mess" "Messcap")
                 (let ((j 0)) (loop for i in (wear-of (nth user (allies-of *game*))) do
@@ -235,6 +251,11 @@
                                  (incf j))
                     (write-char #\Newline)))
             (t
+                (format t "Number of items listed: ~a~%" (iter
+                                                             (with j = 0)
+                                                             (for i in (wear-of (player-of *game*)))
+                                                             (when (typep i wear) (incf j))
+                                                             (finally (return j))))
                 (format t "~a:~%~%" (name-of (player-of *game*)))
                 (format t "~7a~40a~6a~8a~6a~8a~%" "Index" "Name" "Wet" "Wetcap" "Mess" "Messcap")
                 (let ((j 0)) (loop for i in (wear-of (player-of *game*)) do
