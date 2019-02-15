@@ -17,7 +17,7 @@ for Linux users
 I've added a flatpak repo for Linux users, you can add it with
 
 ```
-flatpak remote-add --if-not-exists yadfa https://cgit.pouar.net/yadfa.git/plain/flatpak/yadfa.flatpakrepo
+flatpak remote-add --if-not-exists yadfa https://gitlab.com/pouar/yadfa/raw/master/flatpak/yadfa.flatpakrepo
 ```
 
 then install the game with
