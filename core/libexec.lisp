@@ -2441,11 +2441,11 @@
         (cons (car list) (insert (cdr list) value (- n 1)))))
 (define-modify-macro insertf (value n) insert)
 (defun substitute/swapped-arguments (sequence new old &rest keyword-arguments)
-  (apply #'substitute new old sequence keyword-arguments))
+    (apply #'substitute new old sequence keyword-arguments))
 
 (define-modify-macro substitutef (new old &rest keyword-arguments)
-  substitute/swapped-arguments
-  "Modify-macro for SUBSTITUTE. Sets place designated by the first argument to
+    substitute/swapped-arguments
+    "Modify-macro for SUBSTITUTE. Sets place designated by the first argument to
 the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS.")
 (defun pushnewmove (move* user)
     (pushnew (make-instance move*) (moves-of user)
@@ -2453,10 +2453,10 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                   (eq (class-name (class-of a)) (class-name (class-of b))))))
 (defun get-move (move* user)
     (find move* (moves-of user)
-            :test (lambda (a b)
-                      (if (typep a 'keyword)
-                          (string= a (class-name (class-of b)))
-                          (eq a (class-name (class-of b)))))))
+        :test (lambda (a b)
+                  (if (typep a 'keyword)
+                      (string= a (class-name (class-of b)))
+                      (eq a (class-name (class-of b)))))))
 (defun random-from-range (start end)
     (+ start (random (+ 1 (- end start)))))
 (defun calculate-diaper-usage (user)
