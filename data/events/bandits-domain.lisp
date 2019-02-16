@@ -119,7 +119,7 @@
     :finished-depends '(enter-bandits-shop-1 get-diaper-locked-1)
     :predicate '(lambda (self)
                     (and
-                        (lockedp (car (last (wear-of (player-of *game*)))))
+                        (not (eq (lockedp (car (last (wear-of (player-of *game*))))) :nil))
                         (>= (bitcoins-of (player-of *game*)) 10000)
                         (or
                             (>

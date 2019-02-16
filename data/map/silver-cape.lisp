@@ -27,7 +27,7 @@
     :name "Silver Cape Jail"
     :description "The jail beneith Navy HQ"
     :enter-text "You're inside Navy HQ"
-    :locked 'nil
+    :locked nil
     :events '(yadfa/events:get-location-to-pirate-cove-1))
 (ensure-zone (-2 6 0 silver-cape)
     :name "Silver Cape Navy HQ Lobby"
@@ -72,7 +72,7 @@
                                              (write-line "Dolphin: Please don't change me here!!! Everyone can see me!!!!!")
                                              (write-line "*The Orca ignores his pleas and changes his soggy pullups and puts him in a thick diaper then stands him back up. The diaper is so thick that his legs are forced apart. The dolphin hides his face in embarrassment as he is escorted to a nursery*")
                                              (write-line "*The Jail beneith the cell is now unguarded and can be entered*")
-                                             (setf (lockedp (get-zone '(-2 6 -1 silver-cape))) nil
+                                             (setf (lockedp (get-zone '(-2 6 -1 silver-cape))) :nil
                                                  (enter-text-of (get-zone (-2 6 0 silver-cape))) "You're inside Navy HQ.")
                                              (remf (get-props-from-zone (position-of (player-of *game*)))
                                                  :guard))))
@@ -110,7 +110,7 @@
                                                      (write-line "*The Jail beneith can now be entered*")
                                                      (removef (inventory-of (player-of *game*)) (car a))
                                                      (setf (lockedp (get-zone '(-2 6 -1 silver-cape)))
-                                                         nil
+                                                         :nil
                                                          (enter-text-of (get-zone (-2 6 0 silver-cape)))
                                                          "You're inside Navy HQ."
                                                          (actions-of

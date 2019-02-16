@@ -94,22 +94,24 @@
                 (return-from yadfa/world:move))
             (when (or
                       (and
-                          (lockedp (get-zone new-position))
+                          (not (eq (lockedp (get-zone new-position)) :nil))
                           (not (member
                                    (lockedp (get-zone new-position))
                                    (inventory-of (player-of *game*))
                                    :test (lambda (item key)
                                              (typep key item)))))
                       (and
-                          (getf (getf (direction-attributes-of
-                                          (get-zone (position-of (player-of *game*))))
-                                    direction)
-                              :locked)
+                          (not (eq
+                                   (getf (getf (direction-attributes-of
+                                                   (get-zone (position-of (player-of *game*))))
+                                             direction)
+                                       :locked :nil)
+                                   :nil))
                           (not (member
                                    (getf (getf (direction-attributes-of
                                                    (get-zone (position-of (player-of *game*))))
                                              direction)
-                                       :locked)
+                                       :locked :nil)
                                    (inventory-of (player-of *game*))
                                    :test (lambda (item key)
                                              (typep key item))))))
@@ -117,30 +119,32 @@
                 (return-from yadfa/world:move))
             (when (or
                       (and
-                          (lockedp (get-zone new-position))
+                          (not (eq (lockedp (get-zone new-position)) :nil))
                           (member
                               (lockedp (get-zone new-position))
                               (inventory-of (player-of *game*))
                               :test (lambda (item key)
                                         (typep key item))))
                       (and
-                          (getf (getf (direction-attributes-of
-                                          (get-zone (position-of (player-of *game*))))
-                                    direction)
-                              :locked)
+                          (not (eq
+                                   (getf (getf (direction-attributes-of
+                                                   (get-zone (position-of (player-of *game*))))
+                                             direction)
+                                       :locked :nil)
+                                   :nil))
                           (member
                               (getf (getf (direction-attributes-of
                                               (get-zone (position-of (player-of *game*))))
                                         direction)
-                                  :locked)
+                                  :locked :nil)
                               (inventory-of (player-of *game*))
                               :test (lambda (item key)
                                         (typep key item)))))
                 (format t "You unlock zone ~a~%" new-position))
-            (when (lockedp (get-zone new-position))
-                (setf (lockedp (get-zone new-position)) nil))
-            (when (getf-direction (position-of (player-of *game*)) direction :locked)
-                (remf-direction (position-of (player-of *game*)) direction :locked))
+            (unless (eq (lockedp (get-zone new-position)) :nil)
+                (setf (lockedp (get-zone new-position)) :nil))
+            (unless (eq (getf-direction (position-of (player-of *game*)) direction :locked) :nil)
+                (setf-direction (position-of (player-of *game*)) direction :locked :nil))
             (setf (position-of (player-of *game*))
                 (get-destination direction (position-of (player-of *game*))))
             (when (underwaterp (get-zone (position-of (player-of *game*)))) (swell-up-all))
@@ -591,7 +595,7 @@
                      (for i in (butlast (wear-of selected-user) (- (list-length (wear-of selected-user)) wear)))
                      (when (and
                                (typep i 'closed-bottoms)
-                               (lockedp i))
+                               (not (eq (lockedp i) :nil)))
                          (format t "~a can't remove ~a ~a to put on ~a ~a as it's locked~%"
                              (name-of selected-user)
                              (if (malep selected-user) "his" "her")
@@ -683,7 +687,7 @@
                                    1)))
                  (when (and
                            (typep i 'closed-bottoms)
-                           (lockedp i))
+                           (not (eq (lockedp i) :nil)))
                      (format t "~a can't remove ~a ~a to take off ~a ~a as it's locked~%"
                          (name-of selected-user)
                          (if (malep selected-user) "his" "her")
@@ -777,7 +781,7 @@
                                        1)))
                      (when (and
                                (typep i 'closed-bottoms)
-                               (lockedp i))
+                               (not (eq (lockedp i) :nil)))
                          (format t "~a can't remove ~a ~a to put on ~a ~a as it's locked~%"
                              (name-of selected-user)
                              (if (malep selected-user) "his" "her")
@@ -1216,11 +1220,11 @@
                     (list-length (inventory-of (player-of *game*)))))
             ((not (typep (nth key (inventory-of (player-of *game*))) (key-of (nth wear (wear-of selected-user)))))
                 (write-line "That doesn't go with that"))
-            ((lockedp (nth wear (wear-of selected-user)))
+            ((not (eq (lockedp (nth wear (wear-of selected-user))) :nil))
                 (format t "~a's ~a is now unlocked~%"
                     (name-of selected-user)
                     (name-of (nth wear (wear-of selected-user))))
-                (setf (lockedp (nth wear (wear-of selected-user))) nil))
+                (setf (lockedp (nth wear (wear-of selected-user))) :nil))
             ((typep (nth wear (wear-of selected-user)) 'closed-bottoms)
                 (write-line "That can't be locked"))
             (t

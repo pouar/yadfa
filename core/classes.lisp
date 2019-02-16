@@ -332,7 +332,7 @@
             :documentation "Whether you're only allowed to wear diapers from the waist down here or not.")
         (locked
             :initarg :locked
-            :initform nil
+            :initform :nil
             :accessor lockedp
             :documentation "Whether this area is locked or not. contains the type specifier of the key needed to unlock it if locked, set to nil if it isn't locked")
         (hidden
@@ -604,7 +604,7 @@
             :documentation "Whether this piece of clothing can be locked to prevent removal. Set this to the quoted type specifier that is needed to unlock it")
         (locked
             :initarg :locked
-            :initform nil
+            :initform :nil
             :accessor lockedp
             :documentation "Whether this clothing is locked to prevent removal")))
 (defclass closed-bottoms (bottoms)
