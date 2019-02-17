@@ -4,7 +4,7 @@
 ;;;; because it was quicker and easier than trying to write one of these myself from scratch
 (macro-level:macro-level
     `(setf *default-text-style*
-         (make-text-style ,@(if (member :win32 *features*) '(:fix :roman) '("DejaVu Sans Mono" "Book")) :normal)))
+         (make-text-style ,@(if (member :mcclim-ffi-freetype *features*)  '("DejaVu Sans Mono" "Book") '(:fix :roman)) :normal)))
 
 ;;; The CLIM Listener has the fonts hardcoded, the following 8 forms change them
 (defmethod read-frame-command ((frame listener) &key (stream *standard-input*))
