@@ -126,7 +126,7 @@
 (defclass stretchable-orca-suit (closed-full-outfit) ()
     (:default-initargs
         :waterproof t
-        :value 1000
+        :value 1500
         :thickness-capacity t
         :bulge-text '(60 "You look like one of those pictures drawn by Kurikia"
                          20 "The diaper bulge makes it clear what you're wearing under there"
@@ -146,7 +146,7 @@
 (defclass stretchable-orca-suit-lite (closed-full-outfit) ()
     (:default-initargs
         :waterproof t
-        :value 1000
+        :value 1500
         :thickness-capacity t
         :bulge-text '(60 "You look like one of those pictures drawn by Kurikia"
                          20 "The diaper bulge makes it clear what you're wearing under there"

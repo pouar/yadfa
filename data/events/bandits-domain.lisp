@@ -3,9 +3,9 @@
     :lambda '(lambda (self)
                  (declare (ignore self))
                  (set-new-battle
-                     '((yadfa/npcs:giant-diapered-raccoon-bandit . '(:level 5)))
+                     '((yadfa/npcs:diapered-raccoon-bandit . '(:level 5)))
                      :continuable t
-                     :enter-battle-text (format nil "Giant Raccoon Bandit: This area is under control of the Raccoon Bandits. If you want in you have to get past me~%*Cue battle transition. You can't see it because this is a text based game, but trust us, it's there.*~%"))))
+                     :enter-battle-text (format nil "Raccoon Bandit: This area is under control of the Raccoon Bandits. If you want in you have to get past me~%*Cue battle transition. You can't see it because this is a text based game, but trust us, it's there.*~%"))))
 (defevent enter-bandits-shop-1
     :lambda '(lambda (self)
                  (declare (ignore self))
@@ -114,7 +114,11 @@
                      ((< (random 12) 1)
                          (set-new-battle
                              '((yadfa/npcs:diapered-raccoon-bandit .
-                                   (list :level (random-from-range 2 5)))))))))
+                                   (list :level (random-from-range 2 5))))))
+                     ((< (random 12) 1)
+                         (set-new-battle
+                             '((yadfa/npcs:giant-diapered-raccoon-bandit .
+                                   (list :level (random-from-range 5)))))))))
 (defevent obtain-diaper-lock-1
     :finished-depends '(enter-bandits-shop-1 get-diaper-locked-1)
     :predicate '(lambda (self)

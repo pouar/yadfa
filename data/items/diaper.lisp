@@ -114,6 +114,46 @@
         :wear-mess-text '(10000 "Poo is leaking out of the leg guards"
                              2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                              1 "You can feel a slight mess back there")))
+(defclass latex-diaper (yadfa:diaper) ()
+    (:default-initargs
+        :sogginess-capacity 1400
+        :messiness-capacity 10000
+        :value 250
+        :waterproof t
+        :name "Latex Diaper"
+        :description "A poofy latex diaper that can hold an accident. Can be reused."
+        :wear-wet-text '(1400 "little yellow streams are leaking down from the leg guards"
+                            350 "It squishes when you walk"
+                            1 "You can barely tell you wet it")
+        :wear-mess-text '(10000 "Poo is leaking out of the leg guards"
+                             2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
+                             1 "You can feel a slight mess back there")))
+(defclass disposable-swim-diaper (yadfa:diaper) ()
+    (:default-initargs
+        :sogginess-capacity 1400
+        :messiness-capacity 10000
+        :disposable t
+        :waterproof t
+        :sellable nil
+        :name "Disposable Swim Diaper"
+        :description "A swim diaper that actually holds just the urine you expel and not all the water in the pool"
+        :wear-wet-text '(1400 "little yellow streams are leaking down from the leg guards"
+                            350 "It squishes when you walk"
+                            1 "You can barely tell you wet it")
+        :wear-mess-text '(10000 "Poo is leaking out of the leg guards"
+                             2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
+                             1 "You can feel a slight mess back there")))
+(defclass disposable-swim-diaper-package (item) ()
+    (:default-initargs
+        :name "Package of Disposable Swim Diapers"
+        :plural-name "Packages of Disposable Swim Diapers"
+        :description "A package of swim diapers. Unlike most swim diapers, they absorb your waste without absorbing all the water in the pool."
+        :consumable t
+        :value 300
+        :use-script '(lambda (item user)
+                         (declare (ignore item))
+                         (format t "You tear open the package and dump all the diapers out of it.~%")
+                         (loop for i from 1 to 20 do (push (make-instance 'yadfa/items:disposable-swim-diaper) (inventory-of user))))))
 (defclass diaper-package (item) ()
     (:default-initargs
         :name "Package of Diapers"
@@ -240,7 +280,7 @@
         :value 200
         :sogginess-capacity 800
         :messiness-capacity 10000
-        :name "Navy Pullups"
+        :name "Navy Pullup"
         :description "Has the Navy insignia on the front. The Navy apparently expects you to keep these dry, but keeps them around just in case. They're made of cloth because they don't expect you to use them that often."))
 (defclass pullups-package (item) ()
     (:default-initargs
@@ -259,6 +299,14 @@
         :sogginess-capacity 800
         :messiness-capacity 10000
         :name "Cloth Pullup"
+        :description "Wear this and pretend to be a big kid. Can be reused."))
+(defclass latex-pullups (pullup) ()
+    (:default-initargs
+        :value 200
+        :sogginess-capacity 800
+        :messiness-capacity 10000
+        :waterproof t
+        :name "Latex Pullup"
         :description "Wear this and pretend to be a big kid. Can be reused."))
 (defclass swim-diaper-cover (undies) ()
     (:default-initargs

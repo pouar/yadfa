@@ -101,6 +101,7 @@
         #:automatic-changing-table
         #:checkpoint
         #:shop
+        #:vending-machine
         #:debug-shop
         #:bed
         #:npc
@@ -253,6 +254,8 @@
         #:baggy-jeans
         #:orca-suit
         #:stretchable-orca-suit
+        #:orca-suit-lite
+        #:stretchable-orca-suit-lite
         #:boxers
         #:panties
         #:bra
@@ -285,7 +288,11 @@
         #:pullups
         #:pullups-package
         #:cloth-pullups
+        #:latex-pullups
         #:swim-diaper-cover
+        #:disposable-swim-diaper
+        #:disposable-swim-diaper-package
+        #:latex-diaper
         #:bandit-diaper
         #:bandit-adjustable-diaper
         #:bandit-female-diaper
@@ -364,3 +371,11 @@
 (uiop:define-package #:yadfa-user
     (:use #:yadfa #:yadfa/bin #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:documentation "The package that the player typically executes commands from"))
+(uiop:define-package #:sky-base
+    (:export
+        #:main-office
+        #:living-quarters
+        #:shop
+        #:landing-pad
+        #:nursery)
+    (:documentation "Contains symbols for the sky base"))

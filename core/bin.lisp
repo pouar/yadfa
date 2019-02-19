@@ -79,7 +79,8 @@
         (let ((new-position (get-path-end
                                 (get-destination direction (position-of (player-of *game*)))
                                 (position-of (player-of *game*))
-                                direction)))
+                                direction))
+                 (old-position (position-of (player-of *game*))))
             (unless (get-path-end
                         (get-destination direction (position-of (player-of *game*)))
                         (position-of (player-of *game*))
@@ -153,7 +154,7 @@
             (loop for i in (allies-of *game*) do
                 (process-potty i)
                 (run-equip-effects i))
-            (print-enter-text (position-of (player-of *game*)))
+            (print-enter-text (position-of (player-of *game*)) old-position direction)
             (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
                       (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
                           :win-events (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :win-events)

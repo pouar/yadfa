@@ -16,6 +16,7 @@
     ((c diaper-pirate) &rest args &key &allow-other-keys)
     (unless (iter (for (a b) on args)
                 (when (eq a :wear) (leave t)))
+        (setf (wear-of c) nil)
         (push (make-instance 'yadfa/items:diaper)
             (wear-of c))
         (unless (malep c)
@@ -41,10 +42,11 @@
     ((c thickly-diaper-pirate) &rest args &key &allow-other-keys)
     (unless (iter (for (a b) on args)
                 (when (eq a :wear) (leave t)))
+        (setf (wear-of c) nil)
         (appendf (wear-of c)
-            (iter (for i in '(yadfa/items:incontinence-pad
+            (iter (for i in '(yadfa/items:thick-latex-diaper
                                  yadfa/items:cloth-diaper
-                                 yadfa/items:thick-latex-diaper))
+                                 yadfa/items:incontinence-pad))
                 (collect (make-instance i))))
         (unless (malep c)
             (push (make-instance 'yadfa/items:bra)
