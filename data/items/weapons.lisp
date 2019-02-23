@@ -57,7 +57,7 @@
     (:default-initargs
         :name "Exterminator"
         :value 1000000
-        :description "Creates a mini nuclear explosion, but takes forever to fire and reload and can only hold one round at a time, and makes a horrible melee weapon. Awesome, but impractical."
+        :description "IT'S DA MOST POWEFUW WEAPON!!!! Too bad it takes forever to fire and reload, can only hold one round at a time, and ammo is super expensive, making it practically useless in battle."
         :wield-stats (list :speed -100)
         :ammo-type 'exterminator-ammo
         :ammo-capacity 1
