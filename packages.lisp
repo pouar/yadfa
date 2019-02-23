@@ -313,6 +313,8 @@
         #:ak47
         #:7.62×39mm
         #:box-of-7.62×39mm
+        #:exterminator
+        #:exterminator-ammo
         #:pink-sword
         #:pocket-map-machine
         #:warp-device
