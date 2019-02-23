@@ -2496,18 +2496,6 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
         (for (a b) on (if (wield-of user) (wield-stats-of (wield-of user)) ()) by #'cddr)
         (incf (getf j a) b)
         (finally (return j))))
-(defun calculate-ammo-stats (user)
-    #+sbcl (declare (type base-character user))
-    (check-type user base-character)
-    (iter
-        (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
-        (for (a b) on (if
-                          (and (wield-of user) (first (ammo-of (wield-of user))))
-                          (ammo-stats-of (first (ammo-of (wield-of user))))
-                          ())
-            by #'cddr)
-        (incf (getf j a) b)
-        (finally (return j))))
 (defun calculate-stat-delta (user)
     #+sbcl (declare (type base-character user))
     (check-type user base-character)

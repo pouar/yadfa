@@ -311,6 +311,8 @@
         #:collar
         #:magic-diaper-key
         #:ak47
+        #:7.62×39mm
+        #:box-of-7.62×39mm
         #:pink-sword
         #:pocket-map-machine
         #:warp-device
