@@ -456,6 +456,31 @@
             :initform nil
             :accessor plural-name-of
             :documentation "The plural name of item")
+        (ammo-type
+            :initarg :ammo-type
+            :initform nil
+            :accessor ammo-type-of
+            :documentation "A type specifier specifying the type of ammo this will hold")
+        (ammo
+            :initarg :ammo
+            :initform ()
+            :accessor ammo-of
+            :documentation "List of ammo this item has")
+        (ammo-power
+            :initarg :ammo-power
+            :initform ()
+            :accessor ammo-power-of
+            :documentation "boost for attack base when using this as ammo.")
+        (reload-count
+            :initarg :reload-count
+            :initform nil
+            :accessor reload-count-of
+            :documentation "When in battle, the maximum amount of ammo the user can reload into this item per turn, if nil, then there is no limit")
+        (ammo-capacity
+            :initarg :ammo-capacity
+            :initform 0
+            :accessor ammo-capacity-of
+            :documentation "How much ammo this thing can hold")
         (consumable
             :initarg :consumable
             :initform nil

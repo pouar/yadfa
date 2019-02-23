@@ -172,8 +172,8 @@
                             (when (< (random (getf i :max-random)) random)
                                 (set-new-battle (getf i :enemies))
                                 (return-from yadfa/world:move)))))))))
-(defun yadfa/bin:lst (&key inventory props wear user directions moves position map descriptions)
-    "used to list various objects and properties, INVENTORY takes a type specifier for the items you want to list in your inventory. setting INVENTORY to T will list all the items. WEAR is similar to INVENTORY but lists clothes you're wearing instead. setting DIRECTIONS to non-NIL will list the directions you can walk.setting MOVES to non-NIL will list the moves you know. setting USER to T will cause MOVES and WEAR to apply to the player, setting it to an integer will cause it to apply it to an ally. Leaving it at NIL will cause it to apply to everyone. setting POSITION to true will print your current position. Setting MAP to a number will print the map with the floor number set to MAP, setting MAP to T will print the map of the current floor you're on"
+(defun yadfa/bin:lst (&key inventory inventory-group props wear user directions moves position map descriptions)
+    "used to list various objects and properties, INVENTORY takes a type specifier for the items you want to list in your inventory. setting INVENTORY to T will list all the items. INVENTORY-GROUP is similar to INVENTORY, but will group the items by class name. WEAR is similar to INVENTORY but lists clothes you're wearing instead. setting DIRECTIONS to non-NIL will list the directions you can walk.setting MOVES to non-NIL will list the moves you know. setting USER to T will cause MOVES and WEAR to apply to the player, setting it to an integer will cause it to apply it to an ally. Leaving it at NIL will cause it to apply to everyone. setting POSITION to true will print your current position. Setting MAP to a number will print the map with the floor number set to MAP, setting MAP to T will print the map of the current floor you're on"
     #+sbcl (declare
                (type (or unsigned-byte boolean) user)
                (type (or boolean integer) map)
@@ -185,13 +185,8 @@
         (format t "You only have ~d allies~%" (list-length (allies-of *game*)))
         (return-from yadfa/bin:lst))
     (when inventory
-        (format t "Number of items listed: ~a~%" (iter
-                                                     (with j = 0)
-                                                     (for i in (inventory-of (player-of *game*)))
-                                                     (when (typep i inventory) (incf j))
-                                                     (finally (return j))))
         (format t "~7a~30a~6a~8a~6a~8a~%" "Index" "Name" "Wet" "Wetcap" "Mess" "Messcap")
-        (let ((j 0)) (loop for i in (inventory-of (player-of *game*)) do
+        (let ((j 0)) (iter (for i in (inventory-of (player-of *game*)))
                          (when (typep i inventory)
                              (format t "~7a~30a~6a~8a~6a~8a~%" j
                                  (name-of i)
@@ -201,6 +196,21 @@
                                  (if (typep i 'closed-bottoms) (messiness-capacity-of i) nil)))
                          (incf j))
             (format t "~%")))
+    (when inventory-group
+        (let ((a ()))
+            (iter (for i in (inventory-of (player-of *game*)))
+                (when (typep i inventory-group)
+                    (if (getf a (class-name (class-of i)))
+                        (incf (second
+                                  (getf a (class-name (class-of i)))))
+                        (setf
+                            (getf a (class-name (class-of i)))
+                            (list
+                                (name-of (make-instance (class-name (class-of i))))
+                                1)))))
+            (format t "~30a~40a~10a" "Class Name" "Name" "Quantity")
+            (iter (for (key value) on a by #'cddr)
+                (apply #'format t "~30a~40a~10a" key value))))
     (when wear
         (cond
             ((not user)
@@ -427,6 +437,8 @@
                         (sogginess-capacity-of i)
                         (messiness-of i)
                         (messiness-capacity-of i)))
+                (when (ammo-type-of i)
+                    (format t "Ammo Type: ~s" (ammo-type-of i)))
                 (when (special-actions-of i)
                     (iter (for (a b) on i by #'cddr)
                         (format t "Keyword: ~a~%~%Documentation: ~a~%~%Describe: ~a~%~%"
@@ -823,15 +835,14 @@
                     (name-of inventory))
                 (substitutef (inventory-of selected-user) wear inventory :count 1)
                 (setf (wear-of selected-user) a)))))
-(defun yadfa/battle:fight (attack &key user target friendly-target)
+(defun yadfa/battle:fight (attack &key target friendly-target)
     "Use a move on an enemy. ATTACK* is either a keyword which is the indicator to select an attack that you know, or T for default. USER is the index of a member in your team that you want to fight. TARGET is the index of the enemy you're attacking. FRIENDLY-TARGET is a member on your team you're using the move on instead. Only specify either a FRIENDLY-TARGET or TARGET. Setting both might make the game's code unhappy"
     #+sbcl (declare
-               (type (or null unsigned-byte) user target)
+               (type (or null unsigned-byte) target)
                (type (or symbol boolean) attack))
-    (check-type user (or null unsigned-byte))
     (check-type target (or null unsigned-byte))
     (check-type attack (or symbol boolean))
-    (process-battle :attack attack :user user :target target :friendly-target friendly-target))
+    (process-battle :attack attack :target target :friendly-target friendly-target))
 (defun yadfa/battle:stats (&key user enemy)
     "Prints the current stats in battle, essentially this game's equivelant of a health and energy bar in battle. USER is the index of the member in your team, ENEMY is the index of the enemy in battle. Set both to NIL to show the stats for everyone."
     #+sbcl (declare
@@ -1085,13 +1096,132 @@
                 (format t "Only specify -TARGET or ENEMY-TARGET. Not both.")))
         (process-battle
             :item selected-item
+            :friendly-target (cond
+                                 (target target)
+                                 (enemy-target nil)
+                                 (t
+                                     (position
+                                         (first (turn-queue-of *battle*))
+                                         (team-of *game*))))
             :target (cond
                         (enemy-target enemy-target)
-                        (t nil))
-            :friendly-target (cond
-                                 (enemy-target nil)
-                                 (target target)
-                                 (t 0)))))
+                        (t nil)))))
+(defun yadfa/battle:reload (ammo-type)
+    #+sbcl (declare
+               (type (and (or list (and symbol (not keyword))) (not null)) ammo-type))
+    (check-type ammo-type (and (or list (and symbol (not keyword))) (not null)))
+    (unless
+        (wield-of (first (turn-queue-of *battle*)))
+        (format t "~a isn't carrying a weapon~%"
+            (name-of (first (turn-queue-of *battle*))))
+        (return-from yadfa/battle:reload))
+    (unless (and
+                (ammo-type-of (wield-of (first (turn-queue-of *battle*))))
+                (> (ammo-capacity-of (wield-of (first (turn-queue-of *battle*)))) 0))
+        (format t "~a's ~a doesn't take ammo~%"
+            (name-of (first (turn-queue-of *battle*)))
+            (name-of (wield-of (first (turn-queue-of *battle*)))))
+        (return-from yadfa/battle:reload))
+    (when
+        (>=
+            (list-length (ammo-of (wield-of (first (turn-queue-of *battle*)))))
+            (ammo-capacity-of (wield-of (first (turn-queue-of *battle*)))))
+        (format t "~a's ~a is already full~%"
+            (name-of (first (turn-queue-of *battle*)))
+            (name-of (wield-of (first (turn-queue-of *battle*)))))
+        (return-from yadfa/battle:reload))
+    (unless
+        (iter
+            (for i in (inventory-of (player-of *game*)))
+            (when (typep i ammo-type)
+                (leave t)))
+        (format t "~a doesn't have that ammo~%"
+            (name-of (first (turn-queue-of *battle*))))
+        (return-from yadfa/battle:reload))
+    (unless
+        (iter
+            (for i in (inventory-of (player-of *game*)))
+            (when (typep i (ammo-type-of
+                                   (wield-of
+                                       (first (turn-queue-of *battle*)))))
+                (leave t)))
+        (format t "~a ~a doesn't take that ammo~%"
+            (name-of (first (turn-queue-of *battle*)))
+            (name-of (wield-of (first (turn-queue-of *battle*)))))
+        (return-from yadfa/battle:reload))
+    (process-battle :reload ammo-type))
+(defun yadfa/world:reload (ammo-type &optional user)
+    #+sbcl (declare
+               (type (and (or list (and symbol (not keyword))) (not null)) ammo-type)
+               (type (or unsigned-byte null) user))
+    (check-type ammo-type (and (or list (and symbol (not keyword))) (not null)))
+    (check-type user (or unsigned-byte null))
+    (let ((user (if user
+                    (nth user (allies-of *game*))
+                    (player-of *game*))))
+        (unless
+            (wield-of user)
+            (format t "~a isn't carrying a weapon~%"
+                (name-of user))
+            (return-from yadfa/world:reload))
+        (unless (and
+                    (ammo-type-of (wield-of user))
+                    (> (ammo-capacity-of (wield-of user)) 0))
+            (format t "~a's ~a doesn't take ammo~%"
+                (name-of user)
+                (name-of (wield-of user)))
+            (return-from yadfa/world:reload))
+        (when
+            (>=
+                (list-length (ammo-of (wield-of user)))
+                (ammo-capacity-of (wield-of user)))
+            (format t "~a's ~a is already full~%"
+                (name-of user)
+                (name-of (wield-of user)))
+            (return-from yadfa/world:reload))
+        (unless
+            (iter
+                (for i in (inventory-of (player-of *game*)))
+                (when (typep i ammo-type)
+                    (leave t)))
+            (format t "~a doesn't have that ammo~%"
+                (name-of user))
+            (return-from yadfa/world:reload))
+        (unless
+            (iter
+                (for i in (inventory-of (player-of *game*)))
+                (when (typep i (ammo-type-of
+                                   (wield-of
+                                       user)))
+                    (leave t)))
+            (format t "~a ~a doesn't take that ammo~%"
+                (name-of user)
+                (name-of (wield-of user)))
+            (return-from yadfa/world:reload))
+        (format t "~a reloaded ~a ~a"
+                (name-of user)
+                (if (malep user)
+                    "his"
+                    "her")
+                (name-of (wield-of user)))
+        (iter
+            (with count = 0)
+            (for item in (inventory-of (player-of *game*)))
+            (when (or
+                      (>=
+                          (list-length (ammo-of (wield-of user)))
+                          (ammo-capacity-of (wield-of user)))
+                      (and
+                          (reload-count-of (wield-of user))
+                          (>=
+                              count
+                              (reload-count-of (wield-of user)))))
+                (leave t))
+            (when (and
+                      (typep item ammo-type)
+                      (typep item (ammo-type-of (wield-of user))))
+                (push item (ammo-of (wield-of user)))
+                (removef item (inventory-of (player-of *game*)) :count 1)))))
 (defun yadfa/bin:wield (&key user inventory)
     "Wield an item. Set INVENTORY to the index or a type specifier of an item in your inventory to wield that item. Set USER to the index of an ally to have them to equip it or leave it NIL for the player."
     #+sbcl (declare
@@ -1115,7 +1245,7 @@
                   (format t "INVENTORY isn't valid~%")
                   (return-from yadfa/bin:wield)))
         (when *battle* (format t
-                           "The ~a you're battling stops and waits for you to put on your ~a because Pouar never prevented this function from being called in battle~%"
+                           "The ~a you're battling stops and waits for you to equip your ~a because Pouar never prevented this function from being called in battle~%"
                            (if (> (list-length (enemies-of *battle*)) 1) "enemies" "enemy")
                            (name-of item)))
         (format t "~a equips his ~a ~a~%"

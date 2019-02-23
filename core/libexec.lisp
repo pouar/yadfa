@@ -2496,6 +2496,18 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
         (for (a b) on (if (wield-of user) (wield-stats-of (wield-of user)) ()) by #'cddr)
         (incf (getf j a) b)
         (finally (return j))))
+(defun calculate-ammo-stats (user)
+    #+sbcl (declare (type base-character user))
+    (check-type user base-character)
+    (iter
+        (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
+        (for (a b) on (if
+                          (and (wield-of user) (first (ammo-of (wield-of user))))
+                          (ammo-stats-of (first (ammo-of (wield-of user))))
+                          ())
+            by #'cddr)
+        (incf (getf j a) b)
+        (finally (return j))))
 (defun calculate-stat-delta (user)
     #+sbcl (declare (type base-character user))
     (check-type user base-character)
@@ -3054,7 +3066,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
     (check-type washer (or washer null))
     (wash (inventory-of (player-of *game*)))
     (write-line "You washed all your soggy and messy clothing. Try not to wet and mess them next time"))
-(defmethod process-battle-turn ((character npc) attack item selected-target)
+(defmethod process-battle-turn ((character npc) attack item reload selected-target)
     (declare (ignore attack item selected-target))
     (iter (for i in (getf (status-conditions-of *battle*) character))
         (if (or (eq (duration-of i) t) (> (duration-of i) 0))
@@ -3137,6 +3149,38 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                           '<))
                  1))
             (format t "~a is too busy doing a potty dance to fight~%" (name-of character)))
+        ((and
+             (wield-of character)
+             (ammo-type-of (wield-of character))
+             (<= (list-length (ammo-of (wield-of character))) 0)
+             (> (ammo-capacity-of (wield-of character)) 0)
+             (ammo-type-of (wield-of character))
+             (iter
+                 (for i in (inventory-of character))
+                 (when (typep i (ammo-type-of (wield-of character)))
+                     (leave t))))
+            (format t "~a reloaded ~a ~a"
+                (name-of character)
+                (if (malep character)
+                    "his"
+                    "her")
+                (name-of (wield-of character)))
+            (iter
+                (with count = 0)
+                (for item in (inventory-of character))
+                (when (or
+                          (>=
+                              (list-length (ammo-of (wield-of character)))
+                              (ammo-capacity-of (wield-of character)))
+                          (and
+                              (reload-count-of (wield-of character))
+                              (>=
+                                  count
+                                  (reload-count-of (wield-of character)))))
+                    (leave t))
+                (when (typep item (ammo-type-of (wield-of character)))
+                    (push item (ammo-of (wield-of character)))
+                    (removef item (inventory-of character) :count 1))))
         (t
             (funcall
                 (coerce (battle-script-of character) 'function)
@@ -3144,7 +3188,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                 (random-elt (team-of *game*)))))
     (when (<= (health-of character) 0)
         (format t "~a has fainted~%" (name-of character))))
-(defmethod process-battle-turn ((character team-member) attack item selected-target)
+(defmethod process-battle-turn ((character team-member) attack item reload selected-target)
     (iter (for i in (getf (status-conditions-of *battle*) character))
         (if (or (eq (duration-of i) t) (> (duration-of i) 0))
             (progn
@@ -3278,15 +3322,43 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                 :target selected-target)
             (when (<= (health-of selected-target) 0)
                 (format t "~a has fainted~%" (name-of selected-target))))
+        (reload
+            (format t "~a reloaded ~a ~a"
+                (name-of character)
+                (if (malep character)
+                    "his"
+                    "her")
+                (name-of (wield-of character)))
+            (iter
+                (with count = 0)
+                (for item in (inventory-of (player-of *game*)))
+                (when (or
+                          (>=
+                              (list-length (ammo-of (wield-of character)))
+                              (ammo-capacity-of (wield-of character)))
+                          (and
+                              (reload-count-of (wield-of character))
+                              (>=
+                                  count
+                                  (reload-count-of (wield-of character)))))
+                    (leave t))
+                (when (and
+                          (typep item reload)
+                          (typep item (ammo-type-of (wield-of character))))
+                    (push item (ammo-of (wield-of character)))
+                    (removef item (inventory-of (player-of *game*)) :count 1))))
         ((eq attack t)
             (if (wield-of character)
-                (funcall
-                    (coerce
-                        (attack-of (default-move-of (wield-of character)))
-                        'function)
-                    selected-target
-                    character
-                    (default-move-of (wield-of character)))
+                (progn
+                    (funcall
+                        (coerce
+                            (attack-of (default-move-of (wield-of character)))
+                            'function)
+                        selected-target
+                        character
+                        (default-move-of (wield-of character)))
+                    (when (ammo-of (wield-of character))
+                        (pop (ammo-of (wield-of character)))))
                 (let ((a (make-instance 'yadfa/moves:default)))
                     (funcall
                         (coerce
@@ -3307,18 +3379,20 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                 (get-move attack character))
             (when (<= (health-of selected-target) 0)
                 (format t "~a has fainted~%" (name-of selected-target))))))
-(defun process-battle (&key attack item user target friendly-target no-team-attack)
+(defun process-battle (&key attack item reload target friendly-target no-team-attack selected-target)
     #+sbcl (declare
-               (type (or null integer) user target)
+               (type (or list (and symbol (not keyword))) reload)
+               (type (or null integer) target)
                (type (or symbol boolean) attack))
-    (check-type user (or null integer))
     (check-type target (or null integer))
     (check-type attack (or symbol boolean))
+    (check-type reload (or list (and symbol (not keyword))))
     (when (and (not attack) (not item))
         (write-line "You need to either specify an attack or an item to use")
         (return-from process-battle))
     (let* ((selected-target
                (cond
+                   (selected-target selected-target)
                    ((and target (>= target (list-length (enemies-of *battle*))))
                        (write-line "That target doesn't exist")
                        (return-from process-battle))
@@ -3346,7 +3420,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
             (iter
                 (until (and team-attacked (typep (first (turn-queue-of *battle*)) 'team-member)))
                 (check-if-done)
-                (process-battle-turn (first (turn-queue-of *battle*)) attack item selected-target)
+                (process-battle-turn (first (turn-queue-of *battle*)) attack item reload selected-target)
                 (when (typep (pop (turn-queue-of *battle*)) 'team-member)
                     (setf team-attacked t))
                 (check-if-done)

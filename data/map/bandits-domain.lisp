@@ -69,6 +69,7 @@
                                               (yadfa/items:female-bandit-swim-diaper-cover)
                                               (yadfa/items:gold-collar)
                                               (yadfa/items:ak47)
+                                              (yadfa/items:box-of-7.62×39mm)
                                               (yadfa/items:pink-sword)
                                               (yadfa/items:toddler-dress)))
                :changing-table (make-instance 'automatic-changing-table)

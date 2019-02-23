@@ -92,7 +92,7 @@ also, maybe hacking Chromium to act as our password database wasn't such a good 
 ;;;A plist containing several locations that appeared in a dream I had. They looked pretty cool so I might put them in the game
 '(:candle-carnival "An amusement park located in the sky, has a giant pool, various rides, and is powered by monkies"
      :sky-base "A giant base located in orbit, has a main structure with various platforms attached to it, similar to the Comet Observatory in Super Mario Galaxy, but bigger with the platforms spread farther appart. Has a special gravity simulator that pulls you back up if you fall off, kinda like a trampoline. You can use this to move between various platforms"
-     :star-city "A giant city in space. All the buildings and parks are on floating platforms. You se a space ship or jetpack to travel between the different platforms")
+     :star-city "A giant city in space. All the buildings and parks are on floating platforms. You use a space ship or jetpack to travel between the different platforms")
 '("Good news, Our Brainwashing^[^?Regression therapy service is now sponsered by the Music And Film Association of America (aka MAFIAA) and so we're now bundling a few new services with it, so we need you to put up these `motivational posters' in the regression therapy room"
      "*looks through the propaganda posters* `Sharing Is Piracy' `Drm Is Your Friend And Only Affects Pirates' `The Raspberry Pi Is An Illegal Streaming Device Filled With Malware' Doesn't this cross a line?"
      "But... Money"

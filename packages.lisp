@@ -165,6 +165,11 @@
         #:power-of
         #:ai-flags-of
         #:attack-of
+        #:reload-count-of
+        #:ammo-power-of
+        #:ammo-of
+        #:ammo-type-of
+        #:ammo-capacity-of
         #:items-of
         #:actions-of
         #:plural-name-of
@@ -213,10 +218,10 @@
     (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files)
     (:documentation "Commands that the player can run anytime"))
 (uiop:define-package #:yadfa/world
-    (:export #:move #:interact #:save-game #:load-game #:go-potty #:tickle #:wash-all-in #:use-item #:add-ally-to-team #:remove-ally-from-team #:swap-team-member #:stats #:place)
+    (:export #:move #:interact #:save-game #:load-game #:go-potty #:tickle #:wash-all-in #:use-item #:add-ally-to-team #:remove-ally-from-team #:swap-team-member #:stats #:place #:reload)
     (:documentation "contains the commands when in the open world (assuming that's what it's called) (and not in something like a battle). The player probably shouldn't call these with the package prefix unless they're developing"))
 (uiop:define-package #:yadfa/battle
-    (:export #:fight #:run #:use-item #:stats)
+    (:export #:fight #:run #:use-item #:stats #:reload)
     (:documentation "Contains the commands used when battling. The player probably shouldn't call these with the package prefix unless they're developing"))
 (uiop:define-package #:yadfa/moves
     (:import-from #:macro-level #:macro-level)
@@ -371,11 +376,3 @@
 (uiop:define-package #:yadfa-user
     (:use #:yadfa #:yadfa/bin #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:documentation "The package that the player typically executes commands from"))
-(uiop:define-package #:sky-base
-    (:export
-        #:main-office
-        #:living-quarters
-        #:shop
-        #:landing-pad
-        #:nursery)
-    (:documentation "Contains symbols for the sky base"))
