@@ -79,6 +79,20 @@
             :initarg :energy
             :accessor energy-of
             :documentation "Energy of the character.")
+        (default-attack-power
+            :initarg :default-attack-power
+            :initform 40
+            :accessor default-attack-power-of
+            :documentation "The default attack base stat when no attack is selected and no weapon is equipped")
+        (default-attack
+            :initarg :default-attack
+            :accessor default-attack-of
+            :initform '(lambda (target user)
+                           (let ((a (calculate-damage target user (power-of self))))
+                               (format t "~a attacks ~a~%" (name-of user) (name-of target))
+                               (decf (health-of target) a)
+                               (format t "~a received ~a damage~%" (name-of target) a)))
+            :documentation "The default attack when no attack is selected and no weapon is equipped")
         (level
             :initarg :level
             :initform 2
@@ -1084,14 +1098,12 @@
                                                    self
                                                    (wield-of self)))
                                            (t
-                                               (let ((move-to-use (make-instance 'yadfa/moves:default)))
-                                                   (funcall
-                                                       (coerce
-                                                           (attack-of move-to-use)
-                                                           'function)
-                                                       target
-                                                       self
-                                                       move-to-use))))))))
+                                               (funcall
+                                                   (coerce
+                                                       (default-attack-of self)
+                                                       'function)
+                                                   target
+                                                   self)))))))
             :accessor battle-script-of
             :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack"))
     (:default-initargs :base-stats (list :health 40 :attack 45 :defense 40 :energy 40 :speed 56) :level (random-from-range 2 5) :bitcoins nil)

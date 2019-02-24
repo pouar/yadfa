@@ -177,6 +177,8 @@
         #:plural-name-of
         #:value-of
         #:attack-script-of
+        #:default-attack-of
+        #:default-attack-power-of
         #:wear-stats-of
         #:wield-stats-of
         #:special-actions-of
@@ -235,8 +237,6 @@
         #:mudsport
         #:tickle
         #:tackle
-        #:default
-        #:weapon-default
         #:mush)
     (:documentation "Contains all the moves in the game"))
 (uiop:define-package #:yadfa/items

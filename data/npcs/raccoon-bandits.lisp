@@ -55,14 +55,28 @@
                                                 (format t "~a gets a grin on ~a face~%"
                                                     (name-of self)
                                                     (if (malep self) "his" "her"))
-                                                (make-instance 'yadfa/moves:tickle))
+                                                (let ((move-to-use (make-instance 'yadfa/moves:tickle)))
+                                                    (funcall
+                                                        (coerce
+                                                            (attack-of move-to-use)
+                                                            'function)
+                                                        target
+                                                        self
+                                                        move-to-use)))
                                             ((and
                                                  (> (getf (calculate-diaper-usage target) :messiness) 0)
                                                  (= (random 3) 0))
                                                 (format t "~a gets a grin on ~a face~%"
                                                     (name-of self)
                                                     (if (malep self) "his" "her"))
-                                                (make-instance 'yadfa/moves:mush))
+                                                (let ((move-to-use (make-instance 'yadfa/moves:mush)))
+                                                    (funcall
+                                                        (coerce
+                                                            (attack-of move-to-use)
+                                                            'function)
+                                                        target
+                                                        self
+                                                        move-to-use)))
                                             ((= (random 4) 0)
                                                 (funcall
                                                     (coerce
@@ -80,14 +94,12 @@
                                                     self
                                                     (wield-of self)))
                                             (t
-                                                (let ((move-to-use (make-instance 'yadfa/moves:default)))
-                                                    (funcall
+                                                (funcall
                                                         (coerce
-                                                            (attack-of move-to-use)
+                                                            (default-attack-of self)
                                                             'function)
                                                         target
-                                                        self
-                                                        move-to-use))))))))))
+                                                        self)))))))))
 (defclass rookie-diapered-raccoon-bandit (potty-npc) ()
     (:default-initargs
         :name "Rookie Diapered Raccoon Bandit"

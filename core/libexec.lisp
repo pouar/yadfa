@@ -3347,14 +3347,12 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                         (wield-of character))
                     (when (ammo-of (wield-of character))
                         (pop (ammo-of (wield-of character)))))
-                (let ((a (make-instance 'yadfa/moves:default)))
-                    (funcall
-                        (coerce
-                            (attack-of a)
-                            'function)
-                        selected-target
-                        character
-                        a)))
+                (funcall
+                    (coerce
+                        (default-attack-of character)
+                        'function)
+                    selected-target
+                    character))
             (when (<= (health-of selected-target) 0)
                 (format t "~a has fainted~%" (name-of selected-target))))
         (attack
