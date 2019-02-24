@@ -25,27 +25,26 @@
         :description "Hail a bunch of bullets at these motherfuckers"
         :ammo-type '7.62×39mm
         :ammo-capacity 3
-        :default-move (make-instance 'yadfa/moves:weapon-default
-                          :power 40
-                          :attack '(lambda (target user self)
-                                       (let ((a (calculate-damage target user
-                                                    (if (first (ammo-of (wield-of user)))
-                                                        (ammo-power-of (first (ammo-of (wield-of user))))
-                                                        (power-of self)))))
-                                           (apply #'format t
-                                               (if (first (ammo-of (wield-of user)))
-                                                   (list "~a fires ~a ~a at ~a~%"
-                                                       (name-of user)
-                                                       (if (malep user) "his" "her")
-                                                       (name-of (wield-of user))
-                                                       (name-of target))
-                                                   (list "~a whacks ~a ~a at ~a~%"
-                                                       (name-of user)
-                                                       (if (malep user) "his" "her")
-                                                       (name-of (wield-of user))
-                                                       (name-of target))))
-                                           (decf (health-of target) a)
-                                           (format t "~a received ~a damage~%" (name-of target) a))))))
+        :power 40
+        :attack-script '(lambda (target user self)
+                            (let ((a (calculate-damage target user
+                                         (if (first (ammo-of self))
+                                             (ammo-power-of (first (ammo-of self)))
+                                             (power-of self)))))
+                                (apply #'format t
+                                    (if (first (ammo-of self))
+                                        (list "~a fires ~a ~a at ~a~%"
+                                            (name-of user)
+                                            (if (malep user) "his" "her")
+                                            (name-of self)
+                                            (name-of target))
+                                        (list "~a whacks ~a ~a at ~a~%"
+                                            (name-of user)
+                                            (if (malep user) "his" "her")
+                                            (name-of self)
+                                            (name-of target))))
+                                (decf (health-of target) a)
+                                (format t "~a received ~a damage~%" (name-of target) a)))))
 (defclass exterminator-ammo (ammo) ()
     (:default-initargs
         :name "Exterminator Ammo"
@@ -61,47 +60,46 @@
         :wield-stats (list :speed -100)
         :ammo-type 'exterminator-ammo
         :ammo-capacity 1
-        :default-move (make-instance 'yadfa/moves:weapon-default
-                          :power 0
-                          :attack '(lambda (target user self)
-                                       (let ((a (calculate-damage target user
-                                                    (if (first (ammo-of (wield-of user)))
-                                                        (ammo-power-of (first (ammo-of (wield-of user))))
-                                                        (power-of self)))))
-                                           (apply #'format t
-                                               (if (first (ammo-of (wield-of user)))
-                                                   (list "*BOOOMKSSSHHH!!!!!*~%")
-                                                   (list "~a struggles to whack ~a with ~a ~a but barely taps ~a~%"
-                                                       (name-of user)
-                                                       (name-of target)
-                                                       (if (malep user) "his" "her")
-                                                       (name-of (wield-of user))
-                                                       (if (malep target) "his" "her"))))
-                                           (decf (health-of target) a)
-                                           (format t "~a received ~a damage~%" (name-of target) a))))))
+        :power 0
+        :attack-script '(lambda (target user self)
+                            (let ((a (calculate-damage target user
+                                         (if (first (ammo-of self))
+                                             (ammo-power-of (first (ammo-of self)))
+                                             (power-of self)))))
+                                (apply #'format t
+                                    (if (first (ammo-of self))
+                                        (list "*BOOOMKSSSHHH!!!!!*~%")
+                                        (list "~a struggles to whack ~a with ~a ~a but barely taps ~a~%"
+                                            (name-of user)
+                                            (name-of target)
+                                            (if (malep user) "his" "her")
+                                            (name-of self)
+                                            (if (malep target) "his" "her"))))
+                                (decf (health-of target) a)
+                                (format t "~a received ~a damage~%" (name-of target) a)))))
 (defclass pink-sword (weapon) ()
     (:default-initargs
         :name "Pink Sword"
         :value 3000
-        :description "'Cause it looks cute on the character"
-        :default-move (make-instance 'yadfa/moves:weapon-default
-                          :power 80)))
+        :power 80
+        :description "'Cause it looks cute on the character"))
 (defclass hammer-gun (weapon) ()
     (:default-initargs
         :name "Hammer Gun"
         :value 1000
-        :description "As seen in One Piece"
-        :default-move (make-instance 'yadfa/moves:weapon-default
-                          :power 20)))
+        :power 20
+        :description "As seen in One Piece"))
 (defclass three-swords (weapon) ()
     (:default-initargs
         :name "Three Swords"
         :value 10000
+        :power 150
         :description "You're just like Roronoa Zoro with these"
-        :default-move (make-instance 'yadfa/moves:weapon-default
-                          :power 150
-                          :attack '(lambda (target user self)
-                                       (let ((a (calculate-damage target user (power-of self))))
-                                           (format t "Three Sword Style!!!!~%")
-                                           (decf (health-of target) a)
-                                           (format t "~a received ~a damage~%" (name-of target) a))))))
+        :attack-script '(lambda (target user self)
+                            (let ((a (calculate-damage target user
+                                         (if (first (ammo-of self))
+                                             (ammo-power-of (first (ammo-of self)))
+                                             (power-of self)))))
+                                (format t "Three Sword Style!!!!~%")
+                                (decf (health-of target) a)
+                                (format t "~a received ~a damage~%" (name-of target) a)))))

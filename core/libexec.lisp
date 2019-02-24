@@ -3340,11 +3340,11 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                 (progn
                     (funcall
                         (coerce
-                            (attack-of (default-move-of (wield-of character)))
+                            (attack-script-of (wield-of character))
                             'function)
                         selected-target
                         character
-                        (default-move-of (wield-of character)))
+                        (wield-of character))
                     (when (ammo-of (wield-of character))
                         (pop (ammo-of (wield-of character)))))
                 (let ((a (make-instance 'yadfa/moves:default)))

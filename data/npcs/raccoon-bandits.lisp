@@ -20,24 +20,14 @@
         :battle-script '(lambda (self target)
                             (let ((moves-with-health
                                       (iter
-                                          (for i in (append
-                                                        (list
-                                                            (if (wield-of self)
-                                                                (default-move-of (wield-of self))
-                                                                (make-instance 'yadfa/moves:default)))
-                                                        (moves-of self)))
+                                          (for i in (moves-of self))
                                           (when (and
                                                     (>= (energy-of self) (energy-cost-of i))
                                                     (position :ai-health-inc (ai-flags-of i)))
                                               (collect i))))
                                      (moves-can-use
                                          (iter
-                                             (for i in (append
-                                                           (list
-                                                               (if (wield-of self)
-                                                                   (default-move-of (wield-of self))
-                                                                   (make-instance 'yadfa/moves:default)))
-                                                           (moves-of self)))
+                                             (for i in (moves-of self))
                                              (when (>= (energy-of self) (energy-cost-of i))
                                                  (collect i))))
                                      (move-to-use nil))
@@ -55,32 +45,49 @@
                                             move-to-use))
                                     (t
                                         (setf move-to-use
-                                            (let ((j (random 5)))
-                                                (cond
-                                                    ((and
-                                                         (>=
-                                                             (bladder/contents-of target)
-                                                             (bladder/potty-dance-limit-of target))
-                                                         (< j 1))
-                                                        (format t "~a gets a grin on ~a face~%"
-                                                            (name-of self)
-                                                            (if (malep self) "his" "her"))
-                                                        (make-instance 'yadfa/moves:tickle))
-                                                    ((and
-                                                         (> (getf (calculate-diaper-usage target) :messiness) 0)
-                                                         (< j 1))
-                                                        (format t "~a gets a grin on ~a face~%"
-                                                            (name-of self)
-                                                            (if (malep self) "his" "her"))
-                                                        (make-instance 'yadfa/moves:mush))
-                                                    (t (random-elt moves-can-use)))))
-                                        (funcall
-                                            (coerce
-                                                (attack-of move-to-use)
-                                                'function)
-                                            target
-                                            self
-                                            move-to-use)))))))
+                                            (random-elt moves-can-use))
+                                        (cond
+                                            ((and
+                                                 (>=
+                                                     (bladder/contents-of target)
+                                                     (bladder/potty-dance-limit-of target))
+                                                 (= (random 3) 0))
+                                                (format t "~a gets a grin on ~a face~%"
+                                                    (name-of self)
+                                                    (if (malep self) "his" "her"))
+                                                (make-instance 'yadfa/moves:tickle))
+                                            ((and
+                                                 (> (getf (calculate-diaper-usage target) :messiness) 0)
+                                                 (= (random 3) 0))
+                                                (format t "~a gets a grin on ~a face~%"
+                                                    (name-of self)
+                                                    (if (malep self) "his" "her"))
+                                                (make-instance 'yadfa/moves:mush))
+                                            ((= (random 4) 0)
+                                                (funcall
+                                                    (coerce
+                                                        (attack-of move-to-use)
+                                                        'function)
+                                                    target
+                                                    self
+                                                    move-to-use))
+                                            ((wield-of self)
+                                                (funcall
+                                                    (coerce
+                                                        (attack-script-of (wield-of self))
+                                                        'function)
+                                                    target
+                                                    self
+                                                    (wield-of self)))
+                                            (t
+                                                (let ((move-to-use (make-instance 'yadfa/moves:default)))
+                                                    (funcall
+                                                        (coerce
+                                                            (attack-of move-to-use)
+                                                            'function)
+                                                        target
+                                                        self
+                                                        move-to-use))))))))))
 (defclass rookie-diapered-raccoon-bandit (potty-npc) ()
     (:default-initargs
         :name "Rookie Diapered Raccoon Bandit"

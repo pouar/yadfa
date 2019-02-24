@@ -470,7 +470,7 @@
             :initarg :ammo-power
             :initform ()
             :accessor ammo-power-of
-            :documentation "boost for attack base when using this as ammo.")
+            :documentation "Attack base when using this as ammo.")
         (reload-count
             :initarg :reload-count
             :initform nil
@@ -506,11 +506,27 @@
             :initform ()
             :accessor ai-flags-of
             :documentation "List of flags that affect the AI")
-        (default-move
-            :initarg :default-move
-            :initform (make-instance 'yadfa/moves:weapon-default)
-            :accessor default-move-of
-            :documentation "Default move this weapon uses")
+        (power
+            :initarg :power
+            :initform 40
+            :accessor power-of
+            :documentation "Attack base when used as a melee weapon")
+        (attack-script
+            :initarg :attack-script
+            :initform '(lambda (target user self)
+                           (let ((a (calculate-damage target user
+                                        (if (first (ammo-of self))
+                                            (ammo-power-of (first (ammo-of self)))
+                                            (power-of self)))))
+                               (format t "~a whacks ~a with ~a ~a~%"
+                                   (name-of user)
+                                   (name-of target)
+                                   (if (malep user) "his" "her")
+                                   (name-of self))
+                               (decf (health-of target) a)
+                               (format t "~a received ~a damage~%" (name-of target) a)))
+            :accessor attack-script-of
+            :documentation "Script that runs when attacking with this weapon")
         (attributes
             :initarg :attributes
             :initform '()
@@ -1024,24 +1040,14 @@
             :initform '(lambda (self target)
                            (let ((moves-with-health
                                      (iter
-                                         (for i in (append
-                                                       (list
-                                                           (if (wield-of self)
-                                                               (attack-of (default-move-of (wield-of self)))
-                                                               (make-instance 'yadfa/moves:default)))
-                                                       (moves-of self)))
+                                         (for i in (moves-of self))
                                          (when (and
                                                    (>= (energy-of self) (energy-cost-of i))
                                                    (position :ai-health-inc (ai-flags-of i)))
                                              (collect i))))
                                     (moves-can-use
                                         (iter
-                                            (for i in (append
-                                                          (list
-                                                              (if (wield-of self)
-                                                                  (attack-of (default-move-of (wield-of self)))
-                                                                  (make-instance 'yadfa/moves:default)))
-                                                          (moves-of self)))
+                                            (for i in (moves-of self))
                                             (when (>= (energy-of self) (energy-cost-of i))
                                                 (collect i))))
                                     (move-to-use nil))
@@ -1060,13 +1066,32 @@
                                    (t
                                        (setf move-to-use
                                            (random-elt moves-can-use))
-                                       (funcall
-                                           (coerce
-                                               (attack-of move-to-use)
-                                               'function)
-                                           target
-                                           self
-                                           move-to-use)))))
+                                       (cond
+                                           ((= (random 2) 0)
+                                               (funcall
+                                                   (coerce
+                                                       (attack-of move-to-use)
+                                                       'function)
+                                                   target
+                                                   self
+                                                   move-to-use))
+                                           ((wield-of self)
+                                               (funcall
+                                                   (coerce
+                                                       (attack-script-of (wield-of self))
+                                                       'function)
+                                                   target
+                                                   self
+                                                   (wield-of self)))
+                                           (t
+                                               (let ((move-to-use (make-instance 'yadfa/moves:default)))
+                                                   (funcall
+                                                       (coerce
+                                                           (attack-of move-to-use)
+                                                           'function)
+                                                       target
+                                                       self
+                                                       move-to-use))))))))
             :accessor battle-script-of
             :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack"))
     (:default-initargs :base-stats (list :health 40 :attack 45 :defense 40 :energy 40 :speed 56) :level (random-from-range 2 5) :bitcoins nil)

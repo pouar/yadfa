@@ -176,7 +176,7 @@
         #:actions-of
         #:plural-name-of
         #:value-of
-        #:default-move-of
+        #:attack-script-of
         #:wear-stats-of
         #:wield-stats-of
         #:special-actions-of
