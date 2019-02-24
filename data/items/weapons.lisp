@@ -1,5 +1,5 @@
 (in-package :yadfa/items)
-(defclass 7.62×39mm (item) ()
+(defclass 7.62×39mm (ammo) ()
     (:default-initargs
         :name "7.62x39mm Rounds"
         :plural-name "7.62x39mm Rounds"
@@ -18,7 +18,7 @@
                          (format t "You open the box and dump all the ammunition out of it.~%")
                          (iter (for i from 1 to 6)
                              (push (make-instance '7.62×39mm) (inventory-of user))))))
-(defclass ak47 (item) ()
+(defclass ak47 (weapon) ()
     (:default-initargs
         :name "AK-47"
         :value 6000
@@ -46,14 +46,14 @@
                                                        (name-of target))))
                                            (decf (health-of target) a)
                                            (format t "~a received ~a damage~%" (name-of target) a))))))
-(defclass exterminator-ammo (item) ()
+(defclass exterminator-ammo (ammo) ()
     (:default-initargs
         :name "Exterminator Ammo"
         :plural-name "Exterminator Ammo"
         :value 100000
         :description "Ammo for the Exterminator"
         :ammo-power-of 500))
-(defclass exterminator (item) ()
+(defclass exterminator (weapon) ()
     (:default-initargs
         :name "Exterminator"
         :value 1000000
@@ -79,21 +79,21 @@
                                                        (if (malep target) "his" "her"))))
                                            (decf (health-of target) a)
                                            (format t "~a received ~a damage~%" (name-of target) a))))))
-(defclass pink-sword (item) ()
+(defclass pink-sword (weapon) ()
     (:default-initargs
         :name "Pink Sword"
         :value 3000
         :description "'Cause it looks cute on the character"
         :default-move (make-instance 'yadfa/moves:weapon-default
                           :power 80)))
-(defclass hammer-gun (item) ()
+(defclass hammer-gun (weapon) ()
     (:default-initargs
         :name "Hammer Gun"
         :value 1000
         :description "As seen in One Piece"
         :default-move (make-instance 'yadfa/moves:weapon-default
                           :power 20)))
-(defclass three-swords (item) ()
+(defclass three-swords (weapon) ()
     (:default-initargs
         :name "Three Swords"
         :value 10000

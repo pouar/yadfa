@@ -409,6 +409,8 @@
                         (sogginess-capacity-of i)
                         (messiness-of i)
                         (messiness-capacity-of i)))
+                (when (ammo-type-of i)
+                    (format t "Ammo Type: ~s" (ammo-type-of i)))
                 (when (special-actions-of i)
                     (iter (for (a b) on i by #'cddr)
                         (format t "Keyword: ~a~%Other Parameters: ~w~%Documentation: ~a~%~%Describe: ~a~%~%"

@@ -71,6 +71,8 @@
         #:prop
         #:item
         #:consumable
+        #:ammo
+        #:weapon
         #:clothing
         #:top
         #:headpiece
