@@ -852,27 +852,27 @@
     (check-type user (or unsigned-byte null))
     (check-type enemy (or unsigned-byte null))
     (cond (user
-              (format-stats (nth user (team-of *game*))))
+              (present-stats (nth user (team-of *game*))))
         (enemy
-            (format-stats (nth enemy (enemies-of *battle*))))
+            (present-stats (nth enemy (enemies-of *battle*))))
         (t
             (format t "Your team:~%~%")
             (iter (for i in (team-of *game*))
-                (format-stats i))
+                (present-stats i))
             (format t "Their team:~%~%")
             (iter (for i in (enemies-of *battle*))
-                (format-stats i)))))
+                (present-stats i)))))
 (defun yadfa/world:stats (&optional user)
     "Prints the current stats, essentially this game's equivelant of a health and energy bar in battle. Set USER to the index of an ally to show that ally's stats or set it to T to show your stats, leave it at NIL to show everyone's stats"
     #+sbcl (declare (type (or unsigned-byte boolean) user))
     (check-type user (or unsigned-byte boolean))
     (cond ((eq user t)
-              (format-stats (player-of *game*)))
+              (present-stats (player-of *game*)))
         (user
-            (format-stats (nth user (allies-of *game*))))
+            (present-stats (nth user (allies-of *game*))))
         (t
             (iter (for i in (append (list (player-of *game*)) (allies-of *game*)))
-                (format-stats i)))))
+                (present-stats i)))))
 (defun yadfa/world:go-potty (&key prop wet mess pull-pants-down user)
     "Go potty. PROP is a keyword identifying the prop you want to use. If it's a toilet, use the toilet like a big boy. if it's not. Go potty on it like an animal. If you want to wet yourself, leave PROP as NIL. WET is the amount you want to pee in ml. MESS is the amount in cg, set WET and/or MESS to T to empty yourself completely. set PULL-PANTS-DOWN to non-NIL to pull your pants down first. USER is the index value of an ALLY you have. Set this to NIL if you're referring to yourself"
     #+sbcl (declare
