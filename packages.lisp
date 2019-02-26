@@ -6,6 +6,7 @@
         ;;variables
         #:*battle*
         #:*game*
+        #:+stats-view+
         ;;macros
         #:defevent
         #:ensure-zone
@@ -61,6 +62,7 @@
         #:make-action
         ;;classes
         #:status-condition
+        #:stats-view
         #:base-character
         #:team-member
         #:ally

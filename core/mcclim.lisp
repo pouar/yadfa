@@ -172,6 +172,7 @@
 
 (in-package :yadfa)
 (defclass stats-view (clim:view) ())
+(defparameter +stats-view+ (make-instance 'stats-view))
 (clim:define-presentation-type base-character ())
 (clim:define-presentation-method clim:present
     (base-character (type base-character) stream
