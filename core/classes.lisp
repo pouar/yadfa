@@ -861,6 +861,7 @@
     (:documentation "Class for shops, you can buy stuff from these."))
 (defmethod initialize-instance :after
     ((c shop) &rest args &key &allow-other-keys)
+    (declare (ignorable args))
     (appendf (actions-of c)
         (list
             :list-items-for-sale (make-action
@@ -902,6 +903,7 @@
     (:documentation "Class for vending machines, Functions like a shop, but only lets you buy items instead of selling them"))
 (defmethod initialize-instance :after
     ((c vending-machine) &rest args &key &allow-other-keys)
+    (declare (ignorable args))
     (appendf (actions-of c)
         (list
             :list-items-for-sale (make-action
@@ -928,6 +930,7 @@
     (:documentation "Class for shops, you can buy stuff from these."))
 (defmethod initialize-instance :after
     ((c debug-shop) &rest args &key &allow-other-keys)
+    (declare (ignorable args))
     (appendf (actions-of c)
         (list
             :list-items-for-sale (make-action

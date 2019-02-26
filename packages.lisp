@@ -18,7 +18,6 @@
         #:intro-function
         #:set-player
         #:prompt-for-values
-        #:color-format
         #:insert
         #:set-status-condition
         #:set-new-battle

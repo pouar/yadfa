@@ -119,13 +119,7 @@
     (string<= (namestring pathname1) (namestring pathname2)))
 ;;;(slynk:eval-in-emacs '(with-current-buffer (sly-mrepl--find-buffer) (insert-image (create-image "/tmp/1523307158.liljdude_renamon_boom.jpg"))))
 (defun color-format (color &rest body)
-    (cond
-        #+(or slynk swank)
-        ((not clim-listener::*application-frame*)
-            (cl-ansi-text:with-color (color) (apply #'format t body)))
-        (clim-listener::*application-frame*
-            (clim:with-drawing-options (*standard-output* :ink (eval (intern (format nil "+~a+" color) "CLIM")))
-                (apply #'format t body)))))
+    (cl-ansi-text:with-color (color) (apply #'format t body)))
 ;;; error handling of these 2 functions could be better
 #+(or slynk swank)
 (defun emacs-prompt (options &optional error-message)
@@ -2552,6 +2546,27 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                      / 50)
                   + 2)
                * ($ (random-from-range 85 100) / 100))))
+(defmacro draw-bar (first second third stat)
+    `(if clim-listener::*application-frame*
+        (multiple-value-bind (x y) (clim:stream-cursor-position *standard-output*)
+            (clim:draw-rectangle* *standard-output* x y (+ x (* ,stat 400)) (+ y 15)
+                :ink (cond (,(car first) ,(intern (format nil "+~a+" (car (last first))) "CLIM"))
+                         (,(car second) ,(intern (format nil "+~a+" (car (last second))) "CLIM"))
+                         (t ,(intern (format nil "+~a+" third) "CLIM"))))
+            (clim:draw-rectangle* *standard-output* x y (+ x 400) (+ y 15)
+                :filled nil)
+            (clim:stream-set-cursor-position *standard-output* (+ x 400) y))
+        (cl-ansi-text:with-color ((cond
+                                      (,(car first) ,(car (last first)))
+                                      (,(car second) ,(car (last second)))
+                                      (t ,third)))
+            (color-format (cond ,first
+                              ,second
+                              (t ,third)) "[~{~a~}]"
+                (iter (with i = 0)
+                    (while (< i 40))
+                    (collect (if (< i (* ,stat 40)) "#" " "))
+                    (incf i))))))
 (defun format-stats (user)
     (format t "Name: ~a~%"
         (name-of user))
@@ -2560,44 +2575,20 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
     (format t "Description: ~a~%"
         (description-of user))
     (format t "Health: ")
-    (if clim-listener::*application-frame*
-        (multiple-value-bind (x y) (clim:stream-cursor-position *standard-output*)
-            (clim:draw-rectangle* *standard-output* x y (+ x (* (/ (health-of user) (calculate-stat user :health)) 400)) (+ y 15)
-                :ink (cond ((> (health-of user) (* (calculate-stat user :health) 1/2)) clim:+green+)
-                         ((> (health-of user) (* (calculate-stat user :health) 1/4)) clim:+yellow+)
-                         (t clim:+red+)))
-            (clim:draw-rectangle* *standard-output* x y (+ x 400) (+ y 15)
-                :filled nil)
-            (clim:stream-set-cursor-position *standard-output* (+ x 400) y))
-        (color-format (cond ((> (health-of user) (* (calculate-stat user :health) 1/2)) :green)
-                          ((> (health-of user) (* (calculate-stat user :health) 1/4)) :yellow)
-                          (t :red)) "[~{~a~}]"
-            (iter (with i = 0)
-                (while (< i 40))
-                (collect (if (< i (* (/ (health-of user) (calculate-stat user :health)) 40)) "#" " "))
-                (incf i))))
+    (draw-bar ((> (health-of user) (* (calculate-stat user :health) 1/2)) :green)
+        ((> (health-of user) (* (calculate-stat user :health) 1/4)) :yellow)
+        :red
+        (/ (health-of user) (calculate-stat user :health)))
     (format t " ~a~%Energy: "
         (if (member user (append (allies-of *game*) (list (player-of *game*))))
             (format nil "(~a/~a)"
                 (health-of user)
                 (calculate-stat user :health))
             ""))
-    (if clim-listener::*application-frame*
-        (multiple-value-bind (x y) (clim:stream-cursor-position *standard-output*)
-            (clim:draw-rectangle* *standard-output* x y (+ x (* (/ (energy-of user) (calculate-stat user :energy)) 400)) (+ y 15)
-                :ink (cond ((> (energy-of user) (* (calculate-stat user :energy) 1/2)) clim:+green+)
-                         ((> (energy-of user) (* (calculate-stat user :energy) 1/4)) clim:+yellow+)
-                         (t clim:+red+)))
-            (clim:draw-rectangle* *standard-output* x y (+ x 400) (+ y 15)
-                :filled nil)
-            (clim:stream-set-cursor-position *standard-output* (+ x 400) y))
-        (color-format (cond ((> (energy-of user) (* (calculate-stat user :energy) 1/2)) :green)
-                          ((> (energy-of user) (* (calculate-stat user :energy) 1/4)) :yellow)
-                          (t :red)) "[~{~a~}]"
-            (iter (with i = 0)
-                (while (< i 40))
-                (collect (if (< i (* (/ (energy-of user) (calculate-stat user :energy)) 40)) "#" " "))
-                (incf i))))
+    (draw-bar ((> (energy-of user) (* (calculate-stat user :energy) 1/2)) :green)
+        ((> (energy-of user) (* (calculate-stat user :energy) 1/4)) :yellow)
+        :red
+        (/ (energy-of user) (calculate-stat user :energy)))
     (format t " ~a~%"
         (if (member user (append (allies-of *game*) (list (player-of *game*))))
             (format nil "(~a/~a)"
@@ -2650,39 +2641,16 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                     (unless a (push "Clean" a))
                     a))))
     (write-string "Bladder State: ")
-    (if clim-listener::*application-frame*
-        (multiple-value-bind (x y) (clim:stream-cursor-position *standard-output*)
-            (clim:draw-rectangle* *standard-output* x y (+ x (* (/ (bladder/contents-of user) (bladder/maximum-limit-of user)) 400)) (+ y 15)
-                :ink (cond ((>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)) clim:+red+)
-                         ((>= (bladder/contents-of user) (bladder/need-to-potty-limit-of user)) clim:+yellow+)
-                         (t clim:+green+)))
-            (clim:draw-rectangle* *standard-output* x y (+ x 400) (+ y 15)
-                :filled nil)
-            (clim:stream-set-cursor-position *standard-output* (+ x 400) y))
-        (color-format (cond ((>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)) :red)
-                          ((>= (bladder/contents-of user) (bladder/need-to-potty-limit-of user)) :yellow)
-                          (t :green)) "[~{~a~}]"
-            (iter (with i = 0)
-                (while (< i 40))
-                (collect (if (< i (* (/ (bladder/contents-of user) (bladder/maximum-limit-of user)) 40)) "#" " "))
-                (incf i))))
+    (draw-bar ((>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)) :red)
+        ((>= (bladder/contents-of user) (bladder/need-to-potty-limit-of user)):yellow)
+        :green
+        (/ (bladder/contents-of user) (bladder/maximum-limit-of user)))
     (format t "~%Bowels State: ")
-    (if clim-listener::*application-frame*
-        (multiple-value-bind (x y) (clim:stream-cursor-position *standard-output*)
-            (clim:draw-rectangle* *standard-output* x y (+ x (* (/ (bowels/contents-of user) (bowels/maximum-limit-of user)) 400)) (+ y 15)
-                :ink (cond ((>= (bowels/contents-of user) (bowels/potty-dance-limit-of user)) clim:+red+)
-                         ((>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user)) clim:+yellow+)
-                         (t clim:+green+)))
-            (clim:draw-rectangle* *standard-output* x y (+ x 400) (+ y 15)
-                :filled nil)
-            (clim:stream-set-cursor-position *standard-output* (+ x 400) y))
-        (color-format (cond ((>= (bowels/contents-of user) (bowels/potty-dance-limit-of user)) :red)
-                      ((>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user)) :yellow)
-                      (t :green)) "[~{~a~}]"
-        (iter (with i = 0)
-            (while (< i 40))
-            (collect (if (< i (* (/ (bowels/contents-of user) (bowels/maximum-limit-of user)) 40)) "#" " "))
-            (incf i))))
+    (draw-bar
+        ((>= (bowels/contents-of user) (bowels/potty-dance-limit-of user)) :red)
+        ((>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user)) :yellow)
+        :green
+        (/ (bowels/contents-of user) (bowels/maximum-limit-of user)))
     (format t "~%"))
 (defun present-stats (user)
     (cond
