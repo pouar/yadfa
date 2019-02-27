@@ -15,6 +15,9 @@
     <tags>chocolatey yadfa diaperfur diaper furry babyfur</tags>
     <summary>Yet Another DiaperFur Adventure</summary>
     <description>A WIP diaperfur adventure game where you play by typing in Lisp commands</description>
+    <dependencies>
+      <dependency id="vcxsrv" />
+    </dependencies>
   </metadata>
   <files>
     <file src="AUTHORS*" target="yadfa" />
