@@ -171,10 +171,15 @@
 (pushnew (clim:find-command-table 'yadfa-commands) (clim:command-table-inherit-from (clim:find-command-table 'listener)))
 
 (in-package :yadfa)
-(defclass stats-view (clim:view) ())
-(defparameter +stats-view+ (make-instance 'stats-view))
-(clim:define-presentation-type base-character ())
-(clim:define-presentation-method clim:present
-    (base-character (type base-character) stream
-        (view stats-view) &key)
-    (format-stats base-character))
+(clim:define-presentation-type yadfa-class ())
+(clim:define-presentation-to-command-translator com-describe-object-translator
+    (yadfa-class climi::com-describe clim:global-command-table
+        :gesture :describe
+        :documentation "Describe"
+        :pointer-documentation "Describe"
+        :tester ((object presentation)
+              (declare (ignore object))
+              (not (eq presentation climi::*null-presentation*)))
+        :menu nil)
+    (object)
+    (list object))

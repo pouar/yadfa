@@ -2658,7 +2658,8 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
         ((not clim-listener::*application-frame*)
             (format-stats user))
         (clim-listener::*application-frame*
-            (clim:present user (clim:presentation-type-of user) :view +stats-view+))))
+            (clim:with-output-as-presentation (t user 'yadfa-class :single-box t)
+                (format-stats user)))))
 
 (defun finish-battle (&optional lose)
     (if lose

@@ -2,7 +2,9 @@
 (defmethod ms:class-persistent-slots ((self standard-object))
     (mapcar #'slot-definition-name
         (class-slots (class-of self))))
-(defclass status-condition ()
+(defclass yadfa-class () ()
+    (:documentation "All the classes that are part of the game's core inheit this class"))
+(defclass status-condition (yadfa-class)
     ((name
          :initarg :name
          :initform nil
@@ -55,7 +57,7 @@
             :accessor priority-of
             :documentation "Unsigned integer that specifies How important this condition is to cure. Used for the AI. Lower value means more important"))
     (:documentation "Base class for all the status conditions "))
-(defclass base-character ()
+(defclass base-character (yadfa-class)
     ((name
          :initarg :name
          :initform :missingno.
@@ -288,7 +290,7 @@
     (unless (iter (for (a b) on initargs)
                 (when (eq a :warp-on-death-point) (leave t)))
         (setf (warp-on-death-point-of c) (position-of c))))
-(defclass zone ()
+(defclass zone (yadfa-class)
     ((description
          :initarg :description
          :initform "Seems Pouar didn't make the text for this room yet, get to it you lazy fuck"
@@ -373,7 +375,7 @@
 (defmethod print-object ((obj zone) stream)
     (print-unreadable-object (obj stream :type t :identity t)
         (format stream "~a \"~a\"" (position-of obj) (name-of obj))))
-(defclass stat/move ()
+(defclass stat/move (yadfa-class)
     ((name
          :initarg :name
          :initform :-
@@ -414,7 +416,7 @@
             :accessor attack-of
             :documentation "function that performs the move. TARGET is the enemy that is being attacked and USER is the one doing the attacking, SELF is the move itself"))
     (:documentation "base class of moves used in battle"))
-(defclass prop ()
+(defclass prop (yadfa-class)
     ((description
          :initarg :description
          :initform ""
@@ -454,7 +456,7 @@
 (defmethod print-object ((obj prop) stream)
     (print-unreadable-object (obj stream :type t :identity t)
         (format stream "~w" (name-of obj))))
-(defclass item ()
+(defclass item (yadfa-class)
     ((description
          :initarg :description
          :initform :?
@@ -1019,7 +1021,7 @@
                                              (check-type prop prop)
                                              (go-to-sleep)))))
     (:documentation "Class for beds, you can sleep in these."))
-(defclass config ()
+(defclass config (yadfa-class)
     ())
 (defclass npc (base-character)
     ((exp-yield
@@ -1119,7 +1121,7 @@
         :bladder/fill-rate (* (/ 2000 24 60) 2)
         :bowels/fill-rate (* (/ 12000 24 60) 2))
     (:documentation "Class for an enemy with a bladder and bowels fill rate. This enemy may {wet,mess} {him,her}self in battle."))
-(defclass battle ()
+(defclass battle (yadfa-class)
     ((turn-queue
          :initarg :turn-queue
          :initform ()
@@ -1158,7 +1160,7 @@
     (setf (turn-queue-of c)
         (sort (copy-tree (append (enemies-of c) (team-of *game*)))
             '> :key #'(lambda (a) (calculate-stat a :speed)))))
-(defclass game ()
+(defclass game (yadfa-class)
     ((zones
          :initarg :zones
          :initform (make-hash-table :test 'equal)
