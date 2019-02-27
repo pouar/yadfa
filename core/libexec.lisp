@@ -458,7 +458,7 @@
                             (aref array b)))))
         (let ((pattern
                   (clim:make-pattern-from-bitmap-file
-                      (uiop:merge-pathnames* #P"pixmaps/map-patterns/blank.xpm"
+                      (merge-pathnames #P"pixmaps/map-patterns/blank.xpm"
                           (if uiop:*image-dumped-p*
                               (make-pathname :directory (pathname-directory (truename (uiop:argv0))))
                               (asdf:component-pathname (asdf:find-system "yadfa"))))
@@ -501,11 +501,10 @@
                         (if clim-listener::*application-frame*
                             (progn
                                 (setf pattern
-                                    
                                     (clim:make-pattern-from-bitmap-file
-                                        (uiop:merge-pathnames*
+                                        (merge-pathnames
                                             (car char)
-                                            (uiop:merge-pathnames*
+                                            (merge-pathnames
                                                 #P"pixmaps/map-patterns/"
                                                 (asdf:component-pathname (asdf:find-system "yadfa"))))
                                         :format :xpm
