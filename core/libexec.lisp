@@ -506,7 +506,9 @@
                                             (car char)
                                             (merge-pathnames
                                                 #P"pixmaps/map-patterns/"
-                                                (asdf:component-pathname (asdf:find-system "yadfa"))))
+                                                (if uiop:*image-dumped-p*
+                                                    (make-pathname :directory (pathname-directory (truename (uiop:argv0))))
+                                                    (asdf:component-pathname (asdf:find-system "yadfa")))))
                                         :format :xpm
                                         :designs (list clim:+background-ink+ (cdr char))))
                                 (when (get-zone (list x y (third position) (fourth position)))
