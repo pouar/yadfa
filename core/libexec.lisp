@@ -369,7 +369,78 @@
                      (not (get-zone (get-destination direction position)))
                      (hiddenp (get-zone (get-destination direction position)))))
                 (a (position)
-                    (let ((b 0))
+                    (let ((b 0)
+                             (array
+                                 (if clim-listener::*application-frame*
+                                     #1A((cons "nsew.xpm" clim:+red+)
+                                            (cons "nsew.xpm" clim:+red+)
+                                            (cons "nsew.xpm" clim:+red+)
+                                            (cons "nsew.xpm" clim:+black+)
+                                            (cons "nsw.xpm" clim:+red+)
+                                            (cons "nsw.xpm" clim:+red+)
+                                            (cons "nsw.xpm" clim:+red+)
+                                            (cons "nsw.xpm" clim:+black+)
+                                            (cons "nse.xpm" clim:+red+)
+                                            (cons "nse.xpm" clim:+red+)
+                                            (cons "nse.xpm" clim:+red+)
+                                            (cons "nse.xpm" clim:+black+)
+                                            (cons "ns.xpm" clim:+red+)
+                                            (cons "ns.xpm" clim:+red+)
+                                            (cons "ns.xpm" clim:+red+)
+                                            (cons "ns.xpm" clim:+black+)
+                                            (cons "new.xpm" clim:+red+)
+                                            (cons "new.xpm" clim:+red+)
+                                            (cons "new.xpm" clim:+red+)
+                                            (cons "new.xpm" clim:+black+)
+                                            (cons "nw.xpm" clim:+red+)
+                                            (cons "nw.xpm" clim:+red+)
+                                            (cons "nw.xpm" clim:+red+)
+                                            (cons "nw.xpm" clim:+black+)
+                                            (cons "ne.xpm" clim:+red+)
+                                            (cons "ne.xpm" clim:+red+)
+                                            (cons "ne.xpm" clim:+red+)
+                                            (cons "ne.xpm" clim:+black+)
+                                            (cons "n.xpm" clim:+red+)
+                                            (cons "n.xpm" clim:+red+)
+                                            (cons "n.xpm" clim:+red+)
+                                            (cons "n.xpm" clim:+black+)
+                                            (cons "sew.xpm" clim:+red+)
+                                            (cons "sew.xpm" clim:+red+)
+                                            (cons "sew.xpm" clim:+red+)
+                                            (cons "sew.xpm" clim:+black+)
+                                            (cons "sw.xpm" clim:+red+)
+                                            (cons "sw.xpm" clim:+red+)
+                                            (cons "sw.xpm" clim:+red+)
+                                            (cons "sw.xpm" clim:+black+)
+                                            (cons "se.xpm" clim:+red+)
+                                            (cons "se.xpm" clim:+red+)
+                                            (cons "se.xpm" clim:+red+)
+                                            (cons "se.xpm" clim:+black+)
+                                            (cons "s.xpm" clim:+red+)
+                                            (cons "s.xpm" clim:+red+)
+                                            (cons "s.xpm" clim:+red+)
+                                            (cons "s.xpm" clim:+black+)
+                                            (cons "ew.xpm" clim:+red+)
+                                            (cons "ew.xpm" clim:+red+)
+                                            (cons "ew.xpm" clim:+red+)
+                                            (cons "ew.xpm" clim:+black+)
+                                            (cons "w.xpm" clim:+red+)
+                                            (cons "w.xpm" clim:+red+)
+                                            (cons "w.xpm" clim:+red+)
+                                            (cons "w.xpm" clim:+black+)
+                                            (cons "e.xpm" clim:+red+)
+                                            (cons "e.xpm" clim:+red+)
+                                            (cons "e.xpm" clim:+red+)
+                                            (cons "e.xpm" clim:+black+)
+                                            (cons "s.xpm" clim:+red+)
+                                            (cons "s.xpm" clim:+red+)
+                                            (cons "s.xpm" clim:+red+)
+                                            (cons "s.xpm" clim:+black+)
+                                            (cons "dot.xpm" clim:+red+)
+                                            (cons "dot.xpm" clim:+red+)
+                                            (cons "dot.xpm" clim:+red+)
+                                            (cons "dot.xpm" clim:+black+))
+                                     #1A("╋" "╋" "╋" "┼" "┫" "┫" "┫" "┤" "┣" "┣" "┣" "├" "┃" "┃" "┃" "│" "┻" "┻" "┻" "┴" "┛" "┛" "┛" "┘" "┗" "┗" "┗" "└" "╹" "╹" "╹" "╵" "┳" "┳" "┳" "┬" "┓" "┓" "┓" "┐" "┏" "┏" "┏" "┌" "╻" "╻" "╻" "╷" "━" "━" "━" "─" "╸" "╸" "╸" "╴" "╺" "╺" "╺" "╶" "▮" "▮" "▮" "▯"))))
                         (when (travelablep position :north)
                             (setf b (logior b (shl 1 8 5))))
                         (when (travelablep position :south)
@@ -382,37 +453,78 @@
                             (setf b (logior b (shl 1 8 1))))
                         (when (travelablep position :down)
                             (setf b (logior b (shl 1 8 0))))
-                        (aref
-                            #1A("╋" "╋" "╋" "┼" "┫" "┫" "┫" "┤" "┣" "┣" "┣" "├" "┃" "┃" "┃" "│" "┻" "┻" "┻" "┴" "┛" "┛" "┛" "┘" "┗" "┗" "┗" "└" "╹" "╹" "╹" "╵" "┳" "┳" "┳" "┬" "┓" "┓" "┓" "┐" "┏" "┏" "┏" "┌" "╻" "╻" "╻" "╷" "━" "━" "━" "─" "╸" "╸" "╸" "╴" "╺" "╺" "╺" "╶" "▮" "▮" "▮" "▯")
-                            b))
-                    ))
-        (iter (for y
-                  from (- (second position) 15)
-                  to (+ (second position) 15))
-            (iter (for x
-                      from (- (first position) 15)
-                      to (+ (first position) 15))
-                (format t "~a"
-                    (cond
-                        ((and
-                             (= x (first (position-of (player-of *game*))))
-                             (= y (second (position-of (player-of *game*))))
-                             (= (third position) (third (position-of (player-of *game*))))
-                             (equal (fourth position) (fourth (position-of (player-of *game*)))))
-                            "@")
-                        ((and
-                             (get-zone (list x y (third position) (fourth position)))
-                             (hiddenp (get-zone (list x y (third position) (fourth position))))) " ")
-                        ((and
-                             (get-zone (list x y (third position) (fourth position)))
-                             (warp-points-of (get-zone (list x y (third position) (fourth position)))))
-                            #-win32 "▒"
-                            #+win32 "W")
-                        ((get-zone (list x y (third position) (fourth position)))
-                            #-win32 (a (list x y (third position) (fourth position)))
-                            #+win32 ".")
-                        (t " "))))
-            (format t "~%"))))
+                        (if clim-listener::*application-frame*
+                            (eval (aref array b))
+                            (aref array b)))))
+        (let ((pattern
+                  (clim:make-pattern-from-bitmap-file
+                      (uiop:merge-pathnames* #P"pixmaps/map-patterns/blank.xpm" (asdf:component-pathname (asdf:find-system "yadfa")))
+                      :format :xpm
+                      :designs (list clim:+background-ink+ clim:+foreground-ink+)))
+                 (x-pos (if clim-listener::*application-frame*
+                            (first (multiple-value-list (clim:stream-cursor-position *standard-output*)))
+                            0))
+                 (start-x-pos (if clim-listener::*application-frame*
+                                  (first (multiple-value-list (clim:stream-cursor-position *standard-output*)))
+                                  0))
+                 (y-pos
+                     (if clim-listener::*application-frame*
+                         (second (multiple-value-list (clim:stream-cursor-position *standard-output*)))
+                         0)))
+            (iter (for y
+                      from (- (second position) 15)
+                      to (+ (second position) 15))
+                (iter (for x
+                          from (- (first position) 15)
+                          to (+ (first position) 15))
+                    (let* ((char (cond
+                                     ((and
+                                          (= x (first (position-of (player-of *game*))))
+                                          (= y (second (position-of (player-of *game*))))
+                                          (= (third position) (third (position-of (player-of *game*))))
+                                          (equal (fourth position) (fourth (position-of (player-of *game*)))))
+                                         (if clim-listener::*application-frame* (cons "at.xpm" clim:+black+) "@"))
+                                     ((and
+                                          (get-zone (list x y (third position) (fourth position)))
+                                          (hiddenp (get-zone (list x y (third position) (fourth position)))))
+                                         (if clim-listener::*application-frame* (cons "blank.xpm" clim:+black+) " "))
+                                     ((and
+                                          (get-zone (list x y (third position) (fourth position)))
+                                          (warp-points-of (get-zone (list x y (third position) (fourth position)))))
+                                         (if clim-listener::*application-frame* (cons "checkered.xpm" clim:+black+) "▒"))
+                                     ((get-zone (list x y (third position) (fourth position)))
+                                         (a (list x y (third position) (fourth position))))
+                                     (t (if clim-listener::*application-frame* (cons "blank.xpm" clim:+black+) " ")))))
+                        (if clim-listener::*application-frame*
+                            (progn
+                                (setf pattern
+                                    (clim:make-pattern-from-bitmap-file
+                                        (parse-namestring
+                                            (format nil "~apixmaps/map-patterns/~a"
+                                                (asdf:component-pathname (asdf:find-system "yadfa"))
+                                                (car char)))
+                                        :format :xpm
+                                        :designs (list clim:+background-ink+ (cdr char))))
+                                (when (get-zone (list x y (third position) (fourth position)))
+                                    (clim:with-output-as-presentation (*standard-output*
+                                                                          (get-zone (list x y (third position) (fourth position)))
+                                                                          'yadfa-class)
+                                        (clim:draw-pattern*
+                                            *standard-output*
+                                            pattern
+                                            x-pos
+                                            y-pos))))
+                            (format t "~a" char)))
+                    (incf x-pos (clim:pattern-width pattern))
+                    (when clim-listener::*application-frame*
+                        (clim:stream-set-cursor-position
+                            *standard-output* x-pos y-pos)))
+                (incf y-pos (clim:pattern-height pattern))
+                (setf x-pos start-x-pos)
+                (if clim-listener::*application-frame*
+                    (clim:stream-set-cursor-position
+                        *standard-output* x-pos y-pos)
+                    (format t "~%"))))))
 (defun print-enter-text (position &optional old-position old-direction)
     (let ((old-direction (find old-direction (warp-points-of (get-zone old-position))
                              :test (lambda (a b)
@@ -2548,25 +2660,25 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                * ($ (random-from-range 85 100) / 100))))
 (defmacro draw-bar (first second third stat)
     `(if clim-listener::*application-frame*
-        (multiple-value-bind (x y) (clim:stream-cursor-position *standard-output*)
-            (clim:draw-rectangle* *standard-output* x y (+ x (* ,stat 400)) (+ y 15)
-                :ink (cond (,(car first) ,(intern (format nil "+~a+" (car (last first))) "CLIM"))
-                         (,(car second) ,(intern (format nil "+~a+" (car (last second))) "CLIM"))
-                         (t ,(intern (format nil "+~a+" third) "CLIM"))))
-            (clim:draw-rectangle* *standard-output* x y (+ x 400) (+ y 15)
-                :filled nil)
-            (clim:stream-set-cursor-position *standard-output* (+ x 400) y))
-        (cl-ansi-text:with-color ((cond
-                                      (,(car first) ,(car (last first)))
-                                      (,(car second) ,(car (last second)))
-                                      (t ,third)))
-            (color-format (cond ,first
-                              ,second
-                              (t ,third)) "[~{~a~}]"
-                (iter (with i = 0)
-                    (while (< i 40))
-                    (collect (if (< i (* ,stat 40)) "#" " "))
-                    (incf i))))))
+         (multiple-value-bind (x y) (clim:stream-cursor-position *standard-output*)
+             (clim:draw-rectangle* *standard-output* x y (+ x (* ,stat 400)) (+ y 15)
+                 :ink (cond (,(car first) ,(intern (format nil "+~a+" (car (last first))) "CLIM"))
+                          (,(car second) ,(intern (format nil "+~a+" (car (last second))) "CLIM"))
+                          (t ,(intern (format nil "+~a+" third) "CLIM"))))
+             (clim:draw-rectangle* *standard-output* x y (+ x 400) (+ y 15)
+                 :filled nil)
+             (clim:stream-set-cursor-position *standard-output* (+ x 400) y))
+         (cl-ansi-text:with-color ((cond
+                                       (,(car first) ,(car (last first)))
+                                       (,(car second) ,(car (last second)))
+                                       (t ,third)))
+             (color-format (cond ,first
+                               ,second
+                               (t ,third)) "[~{~a~}]"
+                 (iter (with i = 0)
+                     (while (< i 40))
+                     (collect (if (< i (* ,stat 40)) "#" " "))
+                     (incf i))))))
 (defun format-stats (user)
     (format t "Name: ~a~%"
         (name-of user))
