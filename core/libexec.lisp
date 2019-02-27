@@ -460,7 +460,9 @@
                   (clim:make-pattern-from-bitmap-file
                       (merge-pathnames #P"pixmaps/map-patterns/blank.xpm"
                           (if uiop:*image-dumped-p*
-                              (make-pathname :directory (pathname-directory (truename (uiop:argv0))))
+                              (make-pathname
+                                  :device (pathname-device (truename (uiop:argv0)))
+                                  :directory (pathname-directory (truename (uiop:argv0))))
                               (asdf:component-pathname (asdf:find-system "yadfa"))))
                       :format :xpm
                       :designs (list clim:+background-ink+ clim:+foreground-ink+)))
@@ -507,7 +509,9 @@
                                             (merge-pathnames
                                                 #P"pixmaps/map-patterns/"
                                                 (if uiop:*image-dumped-p*
-                                                    (make-pathname :directory (pathname-directory (truename (uiop:argv0))))
+                                                    (make-pathname
+                                                        :device (pathname-device (truename (uiop:argv0)))
+                                                        :directory (pathname-directory (truename (uiop:argv0))))
                                                     (asdf:component-pathname (asdf:find-system "yadfa")))))
                                         :format :xpm
                                         :designs (list clim:+background-ink+ (cdr char))))
