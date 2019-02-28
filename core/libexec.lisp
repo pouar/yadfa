@@ -210,7 +210,7 @@
 (defmacro prompt-for-values (&rest options)
     `(cond
          #+(or slynk swank)
-         ((not clim-listener::*application-frame*)
+         ((not clim:*application-frame*)
              (let ((out (emacs-prompt ',options))
                       (err nil))
                  (iter (while
@@ -220,7 +220,7 @@
                                    (leave t))))
                      (setf out (emacs-prompt ',options err)))
                  out))
-         (clim-listener::*application-frame*
+         (clim:*application-frame*
              (let ((a (make-list ,(list-length options))))
                  (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
                      ,@(iter (for i from 0 to (1- (list-length options)))
@@ -362,6 +362,27 @@
         (return-from get-path-end
             (values nil (format nil "zone ~a is locked~%" destination))))
     destination)
+(defun print-map-cache (path designs)
+    (if (gethash (list :map path designs) *tile-cache*)
+        (gethash (list :map path designs) *tile-cache*)
+        (setf (gethash (list :map path designs) *tile-cache*)
+            (clim:make-pattern-from-bitmap-file
+                (merge-pathnames
+                    path
+                    (merge-pathnames
+                        #P"pixmaps/map-patterns/"
+                        (if uiop:*image-dumped-p*
+                            (make-pathname
+                                :device (pathname-device (truename (uiop:argv0)))
+                                :directory (pathname-directory (truename (uiop:argv0))))
+                            (asdf:component-pathname (asdf:find-system "yadfa")))))
+                :format :xpm
+                :designs designs))))
+(defun print-map-color-cache (r g b)
+    (if (gethash (list :map-color r g b) *tile-cache*)
+        (gethash (list :map-color r g b) *tile-cache*)
+        (setf (gethash (list :map-color r g b) *tile-cache*)
+            (clim:make-rgb-color r g b))))
 (defun print-map (position)
     (labels ((travelablep (position direction)
                  (and
@@ -371,7 +392,7 @@
                 (a (position)
                     (let ((b 0)
                              (array
-                                 (if clim-listener::*application-frame*
+                                 (if clim:*application-frame*
                                      #1A(#P"nsew.xpm"
                                             #P"nsw.xpm"
                                             #P"nse.xpm"
@@ -389,7 +410,7 @@
                                             #P"e.xpm"
                                             #P"dot.xpm")
                                      #1A("╋" "╋" "╋" "┼" "┫" "┫" "┫" "┤" "┣" "┣" "┣" "├" "┃" "┃" "┃" "│" "┻" "┻" "┻" "┴" "┛" "┛" "┛" "┘" "┗" "┗" "┗" "└" "╹" "╹" "╹" "╵" "┳" "┳" "┳" "┬" "┓" "┓" "┓" "┐" "┏" "┏" "┏" "┌" "╻" "╻" "╻" "╷" "━" "━" "━" "─" "╸" "╸" "╸" "╴" "╺" "╺" "╺" "╶" "▮" "▮" "▮" "▯"))))
-                        (if clim-listener::*application-frame*
+                        (if clim:*application-frame*
                             (progn
                                 (unless (travelablep position :north)
                                     (setf b (logior b (shl 1 8 3))))
@@ -412,38 +433,25 @@
                                     (setf b (logior b (shl 1 8 1))))
                                 (unless (travelablep position :down)
                                     (setf b (logior b (shl 1 8 0))))))
-                        (if clim-listener::*application-frame*
+                        (if clim:*application-frame*
                             (eval (aref array b))
                             (aref array b)))))
         (let ((pattern
-                  (clim:make-pattern-from-bitmap-file
-                      (merge-pathnames #P"pixmaps/map-patterns/blank.xpm"
-                          (if uiop:*image-dumped-p*
-                              (make-pathname
-                                  :device (pathname-device (truename (uiop:argv0)))
-                                  :directory (pathname-directory (truename (uiop:argv0))))
-                              (asdf:component-pathname (asdf:find-system "yadfa"))))
-                      :format :xpm
-                      :designs (list clim:+background-ink+ clim:+foreground-ink+)))
-                 (x-pos (if clim-listener::*application-frame*
-                            (first (multiple-value-list (clim:stream-cursor-position *standard-output*)))
-                            0))
-                 (start-x-pos (if clim-listener::*application-frame*
-                                  (first (multiple-value-list (clim:stream-cursor-position *standard-output*)))
-                                  0))
-                 (y-pos
-                     (if clim-listener::*application-frame*
-                         (second (multiple-value-list (clim:stream-cursor-position *standard-output*)))
-                         0)))
+                  (print-map-cache #P"blank.xpm" (list clim:+background-ink+ clim:+foreground-ink+)))
+                 (pos (if clim:*application-frame*
+                          (multiple-value-list (clim:stream-cursor-position *standard-output*))
+                          '(0 0))))
             (iter (for y
                       from (- (second position) 15)
                       to (+ (second position) 15))
+                (for y-pos from (second pos) to (+ (second pos) (* 30 (clim:pattern-height pattern))) by (clim:pattern-height pattern))
                 (iter (for x
                           from (- (first position) 15)
                           to (+ (first position) 15))
+                    (for x-pos from (first pos) to (+ (first pos) (* 30 (clim:pattern-width pattern))) by (clim:pattern-width pattern))
                     (let* ((char
                                (cond
-                                   (clim-listener::*application-frame*
+                                   (clim:*application-frame*
                                        (cons
                                            (if (or (and
                                                        (get-zone (list x y (third position) (fourth position)))
@@ -451,7 +459,7 @@
                                                    (not (get-zone (list x y (third position) (fourth position)))))
                                                "blank.xpm"
                                                (a (list x y (third position) (fourth position))))
-                                           (clim:make-rgb-color
+                                           (print-map-color-cache
                                                (if (and
                                                        (get-zone (list x y (third position) (fourth position)))
                                                        (warp-points-of (get-zone (list x y (third position) (fourth position)))))
@@ -478,21 +486,10 @@
                                    ((get-zone (list x y (third position) (fourth position)))
                                        (a (list x y (third position) (fourth position))))
                                    (t " "))))
-                        (if clim-listener::*application-frame*
+                        (if clim:*application-frame*
                             (progn
                                 (setf pattern
-                                    (clim:make-pattern-from-bitmap-file
-                                        (merge-pathnames
-                                            (car char)
-                                            (merge-pathnames
-                                                #P"pixmaps/map-patterns/"
-                                                (if uiop:*image-dumped-p*
-                                                    (make-pathname
-                                                        :device (pathname-device (truename (uiop:argv0)))
-                                                        :directory (pathname-directory (truename (uiop:argv0))))
-                                                    (asdf:component-pathname (asdf:find-system "yadfa")))))
-                                        :format :xpm
-                                        :designs (list clim:+background-ink+ (cdr char))))
+                                    (print-map-cache (car char) (list clim:+background-ink+ (cdr char))))
                                 (when (get-zone (list x y (third position) (fourth position)))
                                     (clim:with-output-as-presentation (*standard-output*
                                                                           (get-zone (list x y (third position) (fourth position)))
@@ -502,17 +499,12 @@
                                             pattern
                                             x-pos
                                             y-pos))))
-                            (format t "~a" char)))
-                    (incf x-pos (clim:pattern-width pattern))
-                    (when clim-listener::*application-frame*
-                        (clim:stream-set-cursor-position
-                            *standard-output* x-pos y-pos)))
-                (incf y-pos (clim:pattern-height pattern))
-                (setf x-pos start-x-pos)
-                (if clim-listener::*application-frame*
-                    (clim:stream-set-cursor-position
-                        *standard-output* x-pos y-pos)
-                    (format t "~%"))))))
+                            (format t "~a" char))))
+                (unless clim:*application-frame*
+                    (format t "~%")))
+            (when clim:*application-frame*
+                (clim:stream-set-cursor-position
+                    *standard-output* (first pos) (+ (second pos) (* 31 (clim:pattern-height pattern))))))))
 (defun print-enter-text (position &optional old-position old-direction)
     (let ((old-direction (find old-direction (warp-points-of (get-zone old-position))
                              :test (lambda (a b)
@@ -2647,7 +2639,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                   + 2)
                * ($ (random-from-range 85 100) / 100))))
 (defmacro draw-bar (first second third stat)
-    `(if clim-listener::*application-frame*
+    `(if clim:*application-frame*
          (multiple-value-bind (x y) (clim:stream-cursor-position *standard-output*)
              (clim:draw-rectangle* *standard-output* x y (+ x (* ,stat 400)) (+ y 15)
                  :ink (cond (,(car first) ,(intern (format nil "+~a+" (car (last first))) "CLIM"))
@@ -2755,9 +2747,9 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
 (defun present-stats (user)
     (cond
         #+(or slynk swank)
-        ((not clim-listener::*application-frame*)
+        ((not clim:*application-frame*)
             (format-stats user))
-        (clim-listener::*application-frame*
+        (clim:*application-frame*
             (clim:with-output-as-presentation (t user 'yadfa-class :single-box t)
                 (format-stats user)))))
 
