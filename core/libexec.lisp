@@ -38,6 +38,8 @@
             (when (string= (pathname-type i) "asd")
                 (setf (gethash (pathname-name i) *mod-registry*)
                     (preferred-mod (gethash (pathname-name i) *mod-registry*) i))))))
+(defun clear-tile-cache ()
+    (setf *tile-cache* (make-hash-table :test 'equal)))
 (defun clear-mod-registry ()
     (setf *mod-registry* nil))
 #+yadfa/mods
@@ -54,7 +56,8 @@
                          (pushnew
                              'yadfa::find-mod
                              asdf:*system-definition-search-functions*)
-                         (uiop:register-clear-configuration-hook 'clear-mod-registry))
+                         (uiop:register-clear-configuration-hook 'clear-mod-registry)
+                         (uiop:register-clear-configuration-hook 'clear-tile-cache))
                      (asdf:clear-configuration)
                      (let* ((file (uiop:xdg-config-home "yadfa/mods.conf"))
                                (mods '()))
