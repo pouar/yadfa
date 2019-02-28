@@ -364,95 +364,54 @@
     destination)
 (defun print-map (position)
     (labels ((travelablep (position direction)
-                 (or
-                     (getf-direction position direction :hidden)
-                     (not (get-zone (get-destination direction position)))
-                     (hiddenp (get-zone (get-destination direction position)))))
+                 (and
+                     (get-zone (get-destination direction position))
+                     (not (getf-direction position direction :hidden))
+                     (not (hiddenp (get-zone (get-destination direction position))))))
                 (a (position)
                     (let ((b 0)
                              (array
                                  (if clim-listener::*application-frame*
-                                     #1A((cons #P"nsew.xpm" clim:+red+)
-                                            (cons #P"nsew.xpm" clim:+red+)
-                                            (cons #P"nsew.xpm" clim:+red+)
-                                            (cons #P"nsew.xpm" clim:+black+)
-                                            (cons #P"nsw.xpm" clim:+red+)
-                                            (cons #P"nsw.xpm" clim:+red+)
-                                            (cons #P"nsw.xpm" clim:+red+)
-                                            (cons #P"nsw.xpm" clim:+black+)
-                                            (cons #P"nse.xpm" clim:+red+)
-                                            (cons #P"nse.xpm" clim:+red+)
-                                            (cons #P"nse.xpm" clim:+red+)
-                                            (cons #P"nse.xpm" clim:+black+)
-                                            (cons #P"ns.xpm" clim:+red+)
-                                            (cons #P"ns.xpm" clim:+red+)
-                                            (cons #P"ns.xpm" clim:+red+)
-                                            (cons #P"ns.xpm" clim:+black+)
-                                            (cons #P"new.xpm" clim:+red+)
-                                            (cons #P"new.xpm" clim:+red+)
-                                            (cons #P"new.xpm" clim:+red+)
-                                            (cons #P"new.xpm" clim:+black+)
-                                            (cons #P"nw.xpm" clim:+red+)
-                                            (cons #P"nw.xpm" clim:+red+)
-                                            (cons #P"nw.xpm" clim:+red+)
-                                            (cons #P"nw.xpm" clim:+black+)
-                                            (cons #P"ne.xpm" clim:+red+)
-                                            (cons #P"ne.xpm" clim:+red+)
-                                            (cons #P"ne.xpm" clim:+red+)
-                                            (cons #P"ne.xpm" clim:+black+)
-                                            (cons #P"n.xpm" clim:+red+)
-                                            (cons #P"n.xpm" clim:+red+)
-                                            (cons #P"n.xpm" clim:+red+)
-                                            (cons #P"n.xpm" clim:+black+)
-                                            (cons #P"sew.xpm" clim:+red+)
-                                            (cons #P"sew.xpm" clim:+red+)
-                                            (cons #P"sew.xpm" clim:+red+)
-                                            (cons #P"sew.xpm" clim:+black+)
-                                            (cons #P"sw.xpm" clim:+red+)
-                                            (cons #P"sw.xpm" clim:+red+)
-                                            (cons #P"sw.xpm" clim:+red+)
-                                            (cons #P"sw.xpm" clim:+black+)
-                                            (cons #P"se.xpm" clim:+red+)
-                                            (cons #P"se.xpm" clim:+red+)
-                                            (cons #P"se.xpm" clim:+red+)
-                                            (cons #P"se.xpm" clim:+black+)
-                                            (cons #P"s.xpm" clim:+red+)
-                                            (cons #P"s.xpm" clim:+red+)
-                                            (cons #P"s.xpm" clim:+red+)
-                                            (cons #P"s.xpm" clim:+black+)
-                                            (cons #P"ew.xpm" clim:+red+)
-                                            (cons #P"ew.xpm" clim:+red+)
-                                            (cons #P"ew.xpm" clim:+red+)
-                                            (cons #P"ew.xpm" clim:+black+)
-                                            (cons #P"w.xpm" clim:+red+)
-                                            (cons #P"w.xpm" clim:+red+)
-                                            (cons #P"w.xpm" clim:+red+)
-                                            (cons #P"w.xpm" clim:+black+)
-                                            (cons #P"e.xpm" clim:+red+)
-                                            (cons #P"e.xpm" clim:+red+)
-                                            (cons #P"e.xpm" clim:+red+)
-                                            (cons #P"e.xpm" clim:+black+)
-                                            (cons #P"s.xpm" clim:+red+)
-                                            (cons #P"s.xpm" clim:+red+)
-                                            (cons #P"s.xpm" clim:+red+)
-                                            (cons #P"s.xpm" clim:+black+)
-                                            (cons #P"dot.xpm" clim:+red+)
-                                            (cons #P"dot.xpm" clim:+red+)
-                                            (cons #P"dot.xpm" clim:+red+)
-                                            (cons #P"dot.xpm" clim:+black+))
+                                     #1A(#P"nsew.xpm"
+                                            #P"nsw.xpm"
+                                            #P"nse.xpm"
+                                            #P"ns.xpm"
+                                            #P"new.xpm"
+                                            #P"nw.xpm"
+                                            #P"ne.xpm"
+                                            #P"n.xpm"
+                                            #P"sew.xpm"
+                                            #P"sw.xpm"
+                                            #P"se.xpm"
+                                            #P"s.xpm"
+                                            #P"ew.xpm"
+                                            #P"w.xpm"
+                                            #P"e.xpm"
+                                            #P"dot.xpm")
                                      #1A("╋" "╋" "╋" "┼" "┫" "┫" "┫" "┤" "┣" "┣" "┣" "├" "┃" "┃" "┃" "│" "┻" "┻" "┻" "┴" "┛" "┛" "┛" "┘" "┗" "┗" "┗" "└" "╹" "╹" "╹" "╵" "┳" "┳" "┳" "┬" "┓" "┓" "┓" "┐" "┏" "┏" "┏" "┌" "╻" "╻" "╻" "╷" "━" "━" "━" "─" "╸" "╸" "╸" "╴" "╺" "╺" "╺" "╶" "▮" "▮" "▮" "▯"))))
-                        (when (travelablep position :north)
-                            (setf b (logior b (shl 1 8 5))))
-                        (when (travelablep position :south)
-                            (setf b (logior b (shl 1 8 4))))
-                        (when (travelablep position :west)
-                            (setf b (logior b (shl 1 8 3))))
-                        (when (travelablep position :east)
-                            (setf b (logior b (shl 1 8 2))))
-                        (when (travelablep position :up)
-                            (setf b (logior b (shl 1 8 1))))
-                        (when (travelablep position :down)
-                            (setf b (logior b (shl 1 8 0))))
+                        (if clim-listener::*application-frame*
+                            (progn
+                                (unless (travelablep position :north)
+                                    (setf b (logior b (shl 1 8 3))))
+                                (unless (travelablep position :south)
+                                    (setf b (logior b (shl 1 8 2))))
+                                (unless (travelablep position :west)
+                                    (setf b (logior b (shl 1 8 1))))
+                                (unless (travelablep position :east)
+                                    (setf b (logior b (shl 1 8 0)))))
+                            (progn
+                                (unless (travelablep position :north)
+                                    (setf b (logior b (shl 1 8 5))))
+                                (unless (travelablep position :south)
+                                    (setf b (logior b (shl 1 8 4))))
+                                (unless (travelablep position :west)
+                                    (setf b (logior b (shl 1 8 3))))
+                                (unless (travelablep position :east)
+                                    (setf b (logior b (shl 1 8 2))))
+                                (unless (travelablep position :up)
+                                    (setf b (logior b (shl 1 8 1))))
+                                (unless (travelablep position :down)
+                                    (setf b (logior b (shl 1 8 0))))))
                         (if clim-listener::*application-frame*
                             (eval (aref array b))
                             (aref array b)))))
@@ -482,24 +441,43 @@
                 (iter (for x
                           from (- (first position) 15)
                           to (+ (first position) 15))
-                    (let* ((char (cond
-                                     ((and
-                                          (= x (first (position-of (player-of *game*))))
-                                          (= y (second (position-of (player-of *game*))))
-                                          (= (third position) (third (position-of (player-of *game*))))
-                                          (equal (fourth position) (fourth (position-of (player-of *game*)))))
-                                         (if clim-listener::*application-frame* (cons #P"at.xpm" clim:+black+) "@"))
-                                     ((and
-                                          (get-zone (list x y (third position) (fourth position)))
-                                          (hiddenp (get-zone (list x y (third position) (fourth position)))))
-                                         (if clim-listener::*application-frame* (cons #P"blank.xpm" clim:+black+) " "))
-                                     ((and
-                                          (get-zone (list x y (third position) (fourth position)))
-                                          (warp-points-of (get-zone (list x y (third position) (fourth position)))))
-                                         (if clim-listener::*application-frame* (cons #P"checkered.xpm" clim:+black+) "▒"))
-                                     ((get-zone (list x y (third position) (fourth position)))
-                                         (a (list x y (third position) (fourth position))))
-                                     (t (if clim-listener::*application-frame* (cons #P"blank.xpm" clim:+black+) " ")))))
+                    (let* ((char
+                               (cond
+                                   (clim-listener::*application-frame*
+                                       (cons
+                                           (if (or (and
+                                                       (get-zone (list x y (third position) (fourth position)))
+                                                       (hiddenp (get-zone (list x y (third position) (fourth position)))))
+                                                   (not (get-zone (list x y (third position) (fourth position)))))
+                                               "blank.xpm"
+                                               (a (list x y (third position) (fourth position))))
+                                           (clim:make-rgb-color
+                                               (if (and
+                                                       (get-zone (list x y (third position) (fourth position)))
+                                                       (warp-points-of (get-zone (list x y (third position) (fourth position)))))
+                                                   1
+                                                   0)
+                                               (if (equal (append (list x y) (cddr position)) (position-of (player-of *game*)))
+                                                   0.7
+                                                   0)
+                                               (if (or
+                                                       (travelablep (list x y (third position) (fourth position)) :up)
+                                                       (travelablep (list x y (third position) (fourth position)) :down))
+                                                   1
+                                                   0))))
+                                   ((equal (append (list x y) (cddr position)) (position-of (player-of *game*)))
+                                       "@")
+                                   ((and
+                                        (get-zone (list x y (third position) (fourth position)))
+                                        (hiddenp (get-zone (list x y (third position) (fourth position)))))
+                                       " ")
+                                   ((and
+                                        (get-zone (list x y (third position) (fourth position)))
+                                        (warp-points-of (get-zone (list x y (third position) (fourth position)))))
+                                       "▒")
+                                   ((get-zone (list x y (third position) (fourth position)))
+                                       (a (list x y (third position) (fourth position))))
+                                   (t " "))))
                         (if clim-listener::*application-frame*
                             (progn
                                 (setf pattern
