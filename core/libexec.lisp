@@ -38,8 +38,8 @@
             (when (string= (pathname-type i) "asd")
                 (setf (gethash (pathname-name i) *mod-registry*)
                     (preferred-mod (gethash (pathname-name i) *mod-registry*) i))))))
-(defun clear-tile-cache ()
-    (setf *tile-cache* (make-hash-table :test 'equal)))
+(defun clear-pattern-cache ()
+    (setf *pattern-cache* (make-hash-table :test 'equal)))
 (defun clear-mod-registry ()
     (setf *mod-registry* nil))
 #+yadfa/mods
@@ -57,7 +57,7 @@
                              'yadfa::find-mod
                              asdf:*system-definition-search-functions*)
                          (uiop:register-clear-configuration-hook 'clear-mod-registry)
-                         (uiop:register-clear-configuration-hook 'clear-tile-cache))
+                         (uiop:register-clear-configuration-hook 'clear-pattern-cache))
                      (asdf:clear-configuration)
                      (let* ((file (uiop:xdg-config-home "yadfa/mods.conf"))
                                (mods '()))
@@ -365,10 +365,10 @@
         (return-from get-path-end
             (values nil (format nil "zone ~a is locked~%" destination))))
     destination)
-(defun print-map-cache (path designs)
-    (if (gethash (list :map path designs) *tile-cache*)
-        (gethash (list :map path designs) *tile-cache*)
-        (setf (gethash (list :map path designs) *tile-cache*)
+(defun print-map-pattern-cache (path designs)
+    (if (gethash (list :map-pattern path designs) *pattern-cache*)
+        (gethash (list :map-pattern path designs) *pattern-cache*)
+        (setf (gethash (list :map-pattern path designs) *pattern-cache*)
             (clim:make-pattern-from-bitmap-file
                 (merge-pathnames
                     path
@@ -382,9 +382,9 @@
                 :format :xpm
                 :designs designs))))
 (defun print-map-color-cache (r g b)
-    (if (gethash (list :map-color r g b) *tile-cache*)
-        (gethash (list :map-color r g b) *tile-cache*)
-        (setf (gethash (list :map-color r g b) *tile-cache*)
+    (if (gethash (list :map-color r g b) *pattern-cache*)
+        (gethash (list :map-color r g b) *pattern-cache*)
+        (setf (gethash (list :map-color r g b) *pattern-cache*)
             (clim:make-rgb-color r g b))))
 (defun print-map (position)
     (labels ((travelablep (position direction)
@@ -440,7 +440,7 @@
                             (eval (aref array b))
                             (aref array b)))))
         (let ((pattern
-                  (print-map-cache #P"blank.xpm" (list clim:+background-ink+ clim:+foreground-ink+)))
+                  (print-map-pattern-cache #P"blank.xpm" (list clim:+background-ink+ clim:+foreground-ink+)))
                  (pos (if clim:*application-frame*
                           (multiple-value-list (clim:stream-cursor-position *standard-output*))
                           '(0 0))))
@@ -492,7 +492,7 @@
                         (if clim:*application-frame*
                             (progn
                                 (setf pattern
-                                    (print-map-cache (car char) (list clim:+background-ink+ (cdr char))))
+                                    (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
                                 (when (get-zone (list x y (third position) (fourth position)))
                                     (clim:with-output-as-presentation (*standard-output*
                                                                           (get-zone (list x y (third position) (fourth position)))
