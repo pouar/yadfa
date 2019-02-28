@@ -381,11 +381,6 @@
                             (asdf:component-pathname (asdf:find-system "yadfa")))))
                 :format :xpm
                 :designs designs))))
-(defun print-map-color-cache (r g b)
-    (if (gethash (list :map-color r g b) *pattern-cache*)
-        (gethash (list :map-color r g b) *pattern-cache*)
-        (setf (gethash (list :map-color r g b) *pattern-cache*)
-            (clim:make-rgb-color r g b))))
 (defun print-map (position)
     (labels ((travelablep (position direction)
                  (and
@@ -462,7 +457,7 @@
                                                    (not (get-zone (list x y (third position) (fourth position)))))
                                                "blank.xpm"
                                                (a (list x y (third position) (fourth position))))
-                                           (print-map-color-cache
+                                           (clim:make-rgb-color
                                                (if (and
                                                        (get-zone (list x y (third position) (fourth position)))
                                                        (warp-points-of (get-zone (list x y (third position) (fourth position)))))
