@@ -374,7 +374,7 @@
     (:documentation "A zone on the map"))
 (defmethod print-object ((obj zone) stream)
     (print-unreadable-object (obj stream :type t :identity t)
-        (format stream "~a \"~a\"" (position-of obj) (name-of obj))))
+        (format stream "~s \"~a\"" (position-of obj) (name-of obj))))
 (defclass stat/move (yadfa-class)
     ((name
          :initarg :name

@@ -385,6 +385,7 @@
     (labels ((travelablep (position direction)
                  (and
                      (get-zone (get-destination direction position))
+                     (get-zone position)
                      (not (getf-direction position direction :hidden))
                      (not (hiddenp (get-zone (get-destination direction position))))))
                 (a (position)
