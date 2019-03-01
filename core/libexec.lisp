@@ -39,7 +39,7 @@
                 (setf (gethash (pathname-name i) *mod-registry*)
                     (preferred-mod (gethash (pathname-name i) *mod-registry*) i))))))
 (defun clear-pattern-cache ()
-    (setf *pattern-cache* (make-hash-table :test 'equal)))
+    (clrhash *pattern-cache*))
 (defun clear-mod-registry ()
     (setf *mod-registry* nil))
 #+yadfa/mods
@@ -224,15 +224,13 @@
                      (setf out (emacs-prompt ',options err)))
                  out))
          (clim:*application-frame*
-             (let ((a (make-list ,(list-length options))))
-                 (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
-                     ,@(iter (for i from 0 to (1- (list-length options)))
-                           (collect '(fresh-line *query-io*))
-                           (collect `(setf
-                                         (nth ,i a)
-                                         (clim:accept ',(first (nth i options))
-                                             ,@(rest (nth i options)) :stream *query-io*)))))
-                 a))))
+             (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+                 (list
+                     ,@(iter (for i in options)
+                           (collect `(progn
+                                         (fresh-line *query-io*)
+                                         (clim:accept ',(first i)
+                                             ,@(rest i) :stream *query-io*)))))))))
 (defun trigger-event (event-id)
     (when (and
               (not (and (major-event-of *game*) (event-major (get-event event-id))))
