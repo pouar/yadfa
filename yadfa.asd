@@ -11,26 +11,24 @@
     :build-pathname "yadfa"
     :entry-point "yadfa::main"
     :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria"
-                    (:feature :sbcl "sb-aclrepl") (:feature :slynk "slynk")
+                    (:feature :slynk "slynk")
                     (:feature :swank "swank") (:feature :yadfa/docs "net.didierverna.declt"))
     :components (
                     (:file "packages")
                     (:file "main" :depends-on ("packages"))
                     (:module "core"
                         :depends-on ("packages" "main")
-                        :components (
-                                        (:file "structs")
+                        :components ((:file "structs")
                                         (:file "init")
                                         (:file "libexec" :depends-on ("classes" "init" "structs"))
                                         (:file "classes")
                                         (:file "game" :depends-on ("classes"))
                                         (:file "bin" :depends-on ("libexec"))
-                                        (:file "marshal")
-                                        (:file "mcclim" :depends-on ("game" "libexec"))))
+                                        (:file "patches" :depends-on ("game" "libexec" "init"))
+                                        (:file "mcclim" :depends-on ("patches" "bin"))))
                     (:module "data"
                         :depends-on ("core")
-                        :components (
-                                        (:module "moves"
+                        :components ((:module "moves"
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname

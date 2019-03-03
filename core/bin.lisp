@@ -349,7 +349,7 @@
         (format t "Your current position is ~s~%" (position-of (player-of *game*))))
     (when map
         (cond ((eq map t)
-                  (print-map (position-of (player-of *game*))))
+                  (print-map t))
             (t (print-map (list
                               (first (position-of (player-of *game*)))
                               (second (position-of (player-of *game*)))

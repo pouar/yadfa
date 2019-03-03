@@ -6,7 +6,7 @@
         ;;variables
         #:*battle*
         #:*game*
-        #:+stats-view+
+        #:*records*
         ;;macros
         #:defevent
         #:ensure-zone
