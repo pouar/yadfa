@@ -1058,61 +1058,61 @@
             :documentation "when MUDSPORT-LIMIT is reached, there is a 1 in MUDSPORT-CHANCE he'll voluntarily mess himself")
         (battle-script
             :initarg :battle-script
-            :initform '(lambda (self target)
-                           (let ((moves-with-health
-                                     (iter
-                                         (for i in (moves-of self))
-                                         (when (and
-                                                   (>= (energy-of self) (energy-cost-of i))
-                                                   (position :ai-health-inc (ai-flags-of i)))
-                                             (collect i))))
-                                    (moves-can-use
-                                        (iter
-                                            (for i in (moves-of self))
-                                            (when (>= (energy-of self) (energy-cost-of i))
-                                                (collect i))))
-                                    (move-to-use nil))
-                               (cond
-                                   ((and (<= (health-of self) (/ (calculate-stat self :health) 4))
-                                        moves-with-health)
-                                       (setf move-to-use
-                                           (random-elt moves-with-health))
-                                       (funcall
-                                           (coerce
-                                               (attack-of move-to-use)
-                                               'function)
-                                           target
-                                           self
-                                           move-to-use))
-                                   (t
-                                       (when moves-can-use
-                                           (setf move-to-use (random-elt moves-can-use)))
-                                       (cond
-                                           ((and
-                                                moves-can-use
-                                                (= (random 2) 0))
-                                               (funcall
-                                                   (coerce
-                                                       (attack-of move-to-use)
-                                                       'function)
-                                                   target
-                                                   self
-                                                   move-to-use))
-                                           ((wield-of self)
-                                               (funcall
-                                                   (coerce
-                                                       (attack-script-of (wield-of self))
-                                                       'function)
-                                                   target
-                                                   self
-                                                   (wield-of self)))
-                                           (t
-                                               (funcall
-                                                   (coerce
-                                                       (default-attack-of self)
-                                                       'function)
-                                                   target
-                                                   self)))))))
+            :initform (lambda (self target)
+                          (let ((moves-with-health
+                                    (iter
+                                        (for i in (moves-of self))
+                                        (when (and
+                                                  (>= (energy-of self) (energy-cost-of i))
+                                                  (position :ai-health-inc (ai-flags-of i)))
+                                            (collect i))))
+                                   (moves-can-use
+                                       (iter
+                                           (for i in (moves-of self))
+                                           (when (>= (energy-of self) (energy-cost-of i))
+                                               (collect i))))
+                                   (move-to-use nil))
+                              (cond
+                                  ((and (<= (health-of self) (/ (calculate-stat self :health) 4))
+                                       moves-with-health)
+                                      (setf move-to-use
+                                          (random-elt moves-with-health))
+                                      (funcall
+                                          (coerce
+                                              (attack-of move-to-use)
+                                              'function)
+                                          target
+                                          self
+                                          move-to-use))
+                                  (t
+                                      (when moves-can-use
+                                          (setf move-to-use (random-elt moves-can-use)))
+                                      (cond
+                                          ((and
+                                               moves-can-use
+                                               (= (random 2) 0))
+                                              (funcall
+                                                  (coerce
+                                                      (attack-of move-to-use)
+                                                      'function)
+                                                  target
+                                                  self
+                                                  move-to-use))
+                                          ((wield-of self)
+                                              (funcall
+                                                  (coerce
+                                                      (attack-script-of (wield-of self))
+                                                      'function)
+                                                  target
+                                                  self
+                                                  (wield-of self)))
+                                          (t
+                                              (funcall
+                                                  (coerce
+                                                      (default-attack-of self)
+                                                      'function)
+                                                  target
+                                                  self)))))))
             :accessor battle-script-of
             :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack"))
     (:default-initargs :base-stats (list :health 40 :attack 45 :defense 40 :energy 40 :speed 56) :level (random-from-range 2 5) :bitcoins nil)
