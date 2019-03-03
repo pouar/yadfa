@@ -1510,7 +1510,7 @@
                         "You're doing a potty dance like a 5 year old"
                         "You feel like you're going to wet yourself"
                         "You whine as you hold yourself in desperation"
-                        "Aww, does the baby need to potty?~%"))))
+                        "Aww, does the baby need to potty?"))))
 (defmethod print-process-potty-text ((user player)
                                         padding
                                         (type (eql :wet))
@@ -3626,4 +3626,4 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
             (iter (for i from 1 to (random 20))
                 (push (make-instance (seventh values))
                     (get-items-from-prop :dresser (position-of default))))))
-    (write-line "You wake up from sleeping, the good news is that you managed to stay dry through out the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io))
+    (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io))

@@ -90,7 +90,7 @@
             :initarg :default-attack
             :accessor default-attack-of
             :initform '(lambda (target user)
-                           (let ((a (calculate-damage target user (power-of self))))
+                           (let ((a (calculate-damage target user (default-attack-power-of user))))
                                (format t "~a attacks ~a~%" (name-of user) (name-of target))
                                (decf (health-of target) a)
                                (format t "~a received ~a damage~%" (name-of target) a)))
@@ -283,7 +283,9 @@
         :wear (list (make-instance 'yadfa/items:diaper))
         :moves (list
                    (make-instance 'yadfa/moves:watersport)
-                   (make-instance 'yadfa/moves:mudsport))))
+                   (make-instance 'yadfa/moves:mudsport)
+                   (make-instance 'yadfa/moves:mush)
+                   (make-instance 'yadfa/moves:tickle))))
 (defmethod initialize-instance :after
     ((c player) &rest initargs)
     (declare (ignorable initargs))
@@ -1083,10 +1085,12 @@
                                            self
                                            move-to-use))
                                    (t
-                                       (setf move-to-use
-                                           (random-elt moves-can-use))
+                                       (when moves-can-use
+                                            (setf move-to-use (random-elt moves-can-use)))
                                        (cond
-                                           ((= (random 2) 0)
+                                           ((and
+                                                moves-can-use
+                                                (= (random 2) 0))
                                                (funcall
                                                    (coerce
                                                        (attack-of move-to-use)

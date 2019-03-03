@@ -9,7 +9,7 @@
                         :enter-text "You enter the street"
                         :warp-points ',(when (= i 0) '(bandits-domain (0 30 0 bandits-domain)))
                         :hidden ,(when (= i 0) t)
-                        :events ',(when (= i 0) '(yadfa/events:enter-silver-cape-1)))))))
+                        ,@(when (= i 0) '(:events (list 'yadfa/events:enter-silver-cape-1))))))))
 (macro-level
     `(progn
          ,@(iter (for i from -10 to 10)
@@ -28,7 +28,7 @@
     :description "The jail beneith Navy HQ"
     :enter-text "You're inside Navy HQ"
     :locked nil
-    :events '(yadfa/events:get-location-to-pirate-cove-1))
+    :events (list 'yadfa/events:get-location-to-pirate-cove-1))
 (ensure-zone (-2 6 0 silver-cape)
     :name "Silver Cape Navy HQ Lobby"
     :description "The lobby of Navy HQ"

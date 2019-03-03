@@ -23,7 +23,9 @@
                    `(ensure-zone (,i 21 0 bandits-domain)
                         :name "Bandit's Town"
                         :description "A town run by the Raccoon Bandits"
-                        :enter-text "You're wander around Bandit's Town")))))
+                        :enter-text "You're wander around Bandit's Town"
+                        ,@(when (= i -3)
+                              '(:events (list 'yadfa/events:enter-bandits-shop-2))))))))
 (ensure-zone (-3 22 0 bandits-domain)
     :name "Bandit's Shop"
     :description "A local shop"
@@ -75,7 +77,7 @@
                :changing-table (make-instance 'automatic-changing-table)
                :bed (make-instance 'bed)
                :checkpoint (make-instance 'checkpoint))
-    :events '(yadfa/events:enter-bandits-shop-1 yadfa/events:obtain-diaper-lock-1))
+    :events (list 'yadfa/events:enter-bandits-shop-1 'yadfa/events:obtain-diaper-lock-1))
 (ensure-zone (-3 23 0 bandits-domain)
     :name "Bandit's Shop Bathroom"
     :description "CLOSED FOREVER!!!!! MUAHAHAHAHA!!!!"
@@ -84,13 +86,13 @@
     :name "Bandit's Kennel"
     :description "A grungey looking kennel where the Raccoon Bandits keep their `pets'. Negleted so much that they literally forgot about their existence"
     :enter-text "You enter the kennel"
-    :events '(yadfa/events:enter-bandits-kennel-1))
+    :events (list 'yadfa/events:enter-bandits-kennel-1))
 (ensure-zone (0 21 0 bandits-domain)
     :name "Bandit's Town Entrance"
     :description "The enterance to Bandit Town"
     :enter-text "You're at the enterance of Bandit Town"
     :warp-points '(home (0 1 0 home))
-    :events '(yadfa/events:enter-bandits-village-1))
+    :events (list 'yadfa/events:enter-bandits-village-1))
 (macro-level
     `(progn
          ,@(iter (for i from 22 to 30)
@@ -171,4 +173,4 @@
     :enter-text "You Enter the cave"
     :warp-points '(cave-entrance (6 24 0 bandits-domain)
                       descend (6 24 2 bandits-domain))
-    :events '(yadfa/events:decend-bandits-cave-1))
+    :events (list 'yadfa/events:decend-bandits-cave-1))

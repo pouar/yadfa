@@ -373,12 +373,7 @@
 (uiop:define-package #:yadfa/events
     (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
-        #:enter-bandits-village-1
-        #:enter-bandits-village-2
-        #:decend-bandits-cave-1
-        #:get-diaper-locked-1
-        #:obtain-diaper-lock-1
-        #:enter-bandits-kennel-1)
+        #:get-diaper-locked-1)
     (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package #:yadfa-user
     (:use #:yadfa #:yadfa/bin #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)

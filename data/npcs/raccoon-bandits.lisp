@@ -17,7 +17,7 @@
                        (loop for i from 0 to (random 5) do (push (make-instance 'yadfa/items:bandit-adjustable-diaper) a))
                        (loop for i from 0 to (random 5) do (push (make-instance 'yadfa/items:bandit-female-diaper) a)))
         :bitcoins-per-level 40
-        :battle-script '(lambda (self target)
+        :battle-script (lambda (self target)
                             (let ((moves-with-health
                                       (iter
                                           (for i in (moves-of self))
@@ -44,8 +44,8 @@
                                             self
                                             move-to-use))
                                     (t
-                                        (setf move-to-use
-                                            (random-elt moves-can-use))
+                                        (when moves-can-use
+                                            (setf move-to-use (random-elt moves-can-use)))
                                         (cond
                                             ((and
                                                  (>=
@@ -77,7 +77,9 @@
                                                         target
                                                         self
                                                         move-to-use)))
-                                            ((= (random 4) 0)
+                                            ((and
+                                                 move-to-use
+                                                 (= (random 4) 0))
                                                 (funcall
                                                     (coerce
                                                         (attack-of move-to-use)
