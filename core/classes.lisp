@@ -1086,7 +1086,7 @@
                                            move-to-use))
                                    (t
                                        (when moves-can-use
-                                            (setf move-to-use (random-elt moves-can-use)))
+                                           (setf move-to-use (random-elt moves-can-use)))
                                        (cond
                                            ((and
                                                 moves-can-use

@@ -17,7 +17,7 @@
                        (loop for i from 0 to (random 5) do (push (make-instance 'yadfa/items:bandit-adjustable-diaper) a))
                        (loop for i from 0 to (random 5) do (push (make-instance 'yadfa/items:bandit-female-diaper) a)))
         :bitcoins-per-level 40
-        :battle-script (lambda (self target)
+        :battle-script '(lambda (self target)
                             (let ((moves-with-health
                                       (iter
                                           (for i in (moves-of self))
@@ -97,11 +97,11 @@
                                                     (wield-of self)))
                                             (t
                                                 (funcall
-                                                        (coerce
-                                                            (default-attack-of self)
-                                                            'function)
-                                                        target
-                                                        self)))))))))
+                                                    (coerce
+                                                        (default-attack-of self)
+                                                        'function)
+                                                    target
+                                                    self)))))))))
 (defclass rookie-diapered-raccoon-bandit (potty-npc) ()
     (:default-initargs
         :name "Rookie Diapered Raccoon Bandit"
