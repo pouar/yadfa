@@ -490,7 +490,7 @@
                                 (when (get-zone (list x y (third position) (fourth position)))
                                     (clim:with-output-as-presentation (*standard-output*
                                                                           (get-zone (list x y (third position) (fourth position)))
-                                                                          'yadfa-class)
+                                                                          'zone)
                                         (clim:draw-pattern*
                                             *standard-output*
                                             pattern
