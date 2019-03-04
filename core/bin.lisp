@@ -34,14 +34,14 @@
     #-yadfa/mods (write-line "Mod support is not enabled for this build"))
 (defun yadfa/world:save-game (path)
     "This function saves current game to PATH"
-    #+sbcl (declare (type simple-string path))
-    (check-type path simple-string)
+    #+sbcl (declare (type (or simple-string pathname) path))
+    (check-type path (or simple-string pathname))
     (with-open-file (s path :direction :output :if-exists :supersede :if-does-not-exist :create)
         (write-string (write-to-string (marshal *game*)) s)))
 (defun yadfa/world:load-game (path)
     "This function loads a saved game from PATH"
-    #+sbcl (declare (type simple-string path))
-    (check-type path simple-string)
+    #+sbcl (declare (type (or simple-string pathname) path))
+    (check-type path (or simple-string pathname))
     (with-open-file (stream path)
         (setf *game* (unmarshal (read stream)))))
 (defun yadfa/bin:toggle-onesie (&key wear user)
