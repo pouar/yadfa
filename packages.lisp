@@ -289,6 +289,8 @@
         #:diaper
         #:cloth-diaper
         #:diaper-package
+        #:midnight-diaper
+        #:midnight-diaper-package
         #:kurikia-thick-diaper
         #:kurikia-thick-cloth-diaper
         #:thick-latex-diaper

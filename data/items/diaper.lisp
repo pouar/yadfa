@@ -101,6 +101,33 @@
         :wear-mess-text '(10000 "Poo is leaking out of the leg guards"
                              2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                              1 "You can feel a slight mess back there")))
+(defclass midnight-diaper (yadfa:diaper) ()
+    (:default-initargs
+        :sogginess-capacity 4000
+        :messiness-capacity 20000
+        :name "Midnight Diaper"
+        :disposable t
+        :sellable nil
+        :thickness 50.8
+        :thickness-capacity 160
+        :description "A thick black diaper with blue landing zone and leg guards and red tapes"
+        :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
+                            2000 "It squishes when you walk"
+                            1 "You can barely tell you wet it")
+        :wear-mess-text '(20000 "Poo is leaking out of the leg guards"
+                             5000 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
+                             1 "You can feel a slight mess back there")))
+(defclass midnight-diaper-package (item) ()
+    (:default-initargs
+        :name "Package of Midnight Diapers"
+        :plural-name "Packages of Midnight Diapers"
+        :description "A package of thick black diapers with blue landing zone and leg guards and red tapes"
+        :consumable t
+        :value 250
+        :use-script '(lambda (item user)
+                         (declare (ignore item))
+                         (format t "You tear open the package and dump all the diapers out of it.~%")
+                         (loop for i from 1 to 20 do (push (make-instance 'yadfa/items:midnight-diaper) (inventory-of user))))))
 (defclass cloth-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 1400
