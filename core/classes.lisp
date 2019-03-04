@@ -1157,7 +1157,12 @@
             :initarg :status-conditions
             :initform ()
             :accessor status-conditions-of
-            :documentation "plist of characters who's values are a plist of conditions that go away after battle"))
+            :documentation "plist of characters who's values are a plist of conditions that go away after battle")
+        (fainted
+            :initargs :fainted
+            :initform ()
+            :accessor fainted-of
+            :documentation "Characters that have fainted in battle, used so the \"X has fainted\" messages don't appear repeatedly"))
     (:documentation "Class that contains the information about the battle"))
 (defmethod initialize-instance :after
     ((c battle) &rest initargs &key &allow-other-keys)

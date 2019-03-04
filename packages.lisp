@@ -217,7 +217,8 @@
         #:action-lambda
         #:action-documentation
         #:event-lambda
-        #:event-repeatable)
+        #:event-repeatable
+        #:fainted-of)
     (:documentation "Yet Another Diaperfur Adventure"))
 (uiop:define-package #:yadfa/bin
     (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files)
