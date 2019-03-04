@@ -3186,6 +3186,8 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
     (run-equip-effects character)
     (when (<= (health-of character) 0)
         (format t "~a has fainted~%~%" (name-of character))
+        (setf (health-of character) 0)
+        (removef (turn-queue-of *battle*) character)
         (return-from process-battle-turn))
     (incf (bladder/contents-of character) (* (bladder/fill-rate-of character) 5))
     (incf (bowels/contents-of character) (* (bowels/fill-rate-of character) 5))
@@ -3293,9 +3295,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
             (funcall
                 (coerce (battle-script-of character) 'function)
                 character
-                (random-elt (team-of *game*)))))
-    (when (<= (health-of character) 0)
-        (format t "~a has fainted~%" (name-of character))))
+                (random-elt (team-of *game*))))))
 (defmethod process-battle-turn ((character team-member) attack item reload selected-target)
     (iter (for i in (getf (status-conditions-of *battle*) character))
         (if (or (eq (duration-of i) t) (> (duration-of i) 0))
@@ -3306,6 +3306,8 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
             (removef (getf (status-conditions-of *battle*) character) i)))
     (run-equip-effects character)
     (when (<= (health-of character) 0)
+        (setf (health-of character) 0)
+        (removef (turn-queue-of *battle*) character)
         (format t "~a has fainted~%~%" (name-of character))
         (return-from process-battle-turn))
     (incf (bladder/contents-of character) (* (bladder/fill-rate-of character) 5))
@@ -3427,9 +3429,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
             (use-item%
                 (nth item (inventory-of (player-of *game*)))
                 (player-of *game*)
-                :target selected-target)
-            (when (<= (health-of selected-target) 0)
-                (format t "~a has fainted~%" (name-of selected-target))))
+                :target selected-target))
         (reload
             (format t "~a reloaded ~a ~a"
                 (name-of character)
@@ -3472,9 +3472,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                         (default-attack-of character)
                         'function)
                     selected-target
-                    character))
-            (when (<= (health-of selected-target) 0)
-                (format t "~a has fainted~%" (name-of selected-target))))
+                    character)))
         (attack
             (funcall
                 (coerce
@@ -3482,9 +3480,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                     'function)
                 selected-target
                 character
-                (get-move attack character))
-            (when (<= (health-of selected-target) 0)
-                (format t "~a has fainted~%" (name-of selected-target))))))
+                (get-move attack character)))))
 (defun process-battle (&key attack item reload target friendly-target no-team-attack selected-target)
     #+sbcl (declare
                (type (or list (and symbol (not keyword))) reload)
@@ -3513,11 +3509,16 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                                (leave i))))))
               (team-attacked no-team-attack))
         (flet ((check-if-done ()
-                   (unless (iter (for i in (enemies-of *battle*)) (when (> (health-of i) 0) (leave t)))
-                       (finish-battle)
-                       (return-from process-battle t))
+                   (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
+                       (when (<= (health-of i) 0)
+                           (setf (health-of i) 0)
+                           (format t "~a has fainted~%~%" (name-of i))
+                           (removef (turn-queue-of *battle*) i)))
                    (unless (iter (for i in (team-of *game*)) (when (> (health-of i) 0) (leave t)))
                        (finish-battle t)
+                       (return-from process-battle t))
+                   (unless (iter (for i in (enemies-of *battle*)) (when (> (health-of i) 0) (leave t)))
+                       (finish-battle)
                        (return-from process-battle t))))
             (check-if-done)
             (unless (or (eq attack t) (get-move attack (first (turn-queue-of *battle*))))
@@ -3526,9 +3527,10 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
             (iter
                 (until (and team-attacked (typep (first (turn-queue-of *battle*)) 'team-member)))
                 (check-if-done)
-                (process-battle-turn (first (turn-queue-of *battle*)) attack item reload selected-target)
-                (when (typep (pop (turn-queue-of *battle*)) 'team-member)
-                    (setf team-attacked t))
+                (let ((current-character (pop (turn-queue-of *battle*))))
+                    (process-battle-turn current-character attack item reload selected-target)
+                    (when (typep current-character 'team-member)
+                        (setf team-attacked t)))
                 (check-if-done)
                 (unless (turn-queue-of *battle*)
                     (appendf (turn-queue-of *battle*)
