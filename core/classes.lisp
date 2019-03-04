@@ -872,14 +872,18 @@
                                      :documentation "List items for sale"
                                      :lambda '(lambda
                                                   (prop &rest keys &key &allow-other-keys)
-                                                  (declare (type prop prop))
+                                                  (declare (type prop prop)
+                                                      (ignore keys))
                                                   (check-type prop prop)
                                                   (shopfun (items-for-sale-of prop) :format-items t)))
             :buy-items (make-action
                            :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
                            :lambda '(lambda
                                         (prop &rest keys &key items &allow-other-keys)
-                                        (declare (type prop prop) (type list items))
+                                        (declare
+                                            (type prop prop)
+                                            (type list items)
+                                            (ignore keys))
                                         (check-type prop prop)
                                         (check-type items list)
                                         (shopfun (items-for-sale-of prop)
@@ -889,7 +893,10 @@
                             :documentation "Sell items. ITEMS is a list of indexes where each index corrisponds to an item in your inventory"
                             :lambda '(lambda
                                          (prop &rest keys &key items &allow-other-keys)
-                                         (declare (type prop prop) (type list items))
+                                         (declare
+                                             (type prop prop)
+                                             (type list items)
+                                             (ignore keys))
                                          (check-type prop prop)
                                          (check-type items list)
                                          (shopfun (items-for-sale-of prop)
