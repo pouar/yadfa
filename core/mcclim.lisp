@@ -123,7 +123,6 @@
     (list object))
 (clim:define-presentation-to-command-translator com-yadfa-move-translator
     (zone com-yadfa-move clim:global-command-table
-        :gesture :menu
         :documentation "Move"
         :pointer-documentation "Move Here"
         :menu t)
