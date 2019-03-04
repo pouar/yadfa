@@ -9,9 +9,7 @@
 (defevent enter-bandits-shop-1
     :lambda '(lambda (self)
                  (declare (ignore self))
-                 (format t "Diapered Raccoon Bandit Shop Owner: Hey, we got a customer. Stop dancing around pulling on a locked bathroom door and help him out.~%~%Rookie Diapered Raccoon Bandit Servant: But I really gotta gooooo!!!!! *hops from foot to foot holding the front of his diaper*~%~%*The shop owner walks over to the servant and starts tickling him*~%~%Rookie Diapered Raccoon Bandit Servant: NOOOO!!! STOP!!!! I CAN'T HOLD IT!!!!~%~%*The rookie starts laughing and thrashing about, the insignia that doubles as a wetness indicator on the front of his diaper then turns from blue to yellow.*~%~%Shop Owner: There, you went, now go see to the customer.~%~%*The now blushy Rookie Diapered Raccoon Bandit waddles and squshes over to the back of the counter*~%~%")
-                 (pushnew (event-id self) (finished-events-of *game*))
-                 (setf nil (major-event-of *game*))))
+                 (format t "Diapered Raccoon Bandit Shop Owner: Hey, we got a customer. Stop dancing around pulling on a locked bathroom door and help him out.~%~%Rookie Diapered Raccoon Bandit Servant: But I really gotta gooooo!!!!! *hops from foot to foot holding the front of his diaper*~%~%*The shop owner walks over to the servant and starts tickling him*~%~%Rookie Diapered Raccoon Bandit Servant: NOOOO!!! STOP!!!! I CAN'T HOLD IT!!!!~%~%*The rookie starts laughing and thrashing about, the insignia that doubles as a wetness indicator on the front of his diaper then turns from blue to yellow.*~%~%Shop Owner: There, you went, now go see to the customer.~%~%*The now blushy Rookie Diapered Raccoon Bandit waddles and squshes over to the back of the counter*~%~%")))
 (defevent enter-bandits-shop-2
     :repeatable t
     :lambda '(lambda (self)
@@ -34,7 +32,8 @@
                                                                     (make-instance 'yadfa/items:bandit-uniform-tunic)
                                                                     (make-instance 'yadfa/items:bandit-adjustable-diaper
                                                                         :sogginess 1400
-                                                                        :messiness 8000)))))))))
+                                                                        :messiness 8000)))))
+                         :enter-battle-text (format nil "The leaky raccoon waddles over to you to fight~%")))))
 (defevent decend-bandits-cave-1
     :repeatable t
     :lambda '(lambda (self)

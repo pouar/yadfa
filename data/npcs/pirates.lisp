@@ -30,7 +30,7 @@
             (wear-of c))))
 (defclass thickly-diaper-pirate (diaper-pirate) ()
     (:default-initargs
-        :description "A variant of the Diaper Pirate that wears 3 layers of padding. A stuffer, a cloth diaper that they treat as normal underwear, and a super thick latex diaper that they treat as pants."
+        :description "A variant of the Diaper Pirate that wears 3 layers of padding. A stuffer, a normal diaper, and a super thick diaper."
         :inventory (append
                        (iter (for i from 0 to (random 20))
                            (collect (make-instance 'yadfa/items:incontinence-pad)))
