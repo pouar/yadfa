@@ -7,11 +7,11 @@ Right now, most of the core of the game is done, but is missing a lot of content
 
 So far this has only been tested on Linux and Windows 10, but should be portable enough. I got it to successfully run in SBCL, CCL, and ECL, but I couldn't generate a working image in ECL yet.
 
-Install instructions
+Install Instructions
 ====================
 
 for Linux users
---------------------------
+---------------
 
 
 I've added a flatpak repo for Linux users, you can add it with
@@ -39,7 +39,7 @@ flatpak uninstall net.pouar.yadfa
 ```
 
 for Windows users
---------------------------
+-----------------
 
 I've also added a chocolatey repo for Windows users. You can add the repo from PowerShell with
 
@@ -62,4 +62,10 @@ or uninstall it with
 
 ```
 choco uninstall yadfa
+```
+
+if you no longer need the X Server after uninstalling
+
+```
+choco uninstall vcxsrv
 ```

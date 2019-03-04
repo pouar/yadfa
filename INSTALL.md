@@ -1,3 +1,6 @@
+Compile From Sources
+====================
+
 To compile, you need a decent CL implementation, a recent version of ASDF (newer versions fix a few bugs that affect my game) and Quicklisp (for dependency management), and an X Server. If you downloaded a prebuilded version, you only need to install the X Server and not the rest of the stuff listed, then you can just double click yadfa.exe
 
 If you're on Windows, you probably want Clozure CL (only needed for compiling)
@@ -49,3 +52,66 @@ To build with SLIME/SWANK support, run `sbcl --script build.lisp mods swank` or 
 To build with Sly/Slynk support, run `sbcl --script build.lisp mods slynk` or `ccl -l build.lisp -- mods slynk`, then run `./yadfa slynk` to launch the game
 
 To run, just run ./yadfa (or yadfa.exe in Windows)
+
+Installing Prebuilt Binaries
+============================
+
+for Linux users
+--------------------------
+
+
+I've added a flatpak repo for Linux users, you can add it with
+
+```
+flatpak remote-add --if-not-exists yadfa https://gitlab.com/pouar/yadfa/raw/master/flatpak/yadfa.flatpakrepo
+```
+
+then install the game with
+
+```
+flatpak install yadfa net.pouar.yadfa
+```
+
+you can update the game with (it will also be updated when you run `flatpak update` which updates all packages installed with flatpak)
+
+```
+flatpak update net.pouar.yadfa
+```
+
+you can uninstall the game with 
+
+```
+flatpak uninstall net.pouar.yadfa
+```
+
+for Windows users
+--------------------------
+
+I've also added a chocolatey repo for Windows users. You can add the repo from PowerShell with
+
+```
+choco source add -n yadfa -s https://api.bintray.com/nuget/pouar/yadfa-chocolatey
+```
+
+then install the game with
+
+```
+choco install yadfa
+```
+
+you can upgrade the game with (it will also be upgraded when you run `choco upgrade all` which upgrades all applications installed with chocolatey)
+
+```
+choco upgrade yadfa
+```
+or uninstall it with
+
+```
+choco uninstall yadfa
+```
+
+if you no longer need the X Server after uninstalling
+
+```
+choco uninstall vcxsrv
+```
