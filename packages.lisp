@@ -173,6 +173,7 @@
         #:ammo-of
         #:ammo-type-of
         #:ammo-capacity-of
+        #:cant-use-predicate-of
         #:items-of
         #:actions-of
         #:plural-name-of

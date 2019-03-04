@@ -15,7 +15,7 @@
 (defclass messing (status-condition)
     ()
     (:default-initargs
-        :name "Wetting"
+        :name "Messing"
         :description "User is currently messing himself/herself"
         :battle-script '(lambda (target user self)
                             (declare (ignore target self))

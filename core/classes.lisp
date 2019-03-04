@@ -529,9 +529,17 @@
             :initform 40
             :accessor power-of
             :documentation "Attack base when used as a melee weapon")
+        (cant-use-predicate
+            :initarg :cant-use-predicate
+            :initform '(lambda (item user &rest keys &key target action &allow-other-keys)
+                           (declare (ignorable item user keys target action))
+                           nil)
+            :accessor cant-use-predicate-of
+            :documentation "Function that is used to determine if the player can use this item")
         (attack-script
             :initarg :attack-script
             :initform '(lambda (target user self)
+                           (declare (ignorable target user self))
                            (let ((a (calculate-damage target user
                                         (if (first (ammo-of self))
                                             (ammo-power-of (first (ammo-of self)))

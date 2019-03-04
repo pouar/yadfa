@@ -3191,6 +3191,10 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
         (setf (health-of character) 0)
         (removef (turn-queue-of *battle*) character)
         (return-from process-battle-turn))
+    (when (> (health-of character) (calculate-stat character :health))
+        (setf (health-of character) (calculate-stat character :health)))
+    (when (> (energy-of character) (calculate-stat character :energy))
+        (setf (energy-of character) (calculate-stat character :energy)))
     (incf (bladder/contents-of character) (* (bladder/fill-rate-of character) 5))
     (incf (bowels/contents-of character) (* (bowels/fill-rate-of character) 5))
     (cond ((or
@@ -3314,6 +3318,10 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
             (pushnew character (fainted-of *battle*)))
         (removef (turn-queue-of *battle*) character)
         (return-from process-battle-turn))
+    (when (> (health-of character) (calculate-stat character :health))
+        (setf (health-of character) (calculate-stat character :health)))
+    (when (> (energy-of character) (calculate-stat character :energy))
+        (setf (energy-of character) (calculate-stat character :energy)))
     (incf (bladder/contents-of character) (* (bladder/fill-rate-of character) 5))
     (incf (bowels/contents-of character) (* (bowels/fill-rate-of character) 5))
     (when (and (not (eq (player-of *game*) character))
@@ -3522,7 +3530,11 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                                    (pushnew i (fainted-of *battle*)))
                                (removef (turn-queue-of *battle*) i))
                            (progn
-                               (removef (fainted-of *battle*) i :count 1))))
+                               (removef (fainted-of *battle*) i :count 1)))
+                       (when (> (health-of i) (calculate-stat i :health))
+                           (setf (health-of i) (calculate-stat i :health)))
+                       (when (> (energy-of i) (calculate-stat i :energy))
+                           (setf (energy-of i) (calculate-stat i :energy))))
                    (unless (iter (for i in (team-of *game*)) (when (> (health-of i) 0) (leave t)))
                        (finish-battle t)
                        (return-from process-battle t))
@@ -3573,12 +3585,18 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
               (if action
                   (action-lambda (getf (special-actions-of item) action))
                   (use-script-of item))))
-        (if script
-            (progn
-                (apply (coerce script 'function) item target (when action keys))
-                (when (consumablep item)
-                    (removef (inventory-of user) item)))
-            (write-line "You can't do that with that item"))))
+        (unless (apply (coerce (cant-use-predicate-of item) 'function)
+                    item user keys)
+            (if script
+                (progn
+                    (apply (coerce script 'function) item target (when action keys))
+                    (when (consumablep item)
+                        (removef (inventory-of user) item)))
+                (write-line "You can't do that with that item")))
+        (when (> (health-of target) (calculate-stat target :health))
+            (setf (health-of target) (calculate-stat target :health)))
+        (when (> (energy-of target) (calculate-stat target :energy))
+            (setf (energy-of target) (calculate-stat target :energy)))))
 
 (defun set-player (name malep species)
     "Sets the name, gender, and species of the player"
