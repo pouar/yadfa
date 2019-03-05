@@ -110,7 +110,7 @@
         :sellable nil
         :thickness 50.8
         :thickness-capacity 160
-        :description "A thick black diaper with blue landing zone and leg guards and red tapes"
+        :description "A thick black diaper with blue landing zone, blue leg guards, and red tapes"
         :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
                             2000 "It squishes when you walk"
                             1 "You can barely tell you wet it")
@@ -121,7 +121,7 @@
     (:default-initargs
         :name "Package of Midnight Diapers"
         :plural-name "Packages of Midnight Diapers"
-        :description "A package of thick black diapers with blue landing zone and leg guards and red tapes"
+        :description "A package of thick black diapers with blue landing zone, blue leg guards, and red tapes"
         :consumable t
         :value 250
         :use-script '(lambda (item user)
