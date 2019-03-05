@@ -1167,7 +1167,7 @@
             :accessor status-conditions-of
             :documentation "plist of characters who's values are a plist of conditions that go away after battle")
         (fainted
-            :initargs :fainted
+            :initarg :fainted
             :initform ()
             :accessor fainted-of
             :documentation "Characters that have fainted in battle, used so the \"X has fainted\" messages don't appear repeatedly"))
