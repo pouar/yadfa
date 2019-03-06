@@ -1,6 +1,6 @@
 (in-package :yadfa/events)
 (defevent pirates-cove-1
-    :lambda (lambda (self)
+    :lambda '(lambda (self)
                  (declare (ignorable self))
                  (let* ((a (make-instance 'yadfa/npcs:diaper-pirate))
                            (b (make-instance 'yadfa/npcs:thickly-diaper-pirate)))
@@ -8,11 +8,11 @@
                          (species-of a) (species-of b))
                      (format t "*The ~a struggles to stand and waddles with the thick padding spreading ~a legs apart*~%"
                          (species-of b)
-                         (if b-male "his" "her"))
+                         (if (malep b) "his" "her"))
                      (format t "Padded ~a: Aww, looks like the baby ~a is taking ~a first steps.~%"
                          (species-of a)
                          (species-of b)
-                         (if b-male "his" "her"))
+                         (if (malep b) "his" "her"))
                      (format t "Thickly Padded ~a: Shut it. Hey, isn't that an intruder?~%"
                          (species-of b))
                      (format t "Padded ~a: Apparently.~%"
@@ -27,7 +27,7 @@
                                                                       :species ,(species-of b)
                                                                       :male ,(malep b))))))))
 (defevent pirates-cove-2
-    :lambda (lambda (self)
+    :lambda '(lambda (self)
                  (declare (ignorable self))
                  (let* ((a (make-instance 'yadfa/npcs:diaper-pirate))
                            (coon (make-instance 'ally))
@@ -60,9 +60,9 @@
                                                           (* (bladder/fill-rate-of coon)
                                                               35))
                                     :bowels/contents (+
-                                                          (bowels/need-to-potty-limit-of coon)
-                                                          (* (bowels/fill-rate-of coon)
-                                                              35))
+                                                         (bowels/need-to-potty-limit-of coon)
+                                                         (* (bowels/fill-rate-of coon)
+                                                             35))
                                     :wear (list
                                               (make-instance 'yadfa/items:bandit-uniform-tunic)
                                               (make-instance 'yadfa/items:thick-latex-diaper)
