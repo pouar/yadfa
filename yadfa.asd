@@ -13,8 +13,7 @@
     :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria"
                     (:feature :slynk "slynk")
                     (:feature :swank "swank") (:feature :yadfa/docs "net.didierverna.declt"))
-    :components (
-                    (:file "packages")
+    :components ((:file "packages")
                     (:file "main" :depends-on ("packages"))
                     (:module "core"
                         :depends-on ("packages" "main")
@@ -29,11 +28,11 @@
                     (:module "data"
                         :depends-on ("core")
                         :components ((:module "moves"
-                                            :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
-                                                              (directory-files
-                                                                  (pathname-directory-pathname
-                                                                      (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/moves/*.lisp")))
+                                         :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
+                                                           (directory-files
+                                                               (pathname-directory-pathname
+                                                                   (uiop/lisp-build:current-lisp-file-pathname))
+                                                               "data/moves/*.lisp")))
                                         (:module "items"
                                             :depends-on ("moves")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))

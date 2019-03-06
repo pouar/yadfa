@@ -44,4 +44,6 @@
                              :enter-text "You're inside Pirate's Cove"
                              :enemy-spawn-list '((:max-random 8
                                                      :enemies ((yadfa/npcs:diaper-pirate .
-                                                                   (list :level (random-from-range 4 8)))))))))))
+                                                                   (list :level (random-from-range 4 8))))))
+                             ,@(when (= i 10)
+                                   '(:events (list 'yadfa/events:pirates-cove-2))))))))

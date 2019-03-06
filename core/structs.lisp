@@ -2,8 +2,8 @@
 (defstruct event
     "An event in the game"
     (id nil :type symbol)
-    (lambda '(lambda (self) nil) :type list)
-    (predicate '(lambda (self) t) :type list)
+    (lambda '(lambda (self) nil) :type (or list function))
+    (predicate '(lambda (self) t) :type (or list function))
     (repeatable nil :type boolean)
     (major nil :type boolean)
     (major-depends nil :type symbol)
@@ -11,4 +11,6 @@
     (finished-depends '() :type list))
 (defstruct action
     "An action for a prop or item"
-    (documentation nil :type simple-string) (lambda '(lambda (prop))))
+    (documentation nil :type simple-string)
+    (lambda '(lambda (prop))
+        :type (or list function)))

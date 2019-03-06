@@ -292,6 +292,10 @@
         #:midnight-diaper
         #:midnight-diaper-package
         #:kurikia-thick-diaper
+        #:thick-cloth-diaper
+        #:thick-diaper
+        #:thick-diaper-package
+        #:kurikia-thick-latex-diaper
         #:kurikia-thick-cloth-diaper
         #:thick-latex-diaper
         #:hyper-thick-diaper
