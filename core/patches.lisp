@@ -74,30 +74,8 @@
     (:layouts (default abstract))
     (:command-definer t))
 (defmethod run-frame-top-level :around ((frame accept-values) &key)
-    (let ((*application-frame* frame)
-             (*input-context* nil)
-             (*input-wait-test* nil)
-             (*input-wait-handler* nil)
-             (*pointer-button-press-handler* nil))
-        (declare (special *input-context* *input-wait-test* *input-wait-handler*
-                     *pointer-button-press-handler*))
-        (when (eq (frame-state frame) :disowned) ; Adopt frame into frame manager
-            (adopt-frame (or (frame-manager frame) (find-frame-manager))
-                frame))
-        (unwind-protect
-            (loop
-                for query-io = (frame-query-io frame)
-                for *default-frame-manager* = (frame-manager frame)
-                do (handler-case
-                       (return (if query-io
-                                   (with-input-focus (query-io)
-                                       (letf (((frame-process frame) (current-process)))
-                                           (funcall (frame-top-level-lambda frame) frame)))
-                                   (letf (((frame-process frame) (current-process)))
-                                       (funcall (frame-top-level-lambda frame) frame))))
-                       (frame-layout-changed () nil)
-                       (frame-exit ()	(return))))
-            (destroy-frame frame))))
+    (letf (((frame-process frame) (current-process)))
+        (funcall (frame-top-level-lambda frame) frame)))
 (defmethod display-exit-boxes ((frame accept-values) stream (view textual-dialog-view))
     (declare (ignorable frame))
     (updating-output (stream :unique-id 'buttons :cache-value t)
@@ -244,7 +222,10 @@
         (command-table 'accept-values)
         (frame-class 'accept-values))
     (declare (ignore own-window exit-boxes modify-initial-query
-                 resize-frame scroll-bars x-position y-position width height))
+                 resize-frame scroll-bars x-position y-position width height
+                 initially-select-query-identifier initially-select-p
+                 select-first-query resynchronize-every-pass align-prompts
+                 label command-table))
     (run-frame-top-level (apply #'make-application-frame frame-class
                              :calling-frame *application-frame*
                              :stream stream
