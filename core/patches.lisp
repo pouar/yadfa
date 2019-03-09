@@ -153,7 +153,6 @@
         (when (and align-prompts ;; t means the same as :right
                   (not (eq align-prompts :left)))
             (setf align-prompts :right))
-        (print exit-boxes *debug-io*)
         (multiple-value-bind (cx cy) (stream-cursor-position stream)
             (let* ((return-values nil)
                       (*accepting-values-stream*
