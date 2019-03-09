@@ -239,52 +239,24 @@
                         (setf (stream-cursor-position stream)
                             (values cx cy))))
                 (apply 'values return-values)))))
-(defmacro accepting-values
-    ((&optional (stream t)
-         &rest args
-         &key own-window exit-boxes initially-select-query-identifier
-         modify-initial-query resynchronize-every-pass resize-frame
-         align-prompts label scroll-bars select-first-query
-         x-position y-position width height command-table frame-class
-         (foreground nil foregroundp) (background nil backgroundp)
-         (text-style nil text-style-p))
-        &body body)
-    (declare (ignorable exit-boxes initially-select-query-identifier
-                 modify-initial-query resynchronize-every-pass resize-frame
-                 align-prompts scroll-bars select-first-query
-                 x-position y-position width height command-table frame-class
-                 text-style))
-    (setq stream (stream-designator-symbol stream '*standard-input*))
-    (with-gensyms (accepting-values-continuation)
-        (let* ((with-text-style-body
-                   (if text-style-p
-                       `((with-drawing-options (,stream :text-style ,text-style)
-                             ,@body))
-                       body))
-                  (return-form
-                      `(flet ((,accepting-values-continuation (,stream)
-                                  ,@with-text-style-body))
-                           (run-frame-top-level (make-application-frame 'accept-values
-                                                    :calling-frame *application-frame*
-                                                    :stream ,stream
-                                                    :body #',accepting-values-continuation
-                                                    ,@args))))
-                  (true-form `(with-stream-in-own-window
-                                  (,stream
-                                      :label ,label
-                                      :height ,height
-                                      :width ,width
-                                      ,@(and foregroundp `(:foreground ,foreground))
-                                      ,@(and backgroundp `(:background ,background)))
-                                  (*standard-input* *standard-output*)
-                                  ,return-form)))
-            ;; To avoid unreachable-code warnings, if `own-window' is a
-            ;; boolean constant, don't generate the `if' form.
-            (cond ((eq own-window t) true-form)
-                ((eq own-window nil) return-form)
-                (t `(if ,own-window
-                        ,true-form
-                        ,return-form))))))
+(defun invoke-accepting-values
+    (stream body
+        &rest args
+        &key own-window exit-boxes
+        (initially-select-query-identifier nil initially-select-p)
+        select-first-query
+        modify-initial-query resynchronize-every-pass resize-frame
+        align-prompts label scroll-bars
+        x-position y-position width height
+        (command-table 'accept-values)
+        (frame-class 'accept-values))
+    (declare (ignore own-window exit-boxes modify-initial-query
+                 resize-frame scroll-bars x-position y-position width height))
+    (run-frame-top-level (apply #'make-application-frame frame-class
+                             :calling-frame *application-frame*
+                             :stream stream
+                             :body body
+                             args)))
 (in-package :clim-listener)
 ;;;; because it was quicker and easier than trying to write one of these myself from scratch
 (macro-level:macro-level
