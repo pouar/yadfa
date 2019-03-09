@@ -68,7 +68,6 @@
         (resynchronize-every-pass :initform nil :initarg :resynchronize-every-pass)
         (own-window :initform nil :initarg :own-window)
         (view :initarg :view))
-    (:top-level (accept-values-top-level))
     (:menu-bar nil)
     (:panes (abstract (clim:make-pane 'clim:basic-pane)))
     (:layouts (default abstract))
@@ -93,8 +92,8 @@
                                     :background +gray80+ :highlight-background +gray90+)
                                 (format stream (cadr i))))))))
         (terpri stream)))
-(defmethod accept-values-top-level
-    (frame
+(defmethod default-frame-top-level
+    ((frame accept-values)
         &key command-parser
         command-unparser
         partial-command-parser
@@ -144,7 +143,7 @@
                                        (cerror "Exit returning body values."
                                            "~s must contain at least one call to ~s."
                                            'accepting-values 'accept)
-                                       (return-from accept-values-top-level return-values))
+                                       (return-from default-frame-top-level return-values))
                                    (display-exit-boxes frame
                                        stream
                                        (stream-default-view
