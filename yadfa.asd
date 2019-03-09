@@ -18,12 +18,12 @@
                     (:module "core"
                         :depends-on ("packages" "main")
                         :components ((:file "structs")
-                                        (:file "init")
+                                        (:file "init" :depends-on ("patches"))
                                         (:file "libexec" :depends-on ("classes" "init" "structs"))
-                                        (:file "classes")
+                                        (:file "classes" :depends-on ("patches"))
                                         (:file "game" :depends-on ("classes"))
                                         (:file "bin" :depends-on ("libexec"))
-                                        (:file "patches" :depends-on ("game" "libexec" "init"))
+                                        (:file "patches")
                                         (:file "mcclim" :depends-on ("patches" "bin"))))
                     (:module "data"
                         :depends-on ("core")
