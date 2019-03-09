@@ -78,8 +78,7 @@
              (*input-context* nil)
              (*input-wait-test* nil)
              (*input-wait-handler* nil)
-             (*pointer-button-press-handler* nil)
-             (original-state (frame-state frame)))
+             (*pointer-button-press-handler* nil))
         (declare (special *input-context* *input-wait-test* *input-wait-handler*
                      *pointer-button-press-handler*))
         (when (eq (frame-state frame) :disowned) ; Adopt frame into frame manager
@@ -98,12 +97,7 @@
                                        (funcall (frame-top-level-lambda frame) frame))))
                        (frame-layout-changed () nil)
                        (frame-exit ()	(return))))
-            (case original-state
-                (:disabled
-                    (disable-frame frame))
-                (:disowned
-                    (when-let ((fm (frame-manager frame)))
-                        (disown-frame fm frame)))))))
+            (destroy-frame frame))))
 (defmethod display-exit-boxes ((frame accept-values) stream (view textual-dialog-view))
     (declare (ignorable frame))
     (updating-output (stream :unique-id 'buttons :cache-value t)
@@ -123,12 +117,11 @@
         (terpri stream)))
 (defmethod accept-values-top-level
     (frame
-        &key (command-parser 'command-line-command-parser)
-        (command-unparser 'command-line-command-unparser)
-        (partial-command-parser
-            'command-line-read-remaining-arguments-for-partial-command)
-        (prompt "Command: "))
-    (declare (ignorable command-parser command-unparser partial-command-parser prompt))
+        &key command-parser
+        command-unparser
+        partial-command-parser
+        prompt)
+    (declare (ignore command-parser command-unparser partial-command-parser prompt))
     ;; Give each pane a fresh start first time through.
     (let* ((stream (slot-value frame 'stream))
               (command-table (frame-command-table frame))
