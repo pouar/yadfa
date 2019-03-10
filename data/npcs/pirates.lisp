@@ -37,14 +37,14 @@
                        (iter (for i from 0 to (random 20))
                            (collect (make-instance 'yadfa/items:cloth-diaper)))
                        (iter (for i from 0 to (random 20))
-                           (collect (make-instance 'yadfa/items:thick-latex-diaper))))))
+                           (collect (make-instance 'yadfa/items:thick-rubber-diaper))))))
 (defmethod initialize-instance :after
     ((c thickly-diaper-pirate) &rest args &key &allow-other-keys)
     (unless (iter (for (a b) on args)
                 (when (eq a :wear) (leave t)))
         (setf (wear-of c) nil)
         (appendf (wear-of c)
-            (iter (for i in '(yadfa/items:thick-latex-diaper
+            (iter (for i in '(yadfa/items:thick-rubber-diaper
                                  yadfa/items:cloth-diaper
                                  yadfa/items:incontinence-pad))
                 (collect (make-instance i))))

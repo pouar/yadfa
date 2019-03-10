@@ -65,7 +65,7 @@
                                                              35))
                                     :wear (list
                                               (make-instance 'yadfa/items:bandit-uniform-tunic)
-                                              (make-instance 'yadfa/items:thick-latex-diaper)
+                                              (make-instance 'yadfa/items:thick-rubber-diaper)
                                               (make-instance 'yadfa/items:bandit-adjustable-diaper
                                                   :sogginess (sogginess-capacity-of diaper)
                                                   :messiness (messiness-capacity-of diaper)))))

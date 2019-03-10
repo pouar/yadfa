@@ -182,29 +182,29 @@
         :wear-mess-text '(20000 "Poo is leaking out of the leg guards"
                              5000 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                              1 "You can feel a slight mess back there")))
-(defclass thick-latex-diaper (yadfa:diaper) ()
+(defclass thick-rubber-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 4000
         :messiness-capacity 20000
-        :name "Thick Latex Diaper"
+        :name "Thick Rubber Diaper"
         :waterproof t
         :thickness 50.8
         :thickness-capacity 160
-        :description "A thick latex diaper that can hold more than an normal diaper. Can be reused."
+        :description "A thick rubber diaper that can hold more than an normal diaper. Can be reused."
         :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
                             2000 "It squishes when you walk"
                             1 "You can barely tell you wet it")
         :wear-mess-text '(20000 "Poo is leaking out of the leg guards"
                              5000 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                              1 "You can feel a slight mess back there")))
-(defclass latex-diaper (yadfa:diaper) ()
+(defclass rubber-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 1400
         :messiness-capacity 10000
         :value 250
         :waterproof t
-        :name "Latex Diaper"
-        :description "A poofy latex diaper that can hold an accident. Can be reused."
+        :name "Rubber Diaper"
+        :description "A poofy rubber diaper that can hold an accident. Can be reused."
         :wear-wet-text '(1400 "little yellow streams are leaking down from the leg guards"
                             350 "It squishes when you walk"
                             1 "You can barely tell you wet it")
@@ -282,12 +282,12 @@
                              25000 "It smooshes when you walk"
                              1 "The diaper holds the mess easily")
         :description "It's like carrying a giant pillow between your legs forcing you to waddle. Can be reused."))
-(defclass kurikia-thick-latex-diaper (yadfa:diaper) ()
+(defclass kurikia-thick-rubber-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 10000
         :messiness-capacity 100000
         :waterproof t
-        :name "Kurikia Thick Latex Diaper"
+        :name "Kurikia Thick Rubber Diaper"
         :value 400
         :thickness 300
         :thickness-capacity 100
@@ -333,11 +333,11 @@
                              125000 "It smooshes when you walk"
                              1 "The diaper holds the mess easily")
         :description "When you leak so often that you need a diaper so thick it nearly touches the ground. Can be reused."))
-(defclass hyper-thick-latex-diaper (yadfa:diaper) ()
+(defclass hyper-thick-rubber-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 50000
         :messiness-capacity 500000
-        :name "Hyper Thick Latex Diaper"
+        :name "Hyper Thick Rubber Diaper"
         :value 1000
         :thickness 1000
         :thickness-capacity 380
@@ -349,7 +349,7 @@
         :wear-mess-text '(1 "The diaper holds the mess easily"
                              125000 "It smooshes when you walk"
                              500000 "Poo is leaking out of the diaper")
-        :description "For when the Thick Latex Diaper wasn't thick enough. At least it doubles as a bean bag chair."))
+        :description "For when the Thick Rubber Diaper wasn't thick enough. At least it doubles as a bean bag chair."))
 (defclass pullups (pullup) ()
     (:default-initargs
         :sogginess-capacity 800
@@ -383,13 +383,13 @@
         :messiness-capacity 10000
         :name "Cloth Pullup"
         :description "Wear this and pretend to be a big kid. Can be reused."))
-(defclass latex-pullups (pullup) ()
+(defclass rubber-pullups (pullup) ()
     (:default-initargs
         :value 200
         :sogginess-capacity 800
         :messiness-capacity 10000
         :waterproof t
-        :name "Latex Pullup"
+        :name "Rubber Pullup"
         :description "Wear this and pretend to be a big kid. Can be reused."))
 (defclass swim-diaper-cover (undies) ()
     (:default-initargs

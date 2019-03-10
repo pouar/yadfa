@@ -12,11 +12,11 @@
                             :items (append
                                        (loop for i from 1 to 20 collect (make-instance 'yadfa/items:diaper))
                                        (loop for i from 1 to 20 collect (make-instance 'yadfa/items:pullups))
-                                       (loop for i from 1 to 5 collect (make-instance 'yadfa/items:thick-latex-diaper))
+                                       (loop for i from 1 to 5 collect (make-instance 'yadfa/items:thick-rubber-diaper))
                                        (list
                                            (make-instance 'yadfa/items:sundress)
                                            (make-instance 'yadfa/items:toddler-dress)
-                                           (make-instance 'yadfa/items:latex-onesie))))
+                                           (make-instance 'yadfa/items:rubber-onesie))))
                :toilet (make-instance 'toilet)
                :bed (make-instance 'bed)
                :shop (make-instance 'debug-shop

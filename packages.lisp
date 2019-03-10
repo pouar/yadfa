@@ -295,20 +295,20 @@
         #:thick-cloth-diaper
         #:thick-diaper
         #:thick-diaper-package
-        #:kurikia-thick-latex-diaper
+        #:kurikia-thick-rubber-diaper
         #:kurikia-thick-cloth-diaper
-        #:thick-latex-diaper
+        #:thick-rubber-diaper
         #:hyper-thick-diaper
         #:hyper-thick-cloth-diaper
-        #:hyper-thick-latex-diaper
+        #:hyper-thick-rubber-diaper
         #:pullups
         #:pullups-package
         #:cloth-pullups
-        #:latex-pullups
+        #:rubber-pullups
         #:swim-diaper-cover
         #:disposable-swim-diaper
         #:disposable-swim-diaper-package
-        #:latex-diaper
+        #:rubber-diaper
         #:bandit-diaper
         #:bandit-adjustable-diaper
         #:bandit-female-diaper

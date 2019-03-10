@@ -83,11 +83,11 @@
                          12 "Your padding keeps poking out of the top of your pants"
                          0 "It fits loosely")
         :thickness-capacity (* 16 25.4)))
-(defonesie latex-onesie ()
+(defonesie rubber-onesie ()
     (:default-initargs
         :onesie-waterproof t
         :value 600
-        :name "Black Latex Onesie"
+        :name "Black Rubber Onesie"
         :onesie-bulge-text '((60 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
                                  20 "It fits over your diaper quite nicely"
                                  0 "It's so baggy that what you're wearing under there is quite visible")
@@ -97,8 +97,8 @@
                                     #.(* 11 25) "The flaps just barely cover the diapers"
                                     #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
                                     0 "The flaps hang over covering your underwear like a dress"))
-        :description "An awesome black latex onesie"))
-(defonesie stretchable-latex-onesie ()
+        :description "An awesome black rubber onesie"))
+(defonesie stretchable-rubber-onesie ()
     (:default-initargs
         :onesie-waterproof t
         :value 600
@@ -111,8 +111,8 @@
                                     #.(* 11 25) "The flaps just barely cover the diapers"
                                     #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
                                     0 "The flaps hang over covering your underwear like a dress"))
-        :name "Black Latex Onesie"
-        :description "An awesome black latex onesie that stretches to fit your humongous diapers"))
+        :name "Black Rubber Onesie"
+        :description "An awesome black rubber onesie that stretches to fit your humongous diapers"))
 (defclass orca-suit (closed-full-outfit) ()
     (:default-initargs
         :waterproof t
