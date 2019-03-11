@@ -2648,23 +2648,35 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                      / 50)
                   + 2)
                * ($ (random-from-range 85 100) / 100))))
-(defmacro draw-bar (first second third stat)
+(defmacro draw-bar (stat &rest colors)
     `(if clim-listener::*application-frame*
          (multiple-value-bind (x y) (clim:stream-cursor-position *standard-output*)
              (clim:draw-rectangle* *standard-output* x y (+ x (* ,stat 400)) (+ y 15)
-                 :ink (cond (,(car first) ,(intern (format nil "+~a+" (car (last first))) "CLIM"))
-                          (,(car second) ,(intern (format nil "+~a+" (car (last second))) "CLIM"))
-                          (t ,(intern (format nil "+~a+" third) "CLIM"))))
+                 :ink (cond
+                          ,@(iter (for i in colors)
+                                (collect `(,(car i) ,(intern (format nil "+~a+"
+                                                                 (if (typep (car (last i)) 'cons)
+                                                                     (caar (last i))
+                                                                     (car (last i))))
+                                                         "CLIM"))))))
              (clim:draw-rectangle* *standard-output* x y (+ x 400) (+ y 15)
                  :filled nil)
              (clim:stream-set-cursor-position *standard-output* (+ x 400) y))
          (cl-ansi-text:with-color ((cond
-                                       (,(car first) ,(car (last first)))
-                                       (,(car second) ,(car (last second)))
-                                       (t ,third)))
-             (color-format (cond ,first
-                               ,second
-                               (t ,third)) "[~{~a~}]"
+                                       ,@(iter (for i in colors)
+                                             (collect `(,(car i)
+                                                           ,(if (typep (car (last i)) 'cons)
+                                                                (cadar (last i))
+                                                                (car (last i))))))))
+             (color-format
+                 (cond
+                     ,@(iter (for i in colors)
+                           (collect
+                               (if (typep (car (last i)) 'cons)
+                                   (append (butlast i)
+                                       (cdar (last i)))
+                                   i))))
+                 "[~{~a~}]"
                  (iter (with i = 0)
                      (while (< i 40))
                      (collect (if (< i (* ,stat 40)) "#" " "))
@@ -2677,20 +2689,22 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
     (format t "Description: ~a~%"
         (description-of user))
     (format t "Health: ")
-    (draw-bar ((> (health-of user) (* (calculate-stat user :health) 1/2)) :green)
+    (draw-bar
+        (/ (health-of user) (calculate-stat user :health))
+        ((> (health-of user) (* (calculate-stat user :health) 1/2)) :green)
         ((> (health-of user) (* (calculate-stat user :health) 1/4)) :yellow)
-        :red
-        (/ (health-of user) (calculate-stat user :health)))
+        (t :red))
     (format t " ~a~%Energy: "
         (if (member user (append (allies-of *game*) (list (player-of *game*))))
             (format nil "(~a/~a)"
                 (health-of user)
                 (calculate-stat user :health))
             ""))
-    (draw-bar ((> (energy-of user) (* (calculate-stat user :energy) 1/2)) :green)
+    (draw-bar
+        (/ (energy-of user) (calculate-stat user :energy))
+        ((> (energy-of user) (* (calculate-stat user :energy) 1/2)) :green)
         ((> (energy-of user) (* (calculate-stat user :energy) 1/4)) :yellow)
-        :red
-        (/ (energy-of user) (calculate-stat user :energy)))
+        (t :red))
     (format t " ~a~%"
         (if (member user (append (allies-of *game*) (list (player-of *game*))))
             (format nil "(~a/~a)"
@@ -2743,16 +2757,19 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                     (unless a (push "Clean" a))
                     a))))
     (write-string "Bladder State: ")
-    (draw-bar ((>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)) :red)
+    (draw-bar
+        (/ (bladder/contents-of user) (bladder/maximum-limit-of user))
+        ((>= (bladder/contents-of user) (bladder/potty-desperate-limit-of user)) :red)
+        ((>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)) (:orange :red))
         ((>= (bladder/contents-of user) (bladder/need-to-potty-limit-of user)):yellow)
-        :green
-        (/ (bladder/contents-of user) (bladder/maximum-limit-of user)))
+        (t :green))
     (format t "~%Bowels State: ")
     (draw-bar
-        ((>= (bowels/contents-of user) (bowels/potty-dance-limit-of user)) :red)
+        (/ (bowels/contents-of user) (bowels/maximum-limit-of user))
+        ((>= (bowels/contents-of user) (bowels/potty-desperate-limit-of user)) :red)
+        ((>= (bowels/contents-of user) (bowels/potty-dance-limit-of user)) (:orange :red))
         ((>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user)) :yellow)
-        :green
-        (/ (bowels/contents-of user) (bowels/maximum-limit-of user)))
+        (t :green))
     (format t "~%"))
 (defun present-stats (user)
     (cond

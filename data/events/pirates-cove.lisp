@@ -55,16 +55,12 @@
                                     :species "Raccoon"
                                     :description "Used to be one of the Diapered Raccoon Bandits. Was kicked out after he was forced to give the location of Pirate's Cove to the Navy. He was humiliated constantly by the Diapered Pirates until you rescued him. Is too embarrassed to admit when he as to go unless he's desperate"
                                     :level 5
-                                    :bladder/contents (random (+
-                                                                  (bladder/need-to-potty-limit-of coon)
-                                                                  (* (bladder/fill-rate-of coon)
-                                                                      35)
-                                                                  1))
-                                    :bowels/contents (random (+
-                                                                 (bowels/need-to-potty-limit-of coon)
-                                                                 (* (bowels/fill-rate-of coon)
-                                                                     35)
-                                                                 1))
+                                    :bladder/contents (random (+ (bladder/potty-desperate-limit-of coon)
+                                                                  (/ (- (bladder/potty-desperate-limit-of coon)
+                                                                         (bladder/potty-dance-limit-of coon)))))
+                                    :bowels/contents (random (+ (bowels/potty-desperate-limit-of coon)
+                                                                 (/ (- (bowels/potty-desperate-limit-of coon)
+                                                                        (bowels/potty-dance-limit-of coon)))))
                                     :wear (list
                                               (make-instance 'yadfa/items:bandit-uniform-tunic)
                                               (make-instance 'yadfa/items:thick-rubber-diaper)
@@ -72,10 +68,21 @@
                                                   :sogginess (sogginess-capacity-of diaper)
                                                   :messiness (messiness-capacity-of diaper)))))
                      (do-push coon (team-of *game*) (allies-of *game*))
-                     (format t "*~a grabs the front of his diaper*~%" (name-of coon))
-                     (format t "~a: You don't have to go again do you?~%" (name-of (player-of *game*)))
-                     (format t "~a blushes: No, of course not. I'm not some baby who needs to ask to go to the bathroom all the time~%"
-                         (name-of coon))
-                     (format t "*~a seems too embarrassed to admit when he has to use the toilet. He might change his mind if he gets desperate enough~%"
-                         (name-of coon))
+                     (when (>= (bladder/contents-of coon) (bladder/need-to-potty-limit-of coon))
+                         (format t "*~a grabs the front of his diaper*~%" (name-of coon))
+                         (format t "~a: You don't have to go again do you?~%" (name-of (player-of *game*)))
+                         (if (>= (bladder/contents-of coon) (bladder/potty-dance-limit-of coon))
+                             (progn
+                                 (format t "*~a starts hopping around while holding the front of ~a diaper*~%"
+                                     (name-of coon)
+                                     (if (malep coon) "his" "her")))
+                             (progn
+                                 (format t "*~a takes ~a hands off ~a diaper, fidgets a little and blushes*~%"
+                                     (name-of coon)
+                                     (if (malep coon) "his" "her")
+                                     (if (malep coon) "his" "her"))))
+                         (format t "~a: No, of course not. I'm not some baby who needs to ask to go to the bathroom all the time~%"
+                                     (name-of coon))
+                         (format t "*~a seems too embarrassed to admit when he has to use the toilet. He might change his mind if he gets desperate enough~%"
+                             (name-of coon)))
                      (trigger-event (defevent unlock-slynk)))))
