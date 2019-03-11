@@ -276,29 +276,12 @@
                      (format t "*the 2 wag their tails happily*~%~%")
                      (format t "~a: Mind telling me your names?~%~%" (name-of (player-of *game*)))
                      (let ((c (prompt-for-values
-                                  (string :prompt "Fox Name" :default "Chris" :view clim:+text-field-view+)
-                                  (string :prompt "Vixen Name" :default "Kristy" :view clim:+text-field-view+))))
-                         (setf a (make-instance 'ally
-                                     :name (first c)
-                                     :male t
-                                     :species "Fox"
-                                     :potty-training :rebel
-                                     :description "An orange fox. has gotten accustomed to being treated like a pet and will typically wear nothing but a collar, refuses to be housebroken like a good fox so he must be diapered at all times."
-                                     :wear (list
-                                               (make-instance 'yadfa/items:gold-collar)
-                                               (make-instance 'yadfa/items:bandit-diaper)))
-                             b (make-instance 'ally
-                                   :name (second c)
-                                   :male nil
-                                   :potty-training :none
-                                   :species "Fox"
-                                   :description "A beautiful orange vixen who has a personality that is more like a child than an adult. Loves wearing thick diapers, can't stand pants. Has gone without diapers for so long that she has become dependent on them."
-                                   :wear (list
-                                             (make-instance 'yadfa/items:toddler-dress)
-                                             (make-instance 'yadfa/items:bandit-female-diaper))
-                                   :level 5
-                                   :exp (calculate-level-to-exp 5)
-                                   ))
+                                  (string :prompt "Fox Name" :default #.(name-of (make-instance 'yadfa/allies:chris)) :view clim:+text-field-view+)
+                                  (string :prompt "Vixen Name" :default #.(name-of (make-instance 'yadfa/allies:kristy)) :view clim:+text-field-view+))))
+                         (setf a (make-instance 'yadfa/allies:chris
+                                     :name (first c))
+                             b (make-instance 'yadfa/allies:kristy
+                                   :name (second c)))
                          (loop for i in (list a b) do (do-push i (team-of *game*) (allies-of *game*)))
                          (format t "Fox: I'm ~a~%~%" (name-of a))
                          (format t "Vixen: And I'm ~a~%~%" (name-of b))
@@ -306,9 +289,7 @@
                          (format t "~a: I'm ~a. Now lets get you dressed~%~%"
                              (name-of (player-of *game*))
                              (name-of (player-of *game*)))
-                         (format t "*~a puts the new clothes and diapers on the foxes*~%~%" (name-of a))
-                         (iter (for i in '(unlock-chris unlock-kristy))
-                             (trigger-event (defevent i)))))))
+                         (format t "*~a puts the new clothes and diapers on the foxes*~%~%" (name-of a))))))
 (defevent get-warp-pipe-summoner-1
     :finished-depends '(enter-bandits-shop-1 enter-bandits-kennel-1)
     :lambda '(lambda (self)

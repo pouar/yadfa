@@ -385,6 +385,13 @@
     (:export
         #:get-diaper-locked-1)
     (:documentation "Contains all the event definitions in the game"))
+(uiop:define-package #:yadfa/allies
+    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:export
+        #:slynk
+        #:chris
+        #:kristy)
+    (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package #:yadfa-user
     (:use #:yadfa #:yadfa/bin #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:documentation "The package that the player typically executes commands from"))
