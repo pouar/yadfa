@@ -237,7 +237,12 @@
               (funcall (coerce (event-predicate (get-event event-id)) 'function)
                   (get-event event-id))
               (or (event-repeatable (get-event event-id)) (not (finished-events (list event-id))))
-              (or (not (event-optional (get-event event-id))) (car (prompt-for-values (boolean :prompt "accept quest" :default t)))))
+              (or (not (event-optional (get-event event-id)))
+                  (car (prompt-for-values
+                           (boolean
+                               :prompt "accept quest"
+                               :default t
+                               :view clim:+toggle-button-view+)))))
         (setf (major-event-of *game*) event-id)
         (funcall (coerce (event-lambda (get-event event-id)) 'function) (get-event event-id))
         (unless (event-major (get-event event-id))
@@ -663,7 +668,8 @@
              (setf (get-zone ',position)
                  (make-instance
                      'zone ,@body)))
-         (export ',(fourth position) ',(symbol-package (fourth position)))))
+         (export ',(fourth position) ',(symbol-package (fourth position)))
+         (get-zone ',position)))
 (defmacro make-pocket-zone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
     #+sbcl (declare (type list position))
@@ -1441,12 +1447,7 @@
             :had-accident)
         ((>=
              (bladder/contents-of user)
-             (+ (bladder/potty-dance-limit-of user)
-                 (/
-                     (-
-                         (bladder/maximum-limit-of user)
-                         (bladder/potty-dance-limit-of user))
-                     2)))
+             (bladder/potty-desperate-limit-of user))
             :desparate)
         ((>= (bladder/contents-of user) (bladder/potty-dance-limit-of user))
             :potty-dance)))
@@ -1458,12 +1459,7 @@
             :had-accident)
         ((>=
              (bowels/contents-of user)
-             (+ (bowels/potty-dance-limit-of user)
-                 (/
-                     (-
-                         (bowels/maximum-limit-of user)
-                         (bowels/potty-dance-limit-of user))
-                     2)))
+             (bowels/potty-desperate-limit-of user))
             :desparate)
         ((>= (bowels/contents-of user) (bowels/potty-dance-limit-of user))
             :potty-dance)))
@@ -2883,8 +2879,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                     (when (or (not (member i (finished-events-of *game*)))
                               (event-repeatable (get-event i)))
                         (funcall (coerce (event-lambda (get-event i)) 'function) i)
-                        (pushnew i (finished-events-of *game*))
-                        (collect i)))
+                        (pushnew i (finished-events-of *game*))))
                 (when *battle* (return-from finish-battle)))))
     (unuse-package :yadfa/battle :yadfa-user)
     (use-package :yadfa/world :yadfa-user))
@@ -3618,13 +3613,13 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                   (prompt-for-values
                       (string
                           :prompt "Name"
-                          :default (name-of default))
+                          :default (name-of default) :view clim:+text-field-view+)
                       (boolean
                           :prompt "Is Male"
                           :default (malep default) :view clim:+toggle-button-view+)
                       (string
                           :prompt "Species"
-                          :default (species-of default))
+                          :default (species-of default) :view clim:+text-field-view+)
                       ((clim:completion (yadfa/items:tshirt yadfa/items:short-dress nil))
                           :prompt "Top clothes"
                           :default 'yadfa/items:tshirt :view clim:+option-pane-view+)
@@ -3646,6 +3641,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                                      :species (third values)
                                      :bladder/need-to-potty-limit (getf '(:normal 300 :low 200 :overactive 149) (eighth values))
                                      :bladder/potty-dance-limit (getf '(:normal 450 :low 300 :overactive 150) (eighth values))
+                                     :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) (eighth values))
                                      :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) (eighth values))
                                      :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) (eighth values))
                                      :wear (iter (for i in (cdddr (butlast values)))

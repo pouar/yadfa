@@ -132,11 +132,13 @@
         #:bladder/fill-rate-of
         #:bladder/need-to-potty-limit-of
         #:bladder/potty-dance-limit-of
+        #:bladder/potty-desperate-limit-of
         #:bladder/maximum-limit-of
         #:bowels/contents-of
         #:bowels/fill-rate-of
         #:bowels/need-to-potty-limit-of
         #:bowels/potty-dance-limit-of
+        #:bowels/potty-desperate-limit-of
         #:bowels/maximum-limit-of
         #:moves-of
         #:exp-of

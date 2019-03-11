@@ -44,7 +44,7 @@
                          (if (malep a) "his" "her"))
                      (write-line "Raccoon: umm, thanks.")
                      (format t "~a: got a name?~%" (name-of (player-of *game*)))
-                     (setf (name-of coon) (first (prompt-for-values (string :prompt "Raccoon Name" :default "Slynk"))))
+                     (setf (name-of coon) (first (prompt-for-values (string :prompt "Raccoon Name" :default "Slynk" :view clim:+text-field-view+))))
                      (format t "Raccoon: It's ~a~%" (name-of coon))
                      (format t "~a decides you can't be all bad since you're the first one to be nice to him (plus the Raccoon Bandits abandoned him) and decides to join your team~%"
                          (name-of coon))
@@ -53,16 +53,18 @@
                                     :male t
                                     :potty-training :last-minute
                                     :species "Raccoon"
-                                    :description "Used to be one of the Diapered Raccoon Bandits. Was kicked out after he was forced to give the location of Pirate's Cove to the Navy. He was humiliated constantly by the Diapered Pirates until you rescued him"
+                                    :description "Used to be one of the Diapered Raccoon Bandits. Was kicked out after he was forced to give the location of Pirate's Cove to the Navy. He was humiliated constantly by the Diapered Pirates until you rescued him. Is too embarrassed to admit when he as to go unless he's desperate"
                                     :level 5
-                                    :bladder/contents (+
-                                                          (bladder/need-to-potty-limit-of coon)
-                                                          (* (bladder/fill-rate-of coon)
-                                                              35))
-                                    :bowels/contents (+
-                                                         (bowels/need-to-potty-limit-of coon)
-                                                         (* (bowels/fill-rate-of coon)
-                                                             35))
+                                    :bladder/contents (random (+
+                                                                  (bladder/need-to-potty-limit-of coon)
+                                                                  (* (bladder/fill-rate-of coon)
+                                                                      35)
+                                                                  1))
+                                    :bowels/contents (random (+
+                                                                 (bowels/need-to-potty-limit-of coon)
+                                                                 (* (bowels/fill-rate-of coon)
+                                                                     35)
+                                                                 1))
                                     :wear (list
                                               (make-instance 'yadfa/items:bandit-uniform-tunic)
                                               (make-instance 'yadfa/items:thick-rubber-diaper)
@@ -74,5 +76,6 @@
                      (format t "~a: You don't have to go again do you?~%" (name-of (player-of *game*)))
                      (format t "~a blushes: No, of course not. I'm not some baby who needs to ask to go to the bathroom all the time~%"
                          (name-of coon))
-                     (format t "*~a seems too embarrassed to admit when he has to use the toilet. He might change his mind if he gets desparate enough~%"
-                         (name-of coon)))))
+                     (format t "*~a seems too embarrassed to admit when he has to use the toilet. He might change his mind if he gets desperate enough~%"
+                         (name-of coon))
+                     (trigger-event (defevent unlock-slynk)))))

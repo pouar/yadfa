@@ -276,8 +276,8 @@
                      (format t "*the 2 wag their tails happily*~%~%")
                      (format t "~a: Mind telling me your names?~%~%" (name-of (player-of *game*)))
                      (let ((c (prompt-for-values
-                                  (string :prompt "Fox Name" :default "Chris")
-                                  (string :prompt "Vixen Name" :default "Kristy"))))
+                                  (string :prompt "Fox Name" :default "Chris" :view clim:+text-field-view+)
+                                  (string :prompt "Vixen Name" :default "Kristy" :view clim:+text-field-view+))))
                          (setf a (make-instance 'ally
                                      :name (first c)
                                      :male t
@@ -306,7 +306,9 @@
                          (format t "~a: I'm ~a. Now lets get you dressed~%~%"
                              (name-of (player-of *game*))
                              (name-of (player-of *game*)))
-                         (format t "*~a puts the new clothes and diapers on the foxes*~%~%" (name-of a))))))
+                         (format t "*~a puts the new clothes and diapers on the foxes*~%~%" (name-of a))
+                         (iter (for i in '(unlock-chris unlock-kristy))
+                             (trigger-event (defevent i)))))))
 (defevent get-warp-pipe-summoner-1
     :finished-depends '(enter-bandits-shop-1 enter-bandits-kennel-1)
     :lambda '(lambda (self)

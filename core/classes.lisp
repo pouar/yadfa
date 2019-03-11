@@ -135,6 +135,11 @@
             :initform 450
             :accessor bladder/potty-dance-limit-of
             :documentation "How full the character's bladder needs to be before the character starts doing a potty dance")
+        (bladder/potty-desperate-limit
+            :initarg :bladder/potty-desperate-limit
+            :initform 525
+            :accessor bladder/potty-desperate-limit-of
+            :documentation "How full the character's bladder needs to be before the character starts begging to be taken to the bathroom, currently only applies to NPCs")
         (bladder/maximum-limit
             :initarg :bladder/maximum-limit
             :initform 600
@@ -160,6 +165,11 @@
             :initform 6000
             :accessor bowels/potty-dance-limit-of
             :documentation "How full the character's bowels need to be before the character starts doing a potty dance")
+        (bowels/potty-desperate-limit
+            :initarg :bowels/potty-desperate-limit
+            :initform 7000
+            :accessor bowels/potty-desperate-limit-of
+            :documentation "How full the character's bowels needs to be before the character starts begging to be taken to the bathroom, currently only applies to NPCs")
         (bowels/maximum-limit
             :initarg :bowels/maximum-limit
             :initform 8000
