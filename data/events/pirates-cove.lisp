@@ -47,12 +47,21 @@
                      (write-line "Raccoon: umm, thanks.")
                      (format t "~a: got a name?~%" (name-of (player-of *game*)))
                      (setf coon (make-instance 'yadfa/allies:slynk
-                                    :name (first (prompt-for-values (string :prompt "Raccoon Name" :default #.(name-of (make-instance 'yadfa/allies:slynk)) :view clim:+text-field-view+)))))
+                                    :name (first
+                                              (prompt-for-values
+                                                  (string
+                                                      :prompt "Raccoon Name"
+                                                      :default #.(second
+                                                                     (assoc :name
+                                                                         (progn
+                                                                             (ensure-finalized
+                                                                                 (find-class 'yadfa/allies:slynk))
+                                                                             (compute-default-initargs
+                                                                                 (find-class 'yadfa/allies:slynk)))))
+                                                      :view clim:+text-field-view+)))))
                      (format t "Raccoon: It's ~a~%" (name-of coon))
                      (format t "~a decides you can't be all bad since you're the first one to be nice to him (plus the Raccoon Bandits abandoned him) and decides to join your team~%"
                          (name-of coon))
-                     (setf coon (make-instance 'yadfa/allies:slynk
-                                    :name (name-of coon)))
                      (do-push coon (team-of *game*) (allies-of *game*))
                      (when (>= (bladder/contents-of coon) (bladder/need-to-potty-limit-of coon))
                          (format t "*~a grabs the front of his diaper*~%" (name-of coon))

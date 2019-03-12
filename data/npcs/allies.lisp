@@ -4,6 +4,15 @@
         :name "Slynk"
         :male t
         :potty-training :last-minute
+        :wear (let ((diaper
+                        (progn (ensure-finalized (find-class 'yadfa/items:bandit-adjustable-diaper))
+                            (compute-default-initargs (find-class 'yadfa/items:bandit-adjustable-diaper)))))
+                  (list
+                      (make-instance 'yadfa/items:bandit-uniform-tunic)
+                      (make-instance 'yadfa/items:thick-rubber-diaper)
+                      (make-instance 'yadfa/items:bandit-adjustable-diaper
+                          :sogginess (second (assoc :sogginess-capacity diaper))
+                          :messiness (second (assoc :messiness-capacity diaper)))))
         :species "Raccoon"
         :description "Used to be one of the Diapered Raccoon Bandits. Was kicked out after he was forced to give the location of Pirate's Cove to the Navy. He was humiliated constantly by the Diapered Pirates until you rescued him. Is too embarrassed to admit when he as to go unless he's desperate"
         :level 5))
@@ -20,17 +29,7 @@
         (setf (bowels/contents-of c)
             (random (float (+ (bowels/potty-desperate-limit-of c)
                                (/ (- (bowels/potty-desperate-limit-of c)
-                                      (bowels/potty-dance-limit-of c))))))))
-    (unless (iter (for (a b) on args)
-                (when (eq a :wear) (leave t)))
-        (let ((diaper (make-instance 'yadfa/items:bandit-adjustable-diaper)))
-            (setf (wear-of c)
-                (list
-                    (make-instance 'yadfa/items:bandit-uniform-tunic)
-                    (make-instance 'yadfa/items:thick-rubber-diaper)
-                    (make-instance 'yadfa/items:bandit-adjustable-diaper
-                        :sogginess (sogginess-capacity-of diaper)
-                        :messiness (messiness-capacity-of diaper)))))))
+                                      (bowels/potty-dance-limit-of c)))))))))
 (defclass chris (ally) ()
     (:default-initargs
         :name "Chris"

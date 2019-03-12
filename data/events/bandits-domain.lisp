@@ -276,8 +276,26 @@
                      (format t "*the 2 wag their tails happily*~%~%")
                      (format t "~a: Mind telling me your names?~%~%" (name-of (player-of *game*)))
                      (let ((c (prompt-for-values
-                                  (string :prompt "Fox Name" :default #.(name-of (make-instance 'yadfa/allies:chris)) :view clim:+text-field-view+)
-                                  (string :prompt "Vixen Name" :default #.(name-of (make-instance 'yadfa/allies:kristy)) :view clim:+text-field-view+))))
+                                  (string
+                                      :prompt "Fox Name"
+                                      :default #.(second
+                                                     (assoc :name
+                                                         (progn
+                                                             (ensure-finalized
+                                                                 (find-class 'yadfa/allies:chris))
+                                                             (compute-default-initargs
+                                                                 (find-class 'yadfa/allies:chris)))))
+                                      :view clim:+text-field-view+)
+                                  (string
+                                      :prompt "Vixen Name"
+                                      :default #.(second
+                                                     (assoc :name
+                                                         (progn
+                                                             (ensure-finalized
+                                                                 (find-class 'yadfa/allies:kristy))
+                                                             (compute-default-initargs
+                                                                 (find-class 'yadfa/allies:kristy)))))
+                                      :view clim:+text-field-view+))))
                          (setf a (make-instance 'yadfa/allies:chris
                                      :name (first c))
                              b (make-instance 'yadfa/allies:kristy

@@ -227,7 +227,7 @@
     (:documentation "Team member that is not the player")
     (:default-initargs
         :base-stats (list :health 35 :attack 55 :defense 40 :energy 35 :speed 90)
-        :name "anon"
+        :name "Anon"
         :level 5
         :species "fox"
         :bladder/fill-rate (* (/ 2000 24 60) 2)
