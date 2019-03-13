@@ -7,19 +7,6 @@
 (clim:define-command (yadfa-gc :command-table yadfa-menu-commands :menu "GC")
     ()
     (trivial-garbage:gc :full t))
-(clim:define-command (yadfa-about :command-table yadfa-menu-commands :menu "About Yadfa")
-    ()
-    (dolist (i '("README" "AUTHORS"))
-        (format t "~a:~%" i)
-        (with-open-file (s (uiop:merge-pathnames*
-                               i
-                               (if uiop:*image-dumped-p*
-                                   (pathname (directory-namestring (truename (uiop:argv0))))
-                                   (asdf:system-source-directory :yadfa)))
-                            :direction :input)
-            (loop until (let ((ret (multiple-value-list (read-line s nil))))
-                            (format t "~a~%" (if (first ret) (first ret) ""))
-                            (second ret))))))
 (unless
     (clim:find-menu-item "Yadfa" (clim:find-command-table 'clim-listener::listener) :errorp nil)
     (clim:add-menu-item-to-command-table (clim:find-command-table 'clim-listener::listener) "Yadfa" :menu (clim:find-command-table 'yadfa-menu-commands)))
