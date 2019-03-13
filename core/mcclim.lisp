@@ -103,8 +103,8 @@
         :documentation "Describe"
         :pointer-documentation "Describe"
         :tester ((object presentation)
-              (declare (ignore object))
-              (not (eq presentation climi::*null-presentation*)))
+                    (declare (ignore object))
+                    (not (eq presentation climi::*null-presentation*)))
         :menu nil)
     (object)
     (list object))
