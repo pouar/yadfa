@@ -48,3 +48,10 @@
         :sellable nil
         :tossable nil
         :description "Collect as many of these fuckers as you possibly can. Don't ask why, just do it."))
+(defclass itemfinder (item) ()
+    (:default-initargs
+        :name "Itemfinder"
+        :description "Returns T anytime a hidden item is nearby. It is based on Pouar's ability to detect whatever he has to say is offensive or not. It uses the same algorithm, is about as effective, and has about as many happy customers. Also, if you wrap the function in a not function, it becomes the same algorithm SJWs use to decide whatever they hear is offensive or not."
+        :use-script '(lambda (item user)
+                         (declare (ignore item user))
+                         nil)))

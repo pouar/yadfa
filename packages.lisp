@@ -337,7 +337,8 @@
         #:navy-pullups
         #:pirate-dress
         #:pirate-shirt
-        #:macguffin)
+        #:macguffin
+        #:itemfinder)
     (:documentation "Contains all the items in the game"))
 (uiop:define-package #:yadfa/npcs
     (:import-from #:macro-level #:macro-level)
