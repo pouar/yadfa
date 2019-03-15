@@ -93,7 +93,8 @@
                            (let ((a (calculate-damage target user (default-attack-power-of user))))
                                (format t "~a attacks ~a~%" (name-of user) (name-of target))
                                (decf (health-of target) a)
-                               (format t "~a received ~a damage~%" (name-of target) a)))
+                               (format t "~a received ~a damage~%" (name-of target) a)
+                               a))
             :documentation "The default attack when no attack is selected and no weapon is equipped")
         (level
             :initarg :level
@@ -424,7 +425,8 @@
                            (let ((a (calculate-damage target user (power-of self))))
                                (format t "~a used ~a~%" (name-of user) (name-of self))
                                (decf (health-of target) a)
-                               (format t "~a received ~a damage~%" (name-of target) a)))
+                               (format t "~a received ~a damage~%" (name-of target) a)
+                               a))
             :accessor attack-of
             :documentation "function that performs the move. TARGET is the enemy that is being attacked and USER is the one doing the attacking, SELF is the move itself"))
     (:documentation "base class of moves used in battle"))

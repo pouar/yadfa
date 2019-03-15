@@ -9,4 +9,5 @@
                      (format t
                          "KAM-E-HAM-E-HA!!! *loud energy blast noise*~%Ok, not as dramatic in a text based game~%")
                      (decf (health-of target) (calculate-damage target user 200))
-                     (decf (energy-of user) (energy-cost-of self)))))
+                     (decf (energy-of user) (energy-cost-of self))
+                     (calculate-damage target user 200))))
