@@ -3531,6 +3531,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                        (iter (for i in (enemies-of *battle*))
                            (when (>= (health-of i) 0)
                                (leave i))))))
+              (ret nil)
               (team-attacked no-team-attack))
         (flet ((check-if-done ()
                    (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
@@ -3560,10 +3561,11 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
             (iter
                 (until (and team-attacked (typep (first (turn-queue-of *battle*)) 'team-member)))
                 (check-if-done)
-                (let ((current-character (pop (turn-queue-of *battle*))))
-                    (process-battle-turn current-character attack item reload selected-target)
+                (let* ((current-character (pop (turn-queue-of *battle*)))
+                          (new-ret (process-battle-turn current-character attack item reload selected-target)))
                     (when (typep current-character 'team-member)
-                        (setf team-attacked t)))
+                        (setf team-attacked t
+                            ret new-ret)))
                 (check-if-done)
                 (unless (turn-queue-of *battle*)
                     (appendf (turn-queue-of *battle*)
@@ -3572,7 +3574,8 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                                       (collect i)))
                             '>
                             :key #'(lambda (a) (calculate-stat a :speed))))))
-            (format t "~a is next in battle~%" (name-of (first (turn-queue-of *battle*)))))))
+            (format t "~a is next in battle~%" (name-of (first (turn-queue-of *battle*))))
+            ret)))
 (defun ally-join (ally)
     (format t "~a Joins the team~%" (name-of ally))
     (when (> (bitcoins-of ally) 0)
@@ -3596,19 +3599,21 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
     (let ((script
               (if action
                   (action-lambda (getf (special-actions-of item) action))
-                  (use-script-of item))))
+                  (use-script-of item)))
+             (ret nil))
         (unless (apply (coerce (cant-use-predicate-of item) 'function)
                     item user keys)
             (if script
                 (progn
-                    (apply (coerce script 'function) item target (when action keys))
+                    (setf ret (apply (coerce script 'function) item target (when action keys)))
                     (when (consumablep item)
                         (removef (inventory-of user) item)))
                 (write-line "You can't do that with that item")))
         (when (> (health-of target) (calculate-stat target :health))
             (setf (health-of target) (calculate-stat target :health)))
         (when (> (energy-of target) (calculate-stat target :energy))
-            (setf (energy-of target) (calculate-stat target :energy)))))
+            (setf (energy-of target) (calculate-stat target :energy)))
+        ret))
 
 (defun set-player (name malep species)
     "Sets the name, gender, and species of the player"

@@ -1052,7 +1052,8 @@
                              ((typep item '(or symbol list))
                                  (find item (inventory-of (player-of *game*))
                                      :test #'(lambda (type-specifier obj)
-                                                 (typep obj type-specifier)))))))
+                                                 (typep obj type-specifier))))))
+             (ret nil))
         (unless selected-item
             (format t "You don't have that item~%")
             (return-from yadfa/world:use-item))
@@ -1062,13 +1063,14 @@
         (let ((this-user (if user
                              (nth user (allies-of *game*))
                              (player-of *game*))))
-            (apply #'use-item%
-                selected-item
-                (player-of *game*)
-                :target this-user
-                keys)
+            (setf ret (apply #'use-item%
+                          selected-item
+                          (player-of *game*)
+                          :target this-user
+                          keys))
             (process-potty)
-            (loop for i in (allies-of *game*) do (process-potty i)))))
+            (loop for i in (allies-of *game*) do (process-potty i))
+            ret)))
 (defun yadfa/battle:use-item (item &key target enemy-target)
     "Uses an item. Item is an index of an item in your inventory. TARGET is an index of your team. Setting this to 0 will use it on yourself. ENEMY-TARGET is an index of an enemy in battle if you're using it on an enemy in battle. Only specify either a TARGET or ENEMY-TARGET. Setting both might make the game's code unhappy"
     #+sbcl (declare
