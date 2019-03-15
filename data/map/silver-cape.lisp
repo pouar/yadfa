@@ -127,9 +127,9 @@
                                                                       (declare (type prop prop) (ignore prop))
                                                                       (write-line "Dolphin: Welcome to navy HQ"))))
                                                          (description-of
-                                                               (getf (get-props-from-zone
-                                                                         (position-of (player-of *game*)))
-                                                                   :guard))
+                                                             (getf (get-props-from-zone
+                                                                       (position-of (player-of *game*)))
+                                                                 :guard))
                                                          "A dolphin wearing pullups"))))))))))))
 (ensure-zone (1 5 0 silver-cape)
     :name "Silver Cape Pokemon Center"
@@ -154,4 +154,4 @@
     :name "Silver Cape Dock"
     :description "A Dock that heads to the ocean"
     :enter-text "You enter the street"
-    :warp-points '(:your-ship (-1 6 0 yadfa/zones:your-ship)))
+    :warp-points (list :your-ship '(-1 6 0 yadfa/zones:your-ship)))

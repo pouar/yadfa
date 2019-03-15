@@ -9,10 +9,10 @@
                         :enter-text "You follow the path"
                         :warp-points ',(when (= i 0) '(ironside (2 0 0 ironside)))
                         :enemy-spawn-list
-                        '((:max-random 8
-                              :enemies ((yadfa/npcs:female-diapered-raccoon-bandit .
-                                            (list :level (random-from-range 2 5)))))
-                             (:max-random 8
+                        (list '(:max-random 8
+                                   :enemies ((yadfa/npcs:female-diapered-raccoon-bandit .
+                                                 (list :level (random-from-range 2 5)))))
+                            '(:max-random 8
                                  :enemies ((yadfa/npcs:rookie-diapered-raccoon-bandit .
                                                (list :level (random-from-range 2 5)))))))))))
 
@@ -121,20 +121,20 @@
                                         :description "A cove filled with bandits"
                                         :enter-text "You're at a cove runned by bandits"
                                         :enemy-spawn-list
-                                        '((:max-random 10
-                                              :enemies
-                                              ((yadfa/npcs:rookie-diapered-raccoon-bandit .
-                                                   (list
-                                                       :level (random-from-range 2 5)
-                                                       :wear (list
-                                                                 (make-instance
-                                                                     'yadfa/items:lower-bandit-swim-diaper-cover)
-                                                                 (make-instance
-                                                                     'yadfa/items:bandit-diaper
-                                                                     :sogginess (random 1000)
-                                                                     :messiness (random 6000)))
-                                                       :level (random-from-range 2 5)))))
-                                             (:max-random 10
+                                        (list '(:max-random 10
+                                                   :enemies
+                                                   ((yadfa/npcs:rookie-diapered-raccoon-bandit .
+                                                        (list
+                                                            :level (random-from-range 2 5)
+                                                            :wear (list
+                                                                      (make-instance
+                                                                          'yadfa/items:lower-bandit-swim-diaper-cover)
+                                                                      (make-instance
+                                                                          'yadfa/items:bandit-diaper
+                                                                          :sogginess (random 1000)
+                                                                          :messiness (random 6000)))
+                                                            :level (random-from-range 2 5)))))
+                                            '(:max-random 10
                                                  :enemies
                                                  ((yadfa/npcs:diapered-raccoon-bandit .
                                                       (list
@@ -147,7 +147,7 @@
                                                                     (make-instance
                                                                         'yadfa/items:bandit-diaper))
                                                           :level (random-from-range 2 5)))))
-                                             (:max-random 10
+                                            '(:max-random 10
                                                  :enemies
                                                  ((yadfa/npcs:female-diapered-raccoon-bandit .
                                                       (list
