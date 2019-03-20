@@ -8,6 +8,12 @@
 #+(and sbcl gmp) (sb-gmp:install-gmp-funs)
 (pushnew :yadfa/mods *features*)
 (pushnew :yadfa/docs *features*)
+(ql:update-client
+    :prompt nil)
+(ql:update-all-dists
+    :prmpt nil)
+(ql-dist:install-dist "http://dist.ultralisp.org/"
+    :prompt nil)
 (ql:quickload :yadfa)
 (in-package :yadfa)
 (yadfa::main)

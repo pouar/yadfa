@@ -7,6 +7,12 @@
         (load quicklisp-init)))
 #+(and gmp sbcl) (require 'sb-gmp)
 #+(and sbcl gmp) (sb-gmp:install-gmp-funs)
+(ql:update-client
+    :prompt nil)
+(ql:update-all-dists
+    :prmpt nil)
+(ql-dist:install-dist "http://dist.ultralisp.org/"
+    :prompt nil)
 (pushnew :yadfa/mods *features*)
 (asdf:make :yadfa)
 (#__exit 0)
