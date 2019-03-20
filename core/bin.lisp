@@ -871,7 +871,7 @@
         (user
             (present-stats (nth user (allies-of *game*))))
         (t
-            (iter (for i in (append (list (player-of *game*)) (allies-of *game*)))
+            (iter (for i in (cons (player-of *game*) (allies-of *game*)))
                 (present-stats i)))))
 (defun yadfa/world:go-potty (&key prop wet mess pull-pants-down user)
     "Go potty. PROP is a keyword identifying the prop you want to use. If it's a toilet, use the toilet like a big boy. if it's not. Go potty on it like an animal. If you want to wet yourself, leave PROP as NIL. WET is the amount you want to pee in ml. MESS is the amount in cg, set WET and/or MESS to T to empty yourself completely. set PULL-PANTS-DOWN to non-NIL to pull your pants down first. USER is the index value of an ALLY you have. Set this to NIL if you're referring to yourself"

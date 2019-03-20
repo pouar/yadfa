@@ -319,7 +319,7 @@
         (when (and
                   (diapers-only-p (get-zone destination))
                   (setf wearing-pants
-                      (iter (for i in (append (list (player-of *game*)) (allies-of *game*)))
+                      (iter (for i in (cons (player-of *game*) (allies-of *game*)))
                           (when (or
                                     (<
                                         (list-length (wearingp (wear-of i) 'incontinence-product))
@@ -339,8 +339,8 @@
                               (typep a (lockedp (get-zone destination))))
                           (append
                               (inventory-of (player-of *game*))
-                              (list (wield-of (player-of *game*)))
-                              (wear-of (player-of *game*))
+                              (cons (wield-of (player-of *game*))
+                                  (wear-of (player-of *game*)))
                               (let ((a ()))
                                   (iter (for i in (allies-of *game*))
                                       (push (wield-of i) a)
@@ -357,8 +357,8 @@
                               (typep a (getf-direction position direction :locked)))
                           (append
                               (inventory-of (player-of *game*))
-                              (list (wield-of (player-of *game*)))
-                              (wear-of (player-of *game*))
+                              (cons (wield-of (player-of *game*))
+                                  (wear-of (player-of *game*)))
                               (let ((a ()))
                                   (iter (for i in (allies-of *game*))
                                       (push (wield-of i) a)
@@ -440,8 +440,8 @@
                             (aref array b)))))
         (let ((pattern
                   (print-map-pattern-cache #P"blank.xpm" (list clim:+background-ink+ clim:+foreground-ink+)))
-                 (pos (when clim-listener::*application-frame*
-                          (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
+                 (start-position (when clim-listener::*application-frame*
+                                     (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
             (if clim-listener::*application-frame*
                 (push
                     (clim:updating-output (t)
@@ -452,51 +452,51 @@
                                       from (- (second position) 15)
                                       to (+ (second position) 15))
                                 (for y-pos
-                                    from (second pos)
-                                    to (+ (second pos) (* 30 (clim:pattern-height pattern)))
+                                    from (second start-position)
+                                    to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
                                     by (clim:pattern-height pattern))
                                 (iter (for x
                                           from (- (first position) 15)
                                           to (+ (first position) 15))
                                     (for x-pos
-                                        from (first pos)
-                                        to (+ (first pos) (* 30 (clim:pattern-width pattern)))
+                                        from (first start-position)
+                                        to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
                                         by (clim:pattern-width pattern))
-                                    (let* ((char
-                                               (cons
-                                                   (if (or (and
-                                                               (get-zone (list x y (third position) (fourth position)))
-                                                               (hiddenp (get-zone (list x y (third position) (fourth position)))))
-                                                           (not (get-zone (list x y (third position) (fourth position)))))
-                                                       "blank.xpm"
-                                                       (a (list x y (third position) (fourth position))))
-                                                   (clim:make-rgb-color
-                                                       (if (and
-                                                               (get-zone (list x y (third position) (fourth position)))
-                                                               (warp-points-of (get-zone (list x y (third position) (fourth position)))))
-                                                           1
-                                                           0)
-                                                       (if (equal (append (list x y) (cddr position)) (position-of (player-of *game*)))
-                                                           0.7
-                                                           0)
-                                                       (if (or
-                                                               (travelablep (list x y (third position) (fourth position)) :up)
-                                                               (travelablep (list x y (third position) (fourth position)) :down))
-                                                           1
-                                                           0)))))
-                                        (progn
-                                            (setf pattern
-                                                (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
-                                            (when (get-zone (list x y (third position) (fourth position)))
-                                                (clim:with-output-as-presentation
-                                                    (*standard-output*
-                                                        (get-zone (list x y (third position) (fourth position)))
-                                                        'zone)
-                                                    (clim:draw-pattern*
-                                                        *standard-output*
-                                                        pattern
-                                                        x-pos
-                                                        y-pos)))))))))
+                                    (let* ((current-position (append (list x y) (cddr position)))
+                                              (char
+                                                  (cons
+                                                      (if (or (and
+                                                                  (get-zone current-position)
+                                                                  (hiddenp (get-zone current-position)))
+                                                              (not (get-zone current-position)))
+                                                          "blank.xpm"
+                                                          (a current-position))
+                                                      (clim:make-rgb-color
+                                                          (if (and
+                                                                  (get-zone current-position)
+                                                                  (warp-points-of (get-zone current-position)))
+                                                              1
+                                                              0)
+                                                          (if (equal current-position (position-of (player-of *game*)))
+                                                              0.7
+                                                              0)
+                                                          (if (or
+                                                                  (travelablep current-position :up)
+                                                                  (travelablep current-position :down))
+                                                              1
+                                                              0)))))
+                                        (setf pattern
+                                            (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
+                                        (when (get-zone current-position)
+                                            (clim:with-output-as-presentation
+                                                (*standard-output*
+                                                    (get-zone (list x y (third position) (fourth position)))
+                                                    'zone)
+                                                (clim:draw-pattern*
+                                                    *standard-output*
+                                                    pattern
+                                                    x-pos
+                                                    y-pos))))))))
                     *records*)
                 (iter (for y
                           from (- (second position) 15)
@@ -504,26 +504,27 @@
                     (iter (for x
                               from (- (first position) 15)
                               to (+ (first position) 15))
-                        (let* ((char
-                                   (cond
-                                       ((equal (append (list x y) (cddr position)) (position-of (player-of *game*)))
-                                           "@")
-                                       ((and
-                                            (get-zone (list x y (third position) (fourth position)))
-                                            (hiddenp (get-zone (list x y (third position) (fourth position)))))
-                                           " ")
-                                       ((and
-                                            (get-zone (list x y (third position) (fourth position)))
-                                            (warp-points-of (get-zone (list x y (third position) (fourth position)))))
-                                           "▒")
-                                       ((get-zone (list x y (third position) (fourth position)))
-                                           (a (list x y (third position) (fourth position))))
-                                       (t " "))))
+                        (let* ((current-position (append (list x y) (cddr position)))
+                                  (char
+                                      (cond
+                                          ((equal current-position (position-of (player-of *game*)))
+                                              "@")
+                                          ((and
+                                               (get-zone current-position)
+                                               (hiddenp (get-zone current-position)))
+                                              " ")
+                                          ((and
+                                               (get-zone current-position)
+                                               (warp-points-of (get-zone current-position)))
+                                              "▒")
+                                          ((get-zone current-position)
+                                              (a current-position))
+                                          (t " "))))
                             (format t "~a" char)))
                     (format t "~%")))
             (when clim-listener::*application-frame*
                 (clim:stream-set-cursor-position
-                    *standard-output* (first pos) (+ (second pos) (* 31 (clim:pattern-height pattern))))))))
+                    *standard-output* (first start-position) (+ (second start-position) (* 31 (clim:pattern-height pattern))))))))
 (defun print-enter-text (position &optional old-position old-direction)
     (let ((old-direction (find old-direction (warp-points-of (get-zone old-position))
                              :test (lambda (a b)
@@ -534,15 +535,15 @@
                 (getf-direction old-position old-direction :exit-text)
                 (enter-text-of (get-zone position)))))
     (flet ((z (delta direction)
-               (when (and (get-zone (append (mapcar #'+ (butlast position) delta)
-                                        (last position)))
-                         (not (hiddenp (get-zone (append (mapcar #'+ (butlast position) delta)
-                                                     (last position))))))
-                   (format t "To ~s is ~a. "
-                       direction
-                       (name-of
-                           (get-zone (append (mapcar #'+ (butlast position) delta)
-                                         (last position))))))))
+               (let ((current-position
+                         (append (mapcar #'+ (butlast position) delta)
+                             (last position))))
+                   (when (and (get-zone current-position)
+                             (not (hiddenp (get-zone current-position))))
+                       (format t "To ~s is ~a. "
+                           direction
+                           (name-of
+                               (get-zone current-position)))))))
         (z '(-1 0 0) :west)
         (z '(1 0 0) :east)
         (z '(0 1 0) :south)
@@ -2672,10 +2673,11 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                  (cond
                      ,@(iter (for i in colors)
                            (collect
-                               (if (typep (car (last i)) 'cons)
-                                   (append (butlast i)
-                                       (cdar (last i)))
-                                   i))))
+                               (let ((col (last i)))
+                                   (if (typep (car col) 'cons)
+                                       (append (butlast i)
+                                           (cdar col))
+                                       i)))))
                  "[~{~a~}]"
                  (iter (with i = 0)
                      (while (< i 40))
@@ -2695,7 +2697,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
         ((> (health-of user) (* (calculate-stat user :health) 1/4)) :yellow)
         (t :red))
     (format t " ~a~%Energy: "
-        (if (member user (append (allies-of *game*) (list (player-of *game*))))
+        (if (member user (cons (player-of *game*) (allies-of *game*)))
             (format nil "(~a/~a)"
                 (health-of user)
                 (calculate-stat user :health))
@@ -2706,7 +2708,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
         ((> (energy-of user) (* (calculate-stat user :energy) 1/4)) :yellow)
         (t :red))
     (format t " ~a~%"
-        (if (member user (append (allies-of *game*) (list (player-of *game*))))
+        (if (member user (cons (player-of *game*) (allies-of *game*)))
             (format nil "(~a/~a)"
                 (energy-of user)
                 (calculate-stat user :energy))
@@ -2797,7 +2799,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                 (if (malep (player-of *game*)) "he" "she")
                 (name-of (get-zone (position-of (player-of *game*))))
                 (position-of (player-of *game*)))
-            (iter (for i in (append (list (player-of *game*)) (allies-of *game*)))
+            (iter (for i in (cons (player-of *game*) (allies-of *game*)))
                 (setf (health-of i) (calculate-stat i :health))
                 (setf (energy-of i) (calculate-stat i :energy))
                 (let ((exp-gained
@@ -2910,7 +2912,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
     (cons (wet :wetter user) (mess :messer user)))
 (defun go-to-sleep ()
     (iter
-        (for i in (append (list (player-of *game*)) (allies-of *game*)))
+        (for i in (cons (player-of *game*) (allies-of *game*)))
         (let ((return-value (go-to-sleep% i))
                  (out ()))
             (format t "~a wakes up " (name-of i))
