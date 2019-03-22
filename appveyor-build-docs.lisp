@@ -12,8 +12,11 @@
     :prompt nil)
 (ql:update-all-dists
     :prompt nil)
-(ql-dist:install-dist "http://dist.ultralisp.org/"
-    :prompt nil)
+(when (and
+          (ql-dist:find-dist "ultralisp")
+          (ql-dist:installedp (ql-dist:find-dist "ultralisp")))
+    (ql-dist:install-dist "http://dist.ultralisp.org/"
+        :prompt nil))
 (ql:quickload :yadfa)
 (in-package :yadfa)
 (yadfa::main)
