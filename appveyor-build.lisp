@@ -10,7 +10,7 @@
 (ql:update-client
     :prompt nil)
 (ql:update-all-dists
-    :prmpt nil)
+    :prompt nil)
 (ql-dist:install-dist "http://dist.ultralisp.org/"
     :prompt nil)
 (pushnew :yadfa/mods *features*)
