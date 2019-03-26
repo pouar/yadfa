@@ -151,16 +151,61 @@
                          ,(if error-message
                               (format nil "~a~%" error-message)
                               (format nil "Please answer in this \"Window\"~%")))
-                     ,@(iter (with j = 0)
+                     ,@(iter (for j from 0)
                            (for i in options)
                            (cond
                                ((and (typep (first i) 'list) (eq (caar i) 'member))
                                    (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
                                                  (widget-create 'menu-choice
                                                      :tag ,(format nil "~a: " (getf (rest i) :prompt))
-                                                     :value (getf (rest i) :default)
-                                                     ,@(iter (for j in (cdar i))
-                                                           (collect `',(list 'item :value j)))))))
+                                                     :value ,(cond
+                                                                 ((typep (getf (rest i) :default) '(and symbol (not keyword)))
+                                                                     (list 'quote
+                                                                         (list :intern
+                                                                             (symbol-name (getf (rest i) :default))
+                                                                             (package-name (symbol-package (getf (rest i) :default))))))
+                                                                 ((and (typep (getf (rest i) :default) 'list) (eq (car (getf (rest i) :default)) 'quote))
+                                                                     (list
+                                                                         'quote
+                                                                         (list :intern
+                                                                             (symbol-name (cadr (getf (rest i) :default)))
+                                                                             (package-name (symbol-package (cadr (getf (rest i) :default)))))))
+                                                                 (t (getf (rest i) :default)))
+                                                     ,@(iter (for k in (cdar i))
+                                                           (if (typep k '(and symbol (not keyword)))
+                                                               (collect `',(list 'item
+                                                                               :tag (symbol-name k)
+                                                                               (list
+                                                                                   :intern
+                                                                                   (symbol-name k)
+                                                                                   (package-name (symbol-package k)))))
+                                                               (collect `',(list 'item :value k))))))))
+                               ((and (typep (first i) 'list) (eq (caar i) 'clim:completion))
+                                   (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
+                                                 (widget-create 'menu-choice
+                                                     :tag ,(format nil "~a: " (getf (rest i) :prompt))
+                                                     :value ,(cond
+                                                                 ((typep (getf (rest i) :default) '(and symbol (not keyword)))
+                                                                     (list 'quote
+                                                                         (list :intern
+                                                                             (symbol-name (getf (rest i) :default))
+                                                                             (package-name (symbol-package (getf (rest i) :default))))))
+                                                                 ((and (typep (getf (rest i) :default) 'list) (eq (car (getf (rest i) :default)) 'quote))
+                                                                     (list
+                                                                         'quote
+                                                                         (list :intern
+                                                                             (symbol-name (cadr (getf (rest i) :default)))
+                                                                             (package-name (symbol-package (cadr (getf (rest i) :default)))))))
+                                                                 (t (getf (rest i) :default)))
+                                                     ,@(iter (for k in (cadar i))
+                                                           (if (typep k '(and symbol (not keyword)))
+                                                               (collect `',(list 'item
+                                                                               :tag (symbol-name k)
+                                                                               (list
+                                                                                   :intern
+                                                                                   (symbol-name k)
+                                                                                   (package-name (symbol-package k)))))
+                                                               (collect `',(list 'item :value k))))))))
                                ((eq (first i) 'boolean)
                                    (collect `(widget-insert ,(format nil "~a: " (getf (rest i) :prompt))))
                                    (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
@@ -181,8 +226,7 @@
                                                  (widget-create 'number
                                                      :format ,(format nil "~a: %v" (getf (rest i) :prompt))
                                                      ,@(when (getf (rest i) :default) (list (getf (rest i) :default))))))))
-                           (collect `(widget-insert ,#\linefeed))
-                           (incf j))
+                           (collect `(widget-insert ,#\linefeed)))
                      (widget-create 'push-button
                          :notify (lambda (top widget &optional reason)
                                      (sly-send
@@ -198,18 +242,20 @@
                                                                :test #'string=)
                                                               (swank::current-thread-id)))
                                              :yadfa-response
-                                             (list ,@(iter (with j = 0) (for i in options)
+                                             (list ,@(iter (for j from 0) (for i in options)
                                                          (declare (ignorable i))
-                                                         (collect `(widget-value ,(intern (format nil "a~d" j))))
-                                                         (incf j)))))
+                                                         (collect `(widget-value ,(intern (format nil "a~d" j))))))))
                                      (kill-buffer-and-window))
                          "Apply")
                      (use-local-map widget-keymap)
                      (widget-setup)
                      nil)
                  (yadfa-widget)))
-        (third (funcall wait-for-event
-                   '(:emacs-return :yadfa-response result)))))
+        (iter (for i in (third (funcall wait-for-event
+                                   '(:emacs-return :yadfa-response result))))
+            (collect (if (and (typep i 'list) (eq (car i) :intern))
+                         (apply #'intern (cdr i))
+                         i)))))
 (defmacro prompt-for-values (&rest options)
     `(cond
          #+(or slynk swank)
@@ -218,7 +264,10 @@
                       (err nil))
                  (iter (while
                            (iter (for i in out) (for j in ',options)
-                               (unless (typep i (first j))
+                               (unless (cond
+                                           ((typep (first j) 'list)
+                                               t)
+                                           (t (typep i (first j))))
                                    (setf err (format nil "~a isn't of type ~a" i (first j)))
                                    (leave t))))
                      (setf out (emacs-prompt ',options err)))
@@ -555,7 +604,7 @@
             (format t "To ~s is ~a. " a (name-of (get-zone b)))))
     (format t "~%"))
 (defun get-inventory-list ()
-    (loop for i in (inventory-of (player-of *game*)) collect (symbol-name (type-of i))))
+    (iter (for i in (inventory-of (player-of *game*))) (collect (symbol-name (type-of i)))))
 (defmacro defevent (event-id &rest args)
     `(progn
          (setf (gethash
@@ -2679,10 +2728,8 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                                            (cdar col))
                                        i)))))
                  "[~{~a~}]"
-                 (iter (with i = 0)
-                     (while (< i 40))
-                     (collect (if (< i (* ,stat 40)) "#" " "))
-                     (incf i))))))
+                 (iter (for i from 0 below 40)
+                     (collect (if (< i (* ,stat 40)) "#" " ")))))))
 (defun format-stats (user)
     (format t "Name: ~a~%"
         (name-of user))
@@ -3168,14 +3215,13 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
         (format t "~10a~40a~10@a~%" "Index" "Item" "Price")
         (iter
             (for i in items-for-sale)
-            (with j = 0)
+            (for j from 0)
             (let ((item (apply #'make-instance (car i) (eval (cdr i)))))
                 (format t
                     "~10a~40a~10@a~%"
                     j
                     (name-of item)
-                    (value-of item))
-                (incf j)))))
+                    (value-of item))))))
 (defun getf-action-from-prop (position prop action)
     (getf (actions-of (getf (get-props-from-zone position) prop)) action))
 (defun (setf getf-action-from-prop) (new-value position prop action)
@@ -3309,6 +3355,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                                   (reload-count-of (wield-of character)))))
                     (leave t))
                 (when (typep item (ammo-type-of (wield-of character)))
+                    (incf count)
                     (push item (ammo-of (wield-of character)))
                     (removef item (inventory-of character) :count 1))))
         (t
@@ -3479,6 +3526,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                 (when (and
                           (typep item reload)
                           (typep item (ammo-type-of (wield-of character))))
+                    (incf count)
                     (push item (ammo-of (wield-of character)))
                     (removef item (inventory-of (player-of *game*)) :count 1))))
         ((eq attack t)
