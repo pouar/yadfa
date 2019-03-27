@@ -123,6 +123,12 @@
 ;;;(slynk:eval-in-emacs '(with-current-buffer (sly-mrepl--find-buffer) (insert-image (create-image "/tmp/1523307158.liljdude_renamon_boom.jpg"))))
 (defun color-format (color &rest body)
     (cl-ansi-text:with-color (color) (apply #'format t body)))
+#+(or slynk swank)
+(define-condition invalid-emacs-type-for-promp (error)
+    ((invalid-type :initarg :invalid-type :reader invalid-type))
+    (:report (lambda (condition stream)
+                 (format stream "Invalid Emacs Type: ~S"
+                     (invalid-type condition)))))
 ;;; error handling of these 2 functions could be better
 #+(or slynk swank)
 (defun emacs-prompt (options &optional error-message)
@@ -159,18 +165,21 @@
                                                  (widget-create 'menu-choice
                                                      :tag ,(format nil "~a: " (getf (rest i) :prompt))
                                                      :value ,(cond
-                                                                 ((typep (getf (rest i) :default) '(and symbol (not keyword)))
-                                                                     (list 'quote
-                                                                         (list :intern
-                                                                             (symbol-name (getf (rest i) :default))
-                                                                             (package-name (symbol-package (getf (rest i) :default))))))
-                                                                 ((and (typep (getf (rest i) :default) 'list) (eq (car (getf (rest i) :default)) 'quote))
+                                                                 ((not (and
+                                                                           (typep (getf (rest i) :default) 'list)
+                                                                           (eq (car (getf (rest i) :default)) 'quote)))
+                                                                     (eval (getf (rest i) :default)))
+                                                                 ((and
+                                                                      (typep (getf (rest i) :default) 'list)
+                                                                      (eq (car (getf (rest i) :default)) 'quote)
+                                                                      (typep (cdr (getf (rest i) :default)) 'list)
+                                                                      (typep (cadr (getf (rest i) :default)) '(and symbol (not keyword))))
                                                                      (list
                                                                          'quote
                                                                          (list :intern
                                                                              (symbol-name (cadr (getf (rest i) :default)))
                                                                              (package-name (symbol-package (cadr (getf (rest i) :default)))))))
-                                                                 (t (getf (rest i) :default)))
+                                                                 (t (cadr (getf (rest i) :default))))
                                                      ,@(iter (for k in (cdar i))
                                                            (if (typep k '(and symbol (not keyword)))
                                                                (collect `',(list 'item
@@ -185,18 +194,21 @@
                                                  (widget-create 'menu-choice
                                                      :tag ,(format nil "~a: " (getf (rest i) :prompt))
                                                      :value ,(cond
-                                                                 ((typep (getf (rest i) :default) '(and symbol (not keyword)))
-                                                                     (list 'quote
-                                                                         (list :intern
-                                                                             (symbol-name (getf (rest i) :default))
-                                                                             (package-name (symbol-package (getf (rest i) :default))))))
-                                                                 ((and (typep (getf (rest i) :default) 'list) (eq (car (getf (rest i) :default)) 'quote))
+                                                                 ((not (and
+                                                                           (typep (getf (rest i) :default) 'list)
+                                                                           (eq (car (getf (rest i) :default)) 'quote)))
+                                                                     (eval (getf (rest i) :default)))
+                                                                 ((and
+                                                                      (typep (getf (rest i) :default) 'list)
+                                                                      (eq (car (getf (rest i) :default)) 'quote)
+                                                                      (typep (cdr (getf (rest i) :default)) 'list)
+                                                                      (typep (cadr (getf (rest i) :default)) '(and symbol (not keyword))))
                                                                      (list
                                                                          'quote
                                                                          (list :intern
                                                                              (symbol-name (cadr (getf (rest i) :default)))
                                                                              (package-name (symbol-package (cadr (getf (rest i) :default)))))))
-                                                                 (t (getf (rest i) :default)))
+                                                                 (t (cadr (getf (rest i) :default))))
                                                      ,@(iter (for k in (cadar i))
                                                            (if (typep k '(and symbol (not keyword)))
                                                                (collect `',(list 'item
@@ -206,26 +218,26 @@
                                                                                    (symbol-name k)
                                                                                    (package-name (symbol-package k)))))
                                                                (collect `',(list 'item :value k))))))))
-                               ((eq (first i) 'boolean)
+                               ((member
+                                    (first i)
+                                    '(boolean string integer number))
                                    (collect `(widget-insert ,(format nil "~a: " (getf (rest i) :prompt))))
                                    (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                                 (widget-create 'checkbox
-                                                     ,@(when (getf (rest i) :default) (list (getf (rest i) :default)))))))
-                               ((eq (first i) 'string)
-                                   (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                                 (widget-create 'editable-field
-                                                     :format ,(format nil "~a: %v" (getf (rest i) :prompt))
-                                                     ,@(when (getf (rest i) :default) (list (getf (rest i) :default)))))))
-                               ((eq (first i) 'integer)
-                                   (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                                 (widget-create 'integer
-                                                     :format ,(format nil "~a: %v" (getf (rest i) :prompt))
-                                                     ,@(when (getf (rest i) :default) (list (getf (rest i) :default)))))))
-                               ((eq (first i) 'number)
-                                   (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                                 (widget-create 'number
-                                                     :format ,(format nil "~a: %v" (getf (rest i) :prompt))
-                                                     ,@(when (getf (rest i) :default) (list (getf (rest i) :default))))))))
+                                                 (widget-create ',(if (member (first i) '(boolean string))
+                                                                      (getf
+                                                                          '(boolean checkbox
+                                                                               string editable-field)
+                                                                          (first i))
+                                                                      (first i))
+                                                     ,(when (getf (rest i) :default)
+                                                          (if (and
+                                                                  (typep (getf (rest i) :default) 'list)
+                                                                  (eq (car (getf (rest i) :default)) 'quote))
+                                                              (cadr (getf (rest i) :default))
+                                                              (eval (getf (rest i) :default))))))))
+                               (t
+                                   (error 'invalid-emacs-type-for-promp
+                                       :invalid-type i)))
                            (collect `(widget-insert ,#\linefeed)))
                      (widget-create 'push-button
                          :notify (lambda (top widget &optional reason)
