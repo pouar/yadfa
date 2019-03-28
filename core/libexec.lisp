@@ -160,56 +160,31 @@
                      ,@(iter (for j from 0)
                            (for i in options)
                            (cond
-                               ((and (typep (first i) 'list) (eq (caar i) 'member))
+                               ((and
+                                    (typep (first i) 'list)
+                                    (member (caar i)
+                                        '(member clim:completion)
+                                        :test #'eq))
                                    (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
                                                  (widget-create 'menu-choice
                                                      :tag ,(format nil "~a: " (getf (rest i) :prompt))
-                                                     :value ,(cond
-                                                                 ((not (and
-                                                                           (typep (getf (rest i) :default) 'list)
-                                                                           (eq (car (getf (rest i) :default)) 'quote)))
-                                                                     (eval (getf (rest i) :default)))
-                                                                 ((and
-                                                                      (typep (getf (rest i) :default) 'list)
-                                                                      (eq (car (getf (rest i) :default)) 'quote)
-                                                                      (typep (cdr (getf (rest i) :default)) 'list)
-                                                                      (typep (cadr (getf (rest i) :default)) '(and symbol (not keyword))))
-                                                                     (list
-                                                                         'quote
-                                                                         (list :intern
-                                                                             (symbol-name (cadr (getf (rest i) :default)))
-                                                                             (package-name (symbol-package (cadr (getf (rest i) :default)))))))
-                                                                 (t (cadr (getf (rest i) :default))))
-                                                     ,@(iter (for k in (cdar i))
-                                                           (if (typep k '(and symbol (not keyword)))
-                                                               (collect `',(list 'item
-                                                                               :tag (symbol-name k)
-                                                                               (list
-                                                                                   :intern
-                                                                                   (symbol-name k)
-                                                                                   (package-name (symbol-package k)))))
-                                                               (collect `',(list 'item :value k))))))))
-                               ((and (typep (first i) 'list) (eq (caar i) 'clim:completion))
-                                   (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                                 (widget-create 'menu-choice
-                                                     :tag ,(format nil "~a: " (getf (rest i) :prompt))
-                                                     :value ,(cond
-                                                                 ((not (and
-                                                                           (typep (getf (rest i) :default) 'list)
-                                                                           (eq (car (getf (rest i) :default)) 'quote)))
-                                                                     (eval (getf (rest i) :default)))
-                                                                 ((and
-                                                                      (typep (getf (rest i) :default) 'list)
-                                                                      (eq (car (getf (rest i) :default)) 'quote)
-                                                                      (typep (cdr (getf (rest i) :default)) 'list)
-                                                                      (typep (cadr (getf (rest i) :default)) '(and symbol (not keyword))))
-                                                                     (list
-                                                                         'quote
-                                                                         (list :intern
-                                                                             (symbol-name (cadr (getf (rest i) :default)))
-                                                                             (package-name (symbol-package (cadr (getf (rest i) :default)))))))
-                                                                 (t (cadr (getf (rest i) :default))))
-                                                     ,@(iter (for k in (cadar i))
+                                                     :value ,(if
+                                                                 (and
+                                                                     (typep (getf (rest i) :default) 'list)
+                                                                     (eq (car (getf (rest i) :default)) 'quote)
+                                                                     (typep (cdr (getf (rest i) :default)) 'list)
+                                                                     (typep (cadr (getf (rest i) :default)) '(and symbol (not keyword))))
+                                                                 (list
+                                                                     'quote
+                                                                     (list :intern
+                                                                         (symbol-name (cadr (getf (rest i) :default)))
+                                                                         (package-name (symbol-package (cadr (getf (rest i) :default))))))
+                                                                 (eval (getf (rest i) :default)))
+                                                     ,@(iter (for k in (cond
+                                                                           ((eq (caar i) 'member)
+                                                                               (cdar i))
+                                                                           ((eq (caar i) 'clim:completion)
+                                                                               (cadar i))))
                                                            (if (typep k '(and symbol (not keyword)))
                                                                (collect `',(list 'item
                                                                                :tag (symbol-name k)
@@ -220,7 +195,8 @@
                                                                (collect `',(list 'item :value k))))))))
                                ((member
                                     (first i)
-                                    '(boolean string integer number))
+                                    '(boolean string integer number)
+                                     :test #'eq)
                                    (collect `(widget-insert ,(format nil "~a: " (getf (rest i) :prompt))))
                                    (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
                                                  (widget-create ',(if (member (first i) '(boolean string))
@@ -230,11 +206,7 @@
                                                                           (first i))
                                                                       (first i))
                                                      ,(when (getf (rest i) :default)
-                                                          (if (and
-                                                                  (typep (getf (rest i) :default) 'list)
-                                                                  (eq (car (getf (rest i) :default)) 'quote))
-                                                              (cadr (getf (rest i) :default))
-                                                              (eval (getf (rest i) :default))))))))
+                                                          (eval (getf (rest i) :default)))))))
                                (t
                                    (error 'invalid-emacs-type-for-promp
                                        :invalid-type i)))
