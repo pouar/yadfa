@@ -75,7 +75,7 @@
     "type in the direction as a keyword to move in that direction, valid directions can be found with `(lst :directions t)'. you can also specify multiple directions, for example `(move :south :south)' will move 2 zones south. `(move :south :west :south)' will move south, then west, then south."
     #+sbcl (declare (type list directions))
     (check-type directions list)
-    (loop for direction in directions do
+    (iter (for direction in directions)
         (let ((new-position (get-path-end
                                 (get-destination direction (position-of (player-of *game*)))
                                 (position-of (player-of *game*))

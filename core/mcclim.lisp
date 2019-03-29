@@ -25,78 +25,83 @@
                    (clim:presentation-type presentation))))
 (clim:define-command (com-yadfa-move :command-table clim:global-command-table :menu t :name "Move Here")
     ((zone zone))
-    (apply #'yadfa/world:move
-        (cond
-            ((and
-                 (<
-                     (first (position-of (player-of *game*)))
-                     (first (position-of zone)))
-                 (=
-                     (second (position-of (player-of *game*)))
-                     (second (position-of zone)))
-                 (=
-                     (third (position-of (player-of *game*)))
-                     (third (position-of zone)))
-                 (equal
-                     (fourth (position-of (player-of *game*)))
-                     (fourth (position-of zone))))
-                (iter (for i
-                          from (1+ (first (position-of (player-of *game*))))
-                          to (first (position-of zone)))
-                    (collect :east)))
-            ((and
-                 (>
-                     (first (position-of (player-of *game*)))
-                     (first (position-of zone)))
-                 (=
-                     (second (position-of (player-of *game*)))
-                     (second (position-of zone)))
-                 (=
-                     (third (position-of (player-of *game*)))
-                     (third (position-of zone)))
-                 (equal
-                     (fourth (position-of (player-of *game*)))
-                     (fourth (position-of zone))))
-                (iter (for i
-                          from (1- (first (position-of (player-of *game*))))
-                          downto (first (position-of zone)))
-                    (collect :west)))
-            ((and
-                 (=
-                     (first (position-of (player-of *game*)))
-                     (first (position-of zone)))
-                 (<
-                     (second (position-of (player-of *game*)))
-                     (second (position-of zone)))
-                 (=
-                     (third (position-of (player-of *game*)))
-                     (third (position-of zone)))
-                 (equal
-                     (fourth (position-of (player-of *game*)))
-                     (fourth (position-of zone))))
-                (iter (for i
-                          from (1+ (second (position-of (player-of *game*))))
-                          to (second (position-of zone)))
-                    (collect :south)))
-            ((and
-                 (=
-                     (first (position-of (player-of *game*)))
-                     (first (position-of zone)))
-                 (>
-                     (second (position-of (player-of *game*)))
-                     (second (position-of zone)))
-                 (=
-                     (third (position-of (player-of *game*)))
-                     (third (position-of zone)))
-                 (equal
-                     (fourth (position-of (player-of *game*)))
-                     (fourth (position-of zone))))
-                (iter (for i
-                          from (1- (second (position-of (player-of *game*))))
-                          downto (second (position-of zone)))
-                    (collect :north)))
-            (t
-                (format t "You're either already on that zone or you tried specifying a path that involves turning (which this interface can't do because Pouar sucks at writing code that generates paths)~%")))))
+    (block nil
+        (apply #'yadfa/world:move
+            (cond
+                (*battle*
+                     (format t "You can't do this in battle~%")
+                     (return))
+                ((and
+                        (<
+                            (first (position-of (player-of *game*)))
+                            (first (position-of zone)))
+                        (=
+                            (second (position-of (player-of *game*)))
+                            (second (position-of zone)))
+                        (=
+                            (third (position-of (player-of *game*)))
+                            (third (position-of zone)))
+                        (equal
+                            (fourth (position-of (player-of *game*)))
+                            (fourth (position-of zone))))
+                    (iter (for i
+                              from (1+ (first (position-of (player-of *game*))))
+                              to (first (position-of zone)))
+                        (collect :east)))
+                ((and
+                     (>
+                         (first (position-of (player-of *game*)))
+                         (first (position-of zone)))
+                     (=
+                         (second (position-of (player-of *game*)))
+                         (second (position-of zone)))
+                     (=
+                         (third (position-of (player-of *game*)))
+                         (third (position-of zone)))
+                     (equal
+                         (fourth (position-of (player-of *game*)))
+                         (fourth (position-of zone))))
+                    (iter (for i
+                              from (1- (first (position-of (player-of *game*))))
+                              downto (first (position-of zone)))
+                        (collect :west)))
+                ((and
+                     (=
+                         (first (position-of (player-of *game*)))
+                         (first (position-of zone)))
+                     (<
+                         (second (position-of (player-of *game*)))
+                         (second (position-of zone)))
+                     (=
+                         (third (position-of (player-of *game*)))
+                         (third (position-of zone)))
+                     (equal
+                         (fourth (position-of (player-of *game*)))
+                         (fourth (position-of zone))))
+                    (iter (for i
+                              from (1+ (second (position-of (player-of *game*))))
+                              to (second (position-of zone)))
+                        (collect :south)))
+                ((and
+                     (=
+                         (first (position-of (player-of *game*)))
+                         (first (position-of zone)))
+                     (>
+                         (second (position-of (player-of *game*)))
+                         (second (position-of zone)))
+                     (=
+                         (third (position-of (player-of *game*)))
+                         (third (position-of zone)))
+                     (equal
+                         (fourth (position-of (player-of *game*)))
+                         (fourth (position-of zone))))
+                    (iter (for i
+                              from (1- (second (position-of (player-of *game*))))
+                              downto (second (position-of zone)))
+                        (collect :north)))
+                (t
+                    (format t "You're either already on that zone or you tried specifying a path that involves turning (which this interface can't do because Pouar sucks at writing code that generates paths)~%")
+                    (return))))))
 (clim:define-presentation-to-command-translator com-describe-object-translator
     (yadfa-class climi::com-describe clim:global-command-table
         :gesture :describe
