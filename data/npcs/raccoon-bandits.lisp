@@ -1,4 +1,4 @@
-(in-package :yadfa/npcs)
+(in-package :yadfa-npcs)
 (defclass diapered-raccoon-bandit (potty-npc) ()
     (:default-initargs
         :name "Diapered Raccoon Bandit"
@@ -10,12 +10,12 @@
         :bladder/fill-rate (* (/ 2000 24 60) 2)
         :bowels/fill-rate (* (/ 12000 24 60) 2)
         :wear (list
-                  (make-instance 'yadfa/items:bandit-uniform-tunic)
-                  (make-instance 'yadfa/items:bandit-adjustable-diaper))
+                  (make-instance 'yadfa-items:bandit-uniform-tunic)
+                  (make-instance 'yadfa-items:bandit-adjustable-diaper))
         :inventory (let ((a ()))
-                       (loop for i from 0 to (random 5) do (push (make-instance 'yadfa/items:bandit-diaper) a))
-                       (loop for i from 0 to (random 5) do (push (make-instance 'yadfa/items:bandit-adjustable-diaper) a))
-                       (loop for i from 0 to (random 5) do (push (make-instance 'yadfa/items:bandit-female-diaper) a)))
+                       (loop for i from 0 to (random 5) do (push (make-instance 'yadfa-items:bandit-diaper) a))
+                       (loop for i from 0 to (random 5) do (push (make-instance 'yadfa-items:bandit-adjustable-diaper) a))
+                       (loop for i from 0 to (random 5) do (push (make-instance 'yadfa-items:bandit-female-diaper) a)))
         :bitcoins-per-level 40
         :battle-script (lambda (self target)
                            (let ((moves-with-health
@@ -55,7 +55,7 @@
                                                (format t "~a gets a grin on ~a face~%"
                                                    (name-of self)
                                                    (if (malep self) "his" "her"))
-                                               (let ((move-to-use (make-instance 'yadfa/moves:tickle)))
+                                               (let ((move-to-use (make-instance 'yadfa-moves:tickle)))
                                                    (funcall
                                                        (coerce
                                                            (attack-of move-to-use)
@@ -69,7 +69,7 @@
                                                (format t "~a gets a grin on ~a face~%"
                                                    (name-of self)
                                                    (if (malep self) "his" "her"))
-                                               (let ((move-to-use (make-instance 'yadfa/moves:mush)))
+                                               (let ((move-to-use (make-instance 'yadfa-moves:mush)))
                                                    (funcall
                                                        (coerce
                                                            (attack-of move-to-use)
@@ -113,8 +113,8 @@
         :bladder/fill-rate (* (/ 2000 24 60) 2)
         :bowels/fill-rate (* (/ 12000 24 60) 2)
         :wear (list
-                  (make-instance 'yadfa/items:bandit-uniform-shirt)
-                  (make-instance 'yadfa/items:bandit-diaper
+                  (make-instance 'yadfa-items:bandit-uniform-shirt)
+                  (make-instance 'yadfa-items:bandit-diaper
                       :sogginess (let ((a (random 3)))
                                      (cond
                                          ((= a 0) 0)
@@ -136,8 +136,8 @@
         :bladder/fill-rate (* (/ 2000 24 60) 2)
         :bowels/fill-rate (* (/ 12000 24 60) 2)
         :wear (list
-                  (make-instance 'yadfa/items:bandit-uniform-sports-bikini-top)
-                  (make-instance 'yadfa/items:bandit-female-diaper
+                  (make-instance 'yadfa-items:bandit-uniform-sports-bikini-top)
+                  (make-instance 'yadfa-items:bandit-female-diaper
                       :sogginess (let ((a (random 3)))
                                      (cond
                                          ((= a 0) 0)

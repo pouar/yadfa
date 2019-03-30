@@ -1,4 +1,4 @@
-(in-package :yadfa/zones)
+(in-package :yadfa-zones)
 (macro-level
     `(progn
          ,@(iter (for i from 0 to 20)
@@ -10,10 +10,10 @@
                         :warp-points ',(when (= i 0) '(ironside (2 0 0 ironside)))
                         :enemy-spawn-list
                         (list '(:max-random 8
-                                   :enemies ((yadfa/npcs:female-diapered-raccoon-bandit .
+                                   :enemies ((yadfa-npcs:female-diapered-raccoon-bandit .
                                                  (list :level (random-from-range 2 5)))))
                             '(:max-random 8
-                                 :enemies ((yadfa/npcs:rookie-diapered-raccoon-bandit .
+                                 :enemies ((yadfa-npcs:rookie-diapered-raccoon-bandit .
                                                (list :level (random-from-range 2 5)))))))))))
 
 (macro-level
@@ -25,7 +25,7 @@
                         :description "A town run by the Raccoon Bandits"
                         :enter-text "You're wander around Bandit's Town"
                         ,@(when (= i -3)
-                              '(:events (list 'yadfa/events:enter-bandits-shop-2))))))))
+                              '(:events (list 'yadfa-events:enter-bandits-shop-2))))))))
 (ensure-zone (-3 22 0 bandits-domain)
     :name "Bandit's Shop"
     :description "A local shop"
@@ -54,30 +54,30 @@
                                                        (format t "~a: Well how come they're letting me shop here without attacking me?~%~%"
                                                            (name-of (player-of *game*)))
                                                        (format t "Shop Owner: Because money stupid."))))
-                         :items-for-sale '((yadfa/items:gold-pacifier)
-                                              (yadfa/items:recovering-pacifier)
-                                              (yadfa/items:healing-pacifier)
-                                              (yadfa/items:bandit-swimsuit)
-                                              (yadfa/items:bandit-uniform-tunic)
-                                              (yadfa/items:bandit-uniform-shirt)
-                                              (yadfa/items:bandit-uniform-sports-bikini-top)
-                                              (yadfa/items:monster-energy-drink)
-                                              (yadfa/items:spiked-bottle-of-milk)
-                                              (yadfa/items:bandit-diaper)
-                                              (yadfa/items:bandit-adjustable-diaper)
-                                              (yadfa/items:bandit-female-diaper)
-                                              (yadfa/items:bandit-swim-diaper-cover)
-                                              (yadfa/items:lower-bandit-swim-diaper-cover)
-                                              (yadfa/items:female-bandit-swim-diaper-cover)
-                                              (yadfa/items:gold-collar)
-                                              (yadfa/items:ak47)
-                                              (yadfa/items:box-of-7.62×39mm)
-                                              (yadfa/items:pink-sword)
-                                              (yadfa/items:toddler-dress)))
+                         :items-for-sale '((yadfa-items:gold-pacifier)
+                                              (yadfa-items:recovering-pacifier)
+                                              (yadfa-items:healing-pacifier)
+                                              (yadfa-items:bandit-swimsuit)
+                                              (yadfa-items:bandit-uniform-tunic)
+                                              (yadfa-items:bandit-uniform-shirt)
+                                              (yadfa-items:bandit-uniform-sports-bikini-top)
+                                              (yadfa-items:monster-energy-drink)
+                                              (yadfa-items:spiked-bottle-of-milk)
+                                              (yadfa-items:bandit-diaper)
+                                              (yadfa-items:bandit-adjustable-diaper)
+                                              (yadfa-items:bandit-female-diaper)
+                                              (yadfa-items:bandit-swim-diaper-cover)
+                                              (yadfa-items:lower-bandit-swim-diaper-cover)
+                                              (yadfa-items:female-bandit-swim-diaper-cover)
+                                              (yadfa-items:gold-collar)
+                                              (yadfa-items:ak47)
+                                              (yadfa-items:box-of-7.62×39mm)
+                                              (yadfa-items:pink-sword)
+                                              (yadfa-items:toddler-dress)))
                :changing-table (make-instance 'automatic-changing-table)
                :bed (make-instance 'bed)
                :checkpoint (make-instance 'checkpoint))
-    :events (list 'yadfa/events:enter-bandits-shop-1 'yadfa/events:obtain-diaper-lock-1))
+    :events (list 'yadfa-events:enter-bandits-shop-1 'yadfa-events:obtain-diaper-lock-1))
 (ensure-zone (-3 23 0 bandits-domain)
     :name "Bandit's Shop Bathroom"
     :description "CLOSED FOREVER!!!!! MUAHAHAHAHA!!!!"
@@ -86,13 +86,13 @@
     :name "Bandit's Kennel"
     :description "A grungey looking kennel where the Raccoon Bandits keep their `pets'. Negleted so much that they literally forgot about their existence"
     :enter-text "You enter the kennel"
-    :events (list 'yadfa/events:enter-bandits-kennel-1))
+    :events (list 'yadfa-events:enter-bandits-kennel-1))
 (ensure-zone (0 21 0 bandits-domain)
     :name "Bandit's Town Entrance"
     :description "The enterance to Bandit Town"
     :enter-text "You're at the enterance of Bandit Town"
     :warp-points '(home (0 1 0 home))
-    :events (list 'yadfa/events:enter-bandits-village-1))
+    :events (list 'yadfa-events:enter-bandits-village-1))
 (macro-level
     `(progn
          ,@(iter (for i from 22 to 30)
@@ -123,42 +123,42 @@
                                         :enemy-spawn-list
                                         (list '(:max-random 10
                                                    :enemies
-                                                   ((yadfa/npcs:rookie-diapered-raccoon-bandit .
+                                                   ((yadfa-npcs:rookie-diapered-raccoon-bandit .
                                                         (list
                                                             :level (random-from-range 2 5)
                                                             :wear (list
                                                                       (make-instance
-                                                                          'yadfa/items:lower-bandit-swim-diaper-cover)
+                                                                          'yadfa-items:lower-bandit-swim-diaper-cover)
                                                                       (make-instance
-                                                                          'yadfa/items:bandit-diaper
+                                                                          'yadfa-items:bandit-diaper
                                                                           :sogginess (random 1000)
                                                                           :messiness (random 6000)))
                                                             :level (random-from-range 2 5)))))
                                             '(:max-random 10
                                                  :enemies
-                                                 ((yadfa/npcs:diapered-raccoon-bandit .
+                                                 ((yadfa-npcs:diapered-raccoon-bandit .
                                                       (list
                                                           :level (random-from-range 2 5)
                                                           :wear (list
                                                                     (make-instance
-                                                                        'yadfa/items:bandit-swimsuit/closed)
+                                                                        'yadfa-items:bandit-swimsuit/closed)
                                                                     (make-instance
                                                                         'bandit-swim-diaper-cover)
                                                                     (make-instance
-                                                                        'yadfa/items:bandit-diaper))
+                                                                        'yadfa-items:bandit-diaper))
                                                           :level (random-from-range 2 5)))))
                                             '(:max-random 10
                                                  :enemies
-                                                 ((yadfa/npcs:female-diapered-raccoon-bandit .
+                                                 ((yadfa-npcs:female-diapered-raccoon-bandit .
                                                       (list
                                                           :level (random-from-range 2 5)
                                                           :wear (list
                                                                     (make-instance
-                                                                        'yadfa/items:bandit-uniform-sports-bikini-top)
+                                                                        'yadfa-items:bandit-uniform-sports-bikini-top)
                                                                     (make-instance
-                                                                        'yadfa/items:female-bandit-swim-diaper-cover)
+                                                                        'yadfa-items:female-bandit-swim-diaper-cover)
                                                                     (make-instance
-                                                                        'yadfa/items:bandit-female-diaper
+                                                                        'yadfa-items:bandit-female-diaper
                                                                         :sogginess (random 1000)
                                                                         :messiness (random 6000)))
                                                           :level (random-from-range 2 5))))))))))))
@@ -173,4 +173,4 @@
     :enter-text "You Enter the cave"
     :warp-points '(cave-entrance (6 24 0 bandits-domain)
                       descend (6 24 2 bandits-domain))
-    :events (list 'yadfa/events:decend-bandits-cave-1))
+    :events (list 'yadfa-events:decend-bandits-cave-1))

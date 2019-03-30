@@ -1,16 +1,16 @@
-(in-package :yadfa/allies)
+(in-package :yadfa-allies)
 (defclass slynk (ally) ()
     (:default-initargs
         :name "Slynk"
         :male t
         :potty-training :last-minute
         :wear (let ((diaper
-                        (progn (ensure-finalized (find-class 'yadfa/items:bandit-adjustable-diaper))
-                            (compute-default-initargs (find-class 'yadfa/items:bandit-adjustable-diaper)))))
+                        (progn (ensure-finalized (find-class 'yadfa-items:bandit-adjustable-diaper))
+                            (compute-default-initargs (find-class 'yadfa-items:bandit-adjustable-diaper)))))
                   (list
-                      (make-instance 'yadfa/items:bandit-uniform-tunic)
-                      (make-instance 'yadfa/items:thick-rubber-diaper)
-                      (make-instance 'yadfa/items:bandit-adjustable-diaper
+                      (make-instance 'yadfa-items:bandit-uniform-tunic)
+                      (make-instance 'yadfa-items:thick-rubber-diaper)
+                      (make-instance 'yadfa-items:bandit-adjustable-diaper
                           :sogginess (second (assoc :sogginess-capacity diaper))
                           :messiness (second (assoc :messiness-capacity diaper)))))
         :species "Raccoon"
@@ -38,8 +38,8 @@
         :potty-training :rebel
         :description "An orange fox. has gotten accustomed to being treated like a pet and will typically wear nothing but a collar, refuses to be housebroken like a good fox so he must be diapered at all times."
         :wear (list
-                  (make-instance 'yadfa/items:gold-collar)
-                  (make-instance 'yadfa/items:bandit-diaper))))
+                  (make-instance 'yadfa-items:gold-collar)
+                  (make-instance 'yadfa-items:bandit-diaper))))
 (defclass kristy (ally) ()
     (:default-initargs
         :name "Kristy"
@@ -48,5 +48,5 @@
         :species "Fox"
         :description "A beautiful orange vixen who has a personality that is more like a child than an adult. Loves wearing thick diapers, can't stand pants. Has gone without diapers for so long that she has become dependent on them."
         :wear (list
-                  (make-instance 'yadfa/items:toddler-dress)
-                  (make-instance 'yadfa/items:bandit-female-diaper))))
+                  (make-instance 'yadfa-items:toddler-dress)
+                  (make-instance 'yadfa-items:bandit-female-diaper))))

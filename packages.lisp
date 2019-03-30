@@ -1,6 +1,19 @@
 (in-package :cl-user)
-(uiop:define-package #:yadfa
+(uiop:define-package #:yadfa-util
     (:use #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:export
+        #:shl
+        #:shr
+        #:lambda-list
+        #:do-push
+        #:remove-nth
+        #:insert
+        #:insertf
+        #:substitutef
+        #:random-from-range)
+    (:documentation "Utility functions that aren't really part of the game's API"))
+(uiop:define-package #:yadfa
+    (:use #:c2cl #:yadfa-util #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:import-from #:macro-level #:macro-level)
     (:export
         ;;variables
@@ -12,14 +25,10 @@
         #:ensure-zone
         #:defonesie
         #:make-pocket-zone
-        #:do-push
-        #:insertf
-        #:substf
         ;;functions
         #:intro-function
         #:set-player
         #:prompt-for-values
-        #:insert
         #:set-status-condition
         #:set-new-battle
         #:get-inventory-list
@@ -36,7 +45,6 @@
         #:wet
         #:mess
         #:get-event
-        #:random-from-range
         #:move-to-pocket-map
         #:move-to-secret-underground
         #:get-warp-point
@@ -223,18 +231,18 @@
         #:event-repeatable
         #:fainted-of)
     (:documentation "Yet Another Diaperfur Adventure"))
-(uiop:define-package #:yadfa/bin
+(uiop:define-package #:yadfa-bin
     (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files)
     (:documentation "Commands that the player can run anytime"))
-(uiop:define-package #:yadfa/world
+(uiop:define-package #:yadfa-world
     (:export #:move #:interact #:save-game #:load-game #:go-potty #:tickle #:wash-all-in #:use-item #:add-ally-to-team #:remove-ally-from-team #:swap-team-member #:stats #:place #:reload)
     (:documentation "contains the commands when in the open world (assuming that's what it's called) (and not in something like a battle). The player probably shouldn't call these with the package prefix unless they're developing"))
-(uiop:define-package #:yadfa/battle
+(uiop:define-package #:yadfa-battle
     (:export #:fight #:run #:use-item #:stats #:reload)
     (:documentation "Contains the commands used when battling. The player probably shouldn't call these with the package prefix unless they're developing"))
-(uiop:define-package #:yadfa/moves
+(uiop:define-package #:yadfa-moves
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:kamehameha
         #:superglitch
@@ -244,10 +252,10 @@
         #:tackle
         #:mush)
     (:documentation "Contains all the moves in the game"))
-(uiop:define-package #:yadfa/items
+(uiop:define-package #:yadfa-items
     (:import-from #:macro-level #:macro-level)
     (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:incontinence-pad)
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:pacifier
         #:gold-pacifier
@@ -340,7 +348,7 @@
         #:macguffin
         #:itemfinder)
     (:documentation "Contains all the items in the game"))
-(uiop:define-package #:yadfa/npcs
+(uiop:define-package #:yadfa-npcs
     (:import-from #:macro-level #:macro-level)
     (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
@@ -353,18 +361,18 @@
         #:diaper-pirate
         #:thickly-diaper-pirate)
     (:documentation "Contains all the NPCs in the game"))
-(uiop:define-package #:yadfa/status-conditions
+(uiop:define-package #:yadfa-status-conditions
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:wetting
         #:messing
         #:mushed
         #:tickled)
     (:documentation "Contains all the status condtions in the game"))
-(uiop:define-package #:yadfa/zones
+(uiop:define-package #:yadfa-zones
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:home
         #:debug-map
@@ -381,18 +389,18 @@
         #:pirates-cove
         #:your-ship)
     (:documentation "Contains all the zone definitions in the game"))
-(uiop:define-package #:yadfa/events
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+(uiop:define-package #:yadfa-events
+    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:get-diaper-locked-1)
     (:documentation "Contains all the event definitions in the game"))
-(uiop:define-package #:yadfa/allies
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+(uiop:define-package #:yadfa-allies
+    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:slynk
         #:chris
         #:kristy)
     (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package #:yadfa-user
-    (:use #:yadfa #:yadfa/bin #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:yadfa #:yadfa-util #:yadfa-bin #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:documentation "The package that the player typically executes commands from"))

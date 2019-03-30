@@ -1,4 +1,4 @@
-(in-package :yadfa/items)
+(in-package :yadfa-items)
 (defclass generic-diapers (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 100
@@ -23,7 +23,7 @@
         :use-script '(lambda (item user)
                          (declare (ignore item))
                          (format t "You tear open the package and dump all the diapers out of it.~%")
-                         (loop for i from 1 to 20 do (push (make-instance 'yadfa/items:generic-diapers) (inventory-of user))))))
+                         (loop for i from 1 to 20 do (push (make-instance 'yadfa-items:generic-diapers) (inventory-of user))))))
 (defclass generic-pullons (pullon) ()
     (:default-initargs
         :sogginess-capacity 100
@@ -48,7 +48,7 @@
         :use-script '(lambda (item user)
                          (declare (ignore item))
                          (format t "You tear open the package and dump all the diapers out of it.~%")
-                         (loop for i from 1 to 20 do (push (make-instance 'yadfa/items:generic-pullons) (inventory-of user))))))
+                         (loop for i from 1 to 20 do (push (make-instance 'yadfa-items:generic-pullons) (inventory-of user))))))
 (defclass incontinence-pad (yadfa:incontinence-pad) ()
     (:default-initargs
         :sogginess-capacity 1000
@@ -74,7 +74,7 @@
         :use-script '(lambda (item user)
                          (declare (ignore item))
                          (format t "You tear open the package and dump all the diapers out of it.~%")
-                         (loop for i from 1 to 20 do (push (make-instance 'yadfa/items:incontinence-pad) (inventory-of user))))))
+                         (loop for i from 1 to 20 do (push (make-instance 'yadfa-items:incontinence-pad) (inventory-of user))))))
 (defclass cloth-incontinence-pad (yadfa:incontinence-pad) ()
     (:default-initargs
         :sogginess-capacity 1000
@@ -143,7 +143,7 @@
         :use-script '(lambda (item user)
                          (declare (ignore item))
                          (format t "You tear open the package and dump all the diapers out of it.~%")
-                         (loop for i from 1 to 20 do (push (make-instance 'yadfa/items:thick-diaper) (inventory-of user))))))
+                         (loop for i from 1 to 20 do (push (make-instance 'yadfa-items:thick-diaper) (inventory-of user))))))
 (defclass midnight-diaper-package (item) ()
     (:default-initargs
         :name "Package of Midnight Diapers"
@@ -154,7 +154,7 @@
         :use-script '(lambda (item user)
                          (declare (ignore item))
                          (format t "You tear open the package and dump all the diapers out of it.~%")
-                         (loop for i from 1 to 20 do (push (make-instance 'yadfa/items:midnight-diaper) (inventory-of user))))))
+                         (loop for i from 1 to 20 do (push (make-instance 'yadfa-items:midnight-diaper) (inventory-of user))))))
 (defclass cloth-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 1400
@@ -236,7 +236,7 @@
         :use-script '(lambda (item user)
                          (declare (ignore item))
                          (format t "You tear open the package and dump all the diapers out of it.~%")
-                         (loop for i from 1 to 20 do (push (make-instance 'yadfa/items:disposable-swim-diaper) (inventory-of user))))))
+                         (loop for i from 1 to 20 do (push (make-instance 'yadfa-items:disposable-swim-diaper) (inventory-of user))))))
 (defclass diaper-package (item) ()
     (:default-initargs
         :name "Package of Diapers"
@@ -247,7 +247,7 @@
         :use-script '(lambda (item user)
                          (declare (ignore item))
                          (format t "You tear open the package and dump all the diapers out of it.~%")
-                         (loop for i from 1 to 20 do (push (make-instance 'yadfa/items:diaper) (inventory-of user))))))
+                         (loop for i from 1 to 20 do (push (make-instance 'yadfa-items:diaper) (inventory-of user))))))
 (defclass kurikia-thick-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 10000
@@ -375,7 +375,7 @@
         :use-script '(lambda (item user)
                          (declare (ignore item))
                          (format t "You tear open the package and dump all the pullups out of it.~%")
-                         (loop for i from 1 to 20 do (push (make-instance 'yadfa/items:pullups) (inventory-of user))))))
+                         (loop for i from 1 to 20 do (push (make-instance 'yadfa-items:pullups) (inventory-of user))))))
 (defclass cloth-pullups (pullup) ()
     (:default-initargs
         :value 200

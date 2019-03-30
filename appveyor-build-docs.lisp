@@ -6,8 +6,8 @@
         (load quicklisp-init)))
 #+(and gmp sbcl) (require 'sb-gmp)
 #+(and sbcl gmp) (sb-gmp:install-gmp-funs)
-(pushnew :yadfa/mods *features*)
-(pushnew :yadfa/docs *features*)
+(pushnew :yadfa-mods *features*)
+(pushnew :yadfa-docs *features*)
 (ql:update-client
     :prompt nil)
 (ql:update-all-dists

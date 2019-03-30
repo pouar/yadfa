@@ -1,4 +1,4 @@
-(in-package :yadfa/status-conditions)
+(in-package :yadfa-status-conditions)
 (defclass wetting (status-condition)
     ()
     (:default-initargs

@@ -1,4 +1,4 @@
-(in-package :yadfa/items)
+(in-package :yadfa-items)
 (defclass knights-armor (full-outfit) ()
     (:default-initargs
         :name "Knight's Armor"

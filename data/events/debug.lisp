@@ -1,4 +1,4 @@
-(in-package :yadfa/events)
+(in-package :yadfa-events)
 (defevent test-battle-1
     :lambda '(lambda (self)
                  (declare (ignore self))

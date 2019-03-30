@@ -1,9 +1,9 @@
-(in-package :yadfa/events)
+(in-package :yadfa-events)
 (defevent pirates-cove-1
     :lambda '(lambda (self)
                  (declare (ignorable self))
-                 (let* ((a (make-instance 'yadfa/npcs:diaper-pirate))
-                           (b (make-instance 'yadfa/npcs:thickly-diaper-pirate)))
+                 (let* ((a (make-instance 'yadfa-npcs:diaper-pirate))
+                           (b (make-instance 'yadfa-npcs:thickly-diaper-pirate)))
                      (format t "*You see one of the Pirate ~as changing an ~a into multiple layers of padding*~%"
                          (species-of a) (species-of b))
                      (format t "*The ~a struggles to stand and waddles with the thick padding spreading ~a legs apart*~%"
@@ -18,18 +18,18 @@
                      (format t "Padded ~a: Apparently.~%"
                          (species-of a))
                      (set-new-battle
-                         `((yadfa/npcs:diaper-pirate . (list
+                         `((yadfa-npcs:diaper-pirate . (list
                                                            :level (random-from-range 2 5)
                                                            :species ,(species-of a)
                                                            :male ,(malep a)))
-                              (yadfa/npcs:thickly-diaper-pirate . (list
+                              (yadfa-npcs:thickly-diaper-pirate . (list
                                                                       :level (random-from-range 2 5)
                                                                       :species ,(species-of b)
                                                                       :male ,(malep b))))))))
 (defevent pirates-cove-2
     :lambda '(lambda (self)
                  (declare (ignorable self))
-                 (let* ((a (make-instance 'yadfa/npcs:diaper-pirate))
+                 (let* ((a (make-instance 'yadfa-npcs:diaper-pirate))
                            (coon nil))
                      (write-line "You find the diapered raccoon bandit back from Navy HQ in a pillory wearing nothing but 2 layers of thoroughly flooded and messy diapers")
                      (write-line "Diapered Raccoon Bandit: Ok! I learned my lesson! Can I please get a diaper change now?!?!? >///<")
@@ -46,7 +46,7 @@
                          (if (malep a) "his" "her"))
                      (write-line "Raccoon: umm, thanks.")
                      (format t "~a: got a name?~%" (name-of (player-of *game*)))
-                     (setf coon (make-instance 'yadfa/allies:slynk
+                     (setf coon (make-instance 'yadfa-allies:slynk
                                     :name (first
                                               (prompt-for-values
                                                   (string
@@ -55,9 +55,9 @@
                                                                      (assoc :name
                                                                          (progn
                                                                              (ensure-finalized
-                                                                                 (find-class 'yadfa/allies:slynk))
+                                                                                 (find-class 'yadfa-allies:slynk))
                                                                              (compute-default-initargs
-                                                                                 (find-class 'yadfa/allies:slynk)))))
+                                                                                 (find-class 'yadfa-allies:slynk)))))
                                                       :view clim:+text-field-view+)))))
                      (format t "Raccoon: It's ~a~%" (name-of coon))
                      (format t "~a decides you can't be all bad since you're the first one to be nice to him (plus the Raccoon Bandits abandoned him) and decides to join your team~%"

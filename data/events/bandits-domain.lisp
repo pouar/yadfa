@@ -1,9 +1,9 @@
-(in-package :yadfa/events)
+(in-package :yadfa-events)
 (defevent enter-bandits-village-1
     :lambda '(lambda (self)
                  (declare (ignore self))
                  (set-new-battle
-                     '((yadfa/npcs:diapered-raccoon-bandit . '(:level 5)))
+                     '((yadfa-npcs:diapered-raccoon-bandit . '(:level 5)))
                      :continuable t
                      :enter-battle-text (format nil "Raccoon Bandit: This area is under control of the Raccoon Bandits. If you want in you have to get past me~%*Cue battle transition. You can't see it because this is a text based game, but trust us, it's there.*~%"))))
 (defevent enter-bandits-shop-1
@@ -26,11 +26,11 @@
                      (format t "*~A laughs at the leaky raccoon*~%" (name-of (player-of *game*)))
                      (write-line "Leaky raccoon blushing angrily: What are you laughing at?")
                      (set-new-battle
-                         '((yadfa/npcs:diapered-raccoon-bandit . (list
+                         '((yadfa-npcs:diapered-raccoon-bandit . (list
                                                           :level (random-from-range 2 5)
                                                           :wear (list
-                                                                    (make-instance 'yadfa/items:bandit-uniform-tunic)
-                                                                    (make-instance 'yadfa/items:bandit-adjustable-diaper
+                                                                    (make-instance 'yadfa-items:bandit-uniform-tunic)
+                                                                    (make-instance 'yadfa-items:bandit-adjustable-diaper
                                                                         :sogginess 1400
                                                                         :messiness 8000)))))
                          :enter-battle-text (format nil "The leaky raccoon waddles over to you to fight~%")))))
@@ -47,26 +47,26 @@
                                  :description "A treasure chest"
                                  :items (cond
                                             ((< (random 10))
-                                                (list (make-instance 'yadfa/items:gold-collar
+                                                (list (make-instance 'yadfa-items:gold-collar
                                                           :value (random-from-range 25000 50000))))
                                             ((< (random 10))
-                                                (list (make-instance 'yadfa/items:gold-pacifier
+                                                (list (make-instance 'yadfa-items:gold-pacifier
                                                           :value (random-from-range 10000 20000))))
                                             ((< (random 10))
-                                                (list (make-instance 'yadfa/items:gem
+                                                (list (make-instance 'yadfa-items:gem
                                                           :value (random-from-range 25000 50000))))
                                             ((< (random 20))
-                                                (list (make-instance 'yadfa/items:gold-bar
+                                                (list (make-instance 'yadfa-items:gold-bar
                                                           :value (random-from-range 50000 100000)))))
                                  :bitcoins (random-from-range 12500 25000))))
                      (remf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest))
                  (cond
                      ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa/npcs:diapered-raccoon-bandit . (list
+                             '((yadfa-npcs:diapered-raccoon-bandit . (list
                                                                             :level (random-from-range 2 5)
                                                                             :bladder/contents (random-from-range 450 550)))
-                                  (yadfa/npcs:diapered-raccoon-bandit . (list
+                                  (yadfa-npcs:diapered-raccoon-bandit . (list
                                                                                :level (random-from-range 2 5)
                                                                                :bladder/contents (random 400)
                                                                                :bowels/contents (random 5000))))
@@ -105,41 +105,41 @@
                                      (name-of (player-of *game*)))
                                  (incf (bitcoins-of (player-of *game*)) (random-from-range 50000 100000))
                                  (iter (for i from 0 to (random 5))
-                                     (push (make-instance 'yadfa/items:gold-bar) (inventory-of (player-of *game*))))
+                                     (push (make-instance 'yadfa-items:gold-bar) (inventory-of (player-of *game*))))
                                  (iter (for i from 0 to (random 5))
-                                     (push (make-instance 'yadfa/items:gem) (inventory-of (player-of *game*))))
+                                     (push (make-instance 'yadfa-items:gem) (inventory-of (player-of *game*))))
                                  (iter (for i from 0 to (random 5))
-                                     (push (make-instance 'yadfa/items:bandit-uniform-tunic) (inventory-of (player-of *game*))))
+                                     (push (make-instance 'yadfa-items:bandit-uniform-tunic) (inventory-of (player-of *game*))))
                                  (iter (for i from 0 to (random 20))
                                      (push
-                                         (make-instance 'yadfa/items:bandit-adjustable-diaper)
+                                         (make-instance 'yadfa-items:bandit-adjustable-diaper)
                                          (inventory-of (player-of *game*))))
                                  (push
-                                     (make-instance 'yadfa/items:bandit-swimsuit/closed)
+                                     (make-instance 'yadfa-items:bandit-swimsuit/closed)
                                      (inventory-of (player-of *game*))))
                              (set-new-battle
-                                 '((yadfa/npcs:diapered-raccoon-bandit
+                                 '((yadfa-npcs:diapered-raccoon-bandit
                                        . (list :level (random-from-range 2 5)
                                              :bowels/contents 0
                                              :wear (list
-                                                       (make-instance 'yadfa/items:bandit-uniform-tunic)
-                                                       (make-instance 'yadfa/items:bandit-adjustable-diaper
+                                                       (make-instance 'yadfa-items:bandit-uniform-tunic)
+                                                       (make-instance 'yadfa-items:bandit-adjustable-diaper
                                                            :messiness 8000))))))))
                      ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa/npcs:female-diapered-raccoon-bandit .
+                             '((yadfa-npcs:female-diapered-raccoon-bandit .
                                    (list :level (random-from-range 2 5))))))
                      ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa/npcs:rookie-diapered-raccoon-bandit .
+                             '((yadfa-npcs:rookie-diapered-raccoon-bandit .
                                    (list :level (random-from-range 2 5))))))
                      ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa/npcs:diapered-raccoon-bandit .
+                             '((yadfa-npcs:diapered-raccoon-bandit .
                                    (list :level (random-from-range 2 5))))))
                      ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa/npcs:giant-diapered-raccoon-bandit .
+                             '((yadfa-npcs:giant-diapered-raccoon-bandit .
                                    (list :level (random-from-range 5)))))))))
 (defevent obtain-diaper-lock-1
     :finished-depends '(enter-bandits-shop-1 get-diaper-locked-1)
@@ -164,7 +164,7 @@
                                 (/ (getf (calculate-diaper-usage (player-of *game*)) :messiness-capacity) 4)))))
     :lambda '(lambda (self)
                  (declare (ignorable self))
-                 (pushnew '(yadfa/items:magic-diaper-key . (list :value 10000)) (items-for-sale-of (getf (get-props-from-zone '(-3 22 0 yadfa/zones:bandits-domain)) :shop)))
+                 (pushnew '(yadfa-items:magic-diaper-key . (list :value 10000)) (items-for-sale-of (getf (get-props-from-zone '(-3 22 0 yadfa-zones:bandits-domain)) :shop)))
                  (format t "Shop owner: Seems you're stuck in a locked diaper. I can help.~%~%")
                  (format t "~a: I'm listenening~%~%" (name-of (player-of *game*)))
                  (format t "I got one of those special artifacts that is used to lock and unlock these diapers. I can give it to you for 10000 bitcoins. Better pay up before you ~a yourself~%~%"
@@ -282,9 +282,9 @@
                                                      (assoc :name
                                                          (progn
                                                              (ensure-finalized
-                                                                 (find-class 'yadfa/allies:chris))
+                                                                 (find-class 'yadfa-allies:chris))
                                                              (compute-default-initargs
-                                                                 (find-class 'yadfa/allies:chris)))))
+                                                                 (find-class 'yadfa-allies:chris)))))
                                       :view clim:+text-field-view+)
                                   (string
                                       :prompt "Vixen Name"
@@ -292,13 +292,13 @@
                                                      (assoc :name
                                                          (progn
                                                              (ensure-finalized
-                                                                 (find-class 'yadfa/allies:kristy))
+                                                                 (find-class 'yadfa-allies:kristy))
                                                              (compute-default-initargs
-                                                                 (find-class 'yadfa/allies:kristy)))))
+                                                                 (find-class 'yadfa-allies:kristy)))))
                                       :view clim:+text-field-view+))))
-                         (setf a (make-instance 'yadfa/allies:chris
+                         (setf a (make-instance 'yadfa-allies:chris
                                      :name (first c))
-                             b (make-instance 'yadfa/allies:kristy
+                             b (make-instance 'yadfa-allies:kristy
                                    :name (second c)))
                          (loop for i in (list a b) do (do-push i (team-of *game*) (allies-of *game*)))
                          (format t "Fox: I'm ~a~%~%" (name-of a))
@@ -323,5 +323,5 @@
                  (format t "~a: Ok *grabs the device and puts it in ~a inventory*~%~%"
                      (name-of (player-of *game*))
                      (if (malep (player-of *game*)) "his" "her"))
-                 (push (make-instance 'yadfa/items:warp-device) (inventory-of (player-of *game*)))
-                 (setf (hiddenp (get-zone '(0 0 0 yadfa/zones:silver-cape))) nil)))
+                 (push (make-instance 'yadfa-items:warp-device) (inventory-of (player-of *game*)))
+                 (setf (hiddenp (get-zone '(0 0 0 yadfa-zones:silver-cape))) nil)))

@@ -1,4 +1,4 @@
-(in-package :yadfa/items)
+(in-package :yadfa-items)
 (defonesie onesie ()
     (:default-initargs
         :name "Onesie"

@@ -1,4 +1,4 @@
-(in-package :yadfa/items)
+(in-package :yadfa-items)
 (defclass gold-bar (item) ()
     (:default-initargs
         :name "Gold Bar"

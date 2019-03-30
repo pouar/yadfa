@@ -1,4 +1,4 @@
-(in-package :yadfa/moves)
+(in-package :yadfa-moves)
 (defclass superglitch (stat/move) ()
     (:default-initargs
         :name "Superglitch"
@@ -50,7 +50,7 @@
                      (declare (ignorable user self))
                      (format t "~a used ~a~%" (name-of user) (name-of self))
                      (format t "~a starts laughing helplessly~%" (name-of target))
-                     (set-status-condition 'yadfa/status-conditions:tickled target))))
+                     (set-status-condition 'yadfa-status-conditions:tickled target))))
 (defclass tackle (stat/move) ()
     (:default-initargs
         :name "Tackle"

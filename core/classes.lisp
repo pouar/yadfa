@@ -218,8 +218,8 @@
     ((learned-moves
          :initarg :learned-moves
          :accessor learned-moves-of
-         :initform (list (cons 100 'yadfa/moves:superglitch) (cons 11 'yadfa/moves:kamehameha) (cons 7 'yadfa/moves:tickle) (cons 8 'yadfa/moves:mush))
-         :documentation "Alist of moves the player learns by leveling up, first element is the level when you learn them ove, second is a symbol from the `yadfa/moves' package")
+         :initform (list (cons 100 'yadfa-moves:superglitch) (cons 11 'yadfa-moves:kamehameha) (cons 7 'yadfa-moves:tickle) (cons 8 'yadfa-moves:mush))
+         :documentation "Alist of moves the player learns by leveling up, first element is the level when you learn them ove, second is a symbol from the `yadfa-moves' package")
         (potty-training
             :initarg :potty-training
             :initform :last-minute
@@ -233,10 +233,10 @@
         :species "fox"
         :bladder/fill-rate (* (/ 2000 24 60) 2)
         :bowels/fill-rate (* (/ 12000 24 60) 2)
-        :wear (list (make-instance 'yadfa/items:diaper))
+        :wear (list (make-instance 'yadfa-items:diaper))
         :moves (list
-                   (make-instance 'yadfa/moves:watersport)
-                   (make-instance 'yadfa/moves:mudsport))))
+                   (make-instance 'yadfa-moves:watersport)
+                   (make-instance 'yadfa-moves:mudsport))))
 (defmethod print-object ((obj ally) stream)
     (print-unreadable-object (obj stream :type t :identity t)
         (format stream "~w" (name-of obj))))
@@ -270,7 +270,7 @@
 (defclass player (team-member)
     ((position
          :initarg :position
-         :initform '(0 0 0 yadfa/zones:home)
+         :initform '(0 0 0 yadfa-zones:home)
          :accessor position-of
          :documentation "Current position in the form of `(list x y z map)'.")
         (warp-on-death-point
@@ -280,8 +280,8 @@
         (learned-moves
             :initarg :learned-moves
             :accessor learned-moves-of
-            :initform (list (cons 100 'yadfa/moves:superglitch) (cons 11 'yadfa/moves:kamehameha) (cons 7 'yadfa/moves:tickle) (cons 8 'yadfa/moves:mush))
-            :documentation "Alist of moves the player learns by leveling up, first element is the level when you learn them ove, second is a symbol from the `yadfa/moves'"))
+            :initform (list (cons 100 'yadfa-moves:superglitch) (cons 11 'yadfa-moves:kamehameha) (cons 7 'yadfa-moves:tickle) (cons 8 'yadfa-moves:mush))
+            :documentation "Alist of moves the player learns by leveling up, first element is the level when you learn them ove, second is a symbol from the `yadfa-moves'"))
     (:documentation "The player")
     (:default-initargs
         :base-stats (list :health 45 :attack 80 :defense 50 :energy 45 :speed 120)
@@ -291,12 +291,12 @@
         :species "Fox"
         :bladder/fill-rate (* (/ 2000 24 60) 2)
         :bowels/fill-rate (* (/ 12000 24 60) 2)
-        :wear (list (make-instance 'yadfa/items:diaper))
+        :wear (list (make-instance 'yadfa-items:diaper))
         :moves (list
-                   (make-instance 'yadfa/moves:watersport)
-                   (make-instance 'yadfa/moves:mudsport)
-                   (make-instance 'yadfa/moves:mush)
-                   (make-instance 'yadfa/moves:tickle))))
+                   (make-instance 'yadfa-moves:watersport)
+                   (make-instance 'yadfa-moves:mudsport)
+                   (make-instance 'yadfa-moves:mush)
+                   (make-instance 'yadfa-moves:tickle))))
 (defmethod initialize-instance :after
     ((c player) &rest initargs)
     (declare (ignorable initargs))
@@ -747,7 +747,7 @@
 (defclass pullon (padding) ()
     (:default-initargs :thickness (* 1/2 25.4) :thickness-capacity 40))
 (defclass tabbed-briefs (padding) ()
-    (:default-initargs :thickness 25.4 :thickness-capacity 80 :key 'yadfa/items:magic-diaper-key))
+    (:default-initargs :thickness 25.4 :thickness-capacity 80 :key 'yadfa-items:magic-diaper-key))
 (defclass incontinence-pad (incontinence-product) ()
     (:default-initargs :thickness (* 1/4 25.4) :thickness-capacity 20))
 (defclass undies (closed-bottoms)
@@ -810,7 +810,7 @@
                                              (prop &rest keys &key &allow-other-keys)
                                              (declare (type prop prop))
                                              (check-type prop prop)
-                                             (yadfa/world:wash-all-in prop)))))
+                                             (yadfa-world:wash-all-in prop)))))
     (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 
 (defclass automatic-changing-table (prop) ()
@@ -849,7 +849,7 @@
                                      (progn
                                          (format t "~a: Hey!!! I don't need diapers!!! Stop!!!~%~%"
                                              (name-of j))))
-                                 (change-the-baby j 'yadfa/items:kurikia-thick-diaper :locked t)
+                                 (change-the-baby j 'yadfa-items:kurikia-thick-diaper :locked t)
                                  (format t "*The machine removes ~a's soggy clothing (and any clothing that doesn't fit over the new diaper) and puts a thick diaper on ~a, then locks it to prevent the baby from removing it.*~%~%"
                                      (name-of j)
                                      (if (malep j) "him" "her"))
@@ -858,7 +858,7 @@
                                      (if (malep j) "him" "her")
                                      (name-of j)
                                      (if (malep j) "him" "her"))
-                                 (trigger-event 'yadfa/events:get-diaper-locked-1))))))))
+                                 (trigger-event 'yadfa-events:get-diaper-locked-1))))))))
     (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 (defclass checkpoint (prop) ()
     (:default-initargs

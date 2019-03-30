@@ -1,4 +1,4 @@
-(in-package :yadfa/zones)
+(in-package :yadfa-zones)
 (ensure-zone (0 0 0 secret-underground)
     :name "Secret Underground"
     :description "You see several warp pipes in here going to various places"
@@ -37,8 +37,8 @@
                                         (check-type prop prop)
                                         (check-type out-item '(or (eql :diaper) (eql :pullup)))
                                         (push (make-instance (cond
-                                                                 ((eq out-item :diaper) 'yadfa/items:diaper)
-                                                                 ((eq out-item :pullups)  'yadfa/items:pullups)))
+                                                                 ((eq out-item :diaper) 'yadfa-items:diaper)
+                                                                 ((eq out-item :pullups)  'yadfa-items:pullups)))
                                             (inventory-of (player-of *game*)))))))))
 (ensure-zone (1 1 0 secret-underground)
     :name "Secret Underground Shop"

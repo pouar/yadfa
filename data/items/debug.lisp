@@ -1,4 +1,4 @@
-(in-package :yadfa/items)
+(in-package :yadfa-items)
 (defclass test-clothing (clothing)
     ()
     (:default-initargs

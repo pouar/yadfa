@@ -1,4 +1,4 @@
-(in-package :yadfa/moves)
+(in-package :yadfa-moves)
 (defclass kamehameha (stat/move) ()
     (:default-initargs
         :name "Kamehameha Wave"

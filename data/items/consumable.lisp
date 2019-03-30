@@ -1,4 +1,4 @@
-(in-package :yadfa/items)
+(in-package :yadfa-items)
 (defclass bottle-of-milk (consumable) ()
     (:default-initargs
         :name "Bottle of milk"

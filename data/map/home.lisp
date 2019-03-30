@@ -1,4 +1,4 @@
-(in-package :yadfa/zones)
+(in-package :yadfa-zones)
 (ensure-zone (0 0 0 home)
     :name "Bedroom"
     :description "Your house only has a bedroom and a bathroom. Because Pouar was too lazy to code you a real house."
@@ -25,7 +25,7 @@
                              :name "Cupboard"
                              :placeable t
                              :description "A cupboard located on the sink"
-                             :items (list (make-instance 'yadfa/items:potion)))
+                             :items (list (make-instance 'yadfa-items:potion)))
                :washer (make-instance 'washer
                            :name "Washer"
                            :description "A place to wash all the clothes that you've ruined")))

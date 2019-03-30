@@ -1,4 +1,4 @@
-(in-package :yadfa/events)
+(in-package :yadfa-events)
 (defevent pointless-quest-1
     :lambda '(lambda (self)
                  (declare (ignorable self))

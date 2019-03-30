@@ -1,4 +1,4 @@
-(in-package :yadfa/zones)
+(in-package :yadfa-zones)
 (ensure-zone (0 0 0 ironside)
     :name "Ironside Street"
     :description "Your typical suburban street. Some furries are driving in cars, some are walking, and some are riding on top of other furries treating them like a horse."
@@ -24,16 +24,16 @@
     :props (list
                :shop (make-instance 'shop
                          :items-for-sale (list
-                                             '(yadfa/items:monster-energy-drink)
-                                             '(yadfa/items:generic-diapers-package)
-                                             '(yadfa/items:generic-pullons-package)
-                                             '(yadfa/items:dress)
-                                             '(yadfa/items:jeans)
-                                             '(yadfa/items:tshirt)
-                                             '(yadfa/items:boxers)
-                                             '(yadfa/items:panties)
-                                             '(yadfa/items:knights-armor)
-                                             '(yadfa/items:potion)))
+                                             '(yadfa-items:monster-energy-drink)
+                                             '(yadfa-items:generic-diapers-package)
+                                             '(yadfa-items:generic-pullons-package)
+                                             '(yadfa-items:dress)
+                                             '(yadfa-items:jeans)
+                                             '(yadfa-items:tshirt)
+                                             '(yadfa-items:boxers)
+                                             '(yadfa-items:panties)
+                                             '(yadfa-items:knights-armor)
+                                             '(yadfa-items:potion)))
                :changing-table (make-instance 'automatic-changing-table)))
 
 (ensure-zone (0 -1 0 ironside)
@@ -44,12 +44,12 @@
     :props (list
                :shop (make-instance 'shop
                          :items-for-sale (list
-                                             '(yadfa/items:bottle-of-milk)
-                                             '(yadfa/items:incontinence-pad-package)
-                                             '(yadfa/items:diaper-package)
-                                             '(yadfa/items:pullups-package)
-                                             '(yadfa/items:toddler-dress)
-                                             '(yadfa/items:onesie/opened)))
+                                             '(yadfa-items:bottle-of-milk)
+                                             '(yadfa-items:incontinence-pad-package)
+                                             '(yadfa-items:diaper-package)
+                                             '(yadfa-items:pullups-package)
+                                             '(yadfa-items:toddler-dress)
+                                             '(yadfa-items:onesie/opened)))
                :changing-table (make-instance 'automatic-changing-table)))
 (ensure-zone (2 1 0 ironside)
     :name "Ironside University Entrance"
@@ -122,4 +122,4 @@
                                         (prop &rest keys &key &allow-other-keys)
                                         (declare (type prop prop) (ignore prop))
                                         (check-type prop prop)
-                                        (push (make-instance 'yadfa/items:diaper) (inventory-of (player-of *game*)))))))))
+                                        (push (make-instance 'yadfa-items:diaper) (inventory-of (player-of *game*)))))))))

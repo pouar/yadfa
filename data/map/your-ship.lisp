@@ -1,4 +1,4 @@
-(in-package :yadfa/zones)
+(in-package :yadfa-zones)
 (macro-level
     `(progn
          ,@(iter (for y from 0 to 2)

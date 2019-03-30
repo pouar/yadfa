@@ -1,4 +1,4 @@
-(in-package :yadfa/items)
+(in-package :yadfa-items)
 (defclass pacifier (headpiece) ()
     (:default-initargs
         :name "Pacifier"

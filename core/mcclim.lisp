@@ -26,7 +26,7 @@
 (clim:define-command (com-yadfa-move :command-table clim:global-command-table :menu t :name "Move Here")
     ((zone zone))
     (block nil
-        (apply #'yadfa/world:move
+        (apply #'yadfa-world:move
             (cond
                 (*battle*
                      (format t "You can't do this in battle~%")

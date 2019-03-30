@@ -1,22 +1,10 @@
 ;;;; files used internally by the game, don't call these unless you're developing/modding (or cheating)
 (in-package :yadfa)
-(defun shl (x width bits)
-    "Compute bitwise left shift of x by 'bits' bits, represented on 'width' bits"
-    (logand (ash x bits)
-        (1- (ash 1 width))))
-(defun shr (x width bits)
-    "Compute bitwise right shift of x by 'bits' bits, represented on 'width' bits"
-    (logand (ash x (- bits))
-        (1- (ash 1 width))))
 (defun finished-events (events)
     (not
         (iter (for i in events)
             (unless (member i (finished-events-of *game*))
                 (leave t)))))
-(defmethod lambda-list ((lambda-exp list))
-    (cadr lambda-exp))
-(defmethod lambda-list ((lambda-exp function))
-    (swank-backend:arglist lambda-exp))
 (defun initialize-mod-registry ()
     (setf *mod-registry* (make-hash-table :test 'equal))
     (labels ((preferred-mod (old new)
@@ -42,16 +30,16 @@
     (clrhash *pattern-cache*))
 (defun clear-mod-registry ()
     (setf *mod-registry* nil))
-#+yadfa/mods
+#+yadfa-mods
 (defvar *mods* '())
 (defun find-mod (system)
     (unless *mod-registry* (initialize-mod-registry))
     (gethash (asdf:primary-system-name system) *mod-registry*))
 (defun load-mods (&rest keys &key compiler-verbose &allow-other-keys)
-    #-yadfa/mods nil
-    #+yadfa/mods (unless
-                     #+yadfa/docs (member "texi" (uiop:command-line-arguments) :test #'string=)
-                     #-yadfa/docs nil
+    #-yadfa-mods nil
+    #+yadfa-mods (unless
+                     #+yadfa-docs (member "texi" (uiop:command-line-arguments) :test #'string=)
+                     #-yadfa-docs nil
                      (when uiop:*image-dumped-p*
                          (pushnew
                              'yadfa::find-mod
@@ -301,9 +289,9 @@
                       (format t "~a was added to your pokedex~%" (name-of i))
                       (push (class-name (class-of i)) (seen-enemies-of *game*))
                       (collect (class-name (class-of i))))))
-        (yadfa/bin:pokedex j))
-    (unuse-package :yadfa/world :yadfa-user)
-    (use-package :yadfa/battle :yadfa-user)
+        (yadfa-bin:pokedex j))
+    (unuse-package :yadfa-world :yadfa-user)
+    (use-package :yadfa-battle :yadfa-user)
     (process-battle :attack t :no-team-attack t))
 (defun run-equip-effects (user)
     (iter (for i in (wear-of user))
@@ -714,18 +702,18 @@
     (when *battle*
         (write-line "To avoid breaking the game due to a few assumtpions made in this function, please don't run this in a battle~%")
         (return-from move-to-secret-underground))
-    (unless (get-path-end '(0 0 0 yadfa/zones:secret-underground))
+    (unless (get-path-end '(0 0 0 yadfa-zones:secret-underground))
         (format t "~a"
             (second
                 (multiple-value-list
                     (get-path-end
-                        '(0 0 0 yadfa/zones:secret-underground)))))
+                        '(0 0 0 yadfa-zones:secret-underground)))))
         (return-from move-to-secret-underground))
-    (unless (eq (lockedp (get-zone '(0 0 0 yadfa/zones:secret-underground))) :nil)
-        (format t "You unlock zone ~a~%" '(0 0 0 yadfa/zones:secret-underground))
-        (setf (lockedp (get-zone '(0 0 0 yadfa/zones:secret-underground))) :nil))
+    (unless (eq (lockedp (get-zone '(0 0 0 yadfa-zones:secret-underground))) :nil)
+        (format t "You unlock zone ~a~%" '(0 0 0 yadfa-zones:secret-underground))
+        (setf (lockedp (get-zone '(0 0 0 yadfa-zones:secret-underground))) :nil))
     (setf (position-of (player-of *game*))
-        '(0 0 0 yadfa/zones:secret-underground))
+        '(0 0 0 yadfa-zones:secret-underground))
     (when (underwaterp (get-zone (position-of (player-of *game*)))) (swell-up-all))
     (process-potty)
     (run-equip-effects (player-of *game*))
@@ -801,8 +789,6 @@
                         (when (< (random (getf i :max-random)) random)
                             (set-new-battle (getf i :enemies))
                             (return-from move-to-pocket-map))))))))
-(defmacro do-push (item &rest places)
-    `(progn ,@(loop for place in places collect `(push ,item ,place))))
 (defun wet (&key (wet-amount t) force-fill-amount pants-down accident force-wet-amount (wetter (player-of *game*)))
     #+sbcl (declare
                (type (or null number) force-fill-amount force-wet-amount)
@@ -959,7 +945,7 @@
                 (if (malep user) "him" "her"))
             (format t "~a: Hey!!! I don't need diapers!!! Stop!!!~%~%"
                 (name-of user))))
-    (change-the-baby user 'yadfa/items:kurikia-thick-diaper :locked t)
+    (change-the-baby user 'yadfa-items:kurikia-thick-diaper :locked t)
     (format t "*The diaper police straps the squirmy and heavily blushy ~a down on a public changing table, strips all of ~a's soggy clothes off (and all the clothes that won't fit over the new diaper), and puts a thick diaper on ~a. All while the local bystandards watch, snicker, giggle, and point*~%~%"
         (name-of user)
         (if (malep user) "he" "she")
@@ -978,7 +964,7 @@
         (name-of user)
         (if (malep user) "his" "her")
         (if (malep user) "his" "her"))
-    (trigger-event 'yadfa/events:get-diaper-locked-1))
+    (trigger-event 'yadfa-events:get-diaper-locked-1))
 (defun potty-on-toilet (prop &key wet mess pants-down (user (player-of *game*)))
     #+sbcl (declare
                (type toilet prop)
@@ -2569,20 +2555,6 @@
     (setf (bitcoins-of (getf (get-props-from-zone position) prop)) new-value))
 (defun (setf get-props-from-zone) (new-value position)
     (setf (props-of (eval (get-zone position))) new-value))
-(defun remove-nth (n sequence)
-    (remove-if (constantly t) sequence :start n :count 1))
-(defun insert (list value n)
-    (if (<= n 0)
-        (cons value list)
-        (cons (car list) (insert (cdr list) value (- n 1)))))
-(define-modify-macro insertf (value n) insert)
-(defun substitute/swapped-arguments (sequence new old &rest keyword-arguments)
-    (apply #'substitute new old sequence keyword-arguments))
-
-(define-modify-macro substitutef (new old &rest keyword-arguments)
-    substitute/swapped-arguments
-    "Modify-macro for SUBSTITUTE. Sets place designated by the first argument to
-the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS.")
 (defun pushnewmove (move* user)
     (pushnew (make-instance move*) (moves-of user)
         :test (lambda (a b)
@@ -2593,8 +2565,6 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                   (if (typep a 'keyword)
                       (string= a (class-name (class-of b)))
                       (eq a (class-name (class-of b)))))))
-(defun random-from-range (start end)
-    (+ start (random (+ 1 (- end start)))))
 (defun calculate-diaper-usage (user)
     (iter (with j = (list :sogginess 0 :sogginess-capacity 0 :messiness 0 :messiness-capacity 0))
         (for i in (wearingp (wear-of user) 'closed-bottoms))
@@ -2931,8 +2901,8 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                         (funcall (coerce (event-lambda (get-event i)) 'function) i)
                         (pushnew i (finished-events-of *game*))))
                 (when *battle* (return-from finish-battle)))))
-    (unuse-package :yadfa/battle :yadfa-user)
-    (use-package :yadfa/world :yadfa-user))
+    (unuse-package :yadfa-battle :yadfa-user)
+    (use-package :yadfa-world :yadfa-user))
 (defun wash (clothing)
     (loop for i in (wearingp clothing 'bottoms) do (when (not (disposablep i)) (setf (sogginess-of i) 0 (messiness-of i) 0))))
 (defun go-to-sleep% (user)
@@ -3251,7 +3221,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                       (if (malep character) "he" "she")
                       (if (malep character) "him" "her"))
                   (wet :wetter character)
-                  (set-status-condition 'yadfa/status-conditions:wetting character))
+                  (set-status-condition 'yadfa-status-conditions:wetting character))
               (when (>= (bowels/contents-of character) (bowels/maximum-limit-of character))
                   (format t
                       "~a instinctively squats down as ~a accidentally messes ~aself in battle~%"
@@ -3259,18 +3229,18 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                       (if (malep character) "he" "she")
                       (if (malep character) "him" "her"))
                   (mess :messer character)
-                  (set-status-condition 'yadfa/status-conditions:messing character)))
+                  (set-status-condition 'yadfa-status-conditions:messing character)))
         ((and
              (watersport-limit-of character)
              (<= (- (bladder/maximum-limit-of character) (bladder/contents-of character)) (watersport-limit-of character))
              (< (random (watersport-chance-of character)) 1))
-            (let ((a (make-instance 'yadfa/moves:watersport)))
+            (let ((a (make-instance 'yadfa-moves:watersport)))
                 (funcall (coerce (attack-of a) 'function) (player-of *game*) character a)))
         ((and
              (mudsport-limit-of character)
              (<= (- (bowels/maximum-limit-of character) (bowels/contents-of character)) (mudsport-limit-of character))
              (< (random (mudsport-chance-of character)) 1))
-            (let ((a (make-instance 'yadfa/moves:mudsport)))
+            (let ((a (make-instance 'yadfa-moves:mudsport)))
                 (funcall (coerce (attack-of a) 'function) (player-of *game*) character a)))
         ((iter (for j in (getf (status-conditions-of *battle*) character))
              (when (blocks-turn-of j)
@@ -3392,9 +3362,9 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
     (cond ((and (not (eq (player-of *game*) character))
                (or (eq (potty-training-of character) :rebel))
                (not (typep (get-move attack character)
-                        'yadfa/moves:watersport))
+                        'yadfa-moves:watersport))
                (>= (bladder/contents-of character) (bladder/need-to-potty-limit-of character)))
-              (let ((a (make-instance 'yadfa/moves:watersport)))
+              (let ((a (make-instance 'yadfa-moves:watersport)))
                   (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of character))
                   (format t "*~a uses ~a instead*~%~%" (name-of character) (name-of a))
                   (funcall
@@ -3406,9 +3376,9 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                       a)))
         ((and (not (eq (player-of *game*) character))
              (or (eq (potty-training-of character) :rebel))
-             (not (typep (get-move attack character) 'yadfa/moves:mudsport))
+             (not (typep (get-move attack character) 'yadfa-moves:mudsport))
              (>= (bowels/contents-of character) (bowels/need-to-potty-limit-of character)))
-            (let ((a (make-instance 'yadfa/moves:mudsport)))
+            (let ((a (make-instance 'yadfa-moves:mudsport)))
                 (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of character))
                 (format t "*~a uses ~a instead*~%~%" (name-of character) (name-of a))
                 (funcall
@@ -3428,7 +3398,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                     (if (malep character) "he" "she")
                     (if (malep character) "him" "her"))
                 (wet :wetter character)
-                (set-status-condition 'yadfa/status-conditions:wetting character))
+                (set-status-condition 'yadfa-status-conditions:wetting character))
             (when (>= (bladder/contents-of character) (bladder/maximum-limit-of character))
                 (format t
                     "~a instinctively squats down as ~a accidentally messes ~aself in battle~%"
@@ -3436,7 +3406,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                     (if (malep character) "he" "she")
                     (if (malep character) "him" "her"))
                 (mess :messer character)
-                (set-status-condition 'yadfa/status-conditions:messing character)))
+                (set-status-condition 'yadfa-status-conditions:messing character)))
         ((iter (for j in (getf (status-conditions-of *battle*) character))
              (when (blocks-turn-of j)
                  (leave t))))
@@ -3474,8 +3444,8 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                           '<))
                  1)
              (not (or
-                      (typep (get-move attack character) 'yadfa/moves:watersport)
-                      (typep (get-move attack character) 'yadfa/moves:mudsport))))
+                      (typep (get-move attack character) 'yadfa-moves:watersport)
+                      (typep (get-move attack character) 'yadfa-moves:mudsport))))
             (format t "~a is too busy doing a potty dance to fight~%" (name-of character)))
         (item
             (format t "~a used ~a ~a on ~a~%"
@@ -3676,18 +3646,18 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                       (string
                           :prompt "Species"
                           :default (species-of default) :view clim:+text-field-view+)
-                      ((clim:completion (yadfa/items:tshirt yadfa/items:short-dress nil))
+                      ((clim:completion (yadfa-items:tshirt yadfa-items:short-dress nil))
                           :prompt "Top clothes"
-                          :default 'yadfa/items:tshirt :view clim:+option-pane-view+)
-                      ((clim:completion (yadfa/items:bra nil))
+                          :default 'yadfa-items:tshirt :view clim:+option-pane-view+)
+                      ((clim:completion (yadfa-items:bra nil))
                           :prompt "Top Undies"
                           :default 'nil :view clim:+option-pane-view+)
-                      ((clim:completion (yadfa/items:jeans nil))
+                      ((clim:completion (yadfa-items:jeans nil))
                           :prompt "Bottom Clothes"
                           :default 'nil :view clim:+option-pane-view+)
-                      ((clim:completion (yadfa/items:diaper yadfa/items:pullups yadfa/items:boxers yadfa/items:panties nil))
+                      ((clim:completion (yadfa-items:diaper yadfa-items:pullups yadfa-items:boxers yadfa-items:panties nil))
                           :prompt "Bottom Undies"
-                          :default 'yadfa/items:diaper :view clim:+option-pane-view+)
+                          :default 'yadfa-items:diaper :view clim:+option-pane-view+)
                       ((clim:completion (:normal :low :overactive))
                           :prompt "Bladder capacity"
                           :default :normal :view clim:+option-pane-view+))))
@@ -3703,7 +3673,7 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
                                      :wear (iter (for i in (cdddr (butlast values)))
                                                (unless (eq i 'nil) (collect (make-instance i))))))
         (setf (team-of *game*) (list (player-of *game*)))
-        (when (member (seventh values) '(yadfa/items:diaper yadfa/items:pullups))
+        (when (member (seventh values) '(yadfa-items:diaper yadfa-items:pullups))
             (iter (for i from 1 to (random 20))
                 (push (make-instance (seventh values))
                     (get-items-from-prop :dresser (position-of default))))))

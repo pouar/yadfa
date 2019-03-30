@@ -1,4 +1,4 @@
-(in-package :yadfa/moves)
+(in-package :yadfa-moves)
 (defclass mush (stat/move) ()
     (:default-initargs
         :name "Mush"
@@ -10,4 +10,4 @@
                          (format t "But it had no effect!~%")
                          (progn
                              (format t "~a's diaper has been mushed~%" (name-of target))
-                             (set-status-condition 'yadfa/status-conditions:mushed target))))))
+                             (set-status-condition 'yadfa-status-conditions:mushed target))))))

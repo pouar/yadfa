@@ -1,4 +1,4 @@
-(in-package :yadfa/items)
+(in-package :yadfa-items)
 (defclass 7.62×39mm (ammo) ()
     (:default-initargs
         :name "7.62x39mm Rounds"

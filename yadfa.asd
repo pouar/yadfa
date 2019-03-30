@@ -12,15 +12,16 @@
     :entry-point "yadfa::main"
     :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria"
                     (:feature :slynk "slynk")
-                    (:feature :swank "swank") (:feature :yadfa/docs "net.didierverna.declt"))
+                    (:feature :swank "swank") (:feature :yadfa-docs "net.didierverna.declt"))
     :components ((:file "packages")
                     (:file "main" :depends-on ("packages"))
                     (:module "core"
                         :depends-on ("packages" "main")
-                        :components ((:file "structs")
+                        :components ((:file "util")
+                                        (:file "structs")
                                         (:file "init" :depends-on ("patches"))
-                                        (:file "libexec" :depends-on ("classes" "init" "structs"))
-                                        (:file "classes" :depends-on ("patches"))
+                                        (:file "libexec" :depends-on ("util" "classes" "init" "structs"))
+                                        (:file "classes" :depends-on ("util" "patches"))
                                         (:file "game" :depends-on ("classes"))
                                         (:file "bin" :depends-on ("libexec"))
                                         (:file "patches")
