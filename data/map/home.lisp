@@ -33,7 +33,7 @@
     :name "Street"
     :description "Your typical suburban street. Some furries are driving in cars, some are walking, and some are riding on top of other furries treating them like a horse."
     :enter-text "You enter the street outside your house"
-    :warp-points '(ironside (0 0 0 ironside)))
+    :warp-points (list 'ironside '(0 0 0 ironside)))
 (ensure-zone (0 2 0 home)
     :name "Pool area"
     :description "A pool to go swimming in"

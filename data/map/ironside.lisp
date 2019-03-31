@@ -4,7 +4,7 @@
     :description "Your typical suburban street. Some furries are driving in cars, some are walking, and some are riding on top of other furries treating them like a horse."
     :enter-text "You enter the street. You see a sign that says `Keep our city and your pants clean. Always go potty in the toilet and not in your pants and don't leave puddles on the floor. Anyone who doesn't abide by this rule will be assumed to have no potty training whatsoever and will be immediately diapered by the diaper police to prevent further puddles.'"
     :no-puddles t
-    :warp-points '(home (0 1 0 home)))
+    :warp-points (list 'home '(0 1 0 home)))
 (ensure-zone (1 0 0 ironside)
     :name "Ironside Street"
     :description "Your typical suburban street. Some furries are driving in cars, some are walking, and some are riding on top of other furries treating them like a horse."
@@ -14,7 +14,7 @@
     :name "Ironside Street"
     :description "Your typical suburban street. Some furries are driving in cars, some are walking, and some are riding on top of other furries treating them like a horse."
     :no-puddles t
-    :warp-points '(bandits-way (0 0 0 bandits-domain))
+    :warp-points (list 'bandits-way '(0 0 0 bandits-domain))
     :enter-text "You enter the street")
 (ensure-zone (0 1 0 downtown)
     :name "Ironside Crap-Mart"
@@ -75,7 +75,7 @@
     :enter-text "You enter the classroom"
     :no-puddles t
     :diapers-only t
-    :direction-attributes '(:south (:hidden t))
+    :direction-attributes (list :south (list :hidden t))
     :props
     (list
         :desk
@@ -97,7 +97,7 @@
     :enter-text ""
     :no-puddles t
     :diapers-only t
-    :direction-attributes '(:north (:hidden t))
+    :direction-attributes (list :north (list :hidden t))
     :props (list
                :bed (make-instance 'bed
                         :name "Your bed"

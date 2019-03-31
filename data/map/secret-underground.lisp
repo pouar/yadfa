@@ -3,9 +3,9 @@
     :name "Secret Underground"
     :description "You see several warp pipes in here going to various places"
     :enter-text "You're wandering around in the secret underground"
-    :warp-points '(home (0 1 0 home)
-                      ironside (2 0 0 ironside)
-                      bandits-domain (-3 21 0 bandits-domain)))
+    :warp-points (list 'home '(0 1 0 home)
+                     'ironside '(2 0 0 ironside)
+                     'bandits-domain '(-3 21 0 bandits-domain)))
 (ensure-zone (0 1 0 secret-underground)
     :name "Secret Underground Path"
     :description "A path"

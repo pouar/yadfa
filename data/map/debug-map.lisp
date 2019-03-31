@@ -3,7 +3,7 @@
     :name "zone-0-0-0-debug-map"
     :description "zone-0-0-0-debug-map"
     :enter-text "zone-0-0-0-debug-map"
-    :warp-points '(|1| (1 1 0 debug-map) |2| (0 -1 -1 debug-map))
+    :warp-points (list '|1| '(1 1 0 debug-map) '|2| '(0 -1 -1 debug-map))
     :props (list
                :dresser (make-instance 'prop
                             :name "Dresser"

@@ -7,7 +7,7 @@
                         :name "Silver Cape Street"
                         :description "A busy street with various furries moving back and forth"
                         :enter-text "You enter the street"
-                        :warp-points ',(when (= i 0) '(bandits-domain (0 30 0 bandits-domain)))
+                        :warp-points ,(when (= i 0) '(list 'bandits-domain '(0 30 0 bandits-domain)))
                         :hidden ,(when (= i 0) t)
                         ,@(when (= i 0) '(:events (list 'yadfa-events:enter-silver-cape-1))))))))
 (macro-level

@@ -7,7 +7,7 @@
                         :name "Bandit's Way"
                         :description "A path filled with bandits"
                         :enter-text "You follow the path"
-                        :warp-points ',(when (= i 0) '(ironside (2 0 0 ironside)))
+                        :warp-points ,(when (= i 0) '(list 'ironside '(2 0 0 ironside)))
                         :enemy-spawn-list
                         (list '(:max-random 8
                                    :enemies ((yadfa-npcs:female-diapered-raccoon-bandit .
@@ -91,7 +91,7 @@
     :name "Bandit's Town Entrance"
     :description "The enterance to Bandit Town"
     :enter-text "You're at the enterance of Bandit Town"
-    :warp-points '(home (0 1 0 home))
+    :warp-points (list 'home '(0 1 0 home))
     :events (list 'yadfa-events:enter-bandits-village-1))
 (macro-level
     `(progn
@@ -171,6 +171,6 @@
     :name "Bandit's Cave"
     :description "A mysterious cave"
     :enter-text "You Enter the cave"
-    :warp-points '(cave-entrance (6 24 0 bandits-domain)
-                      descend (6 24 2 bandits-domain))
+    :warp-points (list 'cave-entrance '(6 24 0 bandits-domain)
+                     'descend '(6 24 2 bandits-domain))
     :events (list 'yadfa-events:decend-bandits-cave-1))
