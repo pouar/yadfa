@@ -350,7 +350,7 @@
     (:documentation "Contains all the items in the game"))
 (uiop:define-package #:yadfa-npcs
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:export
         #:diapered-raccoon-bandit
         #:rookie-diapered-raccoon-bandit
