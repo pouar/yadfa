@@ -27,8 +27,9 @@
             :documentation "Enemy target that the battle script affects")
         (battle-script
             :initarg :battle-script
-            :initform '(lambda (target user self)
-                           (declare (ignorable target user self)))
+            :initform (lambda (target user self)
+                          (declare (ignorable target user self))
+                          nil)
             :accessor battle-script-of
             :documentation "function that runs at the beginning of the user's turn. USER is the user with the condition. TARGET is the enemy of said user, and SELF is the condition itself")
         (blocks-turn
