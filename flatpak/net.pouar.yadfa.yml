@@ -47,8 +47,8 @@ modules:
       - chmod +x /app/tmp/sbcl-bin/bin/hostname
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.0/sbcl-1.5.0-x86-64-linux-binary.tar.bz2
-        sha256: 5cad77d26eff98dd97d2109bfc945308e58e5fd2ee0015e60b953c2320980c2c
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.1/sbcl-1.5.1-x86-64-linux-binary.tar.bz2
+        sha256: 3222284f2fa848fc95a8932eef9ccd18662720d3fbdb7ab2464cc51fd8e1ba76
   - name: sbcl
     buildsystem: simple
     build-commands:
@@ -57,8 +57,8 @@ modules:
       - INSTALL_ROOT="/app/tmp/sbcl" HOME="/app/tmp/home/" sh install.sh
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.0/sbcl-1.5.0-source.tar.bz2
-        sha256: 1ff98f17f6ba40c0d987efc907161f729cc9bd8516fe1f28e124626c16418ca8
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.1/sbcl-1.5.1-source.tar.bz2
+        sha256: f072cbab325062202e7b9147f44a42c99c78e3c159e8916609b54ea01616e623
   - name: yadfa-deps
     buildsystem: simple
     build-commands:
@@ -74,7 +74,7 @@ modules:
         url: https://beta.quicklisp.org/quicklisp.lisp
         sha256: 4a7a5c2aebe0716417047854267397e24a44d0cce096127411e9ce9ccfeb2c17
       - type: archive
-        url: https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.2.13/asdf-3.3.2.13.tar.gz
+        url: https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3/asdf-3.3.3.tar.gz
         strip-components: 0
         dest-filename: asdf.tar.gz
         sha256: 72e07870c6986e3604f1147541687530e4100cdabff9513282800625cf66cb07
