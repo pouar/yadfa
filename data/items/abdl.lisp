@@ -3,7 +3,7 @@
     (:default-initargs
         :name "Pacifier"
         :description "A pacifier you can suck on."
-        :value 100))
+        :value 250))
 (defclass gold-pacifier (headpiece) ()
     (:default-initargs
         :name "Gold-Pacifier"

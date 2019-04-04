@@ -298,7 +298,7 @@
         :wear-mess-text '(100000 "Poo is leaking out of the diaper"
                              25000 "It smooshes when you walk"
                              1 "The diaper holds the mess easily")
-        :description "A giant thick plastic diaper. Yes, the waddle is noticable"))
+        :description "A giant thick waterproof diaper. Yes, the waddle is noticable"))
 (defclass hyper-thick-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 50000

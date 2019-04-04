@@ -50,3 +50,13 @@
         :wear (list
                   (make-instance 'yadfa-items:toddler-dress)
                   (make-instance 'yadfa-items:bandit-female-diaper))))
+(defclass furry (ally) ()
+    (:default-initargs
+        :name "Furry"
+        :male t
+        :potty-training :silent
+        :species "Fox"
+        :description "A fox that likes to wear a fursuit. Doesn't talk much. The team got him as a pet, and as a plushie."
+        :wear (list
+                  (make-instance 'yadfa-items:watertight-fursuit)
+                  (make-instance 'yadfa-items:kurikia-thick-cloth-diaper))))

@@ -252,3 +252,39 @@
                          #.(* 1/2 25) "The dress does a good job hiding your padding"
                          0 "It fits quite loosely")
         :thickness-capacity (* 16 25.4)))
+(defclass fursuit (closed-full-outfit) ()
+    (:default-initargs
+        :name "Fursuit"
+        :value 15000
+        :thickness-capacity 400
+        :sogginess-capacity 200
+        :messiness-capacity 100
+        :description "A warm and snuggly Fursuit. Makes you cute and huggable."
+        :bulge-text '(200 "The circular bulge around your waist makes it obvious what you're wearing under there."
+                         0 "It's warm and snuggly")
+        :wear-wet-text '(200 "Just wipe off the excess with a towel and you'll be fine."
+                            100 "You're wet and smelly but at least you're not leaving a trail"
+                            10 "Well it's not noticable"
+                            0 "It's clean")))
+(defclass watertight-fursuit (closed-full-outfit) ()
+    (:default-initargs
+        :name "Watertight Fursuit"
+        :value 25000
+        :thickness-capacity 400
+        :sogginess-capacity 5000
+        :messiness-capacity 50000
+        :waterproof t
+        :description "So you're fursuiting, but then all of a sudden you gotta go, but then don't make it, and then end up in a smelly soggy fursuit, and then no one wants to to touch you cause you're soggy and smelly. Well with this baby, all those nasty smells and waste stay inside your suit, usually. Now the only one who has to suffer is you. Isn't that great?"
+        :bulge-text '(200 "The circular bulge around your waist makes it obvious what you're wearing under there."
+                         0 "It's warm and snuggly")
+        :wear-wet-text '(400 "Even though no one else can tell, you're drenched in your own bodily fluids from the waist down."
+                            100 "You're wet and smelly underneath, but at least no one else will notice."
+                            10 "Well it's not noticable"
+                            0 "It's clean")))
+(defclass koopa-shell (closed-full-outfit) ()
+    (:default-initargs
+        :name "Koopa Shell"
+        :value 10000
+        :thickness-capacity 600
+        :wear-stats (list :speed -1 :defence 20)
+        :description "A hard koopa shell"))

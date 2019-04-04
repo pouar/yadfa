@@ -267,6 +267,9 @@
         #:short-dress
         #:dress
         #:sundress
+        #:fursuit
+        #:watertight-fursuit
+        #:koopa-shell
         #:toddler-dress
         #:knights-armor
         #:tshirt
@@ -399,8 +402,9 @@
     (:export
         #:slynk
         #:chris
-        #:kristy)
-    (:documentation "Contains all the event definitions in the game"))
+        #:kristy
+        #:furry)
+    (:documentation "Contains all the allies in the game"))
 (uiop:define-package #:yadfa-user
     (:use #:yadfa #:yadfa-util #:yadfa-bin #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
     (:documentation "The package that the player typically executes commands from"))

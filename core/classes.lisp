@@ -225,7 +225,7 @@
             :initarg :potty-training
             :initform :last-minute
             :accessor potty-training-of
-            :documentation "Whether this ally is potty trained. Valid values so far are :NONE, :REBEL, and LAST-MINUTE"))
+            :documentation "Whether this ally is potty trained. Valid values so far are :NONE, :REBEL, :SILENT, and LAST-MINUTE"))
     (:documentation "Team member that is not the player")
     (:default-initargs
         :base-stats (list :health 35 :attack 55 :defense 40 :energy 35 :speed 90)
@@ -667,22 +667,22 @@
             :initarg :mess-text
             :initform '()
             :accessor mess-text-of
-            :documentation "List containing 3 strings that contain the text that comes up in the description when in the inventory, it based on messiness")
+            :documentation "Plist that contain the text that comes up in the description when in the inventory with the minimal messiness as the key")
         (wet-text
             :initarg :wet-text
             :initform '()
             :accessor wet-text-of
-            :documentation "List containing 3 strings that contain the text that comes up in the description when in the inventory it based on sogginess")
+            :documentation "Plist that contains that contain the text that comes up in the description when in the inventory with the minimal sogginess as the key")
         (wear-mess-text
             :initarg :wear-mess-text
             :initform ()
             :accessor wear-mess-text-of
-            :documentation "List containing 3 strings that contain the text that comes up in the description when wearing it based on messiness")
+            :documentation "Plist that contains the text that comes up in the description when wearing it with the minimal messiness as the key")
         (wear-wet-text
             :initarg :wear-wet-text
             :initform ()
             :accessor wear-wet-text-of
-            :documentation "List containing 3 strings that contain the text that comes up in the description when wearing it based on sogginess")
+            :documentation "Plist that contain the text that comes up in the description when wearing it with the minimal sogginess as the key")
         (key
             :initarg :key
             :initform nil

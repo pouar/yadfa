@@ -9,8 +9,6 @@
         :bowels/contents (random 7000)
         :watersport-limit 300
         :mudsport-limit 4000
-        :bladder/fill-rate (* (/ 2000 24 60) 2)
-        :bowels/fill-rate (* (/ 12000 24 60) 2)
         :inventory (iter (for i from 0 to (random 20)) (collect (make-instance 'yadfa-items:diaper)))))
 (defmethod initialize-instance :after
     ((c diaper-pirate) &rest args &key &allow-other-keys)
