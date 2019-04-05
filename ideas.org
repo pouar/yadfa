@@ -1,7 +1,7 @@
 This file mostly contains ideas for in game content
 
 * The Turnip
-** An idea for a satire newspaper inspired by The Onion
+ An idea for a satire newspaper inspired by The Onion
 ** Entries
 *** 1
 A new Linux distro has been announced to make it more like Windows since Linux is `too hard'. It has plenty of new Windows-like features.
