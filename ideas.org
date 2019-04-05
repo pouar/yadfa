@@ -6,7 +6,7 @@ This file mostly contains ideas for in game content
 *** 1
 A new Linux distro has been announced to make it more like Windows since Linux is `too hard'. It has plenty of new Windows-like features.
 
-8First up is the new package format, an SQL relational database. Based on Windows design principals, those make the perfect package format.
+First up is the new package format, an SQL relational database. Based on Windows design principals, those make the perfect package format.
 
 The structure is so damn easy and transparent we had to invent an XML to SQL converter to use it.
 
