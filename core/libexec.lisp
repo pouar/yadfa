@@ -2802,7 +2802,7 @@
                         (format nil "*~a is hopping from foot to foot holding the ~a*"
                             (name-of user)
                             (funcall
-                                (if (malep)
+                                (if (malep user)
                                     #'car
                                     #'cdr)
                                 (getf
@@ -2828,7 +2828,7 @@
                         (format nil "*~a is hopping from foot to foot holding the ~a*"
                             (name-of user)
                             (funcall
-                                (if (malep)
+                                (if (malep user)
                                     #'car
                                     #'cdr)
                                 (getf
@@ -2893,8 +2893,7 @@
                                              '("she" "her")))))))
                  (b (random-elt (list (format nil "~%~%~a: Bad ~a!!! You know you're supposed to use the toilet like a big kid"
                                           (name-of (player-of *game*))
-                                          (name-of user)
-                                          (if (malep user) "his" "her"))
+                                          (name-of user))
                                     nil))))
             (when b (push b (cdr (last a))))))
     (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
@@ -2962,19 +2961,16 @@
                                   "her"))
                         (format nil
                             "~a has an accident and makes a mess on the floor"
-                            (name-of user)
-                            (if (malep user)
-                                "his"
-                                "her")))))
-    (let (a (random-elt (list (format nil
-                                  "~a: Bad ~a! No going potty in the house!~%~%*~a baps ~a on the nose with a newspaper*"
-                                  (name-of (player-of *game*))
-                                  (name-of user)
-                                  (name-of (player-of *game*))
-                                  (name-of user))
-                            nil))))
-    (when a
-        (format t "~a~%" a)))
+                            (name-of user)))))
+    (let ((a (random-elt (list (format nil
+                                   "~a: Bad ~a! No going potty in the house!~%~%*~a baps ~a on the nose with a newspaper*"
+                                   (name-of (player-of *game*))
+                                   (name-of user)
+                                   (name-of (player-of *game*))
+                                   (name-of user))
+                             nil))))
+        (when a
+            (format t "~a~%" a))))
 (defun process-potty (&optional (user (player-of *game*)))
     #+sbcl (declare (type (or player ally) user))
     (check-type user (or player ally))
