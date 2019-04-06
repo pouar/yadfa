@@ -274,7 +274,7 @@
         :sogginess-capacity 5000
         :messiness-capacity 50000
         :waterproof t
-        :description "So you're fursuiting, but then all of a sudden you gotta go, but then don't make it, and then end up in a smelly soggy fursuit, and then no one wants to to touch you cause you're soggy and smelly. Well with this baby, all those nasty smells and waste stay inside your suit, usually. Now the only one who has to suffer is you. Isn't that great?"
+        :description "So you're fursuiting, but then all of a sudden you gotta go, but then don't make it, and then end up in a smelly soggy fursuit, and then no one wants to touch you cause you're soggy and smelly. Well with this baby, all those nasty smells and waste stay inside your suit, usually. Now the only one who has to suffer is you. Isn't that great?"
         :bulge-text '(200 "The circular bulge around your waist makes it obvious what you're wearing under there."
                          0 "It's warm and snuggly")
         :wear-wet-text '(400 "Even though no one else can tell, you're drenched in your own bodily fluids from the waist down."
