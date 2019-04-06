@@ -2966,14 +2966,13 @@
                             (if (malep user)
                                 "his"
                                 "her")))))
-    (let (a (random-elt
-                (format nil
-                    "~a: Bad ~a! No going potty in the house!~%~%*~a baps ~a on the nose with a newspaper*"
-                    (name-of (player-of *game*))
-                    (name-of user)
-                    (name-of (player-of *game*))
-                    (name-of user))
-                nil)))
+    (let (a (random-elt (list (format nil
+                                  "~a: Bad ~a! No going potty in the house!~%~%*~a baps ~a on the nose with a newspaper*"
+                                  (name-of (player-of *game*))
+                                  (name-of user)
+                                  (name-of (player-of *game*))
+                                  (name-of user))
+                            nil))))
     (when a
         (format t "~a~%" a)))
 (defun process-potty (&optional (user (player-of *game*)))
