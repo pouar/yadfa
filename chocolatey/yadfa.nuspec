@@ -31,7 +31,7 @@
     <file src="data\**" target="yadfa\data" />
     <file src="pixmaps\**" target="yadfa\pixmaps" />
     <file src="docs\**" target="yadfa\docs" exclude="docs/*/*.toc;docs/*/*.cps;docs/*/*.fns;docs/*/*.tps;docs/*/*.vrs;docs/*/*.aux;docs/*/*.cp;docs/*/*.fn;docs/*/*.log;docs/*/*.tp;docs/*/*.vr;docs/*/*.css" />
-    <file src="ideas.lisp" target="yadfa" />
+    <file src="ideas.org" target="yadfa" />
     <file src="main.lisp" target="yadfa" />
     <file src="mods\**" target="yadfa\mods" />
     <file src="packages.lisp" target="yadfa" />
