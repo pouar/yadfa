@@ -736,7 +736,12 @@
                 (for i in (enemy-spawn-list-of (get-zone (position-of (player-of *game*)))))
                 (let ((random (if (getf i :random) (getf i :random) 1)))
                     (when (< (random (getf i :max-random)) random)
-                        (set-new-battle (getf i :enemies))
+                        (set-new-battle (cond
+                                            ((getf i :eval)
+                                                (eval (getf i :eval)))
+                                            ((getf i :lambda)
+                                                (funcall (coerce (getf i :lambda) 'function)))
+                                            (t (getf i :enemies))))
                         (return-from move-to-secret-underground)))))))
 (defun move-to-pocket-map (item)
     (when *battle*
@@ -787,7 +792,12 @@
                     (for i in (enemy-spawn-list-of (get-zone (position-of (player-of *game*)))))
                     (let ((random (if (getf i :random) (getf i :random) 1)))
                         (when (< (random (getf i :max-random)) random)
-                            (set-new-battle (getf i :enemies))
+                            (set-new-battle (cond
+                                                ((getf i :eval)
+                                                    (eval (getf i :eval)))
+                                                ((getf i :lambda)
+                                                    (funcall (coerce (getf i :lambda) 'function)))
+                                                (t (getf i :enemies))))
                             (return-from move-to-pocket-map))))))))
 (defun wet (&key (wet-amount t) force-fill-amount pants-down accident force-wet-amount (wetter (player-of *game*)))
     #+sbcl (declare

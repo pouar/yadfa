@@ -170,7 +170,12 @@
                         (for i in (enemy-spawn-list-of (get-zone (position-of (player-of *game*)))))
                         (let ((random (if (getf i :random) (getf i :random) 1)))
                             (when (< (random (getf i :max-random)) random)
-                                (set-new-battle (getf i :enemies))
+                                (set-new-battle (cond
+                                                    ((getf i :eval)
+                                                        (eval (getf i :eval)))
+                                                    ((getf i :lambda)
+                                                        (funcall (coerce (getf i :lambda) 'function)))
+                                                    (t (getf i :enemies))))
                                 (return-from yadfa-world:move)))))))))
 (defun yadfa-bin:lst (&key inventory inventory-group props wear user directions moves position map descriptions)
     "used to list various objects and properties, INVENTORY takes a type specifier for the items you want to list in your inventory. setting INVENTORY to T will list all the items. INVENTORY-GROUP is similar to INVENTORY, but will group the items by class name. WEAR is similar to INVENTORY but lists clothes you're wearing instead. setting DIRECTIONS to non-NIL will list the directions you can walk.setting MOVES to non-NIL will list the moves you know. setting USER to T will cause MOVES and WEAR to apply to the player, setting it to an integer will cause it to apply it to an ally. Leaving it at NIL will cause it to apply to everyone. setting POSITION to true will print your current position. Setting MAP to a number will print the map with the floor number set to MAP, setting MAP to T will print the map of the current floor you're on. When printing the map in McCLIM, red means there's a warp point, dark green is the zone with the player, blue means there are stairs. These 3 colors will blend with each other to make the final color"
@@ -1146,8 +1151,8 @@
         (iter
             (for i in (inventory-of (player-of *game*)))
             (when (typep i (ammo-type-of
-                                   (wield-of
-                                       (first (turn-queue-of *battle*)))))
+                               (wield-of
+                                   (first (turn-queue-of *battle*)))))
                 (leave t)))
         (format t "~a ~a doesn't take that ammo~%"
             (name-of (first (turn-queue-of *battle*)))
@@ -1203,11 +1208,11 @@
                 (name-of (wield-of user)))
             (return-from yadfa-world:reload))
         (format t "~a reloaded ~a ~a"
-                (name-of user)
-                (if (malep user)
-                    "his"
-                    "her")
-                (name-of (wield-of user)))
+            (name-of user)
+            (if (malep user)
+                "his"
+                "her")
+            (name-of (wield-of user)))
         (iter
             (with count = 0)
             (for item in (inventory-of (player-of *game*)))
