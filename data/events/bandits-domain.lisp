@@ -281,9 +281,9 @@
                                       :default #.(second
                                                      (assoc :name
                                                          (progn
-                                                             (ensure-finalized
+                                                             (c2mop:ensure-finalized
                                                                  (find-class 'yadfa-allies:chris))
-                                                             (compute-default-initargs
+                                                             (c2mop:compute-default-initargs
                                                                  (find-class 'yadfa-allies:chris)))))
                                       :view clim:+text-field-view+)
                                   (string
@@ -291,9 +291,9 @@
                                       :default #.(second
                                                      (assoc :name
                                                          (progn
-                                                             (ensure-finalized
+                                                             (c2mop:ensure-finalized
                                                                  (find-class 'yadfa-allies:kristy))
-                                                             (compute-default-initargs
+                                                             (c2mop:compute-default-initargs
                                                                  (find-class 'yadfa-allies:kristy)))))
                                       :view clim:+text-field-view+))))
                          (setf a (make-instance 'yadfa-allies:chris

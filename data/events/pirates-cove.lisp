@@ -54,9 +54,9 @@
                                                       :default #.(second
                                                                      (assoc :name
                                                                          (progn
-                                                                             (ensure-finalized
+                                                                             (c2mop:ensure-finalized
                                                                                  (find-class 'yadfa-allies:slynk))
-                                                                             (compute-default-initargs
+                                                                             (c2mop:compute-default-initargs
                                                                                  (find-class 'yadfa-allies:slynk)))))
                                                       :view clim:+text-field-view+)))))
                      (format t "Raccoon: It's ~a~%" (name-of coon))

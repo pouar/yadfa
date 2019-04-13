@@ -1,6 +1,6 @@
 (in-package :cl-user)
 (uiop:define-package #:yadfa-util
-    (:use #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:cl #:iterate)
     (:export
         #:shl
         #:shr
@@ -13,7 +13,7 @@
         #:random-from-range)
     (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package #:yadfa
-    (:use #:c2cl #:yadfa-util #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:cl #:yadfa-util #:iterate #:ugly-tiny-infix-macro #:alexandria)
     (:import-from #:macro-level #:macro-level)
     (:export
         ;;variables
@@ -242,7 +242,7 @@
     (:documentation "Contains the commands used when battling. The player probably shouldn't call these with the package prefix unless they're developing"))
 (uiop:define-package #:yadfa-moves
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:yadfa #:yadfa-util #:cl #:iterate)
     (:export
         #:kamehameha
         #:superglitch
@@ -255,7 +255,7 @@
 (uiop:define-package #:yadfa-items
     (:import-from #:macro-level #:macro-level)
     (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:incontinence-pad)
-    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:yadfa #:yadfa-util #:cl #:iterate)
     (:export
         #:pacifier
         #:gold-pacifier
@@ -353,7 +353,7 @@
     (:documentation "Contains all the items in the game"))
 (uiop:define-package #:yadfa-npcs
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:cl #:yadfa #:yadfa-util #:iterate)
     (:export
         #:diapered-raccoon-bandit
         #:rookie-diapered-raccoon-bandit
@@ -366,7 +366,7 @@
     (:documentation "Contains all the NPCs in the game"))
 (uiop:define-package #:yadfa-status-conditions
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:cl #:yadfa #:yadfa-util #:iterate)
     (:export
         #:wetting
         #:messing
@@ -375,7 +375,7 @@
     (:documentation "Contains all the status condtions in the game"))
 (uiop:define-package #:yadfa-zones
     (:import-from #:macro-level #:macro-level)
-    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:yadfa #:yadfa-util #:cl #:iterate)
     (:export
         #:home
         #:debug-map
@@ -393,12 +393,12 @@
         #:your-ship)
     (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package #:yadfa-events
-    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:yadfa #:yadfa-util #:cl #:iterate)
     (:export
         #:get-diaper-locked-1)
     (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package #:yadfa-allies
-    (:use #:yadfa #:yadfa-util #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:yadfa #:yadfa-util #:cl #:iterate)
     (:export
         #:slynk
         #:chris
@@ -406,5 +406,5 @@
         #:furry)
     (:documentation "Contains all the allies in the game"))
 (uiop:define-package #:yadfa-user
-    (:use #:yadfa #:yadfa-util #:yadfa-bin #:c2cl #:marshal #:iterate #:ugly-tiny-infix-macro #:alexandria #:trivial-garbage)
+    (:use #:cl #:yadfa #:yadfa-util #:yadfa-bin #:iterate #:ugly-tiny-infix-macro #:alexandria)
     (:documentation "The package that the player typically executes commands from"))

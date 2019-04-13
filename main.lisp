@@ -16,7 +16,6 @@
     (in-package #:yadfa)
     (when (position "wait" (uiop:command-line-arguments) :test #'string=)
         (sleep 2))
-    #+ironclad (setf ironclad:*prng* (ironclad:make-prng :os)) ; work around crash
     (load-mods)
     (let ((file (uiop:xdg-config-home "yadfa/yadfarc")))
         (when (probe-file file)

@@ -37,13 +37,13 @@
     #+sbcl (declare (type (or simple-string pathname) path))
     (check-type path (or simple-string pathname))
     (with-open-file (s path :direction :output :if-exists :supersede :if-does-not-exist :create)
-        (write-string (write-to-string (marshal *game*)) s)))
+        (write-string (write-to-string (ms:marshal *game*)) s)))
 (defun yadfa-world:load-game (path)
     "This function loads a saved game from PATH"
     #+sbcl (declare (type (or simple-string pathname) path))
     (check-type path (or simple-string pathname))
     (with-open-file (stream path)
-        (setf *game* (unmarshal (read stream)))))
+        (setf *game* (ms:unmarshal (read stream)))))
 (defun yadfa-bin:toggle-onesie (&key wear user)
     "Open or closes your onesie. WEAR is the index of a onesie. Leave NIL for the outermost onesie. USER is the index of an ally. Leave NIL to refer to yourself"
     #+sbcl (declare (type (or unsigned-byte null) user wear))

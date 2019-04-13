@@ -1,7 +1,7 @@
 (in-package :yadfa)
 (defmethod ms:class-persistent-slots ((self standard-object))
-    (mapcar #'slot-definition-name
-        (class-slots (class-of self))))
+    (mapcar #'c2mop:slot-definition-name
+        (c2mop:class-slots (class-of self))))
 (defclass yadfa-class () ()
     (:documentation "All the classes that are part of the game's core inheit this class"))
 (defclass status-condition (yadfa-class)
