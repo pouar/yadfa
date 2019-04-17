@@ -271,7 +271,7 @@
 (defclass player (team-member)
     ((position
          :initarg :position
-         :initform '(0 0 0 yadfa-zones:home)
+         :initform '(0 0 0 yadfa-zones:debug-map)
          :accessor position-of
          :documentation "Current position in the form of `(list x y z map)'.")
         (warp-on-death-point

@@ -4124,6 +4124,7 @@
     (setf (malep (player-of *game*)) malep))
 (declaim (notinline intro-function))
 (defun intro-function (query-io)
+    "This function sets up the player and prints the back story. If you're trying to create your own game with a different storyline using a mod, you can replace this function. Be careful when enabling mods that change the story line this significantly as they can overwrite each other"
     (setf (clim:stream-end-of-line-action query-io) :wrap*)
     (write-line "Enter your character's name, gender, and species" query-io)
     (let* ((default (make-instance 'player))
@@ -4154,6 +4155,7 @@
                           :prompt "Bladder capacity"
                           :default :normal :view clim:+option-pane-view+))))
         (setf (player-of *game*) (make-instance 'player
+                                     :position '(0 0 0 yadfa-zones:home)
                                      :name (first values)
                                      :male (second values)
                                      :species (third values)
