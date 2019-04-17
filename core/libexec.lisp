@@ -692,6 +692,16 @@
                      'zone ,@body)))
          (export ',(fourth position) ',(symbol-package (fourth position)))
          (get-zone ',position)))
+(defmacro defzone (position &body body)
+    "defines the classes of the zones and adds an instance of them to the game's map hash table. Intended to be used to replace existing zones in more intrusive mods. Best to wrap this in an event and run trigger-event so it doesn't overwrite the zone every time this piece of code is loaded"
+    #+sbcl (declare (type list position))
+    (check-type position list)
+    `(progn
+         (setf (get-zone ',position)
+             (make-instance
+                 'zone ,@body))
+         (export ',(fourth position) ',(symbol-package (fourth position)))
+         (get-zone ',position)))
 (defmacro make-pocket-zone (position &body body)
     "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
     #+sbcl (declare (type list position))

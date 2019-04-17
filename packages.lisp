@@ -23,6 +23,7 @@
         ;;macros
         #:defevent
         #:ensure-zone
+        #:defzone
         #:defonesie
         #:make-pocket-zone
         ;;functions
