@@ -77,7 +77,7 @@ modules:
         url: https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3/asdf-3.3.3.tar.gz
         strip-components: 0
         dest-filename: asdf.tar.gz
-        sha256: 72e07870c6986e3604f1147541687530e4100cdabff9513282800625cf66cb07
+        sha256: d3cdb5c65a7220308deb829ebb7d4e284588ade0d453ad16a8f9ac0c4b8a219e
       - type: git
         url: https://github.com/didierverna/declt.git
         dest: declt
