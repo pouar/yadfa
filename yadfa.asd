@@ -1,4 +1,4 @@
-;;;; -*- Mode: Common-Lisp; -*-
+;;;; -*- Mode: Common-Lisp; -*
 (defsystem "yadfa"
     :name "YADFA"
     :version "0.9"

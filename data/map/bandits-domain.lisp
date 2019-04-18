@@ -53,7 +53,16 @@
                                                        (format t "Shop Owner: Yeah?~%~%")
                                                        (format t "~a: Well how come they're letting me shop here without attacking me?~%~%"
                                                            (name-of (player-of *game*)))
-                                                       (format t "Shop Owner: Because money stupid."))))
+                                                       (format t "Shop Owner: Because money stupid.")))
+                                      :ask-what-they-do-with-sold-items
+                                      (make-action
+                                          :documentation "Ask the raccoons what they do with the random crap you sell them"
+                                          :lambda '(lambda
+                                                       (prop &rest keys &key &allow-other-keys)
+                                                       (declare (ignore prop))
+                                                       (format t "~a: So what the hell do you do with all the random crap we sell you~%~%"
+                                                           (name-of (player-of *game*)))
+                                                       (format t "Shop Owner: We dump it all on ~a's garbage collector. Yes, I know, buying all this crap only to throw it out is dumb. Blame Pouar for designing it this way." (lisp-implementation-type)))))
                          :items-for-sale '((yadfa-items:gold-pacifier)
                                               (yadfa-items:recovering-pacifier)
                                               (yadfa-items:healing-pacifier)
