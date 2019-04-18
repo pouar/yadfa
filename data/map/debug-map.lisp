@@ -25,7 +25,7 @@
                                                 :documentation "Say hi"
                                                 :lambda '(lambda
                                                              (prop &rest keys &key &allow-other-keys)
-                                                             (declare (ignore prop))
+                                                             (declare (ignore prop keys))
                                                              (format t "Hello World~%")))))))
 (ensure-zone (0 0 -1 debug-map)
     :name "zone-0-0--1-debug-map"

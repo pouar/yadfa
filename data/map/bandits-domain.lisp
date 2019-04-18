@@ -40,14 +40,14 @@
                                           :documentation "Ask the raccoons if you can use the bathroom."
                                           :lambda '(lambda
                                                        (prop &rest keys &key &allow-other-keys)
-                                                       (declare (ignore prop))
+                                                       (declare (ignore prop keys))
                                                        (format t "Diapered Raccon Bandit Shop Owner: Sorry, only I'm allowed in there. Everyone else can just use their diapers. Isn't that right mushbutt?~%~%*The Shop Owner slaps the back of the Rookie's diaper*~%~%*Rookie yelps then grabs the back of his diaper and struggles to unmush it*~%~%*The Shop Owner laughs*~%~%Rookie Raccoon: Can I please get a diaper change now?~%~%Shop Owner: Keep asking me that and I'll make you sit in it in timeout again.~%~%Rookie Raccoon: NO! PLEASE! I'LL BE GOOD!~%~%")))
                                       :ask-why-youre-allowed-to-shop
                                       (make-action
                                           :documentation "Ask the raccoons why you're allowed to shop here without the gang attacking you"
                                           :lambda '(lambda
                                                        (prop &rest keys &key &allow-other-keys)
-                                                       (declare (ignore prop))
+                                                       (declare (ignore prop keys))
                                                        (format t "~a: You know how the gang seems to attack me everywhere I show up?~%~%"
                                                            (name-of (player-of *game*)))
                                                        (format t "Shop Owner: Yeah?~%~%")
@@ -59,7 +59,7 @@
                                           :documentation "Ask the raccoons what they do with the random crap you sell them"
                                           :lambda '(lambda
                                                        (prop &rest keys &key &allow-other-keys)
-                                                       (declare (ignore prop))
+                                                       (declare (ignore prop keys))
                                                        (format t "~a: So what the hell do you do with all the random crap we sell you~%~%"
                                                            (name-of (player-of *game*)))
                                                        (format t "Shop Owner: We dump it all on ~a's garbage collector. Yes, I know, buying all this crap only to throw it out is dumb. Blame Pouar for designing it this way." (lisp-implementation-type)))))
