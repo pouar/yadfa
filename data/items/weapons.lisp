@@ -89,7 +89,7 @@
         :value 1000
         :power 20
         :description "As seen in One Piece"))
-(defclass wrench (weapon)
+(defclass wrench (weapon) ()
     (:default-initargs
         :name "Wrench"
         :value 500
