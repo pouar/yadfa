@@ -1,6 +1,11 @@
 ;;;;this file contains functions the player can enter in the REPL
 
 (in-package :yadfa)
+(defun yadfa-bin:get-inventory-of-type (type)
+    #+sbcl (declare
+               (type (or null (and symbol (not keyword)) list class) type))
+    (check-type type (or null (and symbol (not keyword)) list class))
+    (get-positions-of-type type (inventory-of (player-of *game*))))
 (defun yadfa-bin:reload-files (&rest keys &key compiler-verbose &allow-other-keys)
     "Intended for developers. Use this to recompile the game without having to close it. Accepts the same keyword arguments as asdf:load-system and asdf:operate. Set COMPILER-VERBOSE to T to print the compiling messages. setting LOAD-SOURCE t T will avoid creating fasls"
     (let ((*compile-verbose* compiler-verbose) (*compile-print* compiler-verbose))
@@ -958,21 +963,30 @@
     "Throw an item in your inventory away. ITEM is the index of the item in your inventory"
     #+sbcl (declare (type list items))
     (check-type items list)
-    (iter (for i in items) (check-type i integer))
-    (when (>= (first (sort (copy-tree items) #'>)) (list-length (inventory-of (player-of *game*))))
-        (format t "You only have ~d items~%" (list-length (inventory-of (player-of *game*))))
-        (return-from yadfa-bin:toss))
-    (when (iter (for i in items)
-              (unless (tossablep (nth i (inventory-of (player-of *game*))))
-                  (format t "To avoid breaking the game, you can't toss your ~a."
-                      (name-of (nth i (inventory-of (player-of *game*)))))
-                  (leave t)))
-        (return-from yadfa-bin:toss))
-    (format t "You send ~a straight to /dev/null~%"
+    (iter (for i in items) (check-type i unsigned-byte))
+    (let ((items (sort (remove-duplicates items) #'<)))
+        (setf items (iter
+                        (generate i in items)
+                        (for j in (inventory-of (player-of *game*)))
+                        (for k upfrom 0)
+                        (when (first-iteration-p)
+                            (next i))
+                        (when (= k i)
+                            (collect j)
+                            (next i))))
+        (unless items
+            (format t "Those items aren't valid")
+            (return-from yadfa-bin:toss))
         (iter (for i in items)
-            (collect (name-of i))))
-    (iter (for i in (sort (copy-tree items) #'>))
-        (setf (inventory-of (player-of *game*)) (remove-nth i (inventory-of (player-of *game*))))))
+            (unless (tossablep i)
+                (format t "To avoid breaking the game, you can't toss your ~a."
+                    (name-of i))
+                (return-from yadfa-bin:toss)))
+        (iter (for i in items)
+            (format t "You send ~a straight to /dev/null~%" (name-of i)))
+        (removef (inventory-of (player-of *game*)) items
+            :test (lambda (o e)
+                      (member e o)))))
 (defun yadfa-world:place (prop &rest items)
     "Store items in a prop. ITEMS is a list of indexes of the items in your inventory. PROP is a keyword"
     #+sbcl (declare
@@ -981,23 +995,35 @@
     (check-type items list)
     (check-type prop symbol)
     (iter (for i in items) (check-type i integer))
-    (when (>= (first (sort (copy-tree items) #'>)) (list-length (inventory-of (player-of *game*))))
-        (format t "You only have ~d items~%" (list-length (inventory-of (player-of *game*))))
-        (return-from yadfa-world:place))
     (unless (getf (get-props-from-zone (position-of (player-of *game*))) prop)
         (write-line "That prop doesn't exist")
         (return-from yadfa-world:place))
     (unless (placeablep (getf (get-props-from-zone (position-of (player-of *game*))) prop))
         (write-line "To avoid breaking the game, you can't place that item here.")
         (return-from yadfa-world:place))
-    (iter (for i in (sort (copy-tree items) #'>))
-        (format t "You place your ~a on the ~a~%"
-            (name-of (nth i (inventory-of (player-of *game*))))
-            (name-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)))
-        (push
-            (nth i (inventory-of (player-of *game*)))
-            (get-items-from-prop prop (position-of (player-of *game*))))
-        (setf (inventory-of (player-of *game*)) (remove-nth i (inventory-of (player-of *game*))))))
+    (let ((items (sort (remove-duplicates items) #'<)))
+        (setf items (iter
+                        (generate i in items)
+                        (for j in (player-of *game*))
+                        (for k upfrom 0)
+                        (when (first-iteration-p)
+                            (next i))
+                        (when (= k i)
+                            (collect j)
+                            (next i))))
+        (unless items
+            (format t "Those items aren't valid")
+            (return-from yadfa-world:place))
+        (iter (for i in items)
+            (format t "You place your ~a on the ~a~%"
+                (name-of i)
+                (name-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)))
+            (push
+                i
+                (get-items-from-prop prop (position-of (player-of *game*)))))
+        (removef (inventory-of (player-of *game*)) items
+            :test (lambda (o e)
+                      (member e o)))))
 (defun yadfa-battle:run ()
     "Run away from a battle like a coward"
     (cond

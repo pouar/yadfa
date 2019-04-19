@@ -27,6 +27,7 @@
         #:defonesie
         #:make-pocket-zone
         ;;functions
+        #:get-positions-of-type
         #:intro-function
         #:set-player
         #:prompt-for-values
@@ -233,7 +234,7 @@
         #:fainted-of)
     (:documentation "Yet Another Diaperfur Adventure"))
 (uiop:define-package #:yadfa-bin
-    (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files)
+    (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files #:get-inventory-of-type)
     (:documentation "Commands that the player can run anytime"))
 (uiop:define-package #:yadfa-world
     (:export #:move #:interact #:save-game #:load-game #:go-potty #:tickle #:wash-all-in #:use-item #:add-ally-to-team #:remove-ally-from-team #:swap-team-member #:stats #:place #:reload)
@@ -354,7 +355,7 @@
     (:documentation "Contains all the items in the game"))
 (uiop:define-package #:yadfa-npcs
     (:import-from #:macro-level #:macro-level)
-    (:use #:cl #:yadfa #:yadfa-util #:iterate)
+    (:use #:cl #:yadfa #:yadfa-util #:iterate #:alexandria)
     (:export
         #:diapered-raccoon-bandit
         #:rookie-diapered-raccoon-bandit

@@ -155,3 +155,51 @@
     :description "A Dock that heads to the ocean"
     :enter-text "You enter the street"
     :warp-points (list :your-ship '(-1 6 0 yadfa-zones:your-ship)))
+
+(ensure-zone (-6 9 0 silver-cape)
+    :name "Silver Cape Recycling Center"
+    :description "Welcome To Silver Cape Recycling Center. We take all your crap, send it to a recycling plant across the country in a truck belching smoke and polution, process your crap to turn it into less quality crap in machines belching more smoke and pollution, stockpile it and beg people to buy it, then send it all to ~a's garbage collector. Think of it as a more expensive and less environmentally friendly way to throw your stuff away."
+    :enter-text "Welcome To Silver Cape Recycling Center. We take all your crap, send it to a recycling plant across the country in a truck belching smoke and polution, process your crap to turn it into less quality crap in machines belching more smoke and pollution, stockpile it and beg people to buy it, then send it all to ~a's garbage collector. Think of it as a more expensive and less environmentally friendly way to throw your stuff away."
+    :props (list
+               :recycling-bin
+               (make-instance 'prop
+                   :name "Magic Recycling Bin"
+                   :description "Throw your crap here and pretend it gets recycled into itself. Use the :TOSS action instead of YADFA-WORLD:PLACE because this game's \"engine\" is too stupid to figure out what to do with it otherwise."
+                   :actions (list
+                               :toss
+                               (make-action
+                                   :documentation "Toss your items"
+                                   :lambda '(lambda
+                                                (prop &rest keys &key items &allow-other-keys)
+                                                (declare
+                                                    (type prop prop)
+                                                    (type list items)
+                                                    (ignore keys))
+                                                (check-type prop prop)
+                                                (check-type items list)
+                                                (block lambda
+                                                    (let ((items (sort (remove-duplicates items) #'<)))
+                                                        (setf items (iter
+                                                                        (generate i in items)
+                                                                        (for j in (inventory-of (player-of *game*)))
+                                                                        (for k upfrom 0)
+                                                                        (when (first-iteration-p)
+                                                                            (next i))
+                                                                        (when (= k i)
+                                                                            (collect j)
+                                                                            (next i))))
+                                                        (unless items
+                                                            (format t "Those items aren't valid")
+                                                            (return-from block))
+                                                        (iter (for i in items)
+                                                            (when (not (tossablep i))
+                                                                (format t "To avoid breaking the game, we don't accept your ~a~%~%"
+                                                                    (name-of i))
+                                                                (return-from lambda))
+                                                            (iter (for i in items)
+                                                                (format t
+                                                                    "You toss your ~a into the bin and pretend you're saving the planet~%"
+                                                                    (name-of i)))
+                                                            (alexandria:removef (inventory-of (player-of *game*)) items
+                                                                :test (lambda (o e)
+                                                                          (member e o))))))))))))

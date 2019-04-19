@@ -1,5 +1,15 @@
 ;;;; files used internally by the game, don't call these unless you're developing/modding (or cheating)
 (in-package :yadfa)
+(defun get-positions-of-type (type list)
+    #+sbcl (declare
+               (type (or null (and symbol (not keyword)) list class) type)
+               (type list list))
+    (check-type type (or null (and symbol (not keyword)) list class))
+    (check-type list list)
+    (iter (for i in list)
+        (for j upfrom 0)
+        (when (typep i type)
+            (collect j))))
 (defun finished-events (events)
     (not
         (iter (for i in events)
@@ -3642,21 +3652,32 @@
                                 (format nil "~as" (name-of item)))
                             (* (value-of item) (cdr i))))))))
     (when items-to-sell
-        (let ((items (sort (copy-tree items-to-sell) #'>)))
-            (if (>= (car items) (list-length (inventory-of user)))
-                (format t "item ~d doesn't exist~%" (car items))
-                (progn
-                    (when (member-if #'(lambda (i) (not (sellablep (nth i (inventory-of user)))))
-                              items)
-                        (format t "That item isn't sellable~%~%")
-                        (return-from shopfun))
-                    (loop for i in items do
-                        (format t
-                            "You sell your ~a for ~f bitcoins~%"
-                            (name-of (nth i (inventory-of user)))
-                            (/ (value-of (nth i (inventory-of user))) 2))
-                        (incf (bitcoins-of user) (/ (value-of (nth i (inventory-of user))) 2))
-                        (setf (inventory-of user) (remove-nth i (inventory-of user))))))))
+        (let ((items (sort (remove-duplicates items-to-sell) #'<)))
+            (setf items (iter
+                            (generate i in items)
+                            (for j in (inventory-of user))
+                            (for k upfrom 0)
+                            (when (first-iteration-p)
+                                (next i))
+                            (when (= k i)
+                                (collect j)
+                                (next i))))
+            (unless items
+                (format t "Those items aren't valid")
+                (return-from shopfun))
+            (iter (for i in items)
+                (when (not (sellablep i))
+                    (format t "That item isn't sellable~%~%")
+                    (return-from shopfun)))
+            (iter (for i in items)
+                (format t
+                    "You sell your ~a for ~f bitcoins~%"
+                    (name-of (nth i (inventory-of user)))
+                    (/ (value-of (nth i (inventory-of user))) 2))
+                (incf (bitcoins-of user) (/ (value-of i) 2)))
+            (removef (inventory-of user) items
+                :test (lambda (o e)
+                          (member e o)))))
     (when format-items
         (format t "~10a~40a~10@a~%" "Index" "Item" "Price")
         (iter

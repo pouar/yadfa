@@ -5,8 +5,8 @@
         :male t
         :potty-training :last-minute
         :wear (let ((diaper
-                        (progn (ensure-finalized (find-class 'yadfa-items:bandit-adjustable-diaper))
-                            (compute-default-initargs (find-class 'yadfa-items:bandit-adjustable-diaper)))))
+                        (progn (c2mop:ensure-finalized (find-class 'yadfa-items:bandit-adjustable-diaper))
+                            (c2mop:compute-default-initargs (find-class 'yadfa-items:bandit-adjustable-diaper)))))
                   (list
                       (make-instance 'yadfa-items:bandit-uniform-tunic)
                       (make-instance 'yadfa-items:thick-rubber-diaper)
