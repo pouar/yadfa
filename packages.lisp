@@ -342,6 +342,9 @@
         #:exterminator
         #:exterminator-ammo
         #:pink-sword
+        #:hammer-gun
+        #:wrench
+        #:three-swords
         #:pocket-map-machine
         #:warp-device
         #:navy-shirt

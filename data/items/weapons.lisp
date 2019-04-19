@@ -89,6 +89,12 @@
         :value 1000
         :power 20
         :description "As seen in One Piece"))
+(defclass wrench (weapon)
+    (:default-initargs
+        :name "Wrench"
+        :value 500
+        :power 1
+        :description "You get to frag enemies using this beauty, won't that be fun?"))
 (defclass three-swords (weapon) ()
     (:default-initargs
         :name "Three Swords"
