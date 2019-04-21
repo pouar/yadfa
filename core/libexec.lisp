@@ -1321,6 +1321,12 @@
                                              (name-of user)
                                              (if (malep user) "his" "her"))
                                     wet-list mess-list both-list)
+                                (when (>= (getf wet-return-value :wet-amount) (bladder/potty-desperate-limit-of user))
+                                    (do-push (format nil
+                                                 "after doing a potty dance like a 5 year old, ~a floods ~a diapers with a huge sigh of relief"
+                                                 (name-of user)
+                                                 (if (malep user) "his" "her"))
+                                        wet-list))
                                 (when (wearingp (wear-of user) 'diaper)
                                     (do-push (format nil
                                                  "Aww, is the baby using ~a diapers?"
@@ -1331,10 +1337,12 @@
                                           (name-of user)
                                           (if (malep user) "his" "her"))
                                     wet-list)
-                                (push (format nil
-                                          "~a squats down and grunts filling ~a diapers"
+                                (push (apply #'format nil
+                                          "~a squats down with ~a tail raised and fills ~a diapers"
                                           (name-of user)
-                                          (if (malep user) "his" "her"))
+                                          (if (malep user)
+                                              '("his" "his")
+                                              '("her" "her")))
                                     mess-list)
                                 (push (format nil "heh, the baby blorted ~a diapers" (if (malep user) "his" "her")) mess-list)
                                 (push (format nil "~a diapers sprung a leak" (name-of user)) wet-leak-list)
@@ -1376,6 +1384,12 @@
                                             (if (malep user) "boy" "girl")
                                             )
                                         wet-list mess-list both-list)
+                                    (when (>= (getf wet-return-value :wet-amount) (bladder/potty-desperate-limit-of user))
+                                        (do-push (format nil
+                                                     "after doing a potty dance like a 5 year old, ~a floods ~a pullups with a huge sigh of relief and just hopes no one will notice"
+                                                     (name-of user)
+                                                     (if (malep user) "his" "her"))
+                                            wet-list))
                                     (do-push
                                         (format nil
                                             "Bad ~a! Look at the mess you made leaking everywhere like that! Do we have to put you back in diapers?!"
@@ -1598,7 +1612,17 @@
                             "Grabbing your crotch you pause and blush as you flood yourself like an infant"
                             "You cross your legs in a vain attempt to hold it in but fail miserably"
                             "You gasp in embaressment as you flood yourself like a toddler"
-                            "You let out a groan as your bladder empties itself")))))
+                            "You let out a groan as your bladder empties itself"
+                            "You fall to your knees clutching the front of your diapers struggling to keep your diapers dry and flood yourself"
+                            (format nil "LOOK EVERYBODY!!!! ~A IS WETTING ~A DIAPERS!!!!~%~%*~a eeps and hides ~a soggy padding in embarrassment*"
+                                (string-upcase (name-of user))
+                                (if (malep user)
+                                    "HIS"
+                                    "HER")
+                                (name-of user)
+                                (if (malep user)
+                                    "his"
+                                    "her")))))))
             (when (>= (getf (car had-accident) :wet-amount) 300)
                 (push (format nil "Aww, the baby is using ~a diapers?" (if (malep user) "his" "her")) j))
             (random-elt j)))
@@ -1618,29 +1642,32 @@
                                         potty-training
                                         had-accident)
     (format t "~a~%"
-        (let
-            ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
-                          (list "You ghasp in horror as a little leaks out"
-                              "You think you just leaked a little"
-                              (format nil
-                                  "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                  (random-elt '("groan" "whine")))))
-                    ((and (<= (getf (car had-accident) :wet-amount) 300) (> (getf (car had-accident) :wet-amount) 10))
-                        (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                    ((> (getf (car had-accident) :wet-amount) 300)
-                        (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                            "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                            "You cross your legs in a vain attempt to hold it in but fail miserably"
-                            "You gasp in embaressment as you flood yourself like a toddler"
-                            "You let out a groan as your bladder empties itself")))))
-            (when (>= (getf (car had-accident) :wet-amount) 300)
-                (push "The little pictures on the front of your pullups fade showing everyone what you did" j))
-            (when (>= (getf (car had-accident) :wet-amount) 300)
-                (push (format nil
-                          "Naughty ~a wetting your pullups. You know you're supposed to use the toilet like a big kid."
-                          (if (malep user) "boy" "girl"))
-                    j))
-            (random-elt j)))
+        (random-elt
+            (cond ((<= (getf (car had-accident) :wet-amount) 10)
+                      (list "You ghasp in horror as a little leaks out"
+                          "You think you just leaked a little"
+                          (format nil
+                              "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                              (random-elt '("groan" "whine")))))
+                ((and (<= (getf (car had-accident) :wet-amount) 300) (> (getf (car had-accident) :wet-amount) 10))
+                    (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                ((> (getf (car had-accident) :wet-amount) 300)
+                    (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                        "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                        "You cross your legs in a vain attempt to hold it in but fail miserably"
+                        "You gasp in embaressment as you flood yourself like a toddler"
+                        "You let out a groan as your bladder empties itself"
+                        "You fall to your knees clutching the front of your pullups struggling to keep them dry and flood yourself"
+                        "The little pictures on the front of your pullups fade showing everyone what you did"
+                        (format nil
+                            "Naughty ~a wetting your pullups. You know you're supposed to use the toilet like a big kid."
+                            (if (malep user) "boy" "girl"))
+                        (format nil
+                            "LOOK EVERYBODY!!!! ~a IS WETTING ~A PULLUPS!!!!!!~%~%*~a eeps and hides ~a soggy pullups in embarrassment*"
+                            (string-upcase (name-of user))
+                            (if (malep user) "HIS" "HER")
+                            (name-of user)
+                            (if (malep user) "his" "her")))))))
     (format t "~a~%"
         (let ((out (list
                        "Your face turns red as you leak everywhere"
@@ -1657,23 +1684,21 @@
                                         potty-training
                                         had-accident)
     (format t "~a~%"
-        (let
-            ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
-                          (list "You ghasp in horror as a little leaks out"
-                              "You think you just leaked a little"
-                              (format nil
-                                  "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                  (random-elt '("groan" "whine")))))
-                    ((and (<= (getf (car had-accident) :wet-amount) 300) (> (getf (car had-accident) :wet-amount) 10))
-                        (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                    ((> (getf (car had-accident) :wet-amount) 300)
-                        (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                            "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                            "You cross your legs in a vain attempt to hold it in but fail miserably"
-                            "You gasp in embaressment as you flood yourself like a toddler"
-                            "You let out a groan as your bladder empties itself")))))
-            (push "a wet patch forms on the front of your pants" j)
-            (random-elt j)))
+        (random-elt (cond ((<= (getf (car had-accident) :wet-amount) 10)
+                              (list "You ghasp in horror as a little leaks out"
+                                  "You think you just leaked a little"
+                                  (format nil
+                                      "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                      (random-elt '("groan" "whine")))))
+                        ((and (<= (getf (car had-accident) :wet-amount) 300) (> (getf (car had-accident) :wet-amount) 10))
+                            (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                        ((> (getf (car had-accident) :wet-amount) 300)
+                            (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                "You gasp in embaressment as you flood yourself like a toddler"
+                                "You let out a groan as your bladder empties itself"
+                                "You fall to your knees holding your crotch struggling to keep your pants dry and flood yourself")))))
     (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
         (format t "~a~%"
             (random-elt (list "Maybe you should start wearing diapers"
@@ -1759,6 +1784,7 @@
                      "You try to fart to relieve the pressure, except it wasn't a fart"
                      "You end up messing your self"
                      "The back of your diaper expands as you accidentally mess yourself"
+                     "You instinctively squat down with your tail up and mess your diapers, then hold the back of your diapers checking your load in embarrassment"
                      (format nil "Heh, the baby blorted ~a pamps." (if (malep user) "his" "her")))))
             (when (wearingp (wear-of user) 'diaper)
                 (push (format nil "Aww, is the baby messing ~a diapers" (if (malep user) "his" "her")) j))
@@ -2311,23 +2337,32 @@
                          (name-of user)
                          (if (malep user) "his" "her"))
                      (format s "~a: Aww, the poor baby made a mess on the floor~%~%" (name-of (player-of *game*)))
-                     (format s "*~a gasps with a horrified look on ~a face when ~a notices it.~%~%"
+                     (apply #'format s "*~a gasps with a horrified look on ~a face when ~a notices it.~%~%"
                          (name-of user)
-                         (if (malep user) "his" "her")
-                         (if (malep user) "he" "she")))
+                         (if (malep user)
+                             '("his" "he")
+                             '("her" "she"))))
             leak)
         (do-push (with-output-to-string (s)
-                     (format s "*~a instinctively squats down and accidentally messes ~a diapers then gasps in horror when ~a realized what ~a did*~%~%"
+                     (apply #'format s "*~a instinctively squats down and accidentally messes ~a diapers then gasps in horror when ~a realized what ~a did*~%~%"
                          (name-of user)
-                         (if (malep user) "his" "her")
-                         (if (malep user) "he" "she")
-                         (if (malep user) "he" "she")))
+                         (if (malep user)
+                             '("his" "he" "he")
+                             '("her" "she" "she"))))
             normal)
         (do-push (with-output-to-string (s)
-                     (format s "*~a instinctively squats down and accidentally messes ~a diapers then gasps in horror when ~a notices the poo falling down the leg guards*~%~%"
+                     (apply #'format s "*~a instinctively squats down and accidentally messes ~a diapers then holds the back of ~a diapers checking ~a load in embarrassment*~%~%"
                          (name-of user)
-                         (if (malep user) "his" "her")
-                         (if (malep user) "he" "she")))
+                         (if (malep user)
+                             '("his" "his" "his" "his")
+                             '("her" "her" "her" "her"))))
+            normal)
+        (do-push (with-output-to-string (s)
+                     (apply #'format s "*~a instinctively squats down and accidentally messes ~a diapers then gasps in horror when ~a notices the poo falling down the leg guards*~%~%"
+                         (name-of user)
+                         (if (malep user)
+                             '("his" "he")
+                             '("her" "she"))))
             leak)
         (if (> (getf (cdr had-accident) :leak-amount) 0)
             (format t "~a" (random-elt leak))
@@ -2341,17 +2376,18 @@
     (let ((normal ())
              (leak ()))
         (do-push (with-output-to-string (s)
-                     (format s "*~a instinctively squats down and accidentally messes ~a pullups then gasps in horror when ~a realized what ~a did*~%~%"
+                     (apply #'format s "*~a instinctively squats down and accidentally messes ~a pullups then gasps in horror when ~a realized what ~a did*~%~%"
                          (name-of user)
-                         (if (malep user) "his" "her")
-                         (if (malep user) "he" "she")
-                         (if (malep user) "he" "she")))
+                         (if (malep user)
+                             '("his" "he" "he")
+                             '("her" "she" "she"))))
             normal)
         (do-push (with-output-to-string (s)
-                     (format s "*~a instinctively squats down and accidentally messes ~a pullups then gasps in horror when ~a notices the poo falling down the leg guards*~%~%"
+                     (apply #'format s "*~a instinctively squats down and accidentally messes ~a pullups then gasps in horror when ~a notices the poo falling down the leg guards*~%~%"
                          (name-of user)
-                         (if (malep user) "his" "her")
-                         (if (malep user) "he" "she")))
+                         (if (malep user)
+                             '("his" "he")
+                             '("her" "she"))))
             leak)
         (when (wearingp (wear-of user) 'pullup)
             (do-push (with-output-to-string (s)
@@ -2374,11 +2410,11 @@
     (let ((normal ())
              (leak ()))
         (do-push (with-output-to-string (s)
-                     (format s "*~a instinctively squats down and accidentally messes ~a pants then gasps in horror when ~a realized what ~a did*~%~%"
+                     (apply #'format s "*~a instinctively squats down and accidentally messes ~a pants then gasps in horror when ~a realized what ~a did*~%~%"
                          (name-of user)
-                         (if (malep user) "his" "her")
-                         (if (malep user) "he" "she")
-                         (if (malep user) "he" "she")))
+                         (if (malep user)
+                             '("his" "he" "he")
+                             '("her" "she" "she"))))
             normal leak)
         (if (> (getf (cdr had-accident) :leak-amount) 0)
             (format t "~a" (random-elt leak))
@@ -2522,9 +2558,15 @@
                 (random-elt
                     (list
                         (with-output-to-string (s)
-                            (format s "*~a squats down and pushes a big load into ~a already loaded diaper, then predictably has a blowout*~%~%"
+                            (format s "*~a squats down and pushes a big load into ~a diaper like an infant*~%~%"
                                 (name-of user)
-                                (if (malep user) "his" "her")))))))))
+                                (if (malep user) "his" "her")))
+                        (with-output-to-string (s)
+                            (apply #'format s "*~a squats down and pushes a big load into ~a diaper then holds the back of ~a diaper checking ~a new load as if giving ~aself a diaper check*~%~%"
+                                (name-of user)
+                                (if (malep user)
+                                    '("his" "his" "his" "him")
+                                    '("her" "her" "her" "her"))))))))))
 (defmethod print-process-potty-text ((user ally)
                                         padding
                                         (type (eql :mess))
@@ -2630,7 +2672,13 @@
                                 (name-of user)
                                 (if (malep user)
                                     '("he" "him")
-                                    '("she" "her"))))))))
+                                    '("she" "her")))
+                            (apply #'format nil "~a falls to ~a knees clutching the front of ~a diaper in a desparate attempt to keep ~a diapers dry but ends up flooding ~a diapers"
+                                (name-of user)
+                                (iter (for i from 1 to 4)
+                                    (collect (if (malep user)
+                                                 "his"
+                                                 "her")))))))))
             (random-elt j)))
     (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
         (format t "~a~%"
@@ -2684,7 +2732,13 @@
                                 (name-of user)
                                 (if (malep user)
                                     '("he" "him")
-                                    '("she" "her"))))))))
+                                    '("she" "her")))
+                            (apply #'format nil "~a falls to ~a knees clutching the front of ~a pullups in a desparate attempt to keep the pictures on the front of ~a pullups from fading but ends up flooding ~a pullups"
+                                (name-of user)
+                                (iter (for i from 1 to 4)
+                                    (collect (if (malep user)
+                                                 "his"
+                                                 "her")))))))))
             (when (>= (getf (car had-accident) :wet-amount) 300)
                 (push (format nil "*The little pictures on the front of ~a's pullups fade showing everyone what ~a did*"
                           (name-of user)
@@ -2718,27 +2772,40 @@
                                       '("he" "him" "him")
                                       '("she" "her" "he")))))
                     ((> (getf (car had-accident) :wet-amount) 300)
-                        (list
-                            (format nil "*After doing a potty dance like a 5 year old, ~a freezes and pee ~aself*"
-                                (name-of user)
-                                (if (malep user)
-                                    "him"
-                                    "her"))
-                            (apply #'format nil "*~a Grabs ~a crotch, pauses and blushes as ~a flood ~aself like an infant*"
-                                (name-of user)
-                                (if (malep user)
-                                    '("his" "he" "him")
-                                    '("her" "she" "her")))
-                            (format nil "*~a cross ~a legs in a vain attempt to hold it in but fails miserably*"
-                                (name-of user)
-                                (if (malep user)
-                                    "his"
-                                    "her"))
-                            (apply #'format nil "~a gasps in embaressment as ~a floods ~aself like a toddler"
-                                (name-of user)
-                                (if (malep user)
-                                    '("he" "him")
-                                    '("she" "her"))))))))
+                        (let ((a
+                                  (list
+                                      (format nil "*After doing a potty dance like a 5 year old, ~a freezes and pee ~aself*"
+                                          (name-of user)
+                                          (if (malep user)
+                                              "him"
+                                              "her"))
+                                      (apply #'format nil "*~a Grabs ~a crotch, pauses and blushes as ~a flood ~aself like an infant*"
+                                          (name-of user)
+                                          (if (malep user)
+                                              '("his" "he" "him")
+                                              '("her" "she" "her")))
+                                      (format nil "*~a cross ~a legs in a vain attempt to hold it in but fails miserably*"
+                                          (name-of user)
+                                          (if (malep user)
+                                              "his"
+                                              "her"))
+                                      (apply #'format nil "~a gasps in embaressment as ~a floods ~aself like a toddler"
+                                          (name-of user)
+                                          (if (malep user)
+                                              '("he" "him")
+                                              '("she" "her")))
+                                      (apply #'format nil "~a falls to ~a knees holding ~a crotch in a desparate attempt to keep ~a pants dry but ends up flooding ~a pants"
+                                          (name-of user)
+                                          (iter (for i from 1 to 4)
+                                              (collect (if (malep user)
+                                                           "his"
+                                                           "her")))))))
+                            (unless (malep user)
+                                (push
+                                    (format nil "~a struggles to hold it in while pressing her legs together before wetting her pants"
+                                        (name-of user))
+                                    a))
+                            a)))))
             (random-elt j)))
     (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
         (format t "~a~%"
@@ -2780,27 +2847,39 @@
                                       '("he" "him" "him")
                                       '("she" "her" "he")))))
                     ((> (getf (car had-accident) :wet-amount) 300)
-                        (list
-                            (format nil "*After doing a potty dance like a 5 year old, ~a freezes and pee ~aself*"
-                                (name-of user)
-                                (if (malep user)
-                                    "him"
-                                    "her"))
-                            (apply #'format nil "*~a Grabs ~a crotch, pauses and blushes as ~a flood ~aself like an infant*"
-                                (name-of user)
-                                (if (malep user)
-                                    '("his" "he" "him")
-                                    '("her" "she" "her")))
-                            (format nil "*~a cross ~a legs in a vain attempt to hold it in but fails miserably*"
-                                (name-of user)
-                                (if (malep user)
-                                    "his"
-                                    "her"))
-                            (apply #'format nil "~a gasps in embaressment as ~a floods ~aself like a toddler"
-                                (name-of user)
-                                (if (malep user)
-                                    '("he" "him")
-                                    '("she" "her"))))))))
+                        (let ((a
+                                  (list
+                                      (format nil "*After doing a potty dance like a 5 year old, ~a freezes and pee ~aself*"
+                                          (name-of user)
+                                          (if (malep user)
+                                              "him"
+                                              "her"))
+                                      (apply #'format nil "*~a Grabs ~a crotch, pauses and blushes as ~a flood ~aself like an infant*"
+                                          (name-of user)
+                                          (if (malep user)
+                                              '("his" "he" "him")
+                                              '("her" "she" "her")))
+                                      (format nil "*~a cross ~a legs in a vain attempt to hold it in but fails miserably*"
+                                          (name-of user)
+                                          (if (malep user)
+                                              "his"
+                                              "her"))
+                                      (apply #'format nil "~a gasps in embaressment as ~a floods ~aself like a toddler"
+                                          (name-of user)
+                                          (if (malep user)
+                                              '("he" "him")
+                                              '("she" "her")))
+                                      (apply #'format nil "~a falls to ~a knees holding ~a crotch in a desparate attempt to keep from wetting ~aself but ends up wetting ~a pants anyway"
+                                          (name-of user)
+                                          (if (malep user)
+                                              '("his" "his" "him" "his")
+                                              '("her" "her" "her" "her"))))))
+                            (unless (malep user)
+                                (push
+                                    (format nil "~a struggles to hold it in while pressing her legs together until urine starts flowing down her legs"
+                                        (name-of user))
+                                    a))
+                            a)))))
             (random-elt j)))
     (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
         (format t "~a~%"
@@ -2885,7 +2964,12 @@
                                          (name-of user)
                                          (if (malep user)
                                              '("he" "him")
-                                             '("she" "her")))))))
+                                             '("she" "her")))
+                                     (apply #'format nil "*~a instinctively squats down with ~a tail up and messes ~a diapers then holds the back of ~a diapers checking ~a load in embarrassment*~%~%"
+                                         (name-of user)
+                                         (if (malep user)
+                                             '("his" "his" "his" "his")
+                                             '("her" "her" "her" "her")))))))
                  (b (random-elt (list (format nil "~%~%~a: Heh, baby ~a blorted ~a pamps."
                                           (name-of (player-of *game*))
                                           (name-of user)
