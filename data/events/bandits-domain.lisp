@@ -11,29 +11,28 @@
                  (declare (ignore self))
                  (format t "Diapered Raccoon Bandit Shop Owner: Hey, we got a customer. Stop dancing around pulling on a locked bathroom door and help him out.~%~%Rookie Diapered Raccoon Bandit Servant: But I really gotta gooooo!!!!! *hops from foot to foot holding the front of his diaper*~%~%*The shop owner walks over to the servant and starts tickling him*~%~%Rookie Diapered Raccoon Bandit Servant: NOOOO!!! STOP!!!! I CAN'T HOLD IT!!!!~%~%*The rookie starts laughing and thrashing about, the insignia that doubles as a wetness indicator on the front of his diaper then turns from blue to yellow.*~%~%Shop Owner: There, you went, now go see to the customer.~%~%*The now blushy Rookie Diapered Raccoon Bandit waddles and squshes over to the back of the counter*~%~%")))
 (defevent enter-bandits-shop-2
-    :repeatable t
+    :predicate '(lambda (self)
+                    (= (random 5) 0))
     :lambda '(lambda (self)
                  (declare (ignorable self))
-                 (when (= (random 5) 0)
-                     (setf (event-repeatable self) nil)
-                     (write-line "*A diapered Raccoon is doing a potty dance outside the store in a full diaper squishing with every step*")
-                     (write-line "Raccoon: LET ME IN!!!! I CAN'T HOLD IT MUCH LONGER!!!!")
-                     (write-line "Shop Owner: Sorry leaky, you're not allowed in the shop since you leave puddles everywhere")
-                     (write-line "Raccoon: I'M NOT LEAKY!!!! *blushes angrily*")
-                     (write-line "*The raccoon has an accident and his diaper leaks and leaves puddles everywhere*")
-                     (write-line "Shop Owner: Then explain the state of your diapers")
-                     (write-line "*The raccoon blushes then starts to \\sout{waddle away with his legs spread apart} \"sneak away\" hoping no one will notice what he did \\sout{even though the trail he's leaving makes it obvious}*")
-                     (format t "*~A laughs at the leaky raccoon*~%" (name-of (player-of *game*)))
-                     (write-line "Leaky raccoon blushing angrily: What are you laughing at?")
-                     (set-new-battle
-                         '((yadfa-npcs:diapered-raccoon-bandit . (list
-                                                          :level (random-from-range 2 5)
-                                                          :wear (list
-                                                                    (make-instance 'yadfa-items:bandit-uniform-tunic)
-                                                                    (make-instance 'yadfa-items:bandit-adjustable-diaper
-                                                                        :sogginess 1400
-                                                                        :messiness 8000)))))
-                         :enter-battle-text (format nil "The leaky raccoon waddles over to you to fight~%")))))
+                 (write-line "*A diapered Raccoon is doing a potty dance outside the store in a full diaper squishing with every step*")
+                 (write-line "Raccoon: LET ME IN!!!! I CAN'T HOLD IT MUCH LONGER!!!!")
+                 (write-line "Shop Owner: Sorry leaky, you're not allowed in the shop since you leave puddles everywhere")
+                 (write-line "Raccoon: I'M NOT LEAKY!!!! *blushes angrily*")
+                 (write-line "*The raccoon has an accident and his diaper leaks and leaves puddles everywhere*")
+                 (write-line "Shop Owner: Then explain the state of your diapers")
+                 (write-line "*The raccoon blushes then starts to \\sout{waddle away with his legs spread apart} \"sneak away\" hoping no one will notice what he did \\sout{even though the trail he's leaving makes it obvious}*")
+                 (format t "*~A laughs at the leaky raccoon*~%" (name-of (player-of *game*)))
+                 (write-line "Leaky raccoon blushing angrily: What are you laughing at?")
+                 (set-new-battle
+                     '((yadfa-npcs:diapered-raccoon-bandit . (list
+                                                                 :level (random-from-range 2 5)
+                                                                 :wear (list
+                                                                           (make-instance 'yadfa-items:bandit-uniform-tunic)
+                                                                           (make-instance 'yadfa-items:bandit-adjustable-diaper
+                                                                               :sogginess 1400
+                                                                               :messiness 8000)))))
+                     :enter-battle-text (format nil "The leaky raccoon waddles over to you to fight~%"))))
 (defevent decend-bandits-cave-1
     :repeatable t
     :lambda '(lambda (self)
@@ -250,8 +249,7 @@
                          (name-of (player-of *game*)))
                      (format t "~a: Seems you've had an accident too~%~%"
                          (name-of (player-of *game*)))
-                     (format t "Shop Owner: Shut up!!! *pulls his tunic back down while blushing bright red*~%~%")
-                     (setf (event-repeatable self) nil))))
+                     (format t "Shop Owner: Shut up!!! *pulls his tunic back down while blushing bright red*~%~%"))))
 (defevent enter-bandits-kennel-1
     :lambda '(lambda (self)
                  (declare (ignorable self))

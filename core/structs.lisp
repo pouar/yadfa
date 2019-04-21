@@ -2,8 +2,10 @@
 (defstruct event
     "An event in the game"
     (id nil :type symbol)
-    (lambda '(lambda (self) nil) :type (or list function))
-    (predicate '(lambda (self) t) :type (or list function))
+    (lambda '(lambda (self)
+                 (declare (ignore self)) nil) :type (or list function))
+    (predicate '(lambda (self)
+                    (declare (ignore self)) t) :type (or list function))
     (repeatable nil :type boolean)
     (major nil :type boolean)
     (major-depends nil :type symbol)

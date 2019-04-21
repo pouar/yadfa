@@ -268,6 +268,7 @@
               (funcall (coerce (event-predicate (get-event event-id)) 'function)
                   (get-event event-id))
               (or (event-repeatable (get-event event-id)) (not (finished-events (list event-id))))
+              (finished-events (event-finished-depends (get-event event-id)))
               (or (not (event-optional (get-event event-id)))
                   (car (prompt-for-values
                            (boolean

@@ -28,6 +28,7 @@
         #:make-pocket-zone
         ;;functions
         #:get-positions-of-type
+        #:trigger-event
         #:intro-function
         #:set-player
         #:prompt-for-values
