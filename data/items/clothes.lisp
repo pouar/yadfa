@@ -288,11 +288,11 @@
         :thickness-capacity 600
         :wear-stats (list :speed -1 :defence 20)
         :description "A hard koopa shell"))
-(defclass cheerleading-outfit (yadfa:dress) ()
+(defclass cheerleader-outfit (yadfa:dress) ()
     (:default-initargs
-        :name "Cheerleading Outfit"
+        :name "Cheerleader Outfit"
         :value 150
-        :description "A pretty cheerleading dress. Looks great with a diaper to show everyone off with."
+        :description "A pretty cheerleader dress. Looks great with a diaper to show everyone off with."
         :bulge-text '(25 "The skirt does absolutely nothing to hide your padding"
                          #.(* 1/2 25) "The skirt does a good job hiding your padding, as long as you're standing still"
                          0 "It fits quite loosely")
