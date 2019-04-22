@@ -40,8 +40,6 @@
     (clrhash *pattern-cache*))
 (defun clear-mod-registry ()
     (setf *mod-registry* nil))
-#+yadfa-mods
-(defvar *mods* '())
 (defun find-mod (system)
     (unless *mod-registry* (initialize-mod-registry))
     (gethash (asdf:primary-system-name system) *mod-registry*))
