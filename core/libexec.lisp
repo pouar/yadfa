@@ -1609,21 +1609,25 @@
                     ((and (<= (getf (car had-accident) :wet-amount) 300) (> (getf (car had-accident) :wet-amount) 10))
                         (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
                     ((> (getf (car had-accident) :wet-amount) 300)
-                        (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                            "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                            "You cross your legs in a vain attempt to hold it in but fail miserably"
-                            "You gasp in embaressment as you flood yourself like a toddler"
-                            "You let out a groan as your bladder empties itself"
-                            "You fall to your knees clutching the front of your diapers struggling to keep your diapers dry and flood yourself"
-                            (format nil "LOOK EVERYBODY!!!! ~A IS WETTING ~A DIAPERS!!!!~%~%*~a eeps and hides ~a soggy padding in embarrassment*"
-                                (string-upcase (name-of user))
-                                (if (malep user)
-                                    "HIS"
-                                    "HER")
-                                (name-of user)
-                                (if (malep user)
-                                    "his"
-                                    "her")))))))
+                        (let ((a
+                                  (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                      "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                      "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                      "You gasp in embaressment as you flood yourself like a toddler"
+                                      "You let out a groan as your bladder empties itself"
+                                      "You fall to your knees clutching the front of your diapers struggling to keep your diapers dry and flood yourself"
+                                      (format nil "LOOK EVERYBODY!!!! ~A IS WETTING ~A DIAPERS!!!!~%~%*~a eeps and hides ~a soggy padding in embarrassment*"
+                                          (string-upcase (name-of user))
+                                          (if (malep user)
+                                              "HIS"
+                                              "HER")
+                                          (name-of user)
+                                          (if (malep user)
+                                              "his"
+                                              "her")))))
+                            (unless (malep user)
+                                (push "You press your legs together while fidgeting and squirming until your flood your pamps like the baby girl you are" a))
+                            a)))))
             (when (>= (getf (car had-accident) :wet-amount) 300)
                 (push (format nil "Aww, the baby is using ~a diapers?" (if (malep user) "his" "her")) j))
             (random-elt j)))
@@ -2602,17 +2606,20 @@
                                         (potty-training (eql :silent))
                                         had-accident)
     (format t "~a~%"
-        (random-elt (list
-                        (format nil "*~a is doing a potty dance like a 5 year old*"
-                            (name-of user))
-                        (format nil "*~a hops from foot to foot holding ~a crotch*"
-                            (name-of user)
-                            (if (malep user)
-                                "his" "her"))
-                        (format nil "*~a bounces up and down holding ~aself*"
-                            (name-of user)
-                            (if (malep user)
-                                "his" "her"))))))
+        (random-elt (let ((a (list
+                                  (format nil "*~a is doing a potty dance like a 5 year old*"
+                                      (name-of user))
+                                  (format nil "*~a hops from foot to foot holding ~a crotch*"
+                                      (name-of user)
+                                      (if (malep user)
+                                          "his" "her"))
+                                  (format nil "*~a bounces up and down holding ~aself*"
+                                      (name-of user)
+                                      (if (malep user)
+                                          "his" "her")))))
+                        (unless (malep user)
+                            (push (format nil "~a fidgets and squirms while pressing her legs together" (name-of user)) a))
+                        a))))
 (defmethod print-process-potty-text ((user ally)
                                         padding
                                         (type (eql :wet))
@@ -2620,22 +2627,27 @@
                                         (potty-training (eql :silent))
                                         had-accident)
     (format t "~a~%"
-        (random-elt (list
-                        (format nil "*~a is doing a potty dance like a 5 year old*"
-                            (name-of user))
-                        (format nil "*~a hops from foot to foot holding ~a crotch*"
-                            (name-of user)
-                            (if (malep user)
-                                "his" "her"))
-                        (format nil "*~a bounces up and down holding ~aself*"
-                            (name-of user)
-                            (if (malep user)
-                                "him" "her"))
-                        (apply #'format nil "*~a whines as ~a hold ~aself in desperation*"
-                            (name-of user)
-                            (if (malep user)
-                                '("he" "him")
-                                '("she" "her")))))))
+        (random-elt (let ((a
+                              (list
+                                  (format nil "*~a is doing a potty dance like a 5 year old*"
+                                      (name-of user))
+                                  (format nil "*~a hops from foot to foot holding ~a crotch*"
+                                      (name-of user)
+                                      (if (malep user)
+                                          "his" "her"))
+                                  (format nil "*~a bounces up and down holding ~aself*"
+                                      (name-of user)
+                                      (if (malep user)
+                                          "him" "her"))
+                                  (apply #'format nil "*~a whines as ~a hold ~aself in desperation*"
+                                      (name-of user)
+                                      (if (malep user)
+                                          '("he" "him")
+                                          '("she" "her"))))))
+                        (unless (malep user)
+                            (push (format nil "~a fidgets, squirms, and bounces while pressing her legs together" (name-of user))
+                                a))
+                        a))))
 (defmethod print-process-potty-text ((user ally)
                                         (padding (eql :diapers))
                                         (type (eql :wet))
@@ -3103,26 +3115,17 @@
                           (wet :wetter user))
                       (when (>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
                           (mess :messer user))))))
-        (print-process-potty-text
-            user
-            (get-babyish-padding (wear-of user))
-            :wet
-            (get-process-potty-action-type user
-                :wet
+        (iter (for i in '(:wet :mess))
+            (print-process-potty-text
+                user
+                (get-babyish-padding (wear-of user))
+                i
+                (get-process-potty-action-type user
+                    i
+                    (get-potty-training user)
+                    had-accident)
                 (get-potty-training user)
-                had-accident)
-            (get-potty-training user)
-            had-accident)
-        (print-process-potty-text
-            user
-            (get-babyish-padding (wear-of user))
-            :mess
-            (get-process-potty-action-type user
-                :mess
-                (get-potty-training user)
-                had-accident)
-            (get-potty-training user)
-            had-accident)
+                had-accident))
         (when (and
                   (no-puddles-p (get-zone (position-of (player-of *game*))))
                   (or

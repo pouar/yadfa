@@ -273,6 +273,7 @@
         #:fursuit
         #:watertight-fursuit
         #:koopa-shell
+        #:cheerleader-outfit
         #:toddler-dress
         #:knights-armor
         #:tshirt
