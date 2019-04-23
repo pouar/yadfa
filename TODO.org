@@ -1,0 +1,1 @@
+* TODO Make more use of AI flags in items and moves

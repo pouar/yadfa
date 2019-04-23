@@ -147,8 +147,6 @@ Oh who cares what you think, you're just some antivirus that I rely on
   - Sky Base        :: A giant base located in orbit, has a main structure with various platforms attached to it, similar to the Comet Observatory in Super Mario Galaxy, but bigger with the platforms
                        spread farther appart. Has a special gravity simulator that pulls you back up if you fall off, kinda like a trampoline. You can use this to move between various platforms
   - Star City       :: A giant city in space. All the buildings and parks are on floating platforms. You use a space ship or jetpack to travel between the different platforms
-* Todo List
-** TODO Make more use of AI flags in items and moves
 * Joke quest about collecting "magic stars" like in Mario but with crappy quests. These are ideas for bosses
   - Take star from Thwomp that can't go anywhere except up and down
   - Pokemon trainer that just sends out Magikarp
