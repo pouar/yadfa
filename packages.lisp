@@ -10,7 +10,9 @@
         #:insert
         #:insertf
         #:substitutef
-        #:random-from-range)
+        #:random-from-range
+        #:type-specifier
+        #:lambda-expression)
     (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package #:yadfa
     (:use #:cl #:yadfa-util #:iterate #:ugly-tiny-infix-macro #:alexandria)
@@ -176,6 +178,10 @@
         #:tossablep
         #:placeablep
         #:no-puddles-p
+        #:potty-trigger-of
+        #:must-wear-of
+        #:must-wear*-of
+        #:no-wetting/messing-of
         #:enemy-spawn-list-of
         #:energy-cost-of
         #:power-of

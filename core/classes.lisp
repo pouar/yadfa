@@ -380,6 +380,34 @@
             :initform nil
             :accessor no-puddles-p
             :documentation "Whether you're allowed to go potty on the floor or not, violators will be diapered.")
+        (potty-trigger
+            :initarg :potty-trigger
+            :initform '(lambda (had-accident user)
+                           (declare (ignore had-accident user))
+                           nil)
+            :accessor potty-trigger-of
+            :documentation "Runs whenever the user goes potty, whether on purpose or by accident, arguments are the cons called HAD-ACCIDENT that gets passed from the process-potty function, and USER which is the user who did it")
+        (must-wear
+            :initarg :must-wear
+            :initform '(t . (lambda (user)
+                                (declare (ignore user))
+                                t))
+            :accessor must-wear-of
+            :documentation "Used to determine whether you can enter the zone based on what you're wearing. Is a cons with the type specifier of what you must be wearing and a lambda expression or function that runs to determine if you can enter the zone")
+        (must-wear*
+            :initarg :must-wear*
+            :initform '(t . (lambda (user)
+                                (declare (ignore user))
+                                t))
+            :accessor must-wear*-of
+            :documentation "Similar to the must-wear slot but is done when you try to wear or change while still inside the zone")
+        (no-wetting/messing
+            :initarg no-wetting/messing
+            :initform '(lambda (user)
+                           (declare (ignore user))
+                           nil)
+            :accessor no-wetting/messing-of
+            :documentation "lambda expression or function that tells you if you're allowed to wet or mess voluntarily")
         (enemy-spawn-list
             :initarg :enemy-spawn-list
             :initform ()

@@ -32,6 +32,37 @@
     :enter-text "You enter the Bandit's Shop"
     :diapers-only t
     :no-puddles t
+    :potty-trigger '(lambda (had-accident user)
+                        (block nil
+                            (when (> (getf (car had-accident) :leak-amount) 0)
+                                (format t "*The shopkeeper laughs at ~a's misfortune*~%"
+                                    (name-of user))
+                                (return))
+                            (when (> (getf (cdr had-accident) :leak-amount) 0)
+                                (format t "Shopkeeper: Bad ~a!!! No going potty on the floor!!!~%~%"
+                                    (name-of user))
+                                (apply #'format t "*The Shopkeeper spanks ~a through ~a messy diaper and makes ~a sit in it in timeout*~%"
+                                    (name-of user)
+                                    (if (malep user)
+                                        '("his" "him")
+                                        '("her" "her")))
+                                (return))
+                            (when (> (getf (car had-accident) :wet-amount) 0)
+                                (format t "Shopkeper: Aww, is ~a using ~a diapers like a baby?~%"
+                                    (name-of user)
+                                    (if (malep user)
+                                        "his"
+                                        "her"))
+                                (return))
+                            (when (> (getf (cdr had-accident) :mess-amount) 0)
+                                (format t "Shopkeeper: Looks like ~a made a stinky!!!~%~%"
+                                    (name-of user))
+                                (format t "*The Shopkeeper mushes ~a's messy diaper who quickly jerks away and then grabs the back of ~a diaper struggling to unmush it*~%"
+                                    (name-of user)
+                                    (if (malep user)
+                                        "his"
+                                        "her"))
+                                (return))))
     :props (list
                :shop (make-instance 'shop
                          :actions (list

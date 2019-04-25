@@ -46,7 +46,7 @@
 (defun load-mods (&rest keys &key compiler-verbose &allow-other-keys)
     #-yadfa-mods nil
     #+yadfa-mods (unless
-                     #+yadfa-docs (member "texi" (uiop:command-line-arguments) :test #'string=)
+                     #+yadfa-docs (find "texi" (uiop:command-line-arguments) :test #'string=)
                      #-yadfa-docs nil
                      (when uiop:*image-dumped-p*
                          (pushnew
@@ -129,12 +129,12 @@
 #+(or slynk swank)
 (defun emacs-prompt (options &optional error-message)
     (let* ((eval-in-emacs (cond
-                              #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=) #'slynk:eval-in-emacs)
-                              #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=) #'swank:eval-in-emacs)))
+                              #+slynk ((find "slynk" (uiop:command-line-arguments) :test #'string=) #'slynk:eval-in-emacs)
+                              #+swank ((find "swank" (uiop:command-line-arguments) :test #'string=) #'swank:eval-in-emacs)))
               (wait-for-event (cond
-                                  #+slynk ((member "slynk" (uiop:command-line-arguments) :test #'string=)
+                                  #+slynk ((find "slynk" (uiop:command-line-arguments) :test #'string=)
                                               #'slynk::wait-for-event)
-                                  #+swank ((member "swank" (uiop:command-line-arguments) :test #'string=)
+                                  #+swank ((find "swank" (uiop:command-line-arguments) :test #'string=)
                                               #'swank::wait-for-event))))
         (funcall eval-in-emacs
             `(progn (require 'widget)
@@ -213,11 +213,11 @@
                                          (list
                                              :emacs-return
                                              ,(cond
-                                                  #+slynk ((member "slynk"
+                                                  #+slynk ((find "slynk"
                                                                (uiop:command-line-arguments)
                                                                :test #'string=)
                                                               (slynk::current-thread-id))
-                                                  #+swank ((member "swank"
+                                                  #+swank ((find "swank"
                                                                (uiop:command-line-arguments)
                                                                :test #'string=)
                                                               (swank::current-thread-id)))
@@ -555,15 +555,22 @@
             (when clim-listener::*application-frame*
                 (clim:stream-set-cursor-position
                     *standard-output* (first start-position) (+ (second start-position) (* 31 (clim:pattern-height pattern))))))))
+(defun get-zone-text (text)
+    (cond
+        ((typep text 'simple-string)
+            text)
+        ((typep text 'lambda-expression)
+            (funcall (coerce text 'function)))))
 (defun print-enter-text (position &optional old-position old-direction)
     (let ((old-direction (find old-direction (warp-points-of (get-zone old-position))
                              :test (lambda (a b)
                                        (when (typep b 'symbol)
                                            (string= a b))))))
         (format t "~a~%"
-            (if (and old-position old-direction (getf-direction old-position old-direction :exit-text))
-                (getf-direction old-position old-direction :exit-text)
-                (enter-text-of (get-zone position)))))
+            (get-zone-text
+                (if (and old-position old-direction (getf-direction old-position old-direction :exit-text))
+                    (getf-direction old-position old-direction :exit-text)
+                    (enter-text-of (get-zone position))))))
     (flet ((z (delta direction)
                (let ((current-position
                          (append (mapcar #'+ (butlast position) delta)
@@ -728,6 +735,27 @@
                     (get-path-end
                         '(0 0 0 yadfa-zones:secret-underground)))))
         (return-from move-to-secret-underground))
+    (when
+        (iter (for i in (cons (player-of *game*) (allies-of *game*)))
+            (when
+                (or
+                    (not
+                        (< (list-length (wearingp (wear-of i)
+                                            (car
+                                                (must-wear*-of
+                                                    (get-zone
+                                                        '(0 0 0 yadfa-zones:secret-underground))))))
+                            1))
+                    (not (funcall
+                             (coerce
+                                 (cdr
+                                     (must-wear*-of
+                                         (get-zone
+                                             '(0 0 0 yadfa-zones:secret-underground))))
+                                 'function)
+                             i)))
+                (leave t)))
+        (return-from move-to-secret-underground))
     (unless (eq (lockedp (get-zone '(0 0 0 yadfa-zones:secret-underground))) :nil)
         (format t "You unlock zone ~a~%" '(0 0 0 yadfa-zones:secret-underground))
         (setf (lockedp (get-zone '(0 0 0 yadfa-zones:secret-underground))) :nil))
@@ -781,6 +809,27 @@
                     (multiple-value-list
                         (get-path-end
                             '(0 0 0 pocket-map)))))
+            (return-from move-to-pocket-map))
+        (when
+            (iter (for i in (cons (player-of *game*) (allies-of *game*)))
+                (when
+                    (or
+                        (not
+                            (< (list-length (wearingp (wear-of i)
+                                                (car
+                                                    (must-wear*-of
+                                                        (get-zone
+                                                            new-position)))))
+                                1))
+                        (not (funcall
+                                 (coerce
+                                     (cdr
+                                         (must-wear*-of
+                                             (get-zone
+                                                 new-position)))
+                                     'function)
+                                 i)))
+                    (leave t)))
             (return-from move-to-pocket-map))
         (unless (eq (fourth (position-of (player-of *game*))) :pocket-map)
             (setf (getf (attributes-of item) :pocket-map-position) (position-of (player-of *game*))))
@@ -958,42 +1007,6 @@
                     (push (nth i (wear-of user)) (inventory-of (player-of *game*)))
                     (setf (wear-of user) (remove-nth i (wear-of user))))
                 (incf i)))))
-(defun trigger-diaper-police (user)
-    (format t "*Seems ~a's mess got the attention of the diaper police.*~%~%"
-        (name-of user))
-    (if (wearingp (wear-of user) 'padding)
-        (progn
-            (format t "Diaper Police: Seems this ~a needs a diaper change. Better change ~a~%~%"
-                (species-of user)
-                (if (malep user) "him" "her"))
-            (format t "~a: Hey!!! Don't change me here!!! Everyone can see me!!!~%~%"
-                (name-of user)))
-        (progn
-            (format t "Seems this ~a isn't potty trained, better diaper ~a~%~%"
-                (species-of user)
-                (if (malep user) "him" "her"))
-            (format t "~a: Hey!!! I don't need diapers!!! Stop!!!~%~%"
-                (name-of user))))
-    (change-the-baby user 'yadfa-items:kurikia-thick-diaper :locked t)
-    (format t "*The diaper police straps the squirmy and heavily blushy ~a down on a public changing table, strips all of ~a's soggy clothes off (and all the clothes that won't fit over the new diaper), and puts a thick diaper on ~a. All while the local bystandards watch, snicker, giggle, and point*~%~%"
-        (name-of user)
-        (if (malep user) "he" "she")
-        (if (malep user) "him" "her"))
-    (format t "Diaper Police: And to be sure the baby keeps ~a diapers on~%~%"
-        (if (malep user) "his" "her"))
-    (format t "*The diaper police locks the diaper on to prevent ~a from removing it*~%~%"
-        (name-of user))
-    (format t "*The diaper police unstrap ~a from the table. The diaper is so thick ~a's legs are spread apart forcing ~a to waddle*~%~%"
-        (name-of user)
-        (name-of user)
-        (if (malep user) "him" "her"))
-    (format t
-        "Diaper Police: Aww, it looks like the baby is learning how to walk for the first time~%~%")
-    (format t "*~a whines and covers ~a face with ~a paws in embarrassment*~%~%"
-        (name-of user)
-        (if (malep user) "his" "her")
-        (if (malep user) "his" "her"))
-    (trigger-event 'yadfa-events:get-diaper-locked-1))
 (defun potty-on-toilet (prop &key wet mess pants-down (user (player-of *game*)))
     #+sbcl (declare
                (type toilet prop)
@@ -1072,9 +1085,14 @@
                pants-down)
               (write-line "Yeah, that's not going to happen")
               (return-from potty-on-self-or-prop))
+        ((funcall (coerce (no-wetting/messing-of (get-zone (position-of (player-of *game*))))
+                      'function)
+             user)
+            (return-from potty-on-self-or-prop))
         ((and (no-puddles-p (get-zone (position-of (player-of *game*)))) pants-down)
             (format t "~a isn't allowed to go potty there, it's against the rules in this zone~%"
-                (name-of user)))
+                (name-of user))
+            (return-from potty-on-self-or-prop))
         ((and
              (not pants-down)
              (no-puddles-p (get-zone (position-of (player-of *game*))))
@@ -1088,7 +1106,8 @@
             (format t "~a isn't allowed to do that or ~a'll make ~a, which is against the rules in this zone~%"
                 (name-of user)
                 (if (malep user) "he" "she")
-                (if mess "a mess on the floor" "puddles")))
+                (if mess "a mess on the floor" "puddles"))
+            (return-from potty-on-self-or-prop))
         ((and pants-down
              (iter (for i in (wearingp (wear-of user) 'closed-bottoms))
                  (unless (eq (lockedp i) :nil)
@@ -1478,16 +1497,9 @@
                                     wet-leak-list mess-leak-list both-leak-list)))
                         (format-lists)
                         (format-leak-lists)
-                        (when (and
-                                  (no-puddles-p (get-zone (position-of (player-of *game*))))
-                                  (or
-                                      (and
-                                          (getf wet-return-value :leak-amount)
-                                          (> (getf wet-return-value :leak-amount) 0))
-                                      (and
-                                          (getf mess-return-value :leak-amount)
-                                          (> (getf mess-return-value :leak-amount) 0))))
-                            (trigger-diaper-police user))))))))
+                        (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*))))
+                                     'function)
+                            (cons wet-return-value mess-return-value) user)))))))
 (defun get-babyish-padding (clothing)
     (cond
         ((wearingp clothing 'tabbed-briefs)
@@ -3124,12 +3136,9 @@
                     had-accident)
                 (get-potty-training user)
                 had-accident))
-        (when (and
-                  (no-puddles-p (get-zone (position-of (player-of *game*))))
-                  (or
-                      (and (getf (car had-accident) :leak-amount) (> (getf (car had-accident) :leak-amount) 0))
-                      (and (getf (cdr had-accident) :leak-amount) (> (getf (cdr had-accident) :leak-amount) 0))))
-            (trigger-diaper-police user))
+        (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*))))
+                     'function)
+            had-accident user)
         had-accident))
 (defun get-props-from-zone (position)
     (props-of (eval (get-zone position))))

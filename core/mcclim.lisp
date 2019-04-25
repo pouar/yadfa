@@ -102,6 +102,9 @@
                 (t
                     (format t "You're either already on that zone or you tried specifying a path that involves turning (which this interface can't do because Pouar sucks at writing code that generates paths)~%")
                     (return))))))
+(clim:define-command (com-yadfa-describe-zone :command-table clim:global-command-table :menu t :name "Print Zone Description")
+    ((zone zone))
+    (yadfa-bin:lst :describe-zone zone))
 (clim:define-presentation-to-command-translator com-describe-object-translator
     (yadfa-class climi::com-describe clim:global-command-table
         :gesture :describe
@@ -117,6 +120,13 @@
     (zone com-yadfa-move clim:global-command-table
         :documentation "Move"
         :pointer-documentation "Move Here"
+        :menu t)
+    (object)
+    (list object))
+(clim:define-presentation-to-command-translator com-yadfa-describe-zone-translator
+    (zone com-yadfa-describe-zone clim:global-command-table
+        :documentation "Print Zone Description"
+        :pointer-documentation "Print Zone Description"
         :menu t)
     (object)
     (list object))

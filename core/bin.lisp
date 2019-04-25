@@ -3,8 +3,8 @@
 (in-package :yadfa)
 (defun yadfa-bin:get-inventory-of-type (type)
     #+sbcl (declare
-               (type (or null (and symbol (not keyword)) list class) type))
-    (check-type type (or null (and symbol (not keyword)) list class))
+               (type type-specifier type))
+    (check-type type type-specifier)
     (get-positions-of-type type (inventory-of (player-of *game*))))
 (defun yadfa-bin:reload-files (&rest keys &key compiler-verbose &allow-other-keys)
     "Intended for developers. Use this to recompile the game without having to close it. Accepts the same keyword arguments as asdf:load-system and asdf:operate. Set COMPILER-VERBOSE to T to print the compiling messages. setting LOAD-SOURCE t T will avoid creating fasls"
@@ -81,7 +81,7 @@
     #+sbcl (declare (type list directions))
     (check-type directions list)
     (iter (for direction in directions)
-        (let ((new-position (get-path-end
+        (let* ((new-position (get-path-end
                                 (get-destination direction (position-of (player-of *game*)))
                                 (position-of (player-of *game*))
                                 direction))
@@ -97,6 +97,27 @@
                                 (get-destination direction (position-of (player-of *game*)))
                                 (position-of (player-of *game*))
                                 direction))))
+                (return-from yadfa-world:move))
+            (when
+                (iter (for i in (cons (player-of *game*) (allies-of *game*)))
+                    (when
+                        (or
+                            (not
+                                (< (list-length (wearingp (wear-of i)
+                                                    (car
+                                                        (must-wear*-of
+                                                            (get-zone
+                                                                new-position)))))
+                                    1))
+                            (not (funcall
+                                     (coerce
+                                         (cdr
+                                             (must-wear*-of
+                                                 (get-zone
+                                                     new-position)))
+                                         'function)
+                                     i)))
+                        (leave t)))
                 (return-from yadfa-world:move))
             (when (or
                       (and
@@ -152,7 +173,7 @@
             (unless (eq (getf-direction (position-of (player-of *game*)) direction :locked) :nil)
                 (setf-direction (position-of (player-of *game*)) direction :locked :nil))
             (setf (position-of (player-of *game*))
-                (get-destination direction (position-of (player-of *game*))))
+                new-position)
             (when (underwaterp (get-zone (position-of (player-of *game*)))) (swell-up-all))
             (process-potty)
             (run-equip-effects (player-of *game*))
@@ -182,15 +203,15 @@
                                                         (funcall (coerce (getf i :lambda) 'function)))
                                                     (t (getf i :enemies))))
                                 (return-from yadfa-world:move)))))))))
-(defun yadfa-bin:lst (&key inventory inventory-group props wear user directions moves position map descriptions)
+(defun yadfa-bin:lst (&key inventory inventory-group props wear user directions moves position map descriptions describe-zone)
     "used to list various objects and properties, INVENTORY takes a type specifier for the items you want to list in your inventory. setting INVENTORY to T will list all the items. INVENTORY-GROUP is similar to INVENTORY, but will group the items by class name. WEAR is similar to INVENTORY but lists clothes you're wearing instead. setting DIRECTIONS to non-NIL will list the directions you can walk.setting MOVES to non-NIL will list the moves you know. setting USER to T will cause MOVES and WEAR to apply to the player, setting it to an integer will cause it to apply it to an ally. Leaving it at NIL will cause it to apply to everyone. setting POSITION to true will print your current position. Setting MAP to a number will print the map with the floor number set to MAP, setting MAP to T will print the map of the current floor you're on. When printing the map in McCLIM, red means there's a warp point, dark green is the zone with the player, blue means there are stairs. These 3 colors will blend with each other to make the final color"
     #+sbcl (declare
                (type (or unsigned-byte boolean) user)
                (type (or boolean integer) map)
-               (type (or null (and symbol (not keyword)) list class) inventory))
+               (type type-specifier inventory))
     (check-type user (or unsigned-byte boolean))
     (check-type map (or boolean integer))
-    (check-type inventory (or null (and symbol (not keyword)) list class))
+    (check-type inventory type-specifier)
     (when (and (typep user 'unsigned-byte) (>= user (list-length (allies-of *game*))))
         (format t "You only have ~d allies~%" (list-length (allies-of *game*)))
         (return-from yadfa-bin:lst))
@@ -206,6 +227,15 @@
                                  (if (typep i 'closed-bottoms) (messiness-capacity-of i) nil)))
                          (incf j))
             (format t "~%")))
+    (when describe-zone
+        (format t "~a~%"
+            (get-zone-text (description-of
+                               (cond
+                                   ((typep describe-zone 'zone)
+                                       describe-zone)
+                                   ((typep describe-zone 'list)
+                                       (get-zone describe-zone))
+                                   (t (position-of (player-of *game*))))))))
     (when inventory-group
         (let ((a ()))
             (iter (for i in (inventory-of (player-of *game*)))
@@ -382,7 +412,7 @@
                     (name-of (player-of *game*))
                     (species-of (player-of *game*))
                     (description-of (player-of *game*)))
-                (iter (for i in-vector (allies-of *game*))
+                (iter (for i in (allies-of *game*))
                     (format t "Name: ~a~%Species: ~a~%Description: ~a~%~%"
                         (name-of i)
                         (species-of i)
@@ -578,10 +608,10 @@
     #+sbcl (declare
                (type (or null unsigned-byte) user)
                (type unsigned-byte wear)
-               (type (or (and symbol (not keyword)) list unsigned-byte) wear inventory))
+               (type (or type-specifier unsigned-byte) wear inventory))
     (check-type user (or null unsigned-byte))
     (check-type wear unsigned-byte)
-    (check-type inventory (or (and symbol (not keyword)) list unsigned-byte))
+    (check-type inventory (or type-specifier unsigned-byte))
     (let* ((selected-user
                (if
                    user
@@ -590,7 +620,7 @@
               (item (cond
                         ((typep inventory 'unsigned-byte)
                             (nth inventory (inventory-of (player-of *game*))))
-                        ((typep inventory '(or list (and symbol (not keyword))))
+                        ((typep inventory 'type-specifier)
                             (find inventory (inventory-of (player-of *game*))
                                 :test #'(lambda (type-specifier obj)
                                             (typep obj type-specifier))))))
@@ -667,7 +697,7 @@
                (type unsigned-byte inventory))
     (check-type user (or unsigned-byte null))
     (check-type inventory unsigned-byte)
-    (check-type wear (or (and symbol (not keyword)) list unsigned-byte))
+    (check-type wear (or type-specifier unsigned-byte))
     (let* ((selected-user
                (if
                    user
@@ -676,7 +706,7 @@
               (item (cond
                         ((typep wear 'unsigned-byte)
                             (nth wear (wear-of (player-of *game*))))
-                        ((typep wear '(or list (and symbol (not keyword))))
+                        ((typep wear 'type-specifier)
                             (find wear (wear-of (player-of *game*))
                                 :test #'(lambda (type-specifier obj)
                                             (typep obj type-specifier)))))))
@@ -696,6 +726,32 @@
                  (< (wearingp (wear-of selected-user) 'tabbed-briefs) 2))
                 (format t "Letting ~a go without padding is a really bad idea. Don't do it.~%"
                     (name-of selected-user))
+                (return-from yadfa-bin:unwear))
+            ((or
+                 (and
+                     (typep item
+                         (car
+                             (must-wear*-of
+                                 (get-zone
+                                     (position-of
+                                         (player-of *game*))))))
+                     (<= (wearingp
+                             (wear-of selected-user)
+                             (car
+                                 (must-wear*-of
+                                     (get-zone
+                                         (position-of
+                                             (player-of *game*))))))
+                         1))
+                 (not (funcall
+                          (coerce
+                              (cdr
+                                  (must-wear*-of
+                                      (get-zone
+                                          (position-of
+                                              (player-of *game*)))))
+                              'function)
+                          selected-user)))
                 (return-from yadfa-bin:unwear))
             ((and
                  (diapers-only-p (get-zone (position-of (player-of *game*))))
@@ -732,10 +788,10 @@
     "Change one of the clothes you're wearing with one in your inventory. WEAR is the index of the clothing you want to replace. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to replace it with. You can also give INVENTORY and WEAR a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself."
     #+sbcl (declare
                (type (or null unsigned-byte) user)
-               (type (or (and symbol (not keyword)) list unsigned-byte) inventory wear))
+               (type (or type-specifier unsigned-byte) inventory wear))
     (check-type user (or null unsigned-byte))
-    (check-type inventory (or (and symbol (not keyword)) list unsigned-byte))
-    (check-type wear (or (and symbol (not keyword)) list unsigned-byte))
+    (check-type inventory (or type-specifier unsigned-byte))
+    (check-type wear (or type-specifier unsigned-byte))
     (let* ((selected-user
                (if
                    user
@@ -744,14 +800,14 @@
               (inventory (cond
                              ((typep inventory 'unsigned-byte)
                                  (nth inventory (inventory-of (player-of *game*))))
-                             ((typep inventory '(or list (and symbol (not keyword))))
+                             ((typep inventory 'type-specifier)
                                  (find inventory (inventory-of (player-of *game*))
                                      :test #'(lambda (type-specifier obj)
                                                  (typep obj type-specifier))))))
               (wear (cond
                         ((typep wear 'unsigned-byte)
                             (nth wear (wear-of (player-of *game*))))
-                        ((typep wear '(or list (and symbol (not keyword))))
+                        ((typep wear 'type-specifier)
                             (find wear (wear-of (player-of *game*))
                                 :test #'(lambda (type-specifier obj)
                                             (typep obj type-specifier))))))
@@ -795,6 +851,39 @@
                  (typep wear 'padding)
                  (< (list-length (wearingp (wear-of selected-user) 'padding)) 2))
                 (format t "~a can't change into that as padding is manditory in this zone.~%" (name-of selected-user))
+                (return-from yadfa-bin:change))
+            ((and
+                 (or (and
+                         (not (typep inventory
+                                  (car
+                                      (must-wear*-of
+                                          (get-zone
+                                              (position-of
+                                                  (player-of *game*)))))))
+                         (typep wear
+                             (car
+                                 (must-wear*-of
+                                     (get-zone
+                                         (position-of
+                                             (player-of *game*))))))
+                         (<= (list-length
+                                 (wearingp
+                                     (wear-of selected-user)
+                                     (car
+                                         (must-wear*-of
+                                             (get-zone
+                                                 (position-of
+                                                     (player-of *game*)))))))
+                             1))
+                     (not (funcall
+                              (coerce
+                                  (cdr
+                                      (must-wear*-of
+                                          (get-zone
+                                              (position-of
+                                                  (player-of *game*)))))
+                                  'function)
+                              selected-user))))
                 (return-from yadfa-bin:change))
             ((and
                  (iter
