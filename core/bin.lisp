@@ -82,10 +82,10 @@
     (check-type directions list)
     (iter (for direction in directions)
         (let* ((new-position (get-path-end
-                                (get-destination direction (position-of (player-of *game*)))
-                                (position-of (player-of *game*))
-                                direction))
-                 (old-position (position-of (player-of *game*))))
+                                 (get-destination direction (position-of (player-of *game*)))
+                                 (position-of (player-of *game*))
+                                 direction))
+                  (old-position (position-of (player-of *game*))))
             (unless (get-path-end
                         (get-destination direction (position-of (player-of *game*)))
                         (position-of (player-of *game*))
@@ -102,21 +102,36 @@
                 (iter (for i in (cons (player-of *game*) (allies-of *game*)))
                     (when
                         (or
-                            (not
+                            (and
                                 (< (list-length (wearingp (wear-of i)
                                                     (car
-                                                        (must-wear*-of
+                                                        (must-wear-of
                                                             (get-zone
                                                                 new-position)))))
-                                    1))
-                            (not (funcall
-                                     (coerce
-                                         (cdr
-                                             (must-wear*-of
-                                                 (get-zone
-                                                     new-position)))
-                                         'function)
-                                     i)))
+                                    1)
+                                (not (funcall
+                                         (coerce
+                                             (cdr
+                                                 (must-wear-of
+                                                     (get-zone
+                                                         new-position)))
+                                             'function)
+                                         i)))
+                            (and
+                                (> (list-length (wearingp (wear-of i)
+                                                    (car
+                                                        (must-not-wear-of
+                                                            (get-zone
+                                                                new-position)))))
+                                    0)
+                                (not (funcall
+                                         (coerce
+                                             (cdr
+                                                 (must-not-wear-of
+                                                     (get-zone
+                                                         new-position)))
+                                             'function)
+                                         i))))
                         (leave t)))
                 (return-from yadfa-world:move))
             (when (or
@@ -639,9 +654,16 @@
                 (format t "That ~a isn't something you can wear~%" (name-of item))
                 (return-from yadfa-bin:wear))
             ((and
-                 (diapers-only-p (get-zone (position-of (player-of *game*))))
-                 (typep item 'bottoms)
-                 (not (typep item 'incontinence-product)))
+                 (typep item
+                     (car
+                         (must-not-wear*-of
+                             (get-zone (position-of (player-of *game*))))))
+                 (not
+                     (funcall
+                         (coerce
+                             (cdr (must-not-wear*-of (get-zone (position-of (player-of *game*)))))
+                             'function)
+                         selected-user)))
                 (format t "~a isn't allowed to wear those here.~%" (name-of selected-user))
                 (return-from yadfa-bin:wear))
             ((and
@@ -727,22 +749,22 @@
                 (format t "Letting ~a go without padding is a really bad idea. Don't do it.~%"
                     (name-of selected-user))
                 (return-from yadfa-bin:unwear))
-            ((or
-                 (and
-                     (typep item
-                         (car
-                             (must-wear*-of
-                                 (get-zone
-                                     (position-of
-                                         (player-of *game*))))))
-                     (<= (wearingp
+            ((and
+                 (typep item
+                     (car
+                         (must-wear*-of
+                             (get-zone
+                                 (position-of
+                                     (player-of *game*))))))
+                 (<= (list-length
+                         (wearingp
                              (wear-of selected-user)
                              (car
                                  (must-wear*-of
                                      (get-zone
                                          (position-of
-                                             (player-of *game*))))))
-                         1))
+                                             (player-of *game*)))))))
+                     1)
                  (not (funcall
                           (coerce
                               (cdr
@@ -752,12 +774,6 @@
                                               (player-of *game*)))))
                               'function)
                           selected-user)))
-                (return-from yadfa-bin:unwear))
-            ((and
-                 (diapers-only-p (get-zone (position-of (player-of *game*))))
-                 (typep item 'padding)
-                 (< (wearingp (wear-of selected-user) 'padding) 2))
-                (format t "~a isn't allowed to take those off here~%" (name-of selected-user))
                 (return-from yadfa-bin:unwear))
             ((iter
                  (for i in (butlast
@@ -825,11 +841,6 @@
                 (format t "That ~a isn't something you can wear~%" (name-of inventory))
                 (return-from yadfa-bin:change))
             ((and
-                 (diapers-only-p (get-zone (position-of (player-of *game*))))
-                 (typep inventory 'bottoms)
-                 (not (typep inventory 'padding)))
-                (format t "~a can't change into that as pants are prohibited in this zone.~%" (name-of selected-user)))
-            ((and
                  (not (eq (player-of *game*) selected-user))
                  (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
                  (typep inventory 'pullon)
@@ -845,40 +856,49 @@
                  (< (list-length (wearingp (wear-of selected-user) 'tabbed-briefs)) 2))
                 (format t "letting ~a go without padding is a really bad idea. Don't do it.~%" (name-of selected-user))
                 (return-from yadfa-bin:change))
-            ((and
-                 (diapers-only-p (get-zone (position-of (player-of *game*))))
-                 (not (typep inventory 'padding))
-                 (typep wear 'padding)
-                 (< (list-length (wearingp (wear-of selected-user) 'padding)) 2))
-                (format t "~a can't change into that as padding is manditory in this zone.~%" (name-of selected-user))
-                (return-from yadfa-bin:change))
-            ((and
-                 (or (and
-                         (not (typep inventory
-                                  (car
-                                      (must-wear*-of
-                                          (get-zone
-                                              (position-of
-                                                  (player-of *game*)))))))
-                         (typep wear
-                             (car
-                                 (must-wear*-of
-                                     (get-zone
-                                         (position-of
-                                             (player-of *game*))))))
-                         (<= (list-length
-                                 (wearingp
-                                     (wear-of selected-user)
-                                     (car
-                                         (must-wear*-of
-                                             (get-zone
-                                                 (position-of
-                                                     (player-of *game*)))))))
-                             1))
+            ((or
+                 (and
+                     (not (typep inventory
+                              (car
+                                  (must-wear*-of
+                                      (get-zone
+                                          (position-of
+                                              (player-of *game*)))))))
+                     (typep wear
+                         (car
+                             (must-wear*-of
+                                 (get-zone
+                                     (position-of
+                                         (player-of *game*))))))
+                     (<= (list-length
+                             (wearingp
+                                 (wear-of selected-user)
+                                 (car
+                                     (must-wear*-of
+                                         (get-zone
+                                             (position-of
+                                                 (player-of *game*)))))))
+                         1)
                      (not (funcall
                               (coerce
                                   (cdr
                                       (must-wear*-of
+                                          (get-zone
+                                              (position-of
+                                                  (player-of *game*)))))
+                                  'function)
+                              selected-user)))
+                 (and
+                     (typep inventory
+                         (car
+                             (must-not-wear*-of
+                                 (get-zone
+                                     (position-of
+                                         (player-of *game*))))))
+                     (not (funcall
+                              (coerce
+                                  (cdr
+                                      (must-not-wear*-of
                                           (get-zone
                                               (position-of
                                                   (player-of *game*)))))

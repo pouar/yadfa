@@ -355,11 +355,6 @@
             :initform ()
             :accessor warp-points-of
             :documentation "Plist of warp points to different maps, values are lists in the same form as the position of the player, keys are passed to the `move` function")
-        (diapers-only
-            :initarg :diapers-only
-            :initform nil
-            :accessor diapers-only-p
-            :documentation "Whether you're only allowed to wear diapers from the waist down here or not.")
         (locked
             :initarg :locked
             :initform :nil
@@ -401,6 +396,20 @@
                                 t))
             :accessor must-wear*-of
             :documentation "Similar to the must-wear slot but is done when you try to wear or change while still inside the zone")
+        (must-not-wear
+            :initarg :must-not-wear
+            :initform '(nil . (lambda (user)
+                                  (declare (ignore user))
+                                  t))
+            :accessor must-not-wear-of
+            :documentation "Used to determine whether you can enter the zone based on what you're wearing. Is a cons with the type specifier of what you must not be wearing and a lambda expression or function that runs to determine if you can enter the zone")
+        (must-not-wear*
+            :initarg :must-not-wear*
+            :initform '(nil . (lambda (user)
+                                  (declare (ignore user))
+                                  t))
+            :accessor must-not-wear*-of
+            :documentation "Similar to the must-not-wear slot but is done when you try to wear or change while still inside the zone")
         (no-wetting/messing
             :initarg no-wetting/messing
             :initform '(lambda (user)

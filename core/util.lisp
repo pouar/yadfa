@@ -31,36 +31,24 @@ the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS."
     (+ start (random (+ 1 (- end start)))))
 (defun type-specifier-p (type-specifier)
     "Returns true if TYPE-SPECIFIER is a valid type specfiier."
-    (or (documentation type-specifier 'type)
-        (block nil
-            #+sbcl (return (sb-ext:valid-type-specifier-p type-specifier))
-            #+openmcl (return (ccl:type-specifier-p type-specifier))
-            #+ecl (return (c::valid-type-specifier type-specifier))
-            #+clisp (return (null
-                                (nth-value 1 (ignore-errors
-                                                 (ext:type-expand type-specifier)))))
-            (error "TYPE-SPECIFIER-P not available for this implementation"))))
-(defun lambda-expression-p (form)
+    #+sbcl (sb-ext:valid-type-specifier-p type-specifier)
+    #+openmcl (ccl:type-specifier-p type-specifier)
+    #+ecl (c::valid-type-specifier type-specifier)
+    #+clisp (null
+                (nth-value 1 (ignore-errors
+                                 (ext:type-expand type-specifier))))
+    #-(or sbcl openmcl ecl clisp) (typep type-specifier
+                                      '(or
+                                           null
+                                           (and symbol (not keyword))
+                                           list
+                                           class)))
+(defun coerced-function-p (form)
     "checks whether the type is a lambda expression or function"
     (handler-case (coerce form 'function)
         (type-error () nil)))
 (deftype type-specifier ()
-    #+(or
-          sbcl
-          openmcl
-          ecl
-          clisp)
     '(satisfies
-         type-specifier-p)
-    #-(or
-          sbcl
-          openmcl
-          ecl
-          clisp)
-    '(or
-         null
-         (and symbol (not keyword))
-         list
-         class))
-(deftype lambda-expression ()
-    '(satisfies lambda-expression-p))
+         type-specifier-p))
+(deftype coerced-function ()
+    '(satisfies coerced-function-p))

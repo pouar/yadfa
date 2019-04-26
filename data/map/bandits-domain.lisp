@@ -30,7 +30,26 @@
     :name "Bandit's Shop"
     :description "A local shop"
     :enter-text "You enter the Bandit's Shop"
-    :diapers-only t
+    :must-wear '(padding
+                    . (lambda (user)
+                          (declare (ignore user))
+                          (write-line "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.")
+                          nil))
+    :must-wear* '(padding
+                     . (lambda (user)
+                           (declare (ignore user))
+                           (write-line "This area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.")
+                           nil))
+    :must-not-wear '((and closed-bottoms (not incontinence-product))
+                        . (lambda (user)
+                              (declare (ignore user))
+                              (write-line "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.")
+                              nil))
+    :must-not-wear* '((and closed-bottoms (not incontinence-product))
+                         . (lambda (user)
+                               (declare (ignore user))
+                               (write-line "This area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.")
+                               nil))
     :no-puddles t
     :potty-trigger '(lambda (had-accident user)
                         (block nil

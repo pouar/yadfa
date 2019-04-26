@@ -18,7 +18,7 @@
                     (if (malep user) "him" "her"))
                 (format t "~a: Hey!!! I don't need diapers!!! Stop!!!~%~%"
                     (name-of user))))
-        (change-the-baby user 'yadfa-items:kurikia-thick-diaper :locked t)
+        (yadfa::change-the-baby user 'yadfa-items:kurikia-thick-diaper :locked t)
         (format t "*The diaper police straps the squirmy and heavily blushy ~a down on a public changing table, strips all of ~a's soggy clothes off (and all the clothes that won't fit over the new diaper), and puts a thick diaper on ~a. All while the local bystandards watch, snicker, giggle, and point*~%~%"
             (name-of user)
             (if (malep user) "he" "she")

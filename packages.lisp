@@ -12,7 +12,7 @@
         #:substitutef
         #:random-from-range
         #:type-specifier
-        #:lambda-expression)
+        #:coerced-function)
     (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package #:yadfa
     (:use #:cl #:yadfa-util #:iterate #:ugly-tiny-infix-macro #:alexandria)
@@ -172,7 +172,6 @@
         #:underwaterp
         #:hiddenp
         #:warp-points-of
-        #:diapers-only-p
         #:lockedp
         #:sellablep
         #:tossablep
@@ -181,6 +180,8 @@
         #:potty-trigger-of
         #:must-wear-of
         #:must-wear*-of
+        #:must-not-wear-of
+        #:must-not-wear*-of
         #:no-wetting/messing-of
         #:enemy-spawn-list-of
         #:energy-cost-of

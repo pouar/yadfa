@@ -345,22 +345,6 @@
         (return-from get-path-end (values nil (format nil "Pick a direction the game knows about~%"))))
     (when (or (hiddenp (get-zone destination)) (and position direction (getf-direction position direction :hidden)))
         (return-from get-path-end (values nil (format nil "Pick a direction the game knows about~%"))))
-    (let ((wearing-pants nil))
-        (when (and
-                  (diapers-only-p (get-zone destination))
-                  (setf wearing-pants
-                      (iter (for i in (cons (player-of *game*) (allies-of *game*)))
-                          (when (or
-                                    (<
-                                        (list-length (wearingp (wear-of i) 'incontinence-product))
-                                        (list-length (wearingp (wear-of i) 'bottoms)))
-                                    (< (list-length (wearingp (wear-of i) 'padding)) 1))
-                              (collect (name-of i))))))
-            (return-from get-path-end
-                (values
-                    nil
-                    (format nil "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.~%The following characters are currently not compliant with this rule:~{~a~}~%"
-                        (iter (for i in wearing-pants) (collect " ") (collect i)))))))
     (when (or
               (and (not (eq (lockedp (get-zone destination)) :nil))
                   (not
@@ -559,7 +543,7 @@
     (cond
         ((typep text 'simple-string)
             text)
-        ((typep text 'lambda-expression)
+        ((typep text 'coerced-function)
             (funcall (coerce text 'function)))))
 (defun print-enter-text (position &optional old-position old-direction)
     (let ((old-direction (find old-direction (warp-points-of (get-zone old-position))
@@ -739,21 +723,36 @@
         (iter (for i in (cons (player-of *game*) (allies-of *game*)))
             (when
                 (or
-                    (not
+                    (and
                         (< (list-length (wearingp (wear-of i)
                                             (car
-                                                (must-wear*-of
+                                                (must-wear-of
                                                     (get-zone
                                                         '(0 0 0 yadfa-zones:secret-underground))))))
-                            1))
-                    (not (funcall
-                             (coerce
-                                 (cdr
-                                     (must-wear*-of
-                                         (get-zone
-                                             '(0 0 0 yadfa-zones:secret-underground))))
-                                 'function)
-                             i)))
+                            1)
+                        (not (funcall
+                                 (coerce
+                                     (cdr
+                                         (must-wear-of
+                                             (get-zone
+                                                 '(0 0 0 yadfa-zones:secret-underground))))
+                                     'function)
+                                 i)))
+                    (and
+                        (> (list-length (wearingp (wear-of i)
+                                            (car
+                                                (must-not-wear-of
+                                                    (get-zone
+                                                        '(0 0 0 yadfa-zones:secret-underground))))))
+                            0)
+                        (not (funcall
+                                 (coerce
+                                     (cdr
+                                         (must-not-wear-of
+                                             (get-zone
+                                                 '(0 0 0 yadfa-zones:secret-underground))))
+                                     'function)
+                                 i))))
                 (leave t)))
         (return-from move-to-secret-underground))
     (unless (eq (lockedp (get-zone '(0 0 0 yadfa-zones:secret-underground))) :nil)
@@ -814,21 +813,36 @@
             (iter (for i in (cons (player-of *game*) (allies-of *game*)))
                 (when
                     (or
-                        (not
+                        (and
                             (< (list-length (wearingp (wear-of i)
                                                 (car
-                                                    (must-wear*-of
+                                                    (must-wear-of
                                                         (get-zone
                                                             new-position)))))
-                                1))
-                        (not (funcall
-                                 (coerce
-                                     (cdr
-                                         (must-wear*-of
-                                             (get-zone
-                                                 new-position)))
-                                     'function)
-                                 i)))
+                                1)
+                            (not (funcall
+                                     (coerce
+                                         (cdr
+                                             (must-wear-of
+                                                 (get-zone
+                                                     new-position)))
+                                         'function)
+                                     i)))
+                        (and
+                            (> (list-length (wearingp (wear-of i)
+                                                (car
+                                                    (must-not-wear-of
+                                                        (get-zone
+                                                            new-position)))))
+                                0)
+                            (not (funcall
+                                     (coerce
+                                         (cdr
+                                             (must-not-wear-of
+                                                 (get-zone
+                                                     new-position)))
+                                         'function)
+                                     i))))
                     (leave t)))
             (return-from move-to-pocket-map))
         (unless (eq (fourth (position-of (player-of *game*))) :pocket-map)
@@ -2617,16 +2631,16 @@
                                         had-accident)
     (format t "~a~%"
         (random-elt (let ((a (list
-                                  (format nil "*~a is doing a potty dance like a 5 year old*"
-                                      (name-of user))
-                                  (format nil "*~a hops from foot to foot holding ~a crotch*"
-                                      (name-of user)
-                                      (if (malep user)
-                                          "his" "her"))
-                                  (format nil "*~a bounces up and down holding ~aself*"
-                                      (name-of user)
-                                      (if (malep user)
-                                          "his" "her")))))
+                                 (format nil "*~a is doing a potty dance like a 5 year old*"
+                                     (name-of user))
+                                 (format nil "*~a hops from foot to foot holding ~a crotch*"
+                                     (name-of user)
+                                     (if (malep user)
+                                         "his" "her"))
+                                 (format nil "*~a bounces up and down holding ~aself*"
+                                     (name-of user)
+                                     (if (malep user)
+                                         "his" "her")))))
                         (unless (malep user)
                             (push (format nil "~a fidgets and squirms while pressing her legs together" (name-of user)) a))
                         a))))
