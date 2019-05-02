@@ -29,16 +29,16 @@ modules:
     buildsystem: autotools
     sources:
       - type: archive
-        url: https://ftp.gnu.org/gnu/wget/wget-1.19.5.tar.lz
-        sha256: 29fbe6f3d5408430c572a63fe32bd43d5860f32691173dfd84edc06869edca75
+        url: https://ftp.gnu.org/gnu/wget/wget-1.20.3.tar.lz
+        sha256: 69607ce8216c2d1126b7a872db594b3f21e511e660e07ca1f81be96650932abb
   - name: tinytex
     buildsystem: simple
     build-commands:
       - bash -c 'TEXDIR=/app/tmp/texlive;wget -qO- https://github.com/yihui/tinytex/raw/master/tools/install-base.sh | sh -s - "$@";rm -rf $TEXDIR;mkdir -p $TEXDIR;mv texlive/* $TEXDIR;rm -r texlive;$TEXDIR/bin/*/tlmgr install $(wget -qO- https://github.com/yihui/tinytex/raw/master/tools/pkgs-custom.txt | tr "\n" " ") texinfo;$TEXDIR/bin/*/tlmgr path add'
     sources:
       - type: archive
-        sha256: 3ff6c23f51c7cfb40f1fbdfaf25d0c1bfbe08ddea41919d7d1fafcfb953c1b39
-        url: https://github.com/yihui/tinytex/archive/v0.9.tar.gz
+        sha256: 3825d850bd7d3aee5122b0ef20bcffa1ae3691f178b69ef90058dc104ecf3c1c
+        url: https://github.com/yihui/tinytex/archive/v0.12.tar.gz
   - name: sbcl-bin
     buildsystem: simple
     build-commands:
@@ -47,8 +47,8 @@ modules:
       - chmod +x /app/tmp/sbcl-bin/bin/hostname
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.1/sbcl-1.5.1-x86-64-linux-binary.tar.bz2
-        sha256: 3222284f2fa848fc95a8932eef9ccd18662720d3fbdb7ab2464cc51fd8e1ba76
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.2/sbcl-1.5.2-x86-64-linux-binary.tar.bz2
+        sha256: 22ccd9409b2ea16d4be69235c5ad5fde833452955cb24483815312d3b1d7401c
   - name: sbcl
     buildsystem: simple
     build-commands:
@@ -57,8 +57,8 @@ modules:
       - INSTALL_ROOT="/app/tmp/sbcl" HOME="/app/tmp/home/" sh install.sh
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.1/sbcl-1.5.1-source.tar.bz2
-        sha256: f072cbab325062202e7b9147f44a42c99c78e3c159e8916609b54ea01616e623
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.2/sbcl-1.5.2-source.tar.bz2
+        sha256: dac6aef3ec7628c284a31f2222ede5d47d9d94f9cfdffe0f00ef40f9531e3c3f
   - name: yadfa-deps
     buildsystem: simple
     build-commands:
