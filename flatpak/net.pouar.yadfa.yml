@@ -71,7 +71,7 @@ modules:
       - cp -R sly/ /app/tmp/home/quicklisp/local-projects/sly/
     sources:
       - type: file
-        url: http://beta.quicklisp.org/quicklisp.lisp
+        url: https://beta.quicklisp.org/quicklisp.lisp
         sha256: 4a7a5c2aebe0716417047854267397e24a44d0cce096127411e9ce9ccfeb2c17
       - type: archive
         url: https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3/asdf-3.3.3.tar.gz
