@@ -497,6 +497,10 @@
    #:bandits-entrance
    #:secret-underground
    #:pirates-cove
+   #:candle-carnival
+   #:sky-base
+   #:star-city
+   #:flying-mansion
    #:your-ship
    #:rpgmaker-dungeon
    #:create-rpgmaker-dungeon)
