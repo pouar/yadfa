@@ -59,8 +59,9 @@ test_script:
     Else { echo "nupkg was built"; }
 deploy_script:
 - ps: |
-    nuget sources Add -Name Bintray -Source https://api.bintray.com/nuget/pouar/yadfa-chocolatey -UserName pouar -Password $env:bintrayapikey
-    nuget setapikey 'pouar:'$env:bintrayapikey -Source Bintray
-    nuget push $([string[]](Get-Item yadfa*.nupkg)) -Source https://api.bintray.com/nuget/pouar/yadfa-chocolatey
-
-- cmd: 'C:\cygwin64\bin\bash.exe -lc "export bintrayapikey;/cygdrive/c/projects/yadfa/ci/clear-old-versions.sh"'
+    if( $env:APPVEYOR_REPO_BRANCH -like "master") {
+        nuget sources Add -Name Bintray -Source https://api.bintray.com/nuget/pouar/yadfa-chocolatey -UserName pouar -Password $env:bintrayapikey
+        nuget setapikey 'pouar:'$env:bintrayapikey -Source Bintray
+        nuget push $([string[]](Get-Item yadfa*.nupkg)) -Source https://api.bintray.com/nuget/pouar/yadfa-chocolatey
+    }
+- cmd: 'C:\cygwin64\bin\bash.exe -lc "export bintrayapikey APPVEYOR_REPO_BRANCH;/cygdrive/c/projects/yadfa/ci/clear-old-versions.sh"'
