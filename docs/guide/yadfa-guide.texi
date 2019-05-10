@@ -1,0 +1,112 @@
+\input xmp
+\input texinfo
+@documentencoding UTF-8
+@include bib-macros.texi
+@tex
+\includemetadata
+{/Author (Pouar Dragon)
+/Title (YADFA User Guide)
+/Subject (Yet Another DiaperFur Adventure)
+/Creator (Texinfo \texinfoversion)
+\ifx\XeTeXrevision\undefined\else
+        /Producer (XeTeX \the\XeTeXversion\XeTeXrevision)
+\fi}
+{CC_Attribution-ShareAlike_4.0_International.xmp}
+@end tex
+@html
+<script defer>
+MathJax = {
+  tex: {inlineMath: [['$', '$'], ['\\(', '\\)']],
+    macros: {
+      RR: "{\\bf R}",
+      bold: ["{\\bf #1}", 1]
+    }}
+};
+
+    MathJax.Hub.Config({ TeX: { extensions: [] }});
+</script>
+<!-- Source is apparently here https://github.com/mathjax/MathJax-src -->
+<script id="MathJax-script" defer src="https://cdn.jsdelivr.net/npm/mathjax@@3/es5/tex-chtml-full.js"></script>
+@end html
+@macro mathjax{math}
+@tex
+$$\math\$$
+@end tex
+@html
+$$\math\$$
+@end html
+@ifnothtml
+@ifnottex
+@center @backslashchar{}[@math{\math\}@backslashchar{}]
+@end ifnottex
+@end ifnothtml
+@end macro
+@macro imathjax{math}
+@inlineraw{html,$\math\$}
+@inlineraw{tex,$\math\$}
+@inlinefmtifelse{tex,,@inlinefmtifelse{html,,@backslashchar{}(@math{\math\}@backslashchar{})}}
+@end macro
+@dircategory Games
+@direntry
+* Yadfa Guide: (yadfa-guide). Yadfa User Guide
+@end direntry
+@settitle Yadfa User Guide
+@copying
+Copyright @copyright{} Pouar Dragon
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the CC BY-SA 4.0 or later.
+
+@url{https://creativecommons.org/licenses/by-sa/4.0}
+@end quotation
+@end copying
+
+@html
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">YADFA User Guide</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://www.pouar.net/" property="cc:attributionName" rel="cc:attributionURL">Pouar Dragon</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.<br />Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="https://cgit.pouar.net/yadfa.git" rel="dct:source">https://cgit.pouar.net/yadfa.git</a>.
+@end html
+@titlepage
+@title Yet Another DiaperFur Adventure
+@subtitle User/Strategy Guide
+@image{yadfa-guide-figures/title,400pt}
+@author Pouar Dragon
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+@summarycontents
+@contents
+
+@ifnottex
+@node Top
+@top Yadfa User Guide TOC
+
+@menu
+* Prerequisites::       What you need to install before playing.
+* Index::            Complete index.
+* References::
+@end menu
+
+@end ifnottex
+@node Prerequisites
+@chapter Prerequisites
+
+This is my first attempt at a user guide, so I hope it's easy enough to understand.
+
+If you're on Windows, you'll probably need to install an X Server, as McCLIM uses it for the graphics (UNIX and Unix-like systems typically already come with one). Unless you have Cygwin installed (which most of you probably aren't going to do). The best port of X to Windows is VcXsrv.
+
+@url{https://sourceforge.net/projects/vcxsrv}
+
+Yes, it also needs to be running when you play the game.
+
+When you start up the game, you will probably be greeted with something like this
+@float Figure,fig1
+@image{yadfa-guide-figures/fig1, 300pt}
+@end float
+@node Index
+@unnumbered Index
+@printindex cp
+@node References
+@unnumbered References
+@bibreferences
+@bye

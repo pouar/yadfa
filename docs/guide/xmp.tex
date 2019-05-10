@@ -1,0 +1,24 @@
+\def\includemetadata#1#2{
+  \ifpdf
+    \ifx\directlua\undefined
+      \ifx\pdftexversion\undefined\else
+        \pdfcompresslevel 9
+        \pdfobjcompresslevel 9
+        \immediate\pdfobj stream attr {/Type/Metadata/Subtype/XML} file {#2}
+        \pdfcatalog { /Metadata \the\pdflastobj\space 0 R}
+        \pdfinfo{#1}
+      \fi
+    \else
+      \pdfvariable compresslevel 9
+      \pdfvariable objcompresslevel 9
+      \immediate\pdfextension obj stream attr {/Type/Metadata/Subtype/XML} file {#2}
+      \pdfextension catalog { /Metadata \the\numexpr\pdffeedback lastobj\relax\space 0 R}
+      \pdfextension info {#1}
+    \fi
+  \fi
+  \ifx\XeTeXrevision\undefined\else
+    \special{pdf: docinfo <<#1>>}
+    \special{pdf:fstream @xmp (#2) <</Type/Metadata/Subtype/XML>>}
+    \special{pdf:put @catalog << /Metadata @xmp >>}
+  \fi
+}
