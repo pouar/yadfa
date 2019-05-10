@@ -120,6 +120,7 @@
     (zone com-yadfa-move clim:global-command-table
         :documentation "Move"
         :pointer-documentation "Move Here"
+        :gesture nil
         :menu t)
     (object)
     (list object))
@@ -127,6 +128,7 @@
     (zone com-yadfa-describe-zone clim:global-command-table
         :documentation "Print Zone Description"
         :pointer-documentation "Print Zone Description"
+        :gesture nil
         :menu t)
     (object)
     (list object))

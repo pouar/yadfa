@@ -135,6 +135,7 @@
     :name "Silver Cape Pokemon Center"
     :description "A place to heal your pokemon"
     :enter-text "You enter the street"
+    :direction-attributes (list :south (list :hidden t))
     :props (list
                :magic-healing-machine
                (make-instance 'prop
@@ -150,6 +151,25 @@
                                                       (format t "~a~%" "https://youtu.be/wcg5n2UVMss?t=134")
                                                       (setf (health-of user) (calculate-stat user :health))
                                                       (setf (energy-of user) (calculate-stat user :energy))))))))
+(ensure-zone (1 6 0 silver-cape)
+    :name "Quadruple Bypazz"
+    :description "The local fastfood joint"
+    :enter-text "You enter the street"
+    :direction-attributes (list :north (list :hidden t))
+    :props (list
+               :register
+               (make-instance 'prop
+                   :name "Register"
+                   :description "Order Here"
+                   :actions (list
+                                :talk (make-action
+                                          :documentation "Talk to the cashier"
+                                          :lambda '(lambda
+                                                       (prop &rest keys &key &allow-other-keys)
+                                                       (declare (type prop prop) (ignore prop))
+                                                       (check-type prop prop)
+                                                       (write-line "Cashier: Welcome To The Quadruple Bypazz. We recently to moved to automated kiosks for placing your orders, since that is now all the rage nowadays, so we got one designed by the IRS, written in IBM 7074 assembly of course. What you do is you take this form and fill out your order. You fill in your name and payment method, your order number and internal serial number (cause our new automated order system is too crappy to figure this out on its own) credit/debit card information (cause our new automated order system is too crappy to get this from the card reader) and the food you want to order and its prices and sales tax (cause our new automated order system is too crappy to get the menu and pricing information out of it). You then mail this form to our main HQ where we'll manually enter it into the system by hand and you should get your food in about 3 weeks.")
+                                                       (write-line "*You decide ordering isn't worth the hassle*")))))))
 (ensure-zone (0 21 0 silver-cape)
     :name "Silver Cape Dock"
     :description "A Dock that heads to the ocean"

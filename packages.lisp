@@ -267,6 +267,7 @@
     (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:incontinence-pad)
     (:use #:yadfa #:yadfa-util #:cl #:iterate)
     (:export
+        #:revive
         #:pacifier
         #:gold-pacifier
         #:recovering-pacifier
@@ -376,7 +377,8 @@
         #:navy-officer
         #:navy-officer*
         #:diaper-pirate
-        #:thickly-diaper-pirate)
+        #:thickly-diaper-pirate
+        #:padded-fursuiter-servant)
     (:documentation "Contains all the NPCs in the game"))
 (uiop:define-package #:yadfa-status-conditions
     (:import-from #:macro-level #:macro-level)
