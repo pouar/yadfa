@@ -538,7 +538,6 @@
 (defmacro defevent (event-id &rest args)
   `(progn
      (setf (gethash ',event-id (events-of *game*)) (make-event :id ',event-id ,@args))
-     (export ',event-id ',(symbol-package event-id))
      ',event-id))
 (defunassert (filter-items (items type)
                            "This function will return all items in the list @var{ITEMS} that is of type @var{TYPE}")

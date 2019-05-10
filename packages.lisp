@@ -487,8 +487,7 @@
    #:home
    #:debug-map
    #:bandits-domain
-   #:\1
-   #:\2
+   #:lukurbo
    #:ironside
    #:silver-cape
    #:bandits-way
@@ -498,12 +497,41 @@
    #:secret-underground
    #:pirates-cove
    #:your-ship
-   #:rpgmaker-dungeon
-   #:create-rpgmaker-dungeon)
+   #:rpgmaker-dungeon)
   (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package :yadfa-events
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
+   #:enter-bandits-village-1
+   #:enter-bandits-shop-1
+   #:enter-bandits-shop-2
+   #:enter-bandits-shop-3
+   #:decend-bandits-cave-1
+   #:obtain-diaper-lock-1
+   #:enter-bandits-kennel-1
+   #:get-warp-pipe-summoner-1
+   #:shopkeeper-floods-himself-1
+   #:pointless-quest-1
+   #:ironside-university-joke-1
+   #:enter-lukurbo-1
+   #:got-all-shine-stars-1
+   #:enter-race-area-1
+   #:win-race-area-1
+   #:enter-thwomp-area-1
+   #:win-thwomp-area-1
+   #:enter-pokemon-area-1
+   #:win-pokemon-area-1
+   #:enter-blank-area-1
+   #:enter-eggman-area-1
+   #:win-eggman-area-1
+   #:pirates-cove-1
+   #:pirates-cove-2
+   #:rpgmaker-dungeon-1
+   #:rpgmaker-dungeon-2
+   #:rpgmaker-dungeon-3
+   #:enter-silver-cape-1
+   #:obtain-pirate-ship-1
+   #:get-location-to-pirate-cove-1
    #:get-diaper-locked-1)
   (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package :yadfa-allies

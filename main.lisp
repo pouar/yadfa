@@ -24,7 +24,7 @@
   (in-package #:yadfa)
   (when (position "wait" (uiop:command-line-arguments) :test #'string=)
     (sleep 2))
-  (trigger-event 'yadfa-zones:create-rpgmaker-dungeon)
+  (trigger-event 'yadfa-zones::create-rpgmaker-dungeon)
   (load-mods)
   (let ((file #P"yadfa:config;yadfarc"))
     (when (probe-file file)

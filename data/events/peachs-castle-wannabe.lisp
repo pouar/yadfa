@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-events"; coding: utf-8-unix; -*-
 (in-package :yadfa-events)
-(defevent got-all-shine-stars
+(defevent got-all-shine-stars-1
   :lambda '(lambda (self)
             (declare (ignore self))
             (write-line "You got a MacGuffin in exchange for 5 Shine Stars, yay.")

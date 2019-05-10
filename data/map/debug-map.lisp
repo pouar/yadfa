@@ -49,7 +49,7 @@
   :name "zone-1-1-0-debug-map"
   :description "zone-1-1-0-debug-map"
   :enter-text "zone-1-1-0-debug-map"
-  :events (list 'yadfa-events:test-battle-1)
+  :events (list 'yadfa-events::test-battle-1)
   :warp-points '(\1 (0 0 0 debug-map)))
 (ensure-zone (1 1 1 debug-map)
   :name "zone-1-1-1-debug-map"

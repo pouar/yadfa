@@ -8,11 +8,11 @@
                 :name "Silver Cape Street"
                 :description "A busy street with various furries moving back and forth"
                 :enter-text "You enter the street"
-                :warp-points ,(when (= i 0) '(list 'bandits-domain '(0 30 0 bandits-domain)))
+                :warp-points ,(when (= i 0) '(list 'rpgmaker-dungeon '(0 5 0 rpgmaker-dungeon)))
                 :hidden ,(when (= i 0) t)
                 ,@(cond ((= i 7)
                          '(:direction-attributes (list :east (list :hidden t)))))
-                ,@(when (= i 0) '(:events (list 'yadfa-events:enter-silver-cape-1))))))))
+                ,@(when (= i 0) '(:events (list 'yadfa-events:enter-silver-cape-1 'yadfa-events:rpgmaker-dungeon-3))))))))
 (macro-level
   `(progn
      ,@(iter (for i from -10 to 10)

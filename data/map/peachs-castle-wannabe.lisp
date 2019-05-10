@@ -27,7 +27,7 @@
                                       :documentation "Talk to the princess"
                                       :lambda '(lambda (prop &rest keys &key &allow-other-keys)
                                                 (declare (ignore prop keys))
-                                                (cond ((finished-events '(yadfa-events:got-all-shine-stars))
+                                                (cond ((finished-events '(yadfa-events:got-all-shine-stars-1))
                                                        (write-line "Peach: You got all the Shine Stars"))
                                                       ((<= (list-length (filter-items (inventory-of (player-of *game*)) 'yadfa-items:shine-star)) 0)
                                                        (write-line "Peach: The Shine Stars keep peace and harmony throughout the land, but Bowser has stolen them and is causing discord and chaos and you need to go find them and bring them back")
@@ -39,7 +39,7 @@
                                                                (- 5 (list-length (filter-items (inventory-of (player-of *game*)) 'yadfa-items:shine-star)))))
                                                       (t
                                                        (write-line "Peach: You got all the Shine Stars, have a MacGuffin for putting up with this crappy quest")
-                                                       (trigger-event 'yadfa-events:got-all-shine-stars)))))))))
+                                                       (trigger-event 'yadfa-events:got-all-shine-stars-1)))))))))
 (ensure-zone (0 -2 0 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
