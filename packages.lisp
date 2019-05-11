@@ -176,7 +176,7 @@
         #:sellablep
         #:tossablep
         #:placeablep
-        #:no-puddles-p
+        #:can-potty-p
         #:potty-trigger-of
         #:must-wear-of
         #:must-wear*-of

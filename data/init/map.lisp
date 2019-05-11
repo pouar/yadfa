@@ -1,4 +1,27 @@
 (in-package :yadfa-zones)
+(defun can-potty
+    (prop &key wet mess pants-down user)
+    (declare (ignorable prop wet mess pants-down user))
+    (not
+        (when (or
+                  (typep prop '(not toilet))
+                  pants-down
+                  (not (filter-items (wear-of user) 'incontinence-product)))
+            (format t "STOP!!! THE SIGN SAYS ~A ISN'T ALLOWED TO DO THAT HERE!!!!! Just hold it all in.~%~%"
+                (string-upcase (name-of user)))
+            (when (or
+                      (>=
+                          (bladder/contents-of user)
+                          (bladder/potty-dance-limit-of user))
+                      (>=
+                          (bowels/contents-of user)
+                          (bowles/potty-dance-limit-of user))))
+            (format t "*~a whines and continues ~a embarrassing potty dance while the public watches and giggles*~%~%"
+                (name-of user)
+                (if (malep user)
+                    "his"
+                    "her"))
+            t)))
 (defun trigger-diaper-police (had-accident user)
     (when (or
               (and (getf (car had-accident) :leak-amount) (> (getf (car had-accident) :leak-amount) 0))

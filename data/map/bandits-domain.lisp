@@ -50,9 +50,38 @@
                                (declare (ignore user))
                                (write-line "This area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.")
                                nil))
-    :no-puddles t
+    :can-potty '(lambda
+                     (prop &key wet mess pants-down user)
+                     (declare (ignorable prop wet mess pants-down user))
+                     (not
+                         (when (or
+                                   pants-down
+                                   (not (filter-items (wear-of user) 'closed-bottoms)))
+                             (format t "*The shopkeeper baps ~a on the nose with a newspaper before ~a gets the chance to go*~%"
+                                 (name-of user)
+                                 (name-of user))
+                             (format t "Shoppkeeper: Bad ~a, no going potty inside~%"
+                                 (species-of user))
+                             (when (or
+                                       (>=
+                                           (bladder/contents-of user)
+                                           (bladder/potty-dance-limit-of user))
+                                       (>=
+                                           (bowels/contents-of user)
+                                           (bowles/potty-dance-limit-of user))))
+                             (format t "*~a whines and continues ~a embarrassing potty dance while the shopkeeper watches in amusement*~%~%"
+                                 (name-of user)
+                                 (if (malep user)
+                                     "his"
+                                     "her"))
+                             t)))
     :potty-trigger '(lambda (had-accident user)
                         (block nil
+                            (when (not (filter-items (wear-of user) 'incontinence-product))
+                                (format t "*The shopkeeper baps ~a on the nose with a newspaper*~%"
+                                    (name-of user))
+                                (format t "Shoppkeeper: Bad ~a, no going potty inside~%"
+                                    (species-of user)))
                             (when (> (getf (car had-accident) :leak-amount) 0)
                                 (format t "*The shopkeeper laughs at ~a's misfortune*~%"
                                     (name-of user))

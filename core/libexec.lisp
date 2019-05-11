@@ -1030,10 +1030,23 @@
     (check-type prop toilet)
     (check-type wet (or boolean number))
     (check-type mess (or boolean number))
+    (when (notany #'identity (list wet mess))
+        (setf
+            wet t
+            mess t))
     (cond
         ((and (not (eq (player-of *game*) user))
              (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel)))
             (write-line "Yeah, that's not going to happen")
+            (return-from potty-on-toilet))
+        ((not
+             (funcall (coerce (can-potty-p (get-zone (position-of (player-of *game*))))
+                          'function)
+                 prop
+                 :wet wet
+                 :mess mess
+                 :pants-down pants-down
+                 :user user))
             (return-from potty-on-toilet))
         ((and pants-down
              (iter (for i in (filter-items (wear-of user) 'closed-bottoms))
@@ -1047,13 +1060,10 @@
                      (leave t))))
             (return-from potty-on-toilet)))
     (let*
-        ((mess-return-value (when (or mess (and (not wet) (not mess)))
-                                (mess :mess-amount (if mess mess t) :pants-down pants-down :messer user)))
-            (wet-return-value (cond
-                                  ((and mess-return-value wet)
-                                      (wet :pants-down pants-down :wetter user))
-                                  ((or wet (and (not wet) (not mess)))
-                                      (wet :wet-amount (if wet wet t) :pants-down pants-down :wetter user)))))
+        ((mess-return-value (when mess
+                                (mess :mess-amount mess :pants-down pants-down :messer user)))
+            (wet-return-value (when wet
+                                  (wet :wet-amount wet :pants-down pants-down :wetter user))))
         (when
             (and
                 (or (not wet-return-value) (and wet-return-value (= (getf wet-return-value :wet-amount) 0)))
@@ -1096,6 +1106,10 @@
     #+sbcl (declare (type (or boolean number) wet mess))
     (check-type wet (or boolean number))
     (check-type mess (or boolean number))
+    (when (notany #'identity (list wet mess))
+        (setf
+            wet t
+            mess t))
     (cond ((and (not (eq (player-of *game*) user))
                (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
                pants-down)
@@ -1105,24 +1119,14 @@
                       'function)
              user)
             (return-from potty-on-self-or-prop))
-        ((and (no-puddles-p (get-zone (position-of (player-of *game*)))) pants-down)
-            (format t "~a isn't allowed to go potty there, it's against the rules in this zone~%"
-                (name-of user))
-            (return-from potty-on-self-or-prop))
-        ((and
-             (not pants-down)
-             (no-puddles-p (get-zone (position-of (player-of *game*))))
-             (not (filter-items (wear-of user) 'incontinence-product))
-             (or
-                 (not (filter-items (wear-of user) 'closed-bottoms))
-                 (eq wet t)
-                 (and (typep wet 'number) (> wet 10))
-                 mess
-                 (and (not wet) (not mess))))
-            (format t "~a isn't allowed to do that or ~a'll make ~a, which is against the rules in this zone~%"
-                (name-of user)
-                (if (malep user) "he" "she")
-                (if mess "a mess on the floor" "puddles"))
+        ((not
+             (funcall (coerce (can-potty-p (get-zone (position-of (player-of *game*))))
+                          'function)
+                 prop
+                 :wet wet
+                 :mess mess
+                 :pants-down pants-down
+                 :user user))
             (return-from potty-on-self-or-prop))
         ((and pants-down
              (iter (for i in (filter-items (wear-of user) 'closed-bottoms))
@@ -1136,13 +1140,10 @@
                      (leave t))))
             (return-from potty-on-self-or-prop)))
     (let*
-        ((mess-return-value (when (or mess (and (not wet) (not mess)))
-                                (mess :mess-amount (if mess mess t) :pants-down pants-down :messer user)))
-            (wet-return-value (cond
-                                  ((and mess-return-value wet)
-                                      (wet :pants-down pants-down :wetter user))
-                                  ((or wet (and (not wet) (not mess)))
-                                      (wet :wet-amount (if wet wet t) :pants-down pants-down :wetter user))))
+        ((mess-return-value (when mess
+                                (mess :mess-amount mess :pants-down pants-down :messer user)))
+            (wet-return-value (when wet
+                                  (wet :wet-amount wet :pants-down pants-down :wetter user)))
             (clothes (cond
                          ((filter-items (wear-of user) 'tabbed-briefs)
                              (list "diapers" "pamps" "huggies" "pampers" "padding"))

@@ -370,11 +370,13 @@
             :initform ()
             :accessor direction-attributes-of
             :documentation "List of attributes based on the direction rather than the zone itself")
-        (no-puddles
-            :initarg :no-puddles
-            :initform nil
-            :accessor no-puddles-p
-            :documentation "Whether you're allowed to go potty on the floor or not, violators will be diapered.")
+        (can-potty
+            :initarg :can-potty
+            :initform '(lambda (prop &key wet mess pants-down user)
+                           (declare (ignore prop wet mess pants-down user))
+                           t)
+            :accessor can-potty-p
+            :documentation "Whether you're allowed to go potty in this zone. PROP is the prop you're going potty on if any while USER is the one going potty. PANTS-DOWN is T when USER pulls his/her pants down and WET and MESS are the arguments")
         (potty-trigger
             :initarg :potty-trigger
             :initform '(lambda (had-accident user)

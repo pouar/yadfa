@@ -3,19 +3,19 @@
     :name "Ironside Street"
     :description "Your typical suburban street. Some furries are driving in cars, some are walking, and some are riding on top of other furries treating them like a horse."
     :enter-text "You enter the street. You see a sign that says `Keep our city and your pants clean. Always go potty in the toilet and not in your pants and don't leave puddles on the floor. Anyone who doesn't abide by this rule will be assumed to have no potty training whatsoever and will be immediately diapered by the diaper police to prevent further puddles.'"
-    :no-puddles t
+    :can-potty 'can-potty
     :potty-trigger 'trigger-diaper-police
     :warp-points (list 'home '(0 1 0 home)))
 (ensure-zone (1 0 0 ironside)
     :name "Ironside Street"
     :description "Your typical suburban street. Some furries are driving in cars, some are walking, and some are riding on top of other furries treating them like a horse."
-    :no-puddles t
+    :can-potty 'can-potty
     :potty-trigger 'trigger-diaper-police
     :enter-text "You enter the street")
 (ensure-zone (2 0 0 ironside)
     :name "Ironside Street"
     :description "Your typical suburban street. Some furries are driving in cars, some are walking, and some are riding on top of other furries treating them like a horse."
-    :no-puddles t
+    :can-potty 'can-potty
     :potty-trigger 'trigger-diaper-police
     :warp-points (list 'bandits-way '(0 0 0 bandits-domain))
     :enter-text "You enter the street")
@@ -23,7 +23,7 @@
     :name "Ironside Crap-Mart"
     :description "Your local Crap-Mart store. We don't have as big of selection as other stores, but we carry a lot more of what we do actually stock. Our products are built with love, and by love, I mean the sweat and tears of cheap child labor from China. We pass the savings down to you, in theory, but not in practice. We now stock incontinence products that you can depend on, unless you plan to use them, since they can't hold anything worth a crap. Why do people keep buying the ones from across the street?"
     :enter-text "You enter the Crap-Mart"
-    :no-puddles t
+    :can-potty 'can-potty
     :potty-trigger 'trigger-diaper-police
     :props (list
                :shop (make-instance 'shop
@@ -44,7 +44,7 @@
     :name "Ironside ABDL-Mart"
     :description "Welcome to ABDL-Mart"
     :enter-text "You enter the ABDL-Mart."
-    :no-puddles t
+    :can-potty 'can-potty
     :potty-trigger 'trigger-diaper-police
     :props (list
                :shop (make-instance 'shop
@@ -60,25 +60,25 @@
     :name "Ironside University Entrance"
     :description "An old school university back when universities actually innovated, instead of being dumbed down, commercialized, and simply taught how to use proprietary products."
     :enter-text "You enter the university"
-    :no-puddles t
+    :can-potty 'can-potty
     :potty-trigger 'trigger-diaper-police)
 (ensure-zone (2 2 0 ironside)
     :name "Ironside University"
     :description "A hallway"
     :enter-text "You're in the hallway"
-    :no-puddles t
+    :can-potty 'can-potty
     :potty-trigger 'trigger-diaper-police)
 (ensure-zone (2 3 0 ironside)
     :name "Ironside University"
     :description "A hallway"
     :enter-text "You're in the hallway"
-    :no-puddles t
+    :can-potty 'can-potty
     :potty-trigger 'trigger-diaper-police)
 (ensure-zone (3 2 0 ironside)
     :name "6.001/6.037"
     :description "This is the classroom for Structure and Interpretation of Computer Programs"
     :enter-text "You enter the classroom"
-    :no-puddles t
+    :can-potty 'can-potty
     :potty-trigger 'trigger-diaper-police
     :direction-attributes (list :south (list :hidden t))
     :props
@@ -140,7 +140,7 @@
     :name "Ironside University Dormitory"
     :description ""
     :enter-text ""
-    :no-puddles t
+    :can-potty 'can-potty
     :potty-trigger 'trigger-diaper-police
     :direction-attributes (list :north (list :hidden t))
     :props (list
