@@ -11,10 +11,11 @@
         (when (typep i type)
             (collect j))))
 (defun finished-events (events)
-    (not
-        (iter (for i in events)
-            (unless (member i (finished-events-of *game*))
-                (leave t)))))
+    (=
+        (list-length events)
+        (list-length (intersection
+                         events
+                         (finished-events-of *game*)))))
 (defun initialize-mod-registry ()
     (setf *mod-registry* (make-hash-table :test 'equal))
     (labels ((preferred-mod (old new)
