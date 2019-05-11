@@ -875,12 +875,12 @@
                                          (>=
                                              (getf a :messiness)
                                              (/ (getf a :messiness-capacity) 4)))
-                                     (wearingp (wear-of j) 'closed-bottoms))
+                                     (filter-items (wear-of j) 'closed-bottoms))
                                  (format t "Mechanical arms come out of the changing table and strap ~a down on the table to prevent ~a from escaping and proceeeds to change ~a~%~%"
                                      (name-of j)
                                      (if (malep j) "him" "her")
                                      (if (malep j) "him" "her"))
-                                 (if (wearingp (wear-of j) 'padding)
+                                 (if (filter-items (wear-of j) 'padding)
                                      (progn
                                          (format t "~a: Hey!!! Don't change me here!!! People can see me!!! Stop!!!~%~%"
                                              (name-of j)))

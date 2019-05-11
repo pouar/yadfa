@@ -65,14 +65,14 @@
                                        (= 0 (random 5))))
                                (format t "~a~%"
                                    (cond
-                                       ((wearingp (wear-of user) 'tabbed-briefs)
+                                       ((filter-items (wear-of user) 'tabbed-briefs)
                                            (format nil "~a starts wetting ~a diapers~%"
                                                (name-of user)
                                                (if (malep user) "his" "her")))
-                                       ((wearingp (wear-of user) 'pullup)
+                                       ((filter-items (wear-of user) 'pullup)
                                            (format nil "The little pictures on the front of ~a's pullups start fading~%"
                                                (name-of user)))
-                                       ((wearingp (wear-of user) 'pullon)
+                                       ((filter-items (wear-of user) 'pullon)
                                            (format nil "~a starts wetting ~a pullons~%"
                                                (name-of user)
                                                (if (malep user) "his" "her")))

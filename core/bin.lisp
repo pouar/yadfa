@@ -103,7 +103,7 @@
                     (when
                         (or
                             (and
-                                (< (list-length (wearingp (wear-of i)
+                                (< (list-length (filter-items (wear-of i)
                                                     (car
                                                         (must-wear-of
                                                             (get-zone
@@ -118,7 +118,7 @@
                                              'function)
                                          i)))
                             (and
-                                (> (list-length (wearingp (wear-of i)
+                                (> (list-length (filter-items (wear-of i)
                                                     (car
                                                         (must-not-wear-of
                                                             (get-zone
@@ -745,7 +745,7 @@
                  (not (eq (player-of *game*) selected-user))
                  (typep item 'tabbed-briefs)
                  (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
-                 (< (wearingp (wear-of selected-user) 'tabbed-briefs) 2))
+                 (< (filter-items (wear-of selected-user) 'tabbed-briefs) 2))
                 (format t "Letting ~a go without padding is a really bad idea. Don't do it.~%"
                     (name-of selected-user))
                 (return-from yadfa-bin:unwear))
@@ -757,7 +757,7 @@
                                  (position-of
                                      (player-of *game*))))))
                  (<= (list-length
-                         (wearingp
+                         (filter-items
                              (wear-of selected-user)
                              (car
                                  (must-wear*-of
@@ -845,7 +845,7 @@
                  (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
                  (typep inventory 'pullon)
                  (typep wear 'tabbed-briefs)
-                 (< (list-length (wearingp (wear-of selected-user) 'tabbed-briefs)) 2))
+                 (< (list-length (filter-items (wear-of selected-user) 'tabbed-briefs)) 2))
                 (format t "Does ~a look ready for pullups to you?~%" (name-of selected-user))
                 (return-from yadfa-bin:change))
             ((and
@@ -853,7 +853,7 @@
                  (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
                  (not (typep inventory 'tabbed-briefs))
                  (typep wear 'tabbed-briefs)
-                 (< (list-length (wearingp (wear-of selected-user) 'tabbed-briefs)) 2))
+                 (< (list-length (filter-items (wear-of selected-user) 'tabbed-briefs)) 2))
                 (format t "letting ~a go without padding is a really bad idea. Don't do it.~%" (name-of selected-user))
                 (return-from yadfa-bin:change))
             ((or
@@ -871,7 +871,7 @@
                                      (position-of
                                          (player-of *game*))))))
                      (<= (list-length
-                             (wearingp
+                             (filter-items
                                  (wear-of selected-user)
                                  (car
                                      (must-wear*-of

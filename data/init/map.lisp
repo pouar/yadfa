@@ -5,7 +5,7 @@
               (and (getf (cdr had-accident) :leak-amount) (> (getf (cdr had-accident) :leak-amount) 0)))
         (format t "*Seems ~a's mess got the attention of the diaper police.*~%~%"
             (name-of user))
-        (if (wearingp (wear-of user) 'padding)
+        (if (filter-items (wear-of user) 'padding)
             (progn
                 (format t "Diaper Police: Seems this ~a needs a diaper change. Better change ~a~%~%"
                     (species-of user)

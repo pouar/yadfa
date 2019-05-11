@@ -44,7 +44,7 @@
         #:setf-direction
         #:remf-direction
         #:getf-action-from-prop
-        #:wearingp
+        #:filter-items
         #:total-thickness
         #:thickest-sort
         #:wet
