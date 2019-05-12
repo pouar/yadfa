@@ -124,6 +124,7 @@
         #:potty-npc
         #:battle
         ;;accessors
+        #:ticklishp
         #:name-of
         #:description-of
         #:attributes-of

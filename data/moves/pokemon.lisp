@@ -49,8 +49,12 @@
         :attack '(lambda (target user self)
                      (declare (ignorable user self))
                      (format t "~a used ~a~%" (name-of user) (name-of self))
-                     (format t "~a starts laughing helplessly~%" (name-of target))
-                     (set-status-condition 'yadfa-status-conditions:tickled target))))
+                     (if (ticklishp target)
+                         (progn
+                             (format t "~a starts laughing helplessly~%" (name-of target))
+                             (set-status-condition 'yadfa-status-conditions:tickled target))
+                         (progn
+                             (write-line "It has no effect"))))))
 (defclass tackle (stat/move) ()
     (:default-initargs
         :name "Tackle"
