@@ -3,10 +3,7 @@
     (prop &key wet mess pants-down user)
     (declare (ignorable prop wet mess pants-down user))
     (not
-        (when (or
-                  (typep prop '(not toilet))
-                  pants-down
-                  (not (filter-items (wear-of user) 'incontinence-product)))
+        (when (and (typep prop '(not toilet)) (or pants-down (filter-items (wear-of user) 'incontinence-product)))
             (format t "STOP!!! THE SIGN SAYS ~A ISN'T ALLOWED TO DO THAT HERE!!!!! Just hold it all in.~%~%"
                 (string-upcase (name-of user)))
             (when (or
