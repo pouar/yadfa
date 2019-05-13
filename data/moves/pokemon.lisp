@@ -4,7 +4,7 @@
         :name "Superglitch"
         :description "Classic glitch move from the pokemon games, but without the undefined behavior and unwanted side effects."
         :attack '(lambda (target user self)
-                     (declare (ignorable self))
+                     (declare (ignore self))
                      (format t
                          "TMTRAINER ~a is frozen solid~%TMTRAINER ~a is hurt by the burn~%"
                          (name-of user)
@@ -15,7 +15,6 @@
         :name "Watersport"
         :description "Soak your diapers"
         :attack '(lambda (target user self)
-                     (declare (ignorable target self))
                      (format t "~a used ~a~%" (name-of user) (name-of self))
                      (format t
                          "~a wet ~a~%"
@@ -31,7 +30,6 @@
         :name "Mudsport"
         :description "mess your diapers"
         :attack '(lambda (target user self)
-                     (declare (ignorable target self))
                      (format t "~a used ~a~%" (name-of user) (name-of self))
                      (format t
                          "~a messed ~a~%"
@@ -47,7 +45,6 @@
         :name "Tickle"
         :description "Tickle the enemy"
         :attack '(lambda (target user self)
-                     (declare (ignorable user self))
                      (format t "~a used ~a~%" (name-of user) (name-of self))
                      (if (ticklishp target)
                          (progn
