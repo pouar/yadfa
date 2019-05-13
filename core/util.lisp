@@ -20,13 +20,19 @@
         (cons value list)
         (cons (car list) (insert (cdr list) value (- n 1)))))
 (define-modify-macro insertf (value n) insert)
+(declaim (inline substitute/swapped-arguments remove-if/swapped-arguments))
 (defun substitute/swapped-arguments (sequence new old &rest keyword-arguments)
     (apply #'substitute new old sequence keyword-arguments))
-
 (define-modify-macro substitutef (new old &rest keyword-arguments)
     substitute/swapped-arguments
     "Modify-macro for SUBSTITUTE. Sets place designated by the first argument to
 the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS.")
+(defun remove-if/swapped-arguments (sequence test &rest keyword-arguments)
+    (apply #'remove-if test sequence keyword-arguments))
+(define-modify-macro removef-if (test &rest keyword-arguments)
+    remove-if/swapped-arguments
+    "Modify-macro for REMOVE-IF. Sets place designated by the first argument to
+the result of calling REMOVE-IF with TEST, place, and the KEYWORD-ARGUMENTS.")
 (defun random-from-range (start end)
     (+ start (random (+ 1 (- end start)))))
 (defun type-specifier-p (type-specifier)
