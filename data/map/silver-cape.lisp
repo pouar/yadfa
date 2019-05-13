@@ -223,3 +223,8 @@
                                                             (alexandria:removef (inventory-of (player-of *game*)) items
                                                                 :test (lambda (o e)
                                                                           (member e o))))))))))))
+(ensure-zone (6 11 0 silver-cape)
+    :name "To Peach's Castle"
+    :description "Path to a crappy version of Peach's Castle"
+    :enter-text "You're at the entrance to some castle"
+    :warp-points (list 'peachs-castle-wannabe '(0 0 0 peachs-castle-wannabe)))

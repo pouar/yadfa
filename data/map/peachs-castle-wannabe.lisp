@@ -6,7 +6,8 @@
     :can-potty 'can-potty-peachs-castle-wannabe
     :potty-trigger 'potty-trigger-peachs-castle-wannabe
     :direction-attributes (list :down (list :hidden t)
-                              :up (list :hidden t)))
+                              :up (list :hidden t))
+    :warp-points (list 'silver-cape '(6 11 0 silver-cape)))
 (ensure-zone (0 -1 0 peachs-castle-wannabe)
     :name "Castle Hallway"
     :description "Some crappy version of Peach's Castle"
