@@ -270,6 +270,8 @@
     (:use #:yadfa #:yadfa-util #:cl #:iterate)
     (:export
         #:revive
+        #:shine-star
+        #:egg-spear
         #:pacifier
         #:gold-pacifier
         #:recovering-pacifier
@@ -372,6 +374,8 @@
     (:import-from #:macro-level #:macro-level)
     (:use #:cl #:yadfa #:yadfa-util #:iterate #:alexandria)
     (:export
+        #:magikarp
+        #:egg-pawn
         #:diapered-raccoon-bandit
         #:rookie-diapered-raccoon-bandit
         #:female-diapered-raccoon-bandit
@@ -395,6 +399,11 @@
     (:import-from #:macro-level #:macro-level)
     (:use #:yadfa #:yadfa-util #:cl #:iterate)
     (:export
+        #:peachs-castle-wannabe
+        #:painting
+        #:back-to-castle
+        #:race-area
+        #:thwomp-area
         #:home
         #:debug-map
         #:bandits-domain

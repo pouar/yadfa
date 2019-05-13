@@ -1,4 +1,11 @@
 (in-package :yadfa-zones)
+(uiop:define-package #:peachs-castle-wannabe
+    (:export
+        #:blank-area
+        #:pokemon-area
+        #:thwomp-area
+        #:race-area
+        #:eggman-area))
 (defun can-potty
     (prop &key wet mess pants-down user)
     (declare (ignorable prop wet mess pants-down user))
@@ -19,6 +26,42 @@
                     "his"
                     "her"))
             t)))
+(defun can-potty-peachs-castle-wannabe
+    (prop &key wet mess pants-down user)
+    (declare (ignorable prop wet mess pants-down user))
+    (not
+        (when (or pants-down (filter-items (wear-of user) 'incontinence-product))
+            (format t "STOP!!! ~A CAN'T DO THAT HERE!!!! THERE ARE LIKE KIDS HERE!!!!! Just hold it all in~%~%"
+                (string-upcase (name-of user)))
+            (when (or
+                      (>=
+                          (bladder/contents-of user)
+                          (bladder/potty-dance-limit-of user))
+                      (>=
+                          (bowels/contents-of user)
+                          (bowles/potty-dance-limit-of user))))
+            (format t "*~a whines and continues ~a embarrassing potty dance while the public watches and giggles*~%~%"
+                (name-of user)
+                (if (malep user)
+                    "his"
+                    "her"))
+            t)))
+(defun potty-trigger-peachs-castle-wannabe (had-accident user)
+    (when (or
+              (and (getf (car had-accident) :leak-amount) (> (getf (car had-accident) :leak-amount) 0))
+              (and (getf (cdr had-accident) :leak-amount) (> (getf (cdr had-accident) :leak-amount) 0)))
+        (format t "Some kid: HEY LOOK!!!! THAT GUY JUST ~A ~ASELF!!!!!~%~%"
+            (if (and (getf (cdr had-accident) :leak-amount) (> (getf (cdr had-accident) :leak-amount) 0))
+                "MESSED"
+                "WET")
+            (if (malep user)
+                "HIM"
+                "HER"))
+        (apply #'format t "*everybody points and laughs at ~a while ~a hides ~a face with ~a paws in embarrassment*~%~%"
+            (name-of user)
+            (if (malep user)
+                '("he" "his" "his")
+                '("she" "her" "her")))))
 (defun trigger-diaper-police (had-accident user)
     (when (or
               (and (getf (car had-accident) :leak-amount) (> (getf (car had-accident) :leak-amount) 0))

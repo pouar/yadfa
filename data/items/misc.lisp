@@ -55,3 +55,9 @@
         :use-script '(lambda (item user)
                          (declare (ignore item user))
                          nil)))
+(defclass shine-star (item) ()
+    (:default-initargs
+        :name "Shine Star"
+        :sellable nil
+        :tossable nil
+        :description "Collect as many of these fuckers as you possibly can. Don't ask why, just do it."))
