@@ -46,12 +46,12 @@
         :description "Tickle the enemy"
         :attack '(lambda (target user self)
                      (format t "~a used ~a~%" (name-of user) (name-of self))
-                     (if (ticklishp target)
+                     (if (getf (attributes-of target) :not-ticklish)
+                         (progn
+                             (write-line "It has no effect"))
                          (progn
                              (format t "~a starts laughing helplessly~%" (name-of target))
-                             (set-status-condition 'yadfa-status-conditions:tickled target))
-                         (progn
-                             (write-line "It has no effect"))))))
+                             (set-status-condition 'yadfa-status-conditions:tickled target))))))
 (defclass tackle (stat/move) ()
     (:default-initargs
         :name "Tackle"

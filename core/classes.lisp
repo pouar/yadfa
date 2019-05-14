@@ -74,11 +74,6 @@
             :initform '()
             :accessor attributes-of
             :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
-        (ticklish
-            :initarg :ticklish
-            :initform t
-            :accessor ticklishp
-            :documentation "Whether the tickle move works on this character or not")
         (health
             :initarg :health
             :accessor health-of
