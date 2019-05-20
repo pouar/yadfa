@@ -37,7 +37,7 @@
                  (write-line "You find a pokemon trainer")
                  (write-line "Pokemon trainer: Ok, Bowser has paid me to guard this star, so I'm going to fight you with all my might, with my level 2 Magikarp")
                  (set-new-battle
-                     '((yadfa-npcs:magikarp . (list :level 2)))
+                     '((yadfa-enemies:magikarp . (list :level 2)))
                      :continuable t
                      :enter-battle-text "Pokemon trainer wants to battle. Pokemon trainer sent out Magikarp"
                      :win-events '(win-pokemon-area-1))))
@@ -62,7 +62,7 @@
                  (declare (ignore self))
                  (write-line "Eggman: Bowser has paid me a ton of money to protect this shine star, So I'm going to use the same robot I used in Sonic Heroes since it worked so beautifully, an Egg Pawn with an Egg Spear that simply charges at you.")
                  (set-new-battle
-                     '((yadfa-npcs:egg-pawn . (list :level 1 :wield (make-instance 'yadfa-items:egg-spear))))
+                     '((yadfa-enemies:egg-pawn . (list :level 1 :wield (make-instance 'yadfa-items:egg-spear))))
                      :continuable t
                      :enter-battle-text "Eggman sends out a Egg Pawn wielding a Lance^[^?\"Egg Spear\""
                      :win-events '(win-eggman-area-1))))

@@ -2,8 +2,8 @@
 (defevent pirates-cove-1
     :lambda '(lambda (self)
                  (declare (ignorable self))
-                 (let* ((a (make-instance 'yadfa-npcs:diaper-pirate))
-                           (b (make-instance 'yadfa-npcs:thickly-diaper-pirate)))
+                 (let* ((a (make-instance 'yadfa-enemies:diaper-pirate))
+                           (b (make-instance 'yadfa-enemies:thickly-diaper-pirate)))
                      (format t "*You see one of the Pirate ~as changing an ~a into multiple layers of padding*~%"
                          (species-of a) (species-of b))
                      (format t "*The ~a struggles to stand and waddles with the thick padding spreading ~a legs apart*~%"
@@ -18,18 +18,18 @@
                      (format t "Padded ~a: Apparently.~%"
                          (species-of a))
                      (set-new-battle
-                         `((yadfa-npcs:diaper-pirate . (list
+                         `((yadfa-enemies:diaper-pirate . (list
                                                            :level (random-from-range 2 5)
                                                            :species ,(species-of a)
                                                            :male ,(malep a)))
-                              (yadfa-npcs:thickly-diaper-pirate . (list
+                              (yadfa-enemies:thickly-diaper-pirate . (list
                                                                       :level (random-from-range 2 5)
                                                                       :species ,(species-of b)
                                                                       :male ,(malep b))))))))
 (defevent pirates-cove-2
     :lambda '(lambda (self)
                  (declare (ignorable self))
-                 (let* ((a (make-instance 'yadfa-npcs:diaper-pirate))
+                 (let* ((a (make-instance 'yadfa-enemies:diaper-pirate))
                            (coon nil))
                      (write-line "You find the diapered raccoon bandit back from Navy HQ in a pillory wearing nothing but 2 layers of thoroughly flooded and messy diapers")
                      (write-line "Diapered Raccoon Bandit: Ok! I learned my lesson! Can I please get a diaper change now?!?!? >///<")

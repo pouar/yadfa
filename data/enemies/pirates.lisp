@@ -1,5 +1,5 @@
-(in-package :yadfa-npcs)
-(defclass diaper-pirate (potty-npc) ()
+(in-package :yadfa-enemies)
+(defclass diaper-pirate (potty-enemy) ()
     (:default-initargs
         :name "Diaper Pirate"
         :description "A generic pirate that has forgoed toilets and will never try to hold it."

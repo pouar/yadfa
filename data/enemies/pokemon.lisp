@@ -1,5 +1,5 @@
-(in-package :yadfa-npcs)
-(defclass magikarp (npc) ()
+(in-package :yadfa-enemies)
+(defclass magikarp (enemy) ()
     (:default-initargs
         :name "Magikarp"
         :description "The world's weakest pokemon until it evolves, but when it does evolve, HOLY SHIT!!!!!!"

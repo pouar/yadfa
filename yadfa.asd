@@ -48,29 +48,36 @@
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
                                                                   "data/init/*.lisp")))
-                                        (:module "npcs"
+                                        (:module "enemies"
                                             :depends-on ("moves" "items" "init")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/npcs/*.lisp")))
+                                                                  "data/enemies/*.lisp")))
+                                        (:module "team-members"
+                                            :depends-on ("moves" "items" "init")
+                                            :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
+                                                              (directory-files
+                                                                  (pathname-directory-pathname
+                                                                      (uiop/lisp-build:current-lisp-file-pathname))
+                                                                  "data/team-members/*.lisp")))
                                         (:module "props"
-                                            :depends-on ("items" "npcs" "init")
+                                            :depends-on ("items" "enemies" "team-members" "init")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
                                                                   "data/props/*.lisp")))
                                         (:module "events"
-                                            :depends-on ("moves" "items" "npcs" "props" "init")
+                                            :depends-on ("moves" "items" "enemies" "team-members" "props" "init")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
                                                                   "data/events/*.lisp")))
                                         (:module "map"
-                                            :depends-on ( "moves" "items" "npcs" "props" "events" "init")
+                                            :depends-on ( "moves" "items" "enemies" "team-members" "props" "events" "init")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname

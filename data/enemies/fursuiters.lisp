@@ -1,5 +1,5 @@
-(in-package :yadfa-npcs)
-(defclass padded-fursuiter-servant (potty-npc) ()
+(in-package :yadfa-enemies)
+(defclass padded-fursuiter-servant (potty-enemy) ()
     (:default-initargs
         :name "Padded Fursuiter Servant"
         :description "These are basically generic \"servants\" that you can also use as a plushie. Since they're not allowed to take bathroom breaks, they're thickly padded and have special fursuits that keep all the fluids and smells in. Some are too embarrassed to use their diapers for their intended purposes and try so hard to hold it in only to uncontrollably flood and mess themselves. Other's have given up and just use their diapers whenever they have to go."

@@ -3813,7 +3813,7 @@
     (check-type washer (or washer null))
     (wash (inventory-of (player-of *game*)))
     (write-line "You washed all your soggy and messy clothing. Try not to wet and mess them next time"))
-(defmethod process-battle-turn ((character npc) attack item reload selected-target)
+(defmethod process-battle-turn ((character enemy) attack item reload selected-target)
     (declare (ignore attack item selected-target))
     (iter (for i in (getf (status-conditions-of *battle*) character))
         (if (or (eq (duration-of i) t) (> (duration-of i) 0))

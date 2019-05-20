@@ -1,5 +1,5 @@
-(in-package :yadfa-npcs)
-(defclass egg-pawn (npc) ()
+(in-package :yadfa-enemies)
+(defclass egg-pawn (enemy) ()
     (:default-initargs
         :name "Egg Pawn"
         :description "One of Eggman's robots"

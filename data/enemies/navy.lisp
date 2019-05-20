@@ -1,5 +1,5 @@
-(in-package :yadfa-npcs)
-(defclass navy-officer (potty-npc) ()
+(in-package :yadfa-enemies)
+(defclass navy-officer (potty-enemy) ()
     (:default-initargs
         :name "Navy Officer"
         :description "The Navy is mainly made up of aquatic creatures. They're all toilet trained but may use their pullups if they don't want to hold it any longer."

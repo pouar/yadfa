@@ -3,7 +3,7 @@
     :lambda '(lambda (self)
                  (declare (ignore self))
                  (set-new-battle
-                     '((yadfa-npcs:diapered-raccoon-bandit . '(:level 5)))
+                     '((yadfa-enemies:diapered-raccoon-bandit . '(:level 5)))
                      :continuable t
                      :enter-battle-text (format nil "Raccoon Bandit: This area is under control of the Raccoon Bandits. If you want in you have to get past me~%*Cue battle transition. You can't see it because this is a text based game, but trust us, it's there.*~%"))))
 (defevent enter-bandits-shop-1
@@ -25,7 +25,7 @@
                  (format t "*~A laughs at the leaky raccoon*~%" (name-of (player-of *game*)))
                  (write-line "Leaky raccoon blushing angrily: What are you laughing at?")
                  (set-new-battle
-                     '((yadfa-npcs:diapered-raccoon-bandit . (list
+                     '((yadfa-enemies:diapered-raccoon-bandit . (list
                                                                  :level (random-from-range 2 5)
                                                                  :wear (list
                                                                            (make-instance 'yadfa-items:bandit-uniform-tunic)
@@ -62,10 +62,10 @@
                  (cond
                      ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa-npcs:diapered-raccoon-bandit . (list
+                             '((yadfa-enemies:diapered-raccoon-bandit . (list
                                                                             :level (random-from-range 2 5)
                                                                             :bladder/contents (random-from-range 450 550)))
-                                  (yadfa-npcs:diapered-raccoon-bandit . (list
+                                  (yadfa-enemies:diapered-raccoon-bandit . (list
                                                                                :level (random-from-range 2 5)
                                                                                :bladder/contents (random 400)
                                                                                :bowels/contents (random 5000))))
@@ -117,7 +117,7 @@
                                      (make-instance 'yadfa-items:bandit-swimsuit/closed)
                                      (inventory-of (player-of *game*))))
                              (set-new-battle
-                                 '((yadfa-npcs:diapered-raccoon-bandit
+                                 '((yadfa-enemies:diapered-raccoon-bandit
                                        . (list :level (random-from-range 2 5)
                                              :bowels/contents 0
                                              :wear (list
@@ -126,19 +126,19 @@
                                                            :messiness 8000))))))))
                      ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa-npcs:female-diapered-raccoon-bandit .
+                             '((yadfa-enemies:female-diapered-raccoon-bandit .
                                    (list :level (random-from-range 2 5))))))
                      ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa-npcs:rookie-diapered-raccoon-bandit .
+                             '((yadfa-enemies:rookie-diapered-raccoon-bandit .
                                    (list :level (random-from-range 2 5))))))
                      ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa-npcs:diapered-raccoon-bandit .
+                             '((yadfa-enemies:diapered-raccoon-bandit .
                                    (list :level (random-from-range 2 5))))))
                      ((< (random 12) 1)
                          (set-new-battle
-                             '((yadfa-npcs:giant-diapered-raccoon-bandit .
+                             '((yadfa-enemies:giant-diapered-raccoon-bandit .
                                    (list :level (random-from-range 5)))))))))
 (defevent obtain-diaper-lock-1
     :finished-depends '(enter-bandits-shop-1 get-diaper-locked-1)

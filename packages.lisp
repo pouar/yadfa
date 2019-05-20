@@ -80,6 +80,7 @@
         #:base-character
         #:team-member
         #:ally
+        #:playable-ally
         #:player
         #:zone
         #:stat/move
@@ -121,8 +122,8 @@
         #:vending-machine
         #:debug-shop
         #:bed
-        #:npc
-        #:potty-npc
+        #:enemy
+        #:potty-enemy
         #:battle
         ;;accessors
         #:name-of
@@ -369,7 +370,7 @@
         #:macguffin
         #:itemfinder)
     (:documentation "Contains all the items in the game"))
-(uiop:define-package #:yadfa-npcs
+(uiop:define-package #:yadfa-enemies
     (:import-from #:macro-level #:macro-level)
     (:use #:cl #:yadfa #:yadfa-util #:iterate #:alexandria)
     (:export
@@ -384,7 +385,7 @@
         #:diaper-pirate
         #:thickly-diaper-pirate
         #:padded-fursuiter-servant)
-    (:documentation "Contains all the NPCs in the game"))
+    (:documentation "Contains all the enemies in the game"))
 (uiop:define-package #:yadfa-status-conditions
     (:import-from #:macro-level #:macro-level)
     (:use #:cl #:yadfa #:yadfa-util #:iterate)

@@ -1029,6 +1029,9 @@
         (return-from yadfa-world:tickle))
     (let ((selected-ally (nth ally (allies-of *game*))))
         (cond
+            ((getf (attributes-of selected-ally) :not-ticklish)
+                (format t "~a isn't ticklish"
+                    (name-of selected-ally)))
             ((>= (bladder/contents-of selected-ally) (bladder/potty-dance-limit-of selected-ally))
                 (format t
                     "~a: Gah! No! Stop! *falls over and laughs while thrashing about then uncontrollably floods ~aself like an infant*~%~%*~a stops tickling*~%~%~a: Looks like the baby wet ~aself~%~%*~a slowly stands up while still wetting ~aself and grumbles*~%~%"

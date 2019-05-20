@@ -1,5 +1,5 @@
 (in-package :yadfa-allies)
-(defclass slynk (ally) ()
+(defclass slynk (playable-ally) ()
     (:default-initargs
         :name "Slynk"
         :male t
@@ -30,7 +30,7 @@
             (random (float (+ (bowels/potty-desperate-limit-of c)
                                (/ (- (bowels/potty-desperate-limit-of c)
                                       (bowels/potty-dance-limit-of c)))))))))
-(defclass chris (ally) ()
+(defclass chris (playable-ally) ()
     (:default-initargs
         :name "Chris"
         :male t
@@ -40,7 +40,7 @@
         :wear (list
                   (make-instance 'yadfa-items:gold-collar)
                   (make-instance 'yadfa-items:bandit-diaper))))
-(defclass kristy (ally) ()
+(defclass kristy (playable-ally) ()
     (:default-initargs
         :name "Kristy"
         :male nil
@@ -50,7 +50,7 @@
         :wear (list
                   (make-instance 'yadfa-items:toddler-dress)
                   (make-instance 'yadfa-items:bandit-female-diaper))))
-(defclass furry (ally) ()
+(defclass furry (playable-ally) ()
     (:default-initargs
         :name "Furry"
         :male t

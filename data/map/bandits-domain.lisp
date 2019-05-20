@@ -10,10 +10,10 @@
                         :warp-points ,(when (= i 0) '(list 'ironside '(2 0 0 ironside)))
                         :enemy-spawn-list
                         (list '(:max-random 8
-                                   :enemies ((yadfa-npcs:female-diapered-raccoon-bandit .
+                                   :enemies ((yadfa-enemies:female-diapered-raccoon-bandit .
                                                  (list :level (random-from-range 2 5)))))
                             '(:max-random 8
-                                 :enemies ((yadfa-npcs:rookie-diapered-raccoon-bandit .
+                                 :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
                                                (list :level (random-from-range 2 5)))))))))))
 
 (macro-level
@@ -210,7 +210,7 @@
                                     :enemy-spawn-list
                                     (list '(:max-random 10
                                                :enemies
-                                               ((yadfa-npcs:rookie-diapered-raccoon-bandit .
+                                               ((yadfa-enemies:rookie-diapered-raccoon-bandit .
                                                     (list
                                                         :level (random-from-range 2 5)
                                                         :wear (list
@@ -223,7 +223,7 @@
                                                         :level (random-from-range 2 5)))))
                                         '(:max-random 10
                                              :enemies
-                                             ((yadfa-npcs:diapered-raccoon-bandit .
+                                             ((yadfa-enemies:diapered-raccoon-bandit .
                                                   (list
                                                       :level (random-from-range 2 5)
                                                       :wear (list
@@ -236,7 +236,7 @@
                                                       :level (random-from-range 2 5)))))
                                         '(:max-random 10
                                              :enemies
-                                             ((yadfa-npcs:female-diapered-raccoon-bandit .
+                                             ((yadfa-enemies:female-diapered-raccoon-bandit .
                                                   (list
                                                       :level (random-from-range 2 5)
                                                       :wear (list

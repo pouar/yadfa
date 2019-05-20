@@ -141,7 +141,7 @@
             :initarg :bladder/potty-desperate-limit
             :initform 525
             :accessor bladder/potty-desperate-limit-of
-            :documentation "How full the character's bladder needs to be before the character starts begging to be taken to the bathroom, currently only applies to NPCs")
+            :documentation "How full the character's bladder needs to be before the character starts begging to be taken to the bathroom")
         (bladder/maximum-limit
             :initarg :bladder/maximum-limit
             :initform 600
@@ -171,7 +171,7 @@
             :initarg :bowels/potty-desperate-limit
             :initform 7000
             :accessor bowels/potty-desperate-limit-of
-            :documentation "How full the character's bowels needs to be before the character starts begging to be taken to the bathroom, currently only applies to NPCs")
+            :documentation "How full the character's bowels needs to be before the character starts begging to be taken to the bathroom")
         (bowels/maximum-limit
             :initarg :bowels/maximum-limit
             :initform 8000
@@ -238,6 +238,7 @@
         :moves (list
                    (make-instance 'yadfa-moves:watersport)
                    (make-instance 'yadfa-moves:mudsport))))
+(defclass playable-ally (ally))
 (defmethod print-object ((obj ally) stream)
     (print-unreadable-object (obj stream :type t :identity t)
         (format stream "~w" (name-of obj))))
@@ -1092,7 +1093,7 @@
     (:documentation "Class for beds, you can sleep in these."))
 (defclass config (yadfa-class)
     ())
-(defclass npc (base-character)
+(defclass enemy (base-character)
     ((exp-yield
          :initarg :exp-yield
          :initform 50
@@ -1184,10 +1185,10 @@
             :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack"))
     (:default-initargs :base-stats (list :health 40 :attack 45 :defense 40 :energy 40 :speed 56) :level (random-from-range 2 5) :bitcoins nil)
     (:documentation "Class for enemies"))
-(defmethod print-object ((obj npc) stream)
+(defmethod print-object ((obj enemy) stream)
     (print-unreadable-object (obj stream :type t :identity t)
         (format stream "\"~a ~a\"" (if (malep obj) "Male" "Female") (species-of obj))))
-(defclass potty-npc (npc) ()
+(defclass potty-enemy (enemy) ()
     (:default-initargs
         :bladder/fill-rate (* (/ 2000 24 60) 2)
         :bowels/fill-rate (* (/ 12000 24 60) 2))

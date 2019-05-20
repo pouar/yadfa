@@ -1,5 +1,5 @@
-(in-package :yadfa-npcs)
-(defclass diapered-raccoon-bandit (potty-npc) ()
+(in-package :yadfa-enemies)
+(defclass diapered-raccoon-bandit (potty-enemy) ()
     (:default-initargs
         :name "Diapered Raccoon Bandit"
         :description "The Diapered Raccoon Bandits are a local AB/DL gang here in this world. Apparently wearing (and using) diapers is extremly embarrassing for them, so they wear tunics to hide them."
@@ -102,7 +102,7 @@
                                                        'function)
                                                    target
                                                    self)))))))))
-(defclass rookie-diapered-raccoon-bandit (potty-npc) ()
+(defclass rookie-diapered-raccoon-bandit (potty-enemy) ()
     (:default-initargs
         :name "Rookie Diapered Raccoon Bandit"
         :description "The Diapered Raccoon Bandits are a local AB/DL gang here in this world. Despite how embarrasing diapers are for them, the use of toilets and pants in the gang are a privilege and not a right. The ones without these privilages have `babysitters' to keep track of them, as they're not allowed to change themselves. Despite this, they try their best to not wet and/or mess their diapers in a desperate attempt to make their situation less embarrassing."
@@ -125,7 +125,7 @@
                                          ((= a 0) 0)
                                          ((= a 1) 8000)))))
         :bitcoins-per-level 20))
-(defclass female-diapered-raccoon-bandit (potty-npc) ()
+(defclass female-diapered-raccoon-bandit (potty-enemy) ()
     (:default-initargs
         :name "Female Diapered Raccoon Bandit"
         :description "The Diapered Raccoon Bandits are a local AB/DL gang here in this world. Apparently gender equality is non-existent in this gang, so the females have the same potty and pants privileges as the rookies, meaning none at all."
