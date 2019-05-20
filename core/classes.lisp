@@ -238,10 +238,10 @@
         :moves (list
                    (make-instance 'yadfa-moves:watersport)
                    (make-instance 'yadfa-moves:mudsport))))
-(defclass playable-ally (ally))
 (defmethod print-object ((obj ally) stream)
     (print-unreadable-object (obj stream :type t :identity t)
         (format stream "~w" (name-of obj))))
+(defclass playable-ally (ally) ())
 (defmethod initialize-instance :after
     ((c base-character) &rest initargs &key &allow-other-keys)
     (declare (ignorable initargs))
