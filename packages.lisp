@@ -42,7 +42,6 @@
         #:get-destination
         #:get-path-end
         #:getf-direction
-        #:setf-direction
         #:remf-direction
         #:getf-action-from-prop
         #:filter-items

@@ -186,7 +186,7 @@
             (unless (eq (lockedp (get-zone new-position)) :nil)
                 (setf (lockedp (get-zone new-position)) :nil))
             (unless (eq (getf-direction (position-of (player-of *game*)) direction :locked) :nil)
-                (setf-direction (position-of (player-of *game*)) direction :locked :nil))
+                (setf (getf-direction (position-of (player-of *game*)) direction :locked) :nil))
             (setf (position-of (player-of *game*))
                 new-position)
             (when (underwaterp (get-zone (position-of (player-of *game*)))) (swell-up-all))

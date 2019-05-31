@@ -82,16 +82,9 @@
                          (iter (for i in *mods*)
                              (when (asdf:find-system i nil)
                                  (apply #'asdf:load-system i :allow-other-keys t keys))))))
-(defun setf-direction (position direction attribute new-value)
+(defun (setf getf-direction) (new-value position direction attribute)
     (setf (getf (getf (direction-attributes-of (get-zone position)) direction) attribute) new-value))
 (defun getf-direction (position direction attribute)
-    (unless (iter (for (a b) on (getf (direction-attributes-of (get-zone position)) direction) by #'cddr)
-                (if b
-                    (leave t)
-                    (remf
-                        (getf (direction-attributes-of (get-zone position)) direction)
-                        a)))
-        (remf (direction-attributes-of (get-zone position)) direction))
     (getf (getf (direction-attributes-of (get-zone position)) direction) attribute (when (eq attribute :locked) :nil)))
 (defun remf-direction (position direction attribute)
     (remf (getf (direction-attributes-of (get-zone position)) direction) attribute)
