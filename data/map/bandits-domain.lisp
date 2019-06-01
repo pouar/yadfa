@@ -165,7 +165,7 @@
                :changing-table (make-instance 'automatic-changing-table)
                :bed (make-instance 'bed)
                :checkpoint (make-instance 'checkpoint))
-    :events (list 'yadfa-events:enter-bandits-shop-1 'yadfa-events:obtain-diaper-lock-1))
+    :events (list 'yadfa-events:enter-bandits-shop-1 'yadfa-events:obtain-diaper-lock-1 'yadfa-events:enter-bandits-shop-3))
 (ensure-zone (-3 23 0 bandits-domain)
     :name "Bandit's Shop Bathroom"
     :description "CLOSED FOREVER!!!!! MUAHAHAHAHA!!!!"
