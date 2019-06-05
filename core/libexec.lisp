@@ -22,8 +22,9 @@
     (check-type item botoms)
     (+ (thickness-of item)
         (* 10
-            (/ (expt (+ (sogginess-of item)
-                         (messiness-of item))
+            (/ (expt (coerce (+ (sogginess-of item)
+                                 (messiness-of item))
+                         'double-float)
                    1/3)
                 4/3
                 pi))))
@@ -3937,7 +3938,7 @@
                                 (when (>=
                                           (bowels/contents-of character)
                                           (bowels/potty-dance-limit-of character))
-                                    (push (random (expt ($ x / y * (expt 5 2)) (/ 1 2)))
+                                    (push (random (expt ($ x / y * (expt 5 2)) 0.5))
                                         a))
                                 a)
                           '<))
@@ -4102,7 +4103,7 @@
                                 (when (>=
                                           (bowels/contents-of character)
                                           (bowels/potty-dance-limit-of character))
-                                    (push (random (expt ($ x / y * (expt 5 2)) (/ 1 2)))
+                                    (push (random (expt ($ x / y * (expt 5 2)) 0.5))
                                         a))
                                 a)
                           '<))

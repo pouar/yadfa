@@ -1,5 +1,6 @@
 ;; -*- mode: common-lisp; -*-
 (declaim (optimize (safety 3)))
+(setf *read-default-float-format* 'long-float)
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
                           (user-homedir-pathname))))

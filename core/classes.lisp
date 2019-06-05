@@ -670,7 +670,7 @@
             :documentation "the thickness of the undies in mm")
         (thickness-capacity
             :initarg :thickness-capacity
-            :initform (* (expt 6 1/3) 25.4)
+            :initform (* (expt 6.0 1/3) 25.4)
             :accessor thickness-capacity-of
             :documentation "The maximum thickness of your diaper that this can fit over. T means infinite")
         (waterproof
@@ -793,7 +793,7 @@
     (:default-initargs :thickness (* 1/4 25.4) :thickness-capacity 20))
 (defclass undies (closed-bottoms)
     ()
-    (:default-initargs :thickness-capacity (* (expt 6 1/3) 25.4)))
+    (:default-initargs :thickness-capacity (* (expt 6.0 1/3) 25.4)))
 (defclass stuffer (incontinence-pad cub-undies)
     ())
 (defclass diaper (tabbed-briefs cub-undies)
