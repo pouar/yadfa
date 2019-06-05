@@ -17,6 +17,9 @@
                          events
                          (finished-events-of *game*)))))
 (defun get-diaper-expansion (item)
+    #+sbcl (declare
+               (type bottoms item))
+    (check-type item botoms)
     (+ (thickness-of item)
         (* 10
             (/ (expt (+ (sogginess-of item)
