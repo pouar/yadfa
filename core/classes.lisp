@@ -730,7 +730,7 @@
             :documentation "Whether this piece of clothing can be locked to prevent removal. Set this to the quoted type specifier that is needed to unlock it")
         (locked
             :initarg :locked
-            :initform :nil
+            :initform nil
             :accessor lockedp
             :documentation "Whether this clothing is locked to prevent removal")))
 (defclass closed-bottoms (bottoms)
