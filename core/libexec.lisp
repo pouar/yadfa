@@ -19,7 +19,7 @@
 (defun get-diaper-expansion (item)
     #+sbcl (declare
                (type bottoms item))
-    (check-type item botoms)
+    (check-type item bottoms)
     (+ (thickness-of item)
         (* 10
             (/ (expt (coerce (+ (sogginess-of item)
