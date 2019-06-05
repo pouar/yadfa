@@ -168,7 +168,7 @@
     :predicate '(lambda (self)
                     (declare (ignorable self))
                     (and
-                        (not (eq (lockedp (car (last (wear-of (player-of *game*))))) :nil))
+                        (lockedp (car (last (wear-of (player-of *game*)))))
                         (>= (bitcoins-of (player-of *game*)) 10000)
                         (or
                             (>

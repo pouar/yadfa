@@ -672,7 +672,7 @@
                      (for i in (butlast (wear-of selected-user) (- (list-length (wear-of selected-user)) wear)))
                      (when (and
                                (typep i 'closed-bottoms)
-                               (not (eq (lockedp i) :nil)))
+                               (lockedp i))
                          (format t "~a can't remove ~a ~a to put on ~a ~a as it's locked~%"
                              (name-of selected-user)
                              (if (malep selected-user) "his" "her")
@@ -784,7 +784,7 @@
                                    1)))
                  (when (and
                            (typep i 'closed-bottoms)
-                           (not (eq (lockedp i) :nil)))
+                           (lockedp i))
                      (format t "~a can't remove ~a ~a to take off ~a ~a as it's locked~%"
                          (name-of selected-user)
                          (if (malep selected-user) "his" "her")
@@ -1498,11 +1498,11 @@
                     (list-length (inventory-of (player-of *game*)))))
             ((not (typep (nth key (inventory-of (player-of *game*))) (key-of (nth wear (wear-of selected-user)))))
                 (write-line "That doesn't go with that"))
-            ((not (eq (lockedp (nth wear (wear-of selected-user))) :nil))
+            ((lockedp (nth wear (wear-of selected-user)))
                 (format t "~a's ~a is now unlocked~%"
                     (name-of selected-user)
                     (name-of (nth wear (wear-of selected-user))))
-                (setf (lockedp (nth wear (wear-of selected-user))) :nil))
+                (setf (lockedp (nth wear (wear-of selected-user))) nil))
             ((typep (nth wear (wear-of selected-user)) 'closed-bottoms)
                 (write-line "That can't be locked"))
             (t

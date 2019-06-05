@@ -16,6 +16,14 @@
         (list-length (intersection
                          events
                          (finished-events-of *game*)))))
+(defun get-diaper-expansion (item)
+    (+ (thickness-of item)
+        (* 10
+            (/ (expt (+ (sogginess-of item)
+                         (messiness-of item))
+                   1/3)
+                4/3
+                (calculate-pi)))))
 (defun initialize-mod-registry ()
     (setf *mod-registry* (make-hash-table :test 'equal))
     (labels ((preferred-mod (old new)
@@ -621,18 +629,51 @@
             ((filter-items swollen-clothes 'pullon)
                 (format t "~a's pullups swells up humorously~%~%" (name-of user)))
             ((filter-items swollen-clothes 'incontinence-pad)
-                (format t "~a's incontinence pad swells up~%~%" (name-of user))))))
+                (format t "~a's incontinence pad swells up~%~%" (name-of user))))
+        (pop-from-expansion user)))
 (defun swell-up-all ()
     (swell-up (player-of *game*))
     (loop for i in (allies-of *game*) do (swell-up i)))
 (defun total-thickness (clothing)
     #+sbcl (declare (type list clothing))
     (check-type clothing list)
-    (iter (for i in (filter-items clothing 'closed-bottoms)) (with j = 0) (incf j (thickness-of i)) (finally (return j))))
+    (iter (for i in (filter-items clothing 'closed-bottoms)) (with j = 0) (incf j (get-diaper-expansion i)) (finally (return j))))
+(defun pop-from-expansion (user)
+    #+sbcl (declare
+               (type base-character user))
+    (check-type user base-character)
+    (iter
+        (for i in (reverse (wear-of user)))
+        (let ((clothing (when (typep i 'closed-bottoms)
+                            (member i (wear-of user)))))
+            (when
+                (and
+                    (typep i 'closed-bottoms)
+                    (cadr clothing)
+                    (> (total-thickness
+                           (cdr clothing))
+                        (thickness-capacity-of i)))
+                (if (typep i 'onesie/closed)
+                    (progn
+                        (toggle-onesie%% i)
+                        (if (lockedp i)
+                            (progn
+                                (format t "~a's ~a pops open from the expansion destroying the lock in the process~%~%"
+                                    (name-of user)
+                                    (name-of i))
+                                (setf (lockedp i) nil))
+                            (format t "~a's ~a pops open from the expansion~%~%"
+                                (name-of user)
+                                (name-of i))))
+                    (progn
+                        (removef (wear-of user) i :count 1)
+                        (format t "~a's ~a tears from the expansion and is destroyed~%~%"
+                            (name-of user)
+                            (name-of i))))))))
 (defun thickest-sort (clothing)
     #+sbcl (declare (type list clothing))
     (check-type clothing list)
-    (sort (iter (for i in clothing) (when (typep i 'bottoms) (collect i))) '> :key 'thickness-of))
+    (sort (iter (for i in clothing) (when (typep i 'bottoms) (collect i))) '> :key 'get-diaper-expansion))
 (defgeneric toggle-onesie%% (onesie))
 (defgeneric toggle-onesie% (onesie underclothes user))
 (defmethod toggle-onesie% (onesie underclothes user)
@@ -651,7 +692,7 @@
             (name-of (first (thickest-sort underclothes))))
         (toggle-onesie%% onesie)))
 (defmethod toggle-onesie% ((onesie onesie/closed) underclothes (user base-character))
-    (if (not (eq (lockedp onesie) :nil))
+    (if (lockedp onesie)
         (format t "~a can't unsnap ~a ~a as it's locked~%~%"
             (name-of user)
             (if (malep user) "his" "her")
@@ -982,7 +1023,7 @@
 (defun change-the-baby (user &rest new-diaper)
     (let ((b (apply #'make-instance new-diaper)))
         (iter (for i in (filter-items (wear-of user) 'bottoms))
-            (setf (lockedp i) :nil)
+            (setf (lockedp i) nil)
             (when (typep i 'onesie/closed)
                 (toggle-onesie%% i)))
         (setf
@@ -1043,7 +1084,7 @@
             (return-from potty-on-toilet))
         ((and pants-down
              (iter (for i in (filter-items (wear-of user) 'closed-bottoms))
-                 (unless (eq (lockedp i) :nil)
+                 (when (lockedp i)
                      (format t
                          "~a struggles to remove ~a ~a, realizes ~a can't, then starts panicking while doing a potty dance.~%"
                          (name-of user)
@@ -1123,7 +1164,7 @@
             (return-from potty-on-self-or-prop))
         ((and pants-down
              (iter (for i in (filter-items (wear-of user) 'closed-bottoms))
-                 (unless (eq (lockedp i) :nil)
+                 (when (lockedp i)
                      (format t
                          "~a struggles to remove ~a ~a, realizes ~a can't, then starts panicking while doing a potty dance.~%"
                          (name-of user)
@@ -1507,6 +1548,7 @@
                                     wet-leak-list mess-leak-list both-leak-list)))
                         (format-lists)
                         (format-leak-lists)
+                        (pop-from-expansion user)
                         (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*))))
                                      'function)
                             (cons wet-return-value mess-return-value) user)))))))
@@ -3146,6 +3188,7 @@
                     had-accident)
                 (get-potty-training user)
                 had-accident))
+        (pop-from-expansion user)
         (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*))))
                      'function)
             had-accident user)
@@ -4185,6 +4228,7 @@
                 (check-if-done)
                 (let* ((current-character (pop (turn-queue-of *battle*)))
                           (new-ret (process-battle-turn current-character attack item reload selected-target)))
+                    (pop-from-expansion current-character)
                     (when (typep current-character 'team-member)
                         (setf team-attacked t
                             ret new-ret)))

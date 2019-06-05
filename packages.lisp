@@ -13,7 +13,8 @@
         #:random-from-range
         #:type-specifier
         #:coerced-function
-        #:removef-if)
+        #:removef-if
+        #:calculate-pi)
     (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package #:yadfa
     (:use #:cl #:yadfa-util #:iterate #:ugly-tiny-infix-macro #:alexandria)
@@ -43,6 +44,8 @@
         #:get-path-end
         #:getf-direction
         #:remf-direction
+        #:get-diaper-expansion
+        #:pop-from-expansion
         #:getf-action-from-prop
         #:filter-items
         #:total-thickness

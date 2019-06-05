@@ -19,7 +19,7 @@
                           (bladder/potty-dance-limit-of user))
                       (>=
                           (bowels/contents-of user)
-                          (bowles/potty-dance-limit-of user))))
+                          (bowels/potty-dance-limit-of user))))
             (format t "*~a whines and continues ~a embarrassing potty dance while the public watches and giggles*~%~%"
                 (name-of user)
                 (if (malep user)
@@ -39,7 +39,7 @@
                           (bladder/potty-dance-limit-of user))
                       (>=
                           (bowels/contents-of user)
-                          (bowles/potty-dance-limit-of user))))
+                          (bowels/potty-dance-limit-of user))))
             (format t "*~a whines and continues ~a embarrassing potty dance while the public watches and giggles*~%~%"
                 (name-of user)
                 (if (malep user)
