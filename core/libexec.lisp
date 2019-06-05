@@ -26,7 +26,7 @@
                          (messiness-of item))
                    1/3)
                 4/3
-                (calculate-pi)))))
+                pi))))
 (defun initialize-mod-registry ()
     (setf *mod-registry* (make-hash-table :test 'equal))
     (labels ((preferred-mod (old new)
