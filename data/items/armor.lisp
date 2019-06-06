@@ -6,4 +6,4 @@
         :value 1000
         :description "Steel armor that protects you in battle. Pants not included, you don't need em, especially when you have diapers"
         :wear-stats '(:defense 50)
-        :thickness-capacity t))
+        :thickness-capacity nil))

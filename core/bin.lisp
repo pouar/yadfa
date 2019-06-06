@@ -684,14 +684,14 @@
         (setf
             a (insert (wear-of selected-user) item wear)
             i (iter
-                  (for (inner outer) on (reverse a))
+                  (for outer in (reverse (subseq a 0 (1+ wear))))
                   (when (and
                             (typep outer 'bottoms)
-                            (not (eq (thickness-capacity-of outer) t))
+                            (thickness-capacity-of outer)
                             (>
-                                (total-thickness (member inner a))
+                                (total-thickness (cdr (member outer a)))
                                 (thickness-capacity-of outer)))
-                      (leave (first (thickest-sort (member inner a)))))))
+                      (leave (first (thickest-sort (cdr (member outer a))))))))
         (if i
             (format t
                 "~a struggles to fit ~a ~a over ~a ~a in a hilarious fashion but fail to do so.~%"
@@ -927,12 +927,12 @@
         (setf
             a (substitute inventory wear (wear-of selected-user) :count 1)
             i (iter
-                  (for (inner outer) on (reverse a))
+                  (for outer in (reverse (subseq a 0 (1+ (position inventory a)))))
                   (when (and
                             (typep outer 'bottoms)
-                            (not (eq (thickness-capacity-of outer) t))
+                            (thickness-capacity-of outer)
                             (>
-                                (total-thickness (member inner a))
+                                (total-thickness (cdr (member outer a)))
                                 (thickness-capacity-of outer)))
                       (leave outer))))
         (if i

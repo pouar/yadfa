@@ -47,7 +47,7 @@
                          430 "Your padding is slightly visible under your dress"
                          #.(* 1/2 25) "The dress does a good job hiding your padding"
                          0 "It fits quite loosely")
-        :thickness-capacity t))
+        :thickness-capacity nil))
 (defclass toddler-dress (yadfa:dress) ()
     (:default-initargs
         :name "Toddler's Dress"
@@ -59,7 +59,7 @@
                          25 "The dress does a good job hiding your padding, as long as you're standing still"
                          12 "The dress does a good job hiding your padding, unless a gust of wind happens to blow by"
                          0 "The dress easily covers your underwear")
-        :thickness-capacity t))
+        :thickness-capacity nil))
 (defclass tshirt (shirt) ()
     (:default-initargs
         :name "T-Shirt"
@@ -127,7 +127,7 @@
     (:default-initargs
         :waterproof t
         :value 1500
-        :thickness-capacity t
+        :thickness-capacity nil
         :bulge-text '(60 "You look like one of those pictures drawn by Kurikia"
                          20 "The diaper bulge makes it clear what you're wearing under there"
                          0 "It fits snuggly")
@@ -147,7 +147,7 @@
     (:default-initargs
         :waterproof t
         :value 1500
-        :thickness-capacity t
+        :thickness-capacity nil
         :bulge-text '(60 "You look like one of those pictures drawn by Kurikia"
                          20 "The diaper bulge makes it clear what you're wearing under there"
                          0 "It fits snuggly")
@@ -180,7 +180,7 @@
                          25 "The tunic does a good job hiding your padding, as long as you're standing still"
                          12 "The tunic does a good job hiding your padding, unless a gust of wind happens to blow by"
                          0 "The tunic easily covers your underwear")
-        :thickness-capacity t))
+        :thickness-capacity nil))
 
 (defclass bandit-uniform-tunic (yadfa:dress) ()
     (:default-initargs
@@ -191,7 +191,7 @@
                          50 "Your padding is slightly visible under your tunic"
                          12 "The tunic easily covers your padding"
                          0 "The tunic easily covers your underwear")
-        :thickness-capacity t))
+        :thickness-capacity nil))
 
 (defclass bandit-uniform-shirt (shirt) ()
     (:default-initargs
@@ -229,7 +229,7 @@
                          25 "The dress does a good job hiding your padding, as long as you're standing still"
                          12 "The dress does a good job hiding your padding, unless a gust of wind happens to blow by"
                          0 "It fits quite loosely")
-        :thickness-capacity t))
+        :thickness-capacity nil))
 (defclass navy-shirt (yadfa:shirt) ()
     (:default-initargs
         :name "Navy Shirt"

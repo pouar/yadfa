@@ -672,7 +672,7 @@
             :initarg :thickness-capacity
             :initform (* (expt 6.0 1/3) 25.4)
             :accessor thickness-capacity-of
-            :documentation "The maximum thickness of your diaper that this can fit over. T means infinite")
+            :documentation "The maximum thickness of your diaper that this can fit over. NIL means infinite")
         (waterproof
             :initarg :waterproof
             :initform nil

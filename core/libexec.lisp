@@ -21,10 +21,11 @@
                (type bottoms item))
     (check-type item bottoms)
     (+
-        (/
-            (+ (sogginess-of item)
-                (messiness-of item))
-            (* 66.04 25.4))
+        (* 10
+            (/
+                (+ (sogginess-of item)
+                    (messiness-of item))
+                (* 66.04 25.4)))
         (thickness-of item)))
 (defun initialize-mod-registry ()
     (setf *mod-registry* (make-hash-table :test 'equal))
@@ -639,49 +640,86 @@
 (defun total-thickness (clothing)
     #+sbcl (declare (type list clothing))
     (check-type clothing list)
-    (iter (for i in (filter-items clothing 'closed-bottoms)) (with j = 0) (incf j (get-diaper-expansion i)) (finally (return j))))
+    (iter (for i in (filter-items clothing 'closed-bottoms))
+        (with j = 0)
+        (incf j (get-diaper-expansion i))
+        (finally (return j))))
 (defun pop-from-expansion (user)
     #+sbcl (declare
                (type base-character user))
     (check-type user base-character)
-    (iter
-        (for i in (reverse (wear-of user)))
-        (let ((clothing (when (typep i 'closed-bottoms)
-                            (member i (wear-of user)))))
-            (when
-                (and
-                    (typep i 'closed-bottoms)
-                    (cadr clothing)
-                    (> (total-thickness
-                           (cdr clothing))
-                        (thickness-capacity-of i)))
-                (if (typep i 'onesie/closed)
-                    (progn
-                        (toggle-onesie%% i)
-                        (if (lockedp i)
-                            (progn
-                                (format t "~a's ~a pops open from the expansion destroying the lock in the process~%~%"
+    (let ((first t))
+        (iter
+            (for i in (reverse (wear-of user)))
+            (let ((clothing (when (typep i 'bottoms)
+                                (member i (wear-of user)))))
+                (when
+                    (or
+                        (and
+                            first
+                            (typep i 'bottoms)
+                            (cadr clothing)
+                            (thickness-capacity-of i)
+                            (> (total-thickness
+                                   (cdr clothing))
+                                (+ (thickness-capacity-of i) 25)))
+                        (and
+                            (not first)
+                            (typep i 'bottoms)))
+                    (setf first nil)
+                    (cond
+                        ((typep i 'onesie/closed)
+                            (toggle-onesie%% i)
+                            (if (lockedp i)
+                                (progn
+                                    (format t "~a's ~a pops open from the expansion destroying the lock in the process~%~%"
+                                        (name-of user)
+                                        (name-of i))
+                                    (setf (lockedp i) nil))
+                                (format t "~a's ~a pops open from the expansion~%~%"
                                     (name-of user)
-                                    (name-of i))
-                                (setf (lockedp i) nil))
-                            (format t "~a's ~a pops open from the expansion~%~%"
+                                    (name-of i))))
+                        ((or
+                             (typep i 'incontinence-product)
+                             (and
+                                 (typep i 'closed-bottoms)
+                                 (not
+                                     (and
+                                         (thickness-capacity-of i)
+                                         (> (total-thickness
+                                                (cdr clothing))
+                                             (+ (thickness-capacity-of i) 25))))))
+                            (push i (inventory-of
+                                        (if (typep user 'team-member)
+                                            (player-of *game*)
+                                            user)))
+                            (removef (wear-of user) i :count 1)
+                            (format t "~a's ~a comes off from the expansion~%~%"
                                 (name-of user)
-                                (name-of i))))
-                    (progn
-                        (removef (wear-of user) i :count 1)
-                        (format t "~a's ~a tears from the expansion and is destroyed~%~%"
-                            (name-of user)
-                            (name-of i))))))))
+                                (name-of i)))
+                        ((and (typep i '(and bottoms (not incontinence-product)))
+                             (thickness-capacity-of i)
+                             (> (total-thickness
+                                    (cdr clothing))
+                                 (+ (thickness-capacity-of i) 25)))
+                            (removef (wear-of user) i :count 1)
+                            (format t "~a's ~a tears from the expansion and is destroyed~%~%"
+                                (name-of user)
+                                (name-of i)))))))))
 (defun thickest-sort (clothing)
     #+sbcl (declare (type list clothing))
     (check-type clothing list)
-    (sort (iter (for i in clothing) (when (typep i 'bottoms) (collect i))) '> :key 'get-diaper-expansion))
+    (sort (iter
+              (for i in clothing)
+              (when (typep i 'bottoms) (collect i)))
+        '>
+        :key 'get-diaper-expansion))
 (defgeneric toggle-onesie%% (onesie))
 (defgeneric toggle-onesie% (onesie underclothes user))
 (defmethod toggle-onesie% (onesie underclothes user)
     (write-line "That's not a onesie"))
 (defmethod toggle-onesie% ((onesie onesie/opened) underclothes (user base-character))
-    (if (and (not (eq t (car (onesie-thickness-capacity-of onesie))))
+    (if (and (car (onesie-thickness-capacity-of onesie))
             underclothes
             (> (total-thickness underclothes) (car (onesie-thickness-capacity-of onesie))))
         (format t
@@ -1041,7 +1079,7 @@
                 (or
                     (and
                         (typep (nth i (wear-of user)) 'bottoms)
-                        (not (eq (thickness-capacity-of (nth i (wear-of user))) t))
+                        (thickness-capacity-of (nth i (wear-of user)))
                         (nthcdr (1+ i) (wear-of user))
                         (>
                             (total-thickness (nthcdr (1+ i) (wear-of user)))
