@@ -20,13 +20,12 @@
     #+sbcl (declare
                (type bottoms item))
     (check-type item bottoms)
-    (expt
-        (/ (+ (sogginess-of item)
-               (messiness-of item)
-               (* 4/3 pi (expt (thickness-of item) 3)))
-            4/3
-            pi)
-        1/3))
+    (+
+        (/
+            (+ (sogginess-of item)
+                (messiness-of item))
+            (* 66.04 25.4))
+        (thickness-of item)))
 (defun initialize-mod-registry ()
     (setf *mod-registry* (make-hash-table :test 'equal))
     (labels ((preferred-mod (old new)

@@ -251,7 +251,7 @@
 (defclass kurikia-thick-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 10000
-        :messiness-capacity 100000
+        :messiness-capacity 25000
         :name "Kurikia Thick Diaper"
         :value 60
         :thickness 300
@@ -269,7 +269,7 @@
 (defclass kurikia-thick-cloth-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 10000
-        :messiness-capacity 100000
+        :messiness-capacity 25000
         :name "Kurikia Thick Cloth Diaper"
         :value 400
         :thickness 300
@@ -285,7 +285,7 @@
 (defclass kurikia-thick-rubber-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 10000
-        :messiness-capacity 100000
+        :messiness-capacity 25000
         :waterproof t
         :name "Kurikia Thick Rubber Diaper"
         :value 400
@@ -302,7 +302,7 @@
 (defclass hyper-thick-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 50000
-        :messiness-capacity 500000
+        :messiness-capacity 80000
         :name "Hyper Thick Diaper"
         :value 700
         :thickness 1000
@@ -320,7 +320,7 @@
 (defclass hyper-thick-cloth-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 50000
-        :messiness-capacity 500000
+        :messiness-capacity 80000
         :name "Hyper Thick Cloth Diaper"
         :value 1000
         :thickness 1000
@@ -336,7 +336,7 @@
 (defclass hyper-thick-rubber-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 50000
-        :messiness-capacity 500000
+        :messiness-capacity 80000
         :name "Hyper Thick Rubber Diaper"
         :value 1000
         :thickness 1000
@@ -426,7 +426,7 @@
 (defclass bandit-female-diaper (tabbed-briefs) ()
     (:default-initargs
         :sogginess-capacity 10000
-        :messiness-capacity 100000
+        :messiness-capacity 25000
         :thickness 300
         :thickness-capacity 100
         :value 200
