@@ -104,7 +104,7 @@
 (defclass midnight-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 4000
-        :messiness-capacity 20000
+        :messiness-capacity 17000
         :name "Midnight Diaper"
         :disposable t
         :sellable nil
@@ -120,7 +120,7 @@
 (defclass thick-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 4000
-        :messiness-capacity 20000
+        :messiness-capacity 17000
         :name "Thick Diaper"
         :disposable t
         :sellable nil
@@ -171,7 +171,7 @@
 (defclass thick-cloth-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 4000
-        :messiness-capacity 20000
+        :messiness-capacity 17000
         :name "Thick Cloth Diaper"
         :thickness 50.8
         :thickness-capacity 160
@@ -185,7 +185,7 @@
 (defclass thick-rubber-diaper (yadfa:diaper) ()
     (:default-initargs
         :sogginess-capacity 4000
-        :messiness-capacity 20000
+        :messiness-capacity 17000
         :name "Thick Rubber Diaper"
         :waterproof t
         :thickness 50.8
