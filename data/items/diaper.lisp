@@ -184,8 +184,8 @@
                              1 "You can feel a slight mess back there")))
 (defclass thick-rubber-diaper (yadfa:diaper) ()
     (:default-initargs
-        :sogginess-capacity 4000
-        :messiness-capacity 17000
+        :sogginess-capacity 6000
+        :messiness-capacity 25000
         :name "Thick Rubber Diaper"
         :waterproof t
         :thickness 50.8
@@ -199,8 +199,8 @@
                              1 "You can feel a slight mess back there")))
 (defclass rubber-diaper (yadfa:diaper) ()
     (:default-initargs
-        :sogginess-capacity 1400
-        :messiness-capacity 10000
+        :sogginess-capacity 2000
+        :messiness-capacity 17000
         :value 250
         :waterproof t
         :name "Rubber Diaper"
@@ -284,8 +284,8 @@
         :description "It's like carrying a giant pillow between your legs forcing you to waddle. Can be reused."))
 (defclass kurikia-thick-rubber-diaper (yadfa:diaper) ()
     (:default-initargs
-        :sogginess-capacity 10000
-        :messiness-capacity 25000
+        :sogginess-capacity 15000
+        :messiness-capacity 30000
         :waterproof t
         :name "Kurikia Thick Rubber Diaper"
         :value 400
@@ -335,8 +335,8 @@
         :description "When you leak so often that you need a diaper so thick it nearly touches the ground. Can be reused."))
 (defclass hyper-thick-rubber-diaper (yadfa:diaper) ()
     (:default-initargs
-        :sogginess-capacity 50000
-        :messiness-capacity 80000
+        :sogginess-capacity 60000
+        :messiness-capacity 90000
         :name "Hyper Thick Rubber Diaper"
         :value 1000
         :thickness 1000

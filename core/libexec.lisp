@@ -25,7 +25,14 @@
             (/
                 (+ (sogginess-of item)
                     (messiness-of item))
-                (* 66.04 25.4)))
+                (-
+                    (* 72 36)
+                    (*
+                        (/
+                            (* 72 5/7)
+                            2)
+                        (/ 18 2)
+                        pi))))
         (thickness-of item)))
 (defun initialize-mod-registry ()
     (setf *mod-registry* (make-hash-table :test 'equal))
@@ -662,7 +669,7 @@
                             (thickness-capacity-of i)
                             (> (total-thickness
                                    (cdr clothing))
-                                (+ (thickness-capacity-of i) 25)))
+                                (+ (thickness-capacity-of i) 50)))
                         (and
                             (not first)
                             (typep i 'bottoms)))
@@ -688,7 +695,7 @@
                                          (thickness-capacity-of i)
                                          (> (total-thickness
                                                 (cdr clothing))
-                                             (+ (thickness-capacity-of i) 25))))))
+                                             (+ (thickness-capacity-of i) 50))))))
                             (push i (inventory-of
                                         (if (typep user 'team-member)
                                             (player-of *game*)
