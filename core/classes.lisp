@@ -673,6 +673,11 @@
             :initform (* (expt 6.0 1/3) 25.4)
             :accessor thickness-capacity-of
             :documentation "The maximum thickness of your diaper that this can fit over. NIL means infinite")
+        (thickness-capacity-threshold
+            :initarg :thickness-capacity-threshold
+            :initform 50
+            :accessor thickness-capacity-threshold-of
+            :documentation "How much higher than the thickness capacity the clothing can handle diaper expansion in mm before popping/tearing, NIL means it won't pop/tear")
         (waterproof
             :initarg :waterproof
             :initform nil
@@ -743,9 +748,14 @@
 (defclass onesie (full-outfit)
     ((onesie-thickness-capacity
          :initarg :onesie-thickness-capacity
-         :initform (cons (* 16 25.4) t)
+         :initform (cons (* 16 25.4) nil)
          :accessor onesie-thickness-capacity-of
          :documentation "cons of values for the thickness capacity of the onesie, first value is for when it's closed, second for when it's opened")
+        (onesie-thickness-capacity-threshold
+         :initarg :onesie-thickness-capacity-threshold
+         :initform (cons 5 nil)
+         :accessor onesie-thickness-capacity-of
+         :documentation "cons of values for the thickness capacity threshold of the onesie, first value is for when it's closed, second for when it's opened")
         (onesie-waterproof
             :initarg :onesie-waterproof
             :initform nil
@@ -763,23 +773,27 @@
 
 (defmethod update-instance-for-different-class :after ((old onesie/opened) (new onesie/closed) &key)
     (setf (thickness-capacity-of new) (car (slot-value old 'onesie-thickness-capacity)))
+    (setf (thickness-capacity-threshold-of new) (car (slot-value old 'onesie-thickness-capacity-threshold)))
     (setf (waterproofp new) (onesie-waterproof-p old))
     (setf (bulge-text-of new) (car (slot-value old 'onesie-bulge-text)))
     )
 (defmethod update-instance-for-different-class :after ((old onesie/closed) (new onesie/opened) &key)
     (setf (thickness-capacity-of new) (cdr (slot-value old 'onesie-thickness-capacity)))
+    (setf (thickness-capacity-threshold-of new) (cdr (slot-value old 'onesie-thickness-capacity-threshold)))
     (setf (waterproofp new) nil)
     (setf (bulge-text-of new) (cdr (slot-value old 'onesie-bulge-text))))
 (defmethod initialize-instance :after
     ((c onesie/opened) &rest initargs &key &allow-other-keys)
     (declare (ignorable initargs))
     (setf (thickness-capacity-of c) (cdr (onesie-thickness-capacity-of c)))
+    (setf (thickness-capacity-threshold-of c) (cdr (onesie-thickness-capacity-threshold-of c)))
     (setf (waterproofp c) nil)
     (setf (bulge-text-of c) (cdr (onesie-bulge-text-of c))))
 (defmethod initialize-instance :after
     ((c onesie/closed) &rest initargs &key &allow-other-keys)
     (declare (ignorable initargs))
     (setf (thickness-capacity-of c) (car (onesie-thickness-capacity-of c)))
+    (setf (thickness-capacity-threshold-of c) (car (onesie-thickness-capacity-threshold-of c)))
     (setf (waterproofp c) (onesie-waterproof-p c))
     (setf (bulge-text-of c) (car (onesie-bulge-text-of c))))
 (defclass incontinence-product (closed-bottoms) ())

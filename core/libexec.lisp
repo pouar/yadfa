@@ -667,9 +667,10 @@
                             (typep i 'bottoms)
                             (cadr clothing)
                             (thickness-capacity-of i)
+                            (thickness-capacity-threshold-of i)
                             (> (total-thickness
                                    (cdr clothing))
-                                (+ (thickness-capacity-of i) 50)))
+                                (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
                         (and
                             (not first)
                             (typep i 'bottoms)))
@@ -693,9 +694,10 @@
                                  (not
                                      (and
                                          (thickness-capacity-of i)
+                                         (thickness-capacity-threshold-of i)
                                          (> (total-thickness
                                                 (cdr clothing))
-                                             (+ (thickness-capacity-of i) 50))))))
+                                             (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i)))))))
                             (push i (inventory-of
                                         (if (typep user 'team-member)
                                             (player-of *game*)
@@ -706,9 +708,10 @@
                                 (name-of i)))
                         ((and (typep i '(and bottoms (not incontinence-product)))
                              (thickness-capacity-of i)
+                             (thickness-capacity-threshold-of i)
                              (> (total-thickness
                                     (cdr clothing))
-                                 (+ (thickness-capacity-of i) 25)))
+                                 (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
                             (removef (wear-of user) i :count 1)
                             (format t "~a's ~a tears from the expansion and is destroyed~%~%"
                                 (name-of user)

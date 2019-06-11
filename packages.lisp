@@ -212,6 +212,7 @@
         #:wear-script-of
         #:thickness-of
         #:thickness-capacity-of
+        #:thickness-capacity-threshold-of
         #:waterproofp
         #:disposablep
         #:sogginess-of
@@ -220,6 +221,7 @@
         #:messiness-capacity-of
         #:key-of
         #:onesie-thickness-capacity-of
+        #:onesie-thickness-capacity-threshold-of
         #:onesie-waterproof-p
         #:items-for-sale-of
         #:watersport-limit-of
