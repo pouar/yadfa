@@ -4,11 +4,26 @@
         :name "Onesie"
         :description "A onesie"
         :value 400
+        :onesie-bulge-text '((50 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
+                                 20 "It fits over your diaper quite nicely"
+                                 0 "It's so baggy that what you're wearing under there is quite visible")
+                                .
+                                (100 "You are unable to get the buttons to snap so you just leave the flaps open"
+                                    #.(* 12 25) "Your padding is clearly visible under there"
+                                    #.(* 11 25) "The flaps just barely cover the diapers"
+                                    #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
+                                    0 "The flaps hang over covering your underwear like a dress"))))
+(defonesie roomy-onesie ()
+    (:default-initargs
+        :name "Roomy Onesie"
+        :description "A onesie intended to accomidate thicker diapers"
+        :onesie-thickness-capacity (cons (* 16 25.4) nil)
+        :value 400
         :onesie-bulge-text '((60 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
                                  20 "It fits over your diaper quite nicely"
                                  0 "It's so baggy that what you're wearing under there is quite visible")
                                 .
-                                (80 "You are unable to get the buttons to snap so you just leave the flaps open"
+                                (#.(* 16 25.4) "You are unable to get the buttons to snap so you just leave the flaps open"
                                     #.(* 12 25) "Your padding is clearly visible under there"
                                     #.(* 11 25) "The flaps just barely cover the diapers"
                                     #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
@@ -88,11 +103,13 @@
         :onesie-waterproof t
         :value 600
         :name "Black Rubber Onesie"
+        :onesie-thickness-capacity (cons (* 16 25.4) nil)
         :onesie-bulge-text '((60 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
+                                 50 "It stretches which helps accomidate your thick padding"
                                  20 "It fits over your diaper quite nicely"
                                  0 "It's so baggy that what you're wearing under there is quite visible")
                                 .
-                                (80 "You are unable to get the buttons to snap so you just leave the flaps open"
+                                (#.(* 16 25.4) "You are unable to get the buttons to snap so you just leave the flaps open"
                                     #.(* 12 25) "Your padding is clearly visible under there"
                                     #.(* 11 25) "The flaps just barely cover the diapers"
                                     #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
@@ -102,7 +119,8 @@
     (:default-initargs
         :onesie-waterproof t
         :value 600
-        :onesie-thickness-capacity (cons t t)
+        :onesie-thickness-capacity (cons nil nil)
+        :onesie-thickness-capacity-threshold (cons nil nil)
         :onesie-bulge-text '((60 "The onesie has easily stretched to accommodate your padding"
                                  20 "The diaper bulge makes it clear what you're wearing under there"
                                  0 "It fits snuggly")
@@ -128,6 +146,7 @@
         :waterproof t
         :value 1500
         :thickness-capacity nil
+        :thickness-capacity-threshold nil
         :bulge-text '(60 "You look like one of those pictures drawn by Kurikia"
                          20 "The diaper bulge makes it clear what you're wearing under there"
                          0 "It fits snuggly")
@@ -148,6 +167,7 @@
         :waterproof t
         :value 1500
         :thickness-capacity nil
+        :thickness-capacity-threshold nil
         :bulge-text '(60 "You look like one of those pictures drawn by Kurikia"
                          20 "The diaper bulge makes it clear what you're wearing under there"
                          0 "It fits snuggly")
@@ -191,7 +211,8 @@
                          50 "Your padding is slightly visible under your tunic"
                          12 "The tunic easily covers your padding"
                          0 "The tunic easily covers your underwear")
-        :thickness-capacity nil))
+        :thickness-capacity nil
+        :thickness-capacity-threshold nil))
 
 (defclass bandit-uniform-shirt (shirt) ()
     (:default-initargs
@@ -208,11 +229,13 @@
         :onesie-waterproof t
         :value 600
         :name "Bandit Swimsuit"
+        :onesie-thickness-capacity (cons (* 16 25.4) nil)
         :onesie-bulge-text '((60 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
+                                 50 "It stretches which helps accomidate your thick padding"
                                  20 "It fits over your diaper quite nicely"
                                  0 "It's so baggy that what you're wearing under there is quite visible")
                                 .
-                                (80 "You are unable to get the buttons to snap so you just leave the flaps open"
+                                (#.(* 16 25.4) "You are unable to get the buttons to snap so you just leave the flaps open"
                                     #.(* 12 25) "Your padding is clearly visible under there"
                                     #.(* 11 25) "The flaps just barely cover the diapers"
                                     #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
@@ -229,7 +252,8 @@
                          25 "The dress does a good job hiding your padding, as long as you're standing still"
                          12 "The dress does a good job hiding your padding, unless a gust of wind happens to blow by"
                          0 "It fits quite loosely")
-        :thickness-capacity nil))
+        :thickness-capacity nil
+        :thickness-capacity-threshold nil))
 (defclass navy-shirt (yadfa:shirt) ()
     (:default-initargs
         :name "Navy Shirt"

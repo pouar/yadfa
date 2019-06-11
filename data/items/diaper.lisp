@@ -109,7 +109,7 @@
         :disposable t
         :sellable nil
         :thickness 50.8
-        :thickness-capacity 160
+        :thickness-capacity 100
         :description "A thick black diaper with blue landing zone, blue leg guards, and red tapes"
         :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
                             2000 "It squishes when you walk"
@@ -125,7 +125,7 @@
         :disposable t
         :sellable nil
         :thickness 50.8
-        :thickness-capacity 160
+        :thickness-capacity 100
         :description "A thick diaper that can hold more than an normal diaper"
         :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
                             2000 "It squishes when you walk"
@@ -174,7 +174,7 @@
         :messiness-capacity 17000
         :name "Thick Cloth Diaper"
         :thickness 50.8
-        :thickness-capacity 160
+        :thickness-capacity 100
         :description "A thick diaper that can hold more than an normal diaper. Can be reused."
         :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
                             2000 "It squishes when you walk"
@@ -189,7 +189,7 @@
         :name "Thick Rubber Diaper"
         :waterproof t
         :thickness 50.8
-        :thickness-capacity 160
+        :thickness-capacity 100
         :description "A thick rubber diaper that can hold more than an normal diaper. Can be reused."
         :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
                             2000 "It squishes when you walk"

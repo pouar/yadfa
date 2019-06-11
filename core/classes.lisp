@@ -748,13 +748,13 @@
 (defclass onesie (full-outfit)
     ((onesie-thickness-capacity
          :initarg :onesie-thickness-capacity
-         :initform (cons (* 16 25.4) nil)
+         :initform (cons 100 nil)
          :accessor onesie-thickness-capacity-of
          :documentation "cons of values for the thickness capacity of the onesie, first value is for when it's closed, second for when it's opened")
         (onesie-thickness-capacity-threshold
          :initarg :onesie-thickness-capacity-threshold
          :initform (cons 5 nil)
-         :accessor onesie-thickness-capacity-of
+         :accessor onesie-thickness-capacity-threshold-of
          :documentation "cons of values for the thickness capacity threshold of the onesie, first value is for when it's closed, second for when it's opened")
         (onesie-waterproof
             :initarg :onesie-waterproof
@@ -796,18 +796,28 @@
     (setf (thickness-capacity-threshold-of c) (car (onesie-thickness-capacity-threshold-of c)))
     (setf (waterproofp c) (onesie-waterproof-p c))
     (setf (bulge-text-of c) (car (onesie-bulge-text-of c))))
-(defclass incontinence-product (closed-bottoms) ())
+(defclass incontinence-product (closed-bottoms) ()
+    (:default-initargs
+        :thickness-capacity-threshold nil))
 (defclass padding (incontinence-product) ())
 (defclass cub-undies (incontinence-product) ())
 (defclass pullon (padding) ()
-    (:default-initargs :thickness (* 1/2 25.4) :thickness-capacity 40))
+    (:default-initargs
+        :thickness (* 1/2 25.4)
+        :thickness-capacity 40))
 (defclass tabbed-briefs (padding) ()
-    (:default-initargs :thickness 25.4 :thickness-capacity 80 :key 'yadfa-items:magic-diaper-key))
+    (:default-initargs
+        :thickness 25.4
+        :thickness-capacity 80
+        :key 'yadfa-items:magic-diaper-key))
 (defclass incontinence-pad (incontinence-product) ()
-    (:default-initargs :thickness (* 1/4 25.4) :thickness-capacity 20))
+    (:default-initargs
+        :thickness (* 1/4 25.4)
+        :thickness-capacity 20))
 (defclass undies (closed-bottoms)
     ()
-    (:default-initargs :thickness-capacity (* (expt 6.0 1/3) 25.4)))
+    (:default-initargs
+        :thickness-capacity (* (expt 6.0 1/3) 25.4)))
 (defclass stuffer (incontinence-pad cub-undies)
     ())
 (defclass diaper (tabbed-briefs cub-undies)
@@ -816,10 +826,14 @@
     ())
 (defclass skirt (bottoms)
     ()
-    (:default-initargs :thickness-capacity 100))
+    (:default-initargs
+        :thickness-capacity 100
+        :thickness-capacity-threshold nil))
 (defclass dress (full-outfit)
     ()
-    (:default-initargs :thickness-capacity 100))
+    (:default-initargs
+        :thickness-capacity 100
+        :thickness-capacity-threshold nil))
 (defclass shirt (top)
     ())
 (defclass pants (closed-pants)
