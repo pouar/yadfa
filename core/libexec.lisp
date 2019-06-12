@@ -651,18 +651,18 @@
         (with j = 0)
         (incf j (get-diaper-expansion i))
         (finally (return j))))
-(defun pop-from-expansion (user &optional wet mess)
+(defun pop-from-expansion (user &optional wet/mess)
     #+sbcl (declare
                (type base-character user))
     (check-type user base-character)
-    (macrolet ((pushclothing (i wet mess return)
+    (macrolet ((pushclothing (i wet/mess return)
                    `(progn
-                        (when (and (getf ,wet :wet-amount)
-                                  (> (getf ,wet :wet-amount) 0))
-                            (pushnew ,i (getf ,wet :popped)))
-                        (when (and (getf ,mess :mess-amount)
-                                  (> (getf ,mess :mess-amount) 0))
-                            (pushnew ,i (getf ,mess :popped)))
+                        (when (and (getf (car ,wet/mess) :wet-amount)
+                                  (> (getf (car ,wet/mess) :wet-amount) 0))
+                            (pushnew ,i (getf (car ,wet/mess) :popped)))
+                        (when (and (getf (cdr ,wet/mess) :mess-amount)
+                                  (> (getf (cdr ,wet/mess) :mess-amount) 0))
+                            (pushnew ,i (getf (cdr ,wet/mess) :popped)))
                         (pushnew ,i ,return))))
         (let ((first t)
                  (return ()))
@@ -697,7 +697,7 @@
                                     (format t "~a's ~a pops open from the expansion~%~%"
                                         (name-of user)
                                         (name-of i)))
-                                (pushclothing i wet mess return))
+                                (pushclothing i wet/mess return))
                             ((or
                                  (typep i 'incontinence-product)
                                  (and
@@ -717,7 +717,7 @@
                                 (format t "~a's ~a comes off from the expansion~%~%"
                                     (name-of user)
                                     (name-of i))
-                                (pushclothing i wet mess return))
+                                (pushclothing i wet/mess return))
                             ((and (typep i '(and bottoms (not incontinence-product)))
                                  (thickness-capacity-of i)
                                  (thickness-capacity-threshold-of i)
@@ -728,12 +728,12 @@
                                 (format t "~a's ~a tears from the expansion and is destroyed~%~%"
                                     (name-of user)
                                     (name-of i))
-                                (pushclothing i wet mess return))))))
+                                (pushclothing i wet/mess return))))))
             (cond
                 ((or
-                     (getf wet :popped)
-                     (getf mess :popped))
-                    (values (cons wet mess) :wet/mess))
+                     (getf (car wet/mess) :popped)
+                     (getf (cdr wet/mess) :popped))
+                    (values wet/mess :wet/mess))
                 (return (values return :return))
                 (t
                     (values nil nil))))))
@@ -1621,7 +1621,7 @@
                         (format-leak-lists)
                         (multiple-value-bind
                             (value key)
-                            (pop-from-expansion user wet-return-value mess-return-value)
+                            (pop-from-expansion user (cons wet-return-value mess-return-value))
                             (when (eq key :wet/mess)
                                 (setf wet-return-value (car value)
                                     mess-return-value (cdr value))))
@@ -3264,7 +3264,11 @@
                     had-accident)
                 (get-potty-training user)
                 had-accident))
-        (pop-from-expansion user (car had-accident) (cdr had-accident))
+        (multiple-value-bind
+            (value key)
+            (pop-from-expansion user had-accident)
+            (when (eq key :wet/mess)
+                (setf had-accident value)))
         (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*))))
                      'function)
             had-accident user)
