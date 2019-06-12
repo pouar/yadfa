@@ -665,7 +665,8 @@
                             (pushnew ,i (getf (cdr ,wet/mess) :popped)))
                         (pushnew ,i ,return))))
         (let ((first t)
-                 (return ()))
+                 (return ())
+                 (wet/mess (copy-tree wet/mess)))
             (iter
                 (for i in (reverse (wear-of user)))
                 (let ((clothing (when (typep i 'bottoms)
