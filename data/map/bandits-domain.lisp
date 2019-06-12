@@ -82,6 +82,11 @@
                                     (name-of user))
                                 (format t "Shoppkeeper: Bad ~a, no going potty inside~%"
                                     (species-of user)))
+                            (when (or (getf (car had-accident) :popped)
+                                      (getf (cdr had-accident) :popped))
+                                (format t "*The shopkeeper falls over laughing with his diaper clearly exposed from under his tunic, then gets an embarrased look on his face when he floods his diaper from the laughter, which is incredibly obvious from the wetness indicator changing color*~%~%")
+                                (format t "*A random raccoon in the shop records the shopkeeper flooding his pamps then uploads it to the internet*~%~%")
+                                (trigger-event 'yadfa-events:shopkeeper-floods-himself-1))
                             (when (> (getf (car had-accident) :leak-amount) 0)
                                 (format t "*The shopkeeper laughs at ~a's misfortune*~%"
                                     (name-of user))

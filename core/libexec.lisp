@@ -651,71 +651,92 @@
         (with j = 0)
         (incf j (get-diaper-expansion i))
         (finally (return j))))
-(defun pop-from-expansion (user)
+(defun pop-from-expansion (user &optional wet mess)
     #+sbcl (declare
                (type base-character user))
     (check-type user base-character)
-    (let ((first t))
-        (iter
-            (for i in (reverse (wear-of user)))
-            (let ((clothing (when (typep i 'bottoms)
-                                (member i (wear-of user)))))
-                (when
-                    (or
-                        (and
-                            first
-                            (typep i 'bottoms)
-                            (cadr clothing)
-                            (thickness-capacity-of i)
-                            (thickness-capacity-threshold-of i)
-                            (> (total-thickness
-                                   (cdr clothing))
-                                (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
-                        (and
-                            (not first)
-                            (typep i 'bottoms)))
-                    (setf first nil)
-                    (cond
-                        ((typep i 'onesie/closed)
-                            (toggle-onesie%% i)
-                            (if (lockedp i)
-                                (progn
-                                    (format t "~a's ~a pops open from the expansion destroying the lock in the process~%~%"
+    (macrolet ((pushclothing (i wet mess return)
+                   `(progn
+                        (when (and (getf ,wet :wet-amount)
+                                  (> (getf ,wet :wet-amount) 0))
+                            (pushnew ,i (getf ,wet :popped)))
+                        (when (and (getf ,mess :mess-amount)
+                                  (> (getf ,mess :mess-amount) 0))
+                            (pushnew ,i (getf ,mess :popped)))
+                        (pushnew ,i ,return))))
+        (let ((first t)
+                 (return ()))
+            (iter
+                (for i in (reverse (wear-of user)))
+                (let ((clothing (when (typep i 'bottoms)
+                                    (member i (wear-of user)))))
+                    (when
+                        (or
+                            (and
+                                first
+                                (typep i 'bottoms)
+                                (cadr clothing)
+                                (thickness-capacity-of i)
+                                (thickness-capacity-threshold-of i)
+                                (> (total-thickness
+                                       (cdr clothing))
+                                    (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
+                            (and
+                                (not first)
+                                (typep i 'bottoms)))
+                        (setf first nil)
+                        (cond
+                            ((typep i 'onesie/closed)
+                                (toggle-onesie%% i)
+                                (if (lockedp i)
+                                    (progn
+                                        (format t "~a's ~a pops open from the expansion destroying the lock in the process~%~%"
+                                            (name-of user)
+                                            (name-of i))
+                                        (setf (lockedp i) nil))
+                                    (format t "~a's ~a pops open from the expansion~%~%"
                                         (name-of user)
-                                        (name-of i))
-                                    (setf (lockedp i) nil))
-                                (format t "~a's ~a pops open from the expansion~%~%"
+                                        (name-of i)))
+                                (pushclothing i wet mess return))
+                            ((or
+                                 (typep i 'incontinence-product)
+                                 (and
+                                     (typep i 'closed-bottoms)
+                                     (not
+                                         (and
+                                             (thickness-capacity-of i)
+                                             (thickness-capacity-threshold-of i)
+                                             (> (total-thickness
+                                                    (cdr clothing))
+                                                 (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i)))))))
+                                (push i (inventory-of
+                                            (if (typep user 'team-member)
+                                                (player-of *game*)
+                                                user)))
+                                (removef (wear-of user) i :count 1)
+                                (format t "~a's ~a comes off from the expansion~%~%"
                                     (name-of user)
-                                    (name-of i))))
-                        ((or
-                             (typep i 'incontinence-product)
-                             (and
-                                 (typep i 'closed-bottoms)
-                                 (not
-                                     (and
-                                         (thickness-capacity-of i)
-                                         (thickness-capacity-threshold-of i)
-                                         (> (total-thickness
-                                                (cdr clothing))
-                                             (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i)))))))
-                            (push i (inventory-of
-                                        (if (typep user 'team-member)
-                                            (player-of *game*)
-                                            user)))
-                            (removef (wear-of user) i :count 1)
-                            (format t "~a's ~a comes off from the expansion~%~%"
-                                (name-of user)
-                                (name-of i)))
-                        ((and (typep i '(and bottoms (not incontinence-product)))
-                             (thickness-capacity-of i)
-                             (thickness-capacity-threshold-of i)
-                             (> (total-thickness
-                                    (cdr clothing))
-                                 (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
-                            (removef (wear-of user) i :count 1)
-                            (format t "~a's ~a tears from the expansion and is destroyed~%~%"
-                                (name-of user)
-                                (name-of i)))))))))
+                                    (name-of i))
+                                (pushclothing i wet mess return))
+                            ((and (typep i '(and bottoms (not incontinence-product)))
+                                 (thickness-capacity-of i)
+                                 (thickness-capacity-threshold-of i)
+                                 (> (total-thickness
+                                        (cdr clothing))
+                                     (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
+                                (removef (wear-of user) i :count 1)
+                                (format t "~a's ~a tears from the expansion and is destroyed~%~%"
+                                    (name-of user)
+                                    (name-of i))
+                                (pushclothing i wet mess return))))))
+            (cond
+                ((or
+                     (getf wet :popped)
+                     (getf mess :popped))
+                    (values (cons wet mess) :wet/mess))
+                (return (values return :return))
+                (t
+                    (values nil nil))))))
 (defun thickest-sort (clothing)
     #+sbcl (declare (type list clothing))
     (check-type clothing list)
@@ -1598,7 +1619,12 @@
                                     wet-leak-list mess-leak-list both-leak-list)))
                         (format-lists)
                         (format-leak-lists)
-                        (pop-from-expansion user)
+                        (multiple-value-bind
+                            (value key)
+                            (pop-from-expansion user wet-return-value mess-return-value)
+                            (when (eq key :wet/mess)
+                                (setf wet-return-value (car value)
+                                    mess-return-value (cdr value))))
                         (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*))))
                                      'function)
                             (cons wet-return-value mess-return-value) user)))))))
@@ -3238,7 +3264,7 @@
                     had-accident)
                 (get-potty-training user)
                 had-accident))
-        (pop-from-expansion user)
+        (pop-from-expansion user (car had-accident) (cdr had-accident))
         (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*))))
                      'function)
             had-accident user)

@@ -346,3 +346,4 @@
                      (if (malep (player-of *game*)) "his" "her"))
                  (push (make-instance 'yadfa-items:warp-device) (inventory-of (player-of *game*)))
                  (setf (hiddenp (get-zone '(0 0 0 yadfa-zones:silver-cape))) nil)))
+(defevent shopkeeper-floods-himself-1)
