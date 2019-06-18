@@ -3646,6 +3646,11 @@
         (for i in (cons (player-of *game*) (allies-of *game*)))
         (let ((return-value (go-to-sleep% i))
                  (out ()))
+            (multiple-value-bind
+                (value key)
+                (pop-from-expansion i return-value)
+                (when (eq key :wet/mess)
+                    (setf return-value value)))
             (format t "~a wakes up " (name-of i))
             (when (> (getf (car return-value) :wet-amount) 0)
                 (cond
