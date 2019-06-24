@@ -1,5 +1,37 @@
 ;;;; files used internally by the game, don't call these unless you're developing/modding (or cheating)
 (in-package :yadfa)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+    (defun set-logical-pathnames ()
+        (setf (logical-pathname-translations "YADFA")
+            (list
+                (list "YADFA:DATA;**;*.*.*" (merge-pathnames
+                                                (make-pathname
+                                                    :directory '(:relative "yadfa" :wild-inferiors)
+                                                    :name :wild
+                                                    :type :wild)
+                                                (uiop:xdg-data-home)))
+                (list "YADFA:CONFIG;**;*.*.*" (merge-pathnames
+                                                  (make-pathname
+                                                      :directory '(:relative "yadfa" :wild-inferiors)
+                                                      :name :wild
+                                                      :type :wild)
+                                                  (uiop:xdg-config-home)))
+                (list "YADFA:MAIN;**;*.*.*" (if uiop:*image-dumped-p*
+                                                (uiop:merge-pathnames*
+                                                    (make-pathname
+                                                        :directory '(:relative :wild-inferiors)
+                                                        :type :wild
+                                                        :name :wild)
+                                                    (make-pathname
+                                                        :device (pathname-device (truename (uiop:argv0)))
+                                                        :directory (pathname-directory (truename (uiop:argv0)))))
+                                                (uiop:merge-pathnames*
+                                                    (make-pathname
+                                                        :directory '(:relative :wild-inferiors)
+                                                        :type :wild
+                                                        :name :wild)
+                                                    (asdf:component-pathname (asdf:find-system "yadfa"))))))))
+    (set-logical-pathnames))
 (defun get-positions-of-type (type list)
     #+sbcl (declare
                (type (or null (and symbol (not keyword)) list class) type)
@@ -35,6 +67,7 @@
                         pi))))
         (thickness-of item)))
 (defun initialize-mod-registry ()
+    (set-logical-pathnames)
     (setf *mod-registry* (make-hash-table :test 'equal))
     (labels ((preferred-mod (old new)
                  (cond ((not old)
@@ -50,8 +83,7 @@
                          old)
                      (t new))))
         (iter (for i in (uiop:directory-files
-                            (make-pathname :name :wild :type "asd")
-                            (merge-pathnames (make-pathname :directory '(:relative "yadfa" "mods" :wild-inferiors)) (uiop:xdg-data-home))))
+                            (translate-logical-pathname #P"yadfa:data;mods;**;*.asd")))
             (when (string= (pathname-type i) "asd")
                 (setf (gethash (pathname-name i) *mod-registry*)
                     (preferred-mod (gethash (pathname-name i) *mod-registry*) i))))))
@@ -74,16 +106,10 @@
                          (uiop:register-clear-configuration-hook 'clear-mod-registry)
                          (uiop:register-clear-configuration-hook 'clear-pattern-cache))
                      (asdf:clear-configuration)
-                     (let* ((file (uiop:merge-pathnames* (make-pathname
-                                                             :directory '(:relative "yadfa")
-                                                             :name "mods"
-                                                             :type "conf")
-                                      (uiop:xdg-config-home)))
+                     (set-logical-pathnames)
+                     (let* ((file #P"yadfa:config;mods.conf")
                                (mods '()))
-                         (ensure-directories-exist
-                             (uiop:merge-pathnames* (make-pathname
-                                                        :directory '(:relative "yadfa"))
-                                 (uiop:xdg-config-home)))
+                         (ensure-directories-exist #P"yadfa:config;")
                          (handler-case (with-open-file (stream file :if-does-not-exist :error)
                                            (setf mods (read stream)))
                              (file-error ()
@@ -407,17 +433,8 @@
         (setf (gethash (list :map-pattern path designs) *pattern-cache*)
             (clim:make-pattern-from-bitmap-file
                 (uiop:merge-pathnames*
-                    (make-pathname
-                        :name path
-                        :type "xpm")
-                    (uiop:merge-pathnames*
-                        (make-pathname
-                            :directory '(:relative "pixmaps" "map-patterns"))
-                        (if uiop:*image-dumped-p*
-                            (make-pathname
-                                :device (pathname-device (truename (uiop:argv0)))
-                                :directory (pathname-directory (truename (uiop:argv0))))
-                            (asdf:component-pathname (asdf:find-system "yadfa")))))
+                    path
+                    #P"yadfa:main;pixmaps;map-patterns;")
                 :format :xpm
                 :designs designs))))
 (defun print-map (position)
@@ -431,22 +448,22 @@
                     (let ((b 0)
                              (array
                                  (if clim-listener::*application-frame*
-                                     #1A("nsew"
-                                            "nsw"
-                                            "nse"
-                                            "ns"
-                                            "new"
-                                            "nw"
-                                            "ne"
-                                            "n"
-                                            "sew"
-                                            "sw"
-                                            "se"
-                                            "s"
-                                            "ew"
-                                            "w"
-                                            "e"
-                                            "dot")
+                                     #1A(#P"nsew.xpm"
+                                            #P"nsw.xpm"
+                                            #P"nse.xpm"
+                                            #P"ns.xpm"
+                                            #P"new.xpm"
+                                            #P"nw.xpm"
+                                            #P"ne.xpm"
+                                            #P"n.xpm"
+                                            #P"sew.xpm"
+                                            #P"sw.xpm"
+                                            #P"se.xpm"
+                                            #P"s.xpm"
+                                            #P"ew.xpm"
+                                            #P"w.xpm"
+                                            #P"e.xpm"
+                                            #P"dot.xpm")
                                      #1A("╋" "╋" "╋" "┼" "┫" "┫" "┫" "┤" "┣" "┣" "┣" "├" "┃" "┃" "┃" "│" "┻" "┻" "┻" "┴" "┛" "┛" "┛" "┘" "┗" "┗" "┗" "└" "╹" "╹" "╹" "╵" "┳" "┳" "┳" "┬" "┓" "┓" "┓" "┐" "┏" "┏" "┏" "┌" "╻" "╻" "╻" "╷" "━" "━" "━" "─" "╸" "╸" "╸" "╴" "╺" "╺" "╺" "╶" "▮" "▮" "▮" "▯"))))
                         (if clim-listener::*application-frame*
                             (progn
@@ -475,7 +492,7 @@
                             (eval (aref array b))
                             (aref array b)))))
         (let ((pattern
-                  (print-map-pattern-cache "blank" (list clim:+background-ink+ clim:+foreground-ink+)))
+                  (print-map-pattern-cache #P"blank.xpm" (list clim:+background-ink+ clim:+foreground-ink+)))
                  (start-position (when clim-listener::*application-frame*
                                      (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
             (if clim-listener::*application-frame*
@@ -505,7 +522,7 @@
                                                                   (get-zone current-position)
                                                                   (hiddenp (get-zone current-position)))
                                                               (not (get-zone current-position)))
-                                                          "blank"
+                                                          #P"blank.xpm"
                                                           (a current-position))
                                                       (clim:make-rgb-color
                                                           (if (and
