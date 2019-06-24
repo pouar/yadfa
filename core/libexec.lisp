@@ -83,7 +83,7 @@
                          old)
                      (t new))))
         (iter (for i in (uiop:directory-files
-                            (translate-logical-pathname #P"yadfa:data;mods;**;*.asd")))
+                            (translate-logical-pathname #P"YADFA:DATA;mods;**;*.asd")))
             (when (string= (pathname-type i) "asd")
                 (setf (gethash (pathname-name i) *mod-registry*)
                     (preferred-mod (gethash (pathname-name i) *mod-registry*) i))))))
@@ -107,9 +107,9 @@
                          (uiop:register-clear-configuration-hook 'clear-pattern-cache))
                      (asdf:clear-configuration)
                      (set-logical-pathnames)
-                     (let* ((file #P"yadfa:config;mods.conf")
+                     (let* ((file #P"YADFA:CONFIG;mods.conf")
                                (mods '()))
-                         (ensure-directories-exist #P"yadfa:config;")
+                         (ensure-directories-exist #P"YADFA:CONFIG;")
                          (handler-case (with-open-file (stream file :if-does-not-exist :error)
                                            (setf mods (read stream)))
                              (file-error ()
@@ -434,7 +434,7 @@
             (clim:make-pattern-from-bitmap-file
                 (uiop:merge-pathnames*
                     path
-                    #P"yadfa:main;pixmaps;map-patterns;")
+                    #P"YADFA:MAIN;pixmaps;map-patterns;")
                 :format :xpm
                 :designs designs))))
 (defun print-map (position)
