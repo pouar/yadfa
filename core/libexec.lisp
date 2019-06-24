@@ -50,8 +50,8 @@
                          old)
                      (t new))))
         (iter (for i in (uiop:directory-files
-                            (format nil "*.asd")
-                            (merge-pathnames "mods/**/" (uiop:xdg-data-home "yadfa/"))))
+                            (make-pathname :name :wild :type "asd")
+                            (merge-pathnames (make-pathname :directory '(:relative "yadfa" "mods" :wild-inferiors)) (uiop:xdg-data-home))))
             (when (string= (pathname-type i) "asd")
                 (setf (gethash (pathname-name i) *mod-registry*)
                     (preferred-mod (gethash (pathname-name i) *mod-registry*) i))))))
