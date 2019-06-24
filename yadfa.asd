@@ -34,59 +34,86 @@
                                                            (directory-files
                                                                (pathname-directory-pathname
                                                                    (uiop/lisp-build:current-lisp-file-pathname))
-                                                               "data/moves/*.lisp")))
+                                                               (make-pathname
+                                                                   :directory '(:relative "data" "moves")
+                                                                   :name :wild
+                                                                   :type "lisp"))))
                                         (:module "items"
                                             :depends-on ("moves" "init")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/items/*.lisp")))
+                                                                  (make-pathname
+                                                                      :directory '(:relative "data" "items")
+                                                                      :name :wild
+                                                                      :type "lisp"))))
                                         (:module "init"
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/init/*.lisp")))
+                                                                  (make-pathname
+                                                                      :directory '(:relative "data" "init")
+                                                                      :name :wild
+                                                                      :type "lisp"))))
                                         (:module "enemies"
                                             :depends-on ("moves" "items" "init")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/enemies/*.lisp")))
+                                                                  (make-pathname
+                                                                      :directory '(:relative "data" "enemies")
+                                                                      :name :wild
+                                                                      :type "lisp"))))
                                         (:module "team-members"
                                             :depends-on ("moves" "items" "init")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/team-members/*.lisp")))
+                                                                  (make-pathname
+                                                                      :directory '(:relative "data" "team-members")
+                                                                      :name :wild
+                                                                      :type "lisp"))))
                                         (:module "props"
                                             :depends-on ("items" "enemies" "team-members" "init")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/props/*.lisp")))
+                                                                  (make-pathname
+                                                                      :directory '(:relative "data" "props")
+                                                                      :name :wild
+                                                                      :type "lisp"))))
                                         (:module "events"
                                             :depends-on ("moves" "items" "enemies" "team-members" "props" "init")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/events/*.lisp")))
+                                                                  (make-pathname
+                                                                      :directory '(:relative "data" "events")
+                                                                      :name :wild
+                                                                      :type "lisp"))))
                                         (:module "map"
                                             :depends-on ( "moves" "items" "enemies" "team-members" "props" "events" "init")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/map/*.lisp")))
+                                                                  (make-pathname
+                                                                      :directory '(:relative "data" "map")
+                                                                      :name :wild
+                                                                      :type "lisp"))))
                                         (:module "status-conditions"
                                             :depends-on ("init")
                                             :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                               (directory-files
                                                                   (pathname-directory-pathname
                                                                       (uiop/lisp-build:current-lisp-file-pathname))
-                                                                  "data/status-conditions/*.lisp")))))))
+                                                                  (make-pathname
+                                                                      :directory '(:relative "data" "status-conditions")
+                                                                      :name :wild
+                                                                      :type "lisp"))))))))

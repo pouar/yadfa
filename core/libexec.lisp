@@ -74,9 +74,16 @@
                          (uiop:register-clear-configuration-hook 'clear-mod-registry)
                          (uiop:register-clear-configuration-hook 'clear-pattern-cache))
                      (asdf:clear-configuration)
-                     (let* ((file (uiop:xdg-config-home "yadfa/mods.conf"))
+                     (let* ((file (uiop:merge-pathnames* (make-pathname
+                                                             :directory '(:relative "yadfa")
+                                                             :name "mods"
+                                                             :type "conf")
+                                      (uiop:xdg-config-home)))
                                (mods '()))
-                         (ensure-directories-exist (uiop:xdg-config-home "yadfa/"))
+                         (ensure-directories-exist
+                             (uiop:merge-pathnames* (make-pathname
+                                                        :directory '(:relative "yadfa"))
+                                 (uiop:xdg-config-home)))
                          (handler-case (with-open-file (stream file :if-does-not-exist :error)
                                            (setf mods (read stream)))
                              (file-error ()
@@ -399,10 +406,13 @@
         (gethash (list :map-pattern path designs) *pattern-cache*)
         (setf (gethash (list :map-pattern path designs) *pattern-cache*)
             (clim:make-pattern-from-bitmap-file
-                (merge-pathnames
-                    path
-                    (merge-pathnames
-                        #P"pixmaps/map-patterns/"
+                (uiop:merge-pathnames*
+                    (make-pathname
+                        :name path
+                        :type "xpm")
+                    (uiop:merge-pathnames*
+                        (make-pathname
+                            :directory '(:relative "pixmaps" "map-patterns"))
                         (if uiop:*image-dumped-p*
                             (make-pathname
                                 :device (pathname-device (truename (uiop:argv0)))
@@ -421,22 +431,22 @@
                     (let ((b 0)
                              (array
                                  (if clim-listener::*application-frame*
-                                     #1A(#P"nsew.xpm"
-                                            #P"nsw.xpm"
-                                            #P"nse.xpm"
-                                            #P"ns.xpm"
-                                            #P"new.xpm"
-                                            #P"nw.xpm"
-                                            #P"ne.xpm"
-                                            #P"n.xpm"
-                                            #P"sew.xpm"
-                                            #P"sw.xpm"
-                                            #P"se.xpm"
-                                            #P"s.xpm"
-                                            #P"ew.xpm"
-                                            #P"w.xpm"
-                                            #P"e.xpm"
-                                            #P"dot.xpm")
+                                     #1A("nsew"
+                                            "nsw"
+                                            "nse"
+                                            "ns"
+                                            "new"
+                                            "nw"
+                                            "ne"
+                                            "n"
+                                            "sew"
+                                            "sw"
+                                            "se"
+                                            "s"
+                                            "ew"
+                                            "w"
+                                            "e"
+                                            "dot")
                                      #1A("╋" "╋" "╋" "┼" "┫" "┫" "┫" "┤" "┣" "┣" "┣" "├" "┃" "┃" "┃" "│" "┻" "┻" "┻" "┴" "┛" "┛" "┛" "┘" "┗" "┗" "┗" "└" "╹" "╹" "╹" "╵" "┳" "┳" "┳" "┬" "┓" "┓" "┓" "┐" "┏" "┏" "┏" "┌" "╻" "╻" "╻" "╷" "━" "━" "━" "─" "╸" "╸" "╸" "╴" "╺" "╺" "╺" "╶" "▮" "▮" "▮" "▯"))))
                         (if clim-listener::*application-frame*
                             (progn
@@ -465,7 +475,7 @@
                             (eval (aref array b))
                             (aref array b)))))
         (let ((pattern
-                  (print-map-pattern-cache #P"blank.xpm" (list clim:+background-ink+ clim:+foreground-ink+)))
+                  (print-map-pattern-cache "blank" (list clim:+background-ink+ clim:+foreground-ink+)))
                  (start-position (when clim-listener::*application-frame*
                                      (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
             (if clim-listener::*application-frame*
@@ -495,7 +505,7 @@
                                                                   (get-zone current-position)
                                                                   (hiddenp (get-zone current-position)))
                                                               (not (get-zone current-position)))
-                                                          "blank.xpm"
+                                                          "blank"
                                                           (a current-position))
                                                       (clim:make-rgb-color
                                                           (if (and
