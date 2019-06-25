@@ -16,7 +16,7 @@
                                                       :name :wild
                                                       :type :wild)
                                                   (uiop:xdg-config-home)))
-                (list "YADFA:MAIN;**;*.*.*" (if uiop:*image-dumped-p*
+                (list "YADFA:HOME;**;*.*.*" (if uiop:*image-dumped-p*
                                                 (uiop:merge-pathnames*
                                                     (make-pathname
                                                         :directory '(:relative :wild-inferiors)
@@ -434,7 +434,7 @@
             (clim:make-pattern-from-bitmap-file
                 (uiop:merge-pathnames*
                     path
-                    #P"YADFA:MAIN;pixmaps;map-patterns;")
+                    #P"YADFA:HOME;pixmaps;map-patterns;")
                 :format :xpm
                 :designs designs))))
 (defun print-map (position)
