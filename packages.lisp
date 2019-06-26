@@ -289,6 +289,7 @@
         #:watertight-fursuit
         #:koopa-shell
         #:cheerleader-outfit
+        #:ballerina-dress
         #:toddler-dress
         #:knights-armor
         #:tshirt
@@ -347,6 +348,7 @@
         #:bandit-swim-diaper-cover
         #:lower-bandit-swim-diaper-cover
         #:female-bandit-swim-diaper-cover
+        #:pink-frilly-diaper
         #:magic-diaper-key
         #:gold-bar
         #:gem

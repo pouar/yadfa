@@ -458,3 +458,20 @@
         :thickness-capacity 400
         :name "Lower Bandit Swim diaper cover"
         :description "The females wear these when in the water to prevent their diapers from swelling up. It is transparent enough to show the state of the diaper and does nothing to hide the poofiness. It is much larger than the ones the males wear to accommodate the thicker padding."))
+(defclass pink-frilly-diaper (yadfa:diaper) ()
+    (:default-initargs
+        :sogginess-capacity 5000
+        :messiness-capacity 17000
+        :name "Thick Diaper"
+        :disposable t
+        :sellable nil
+        :thickness 50.8
+        :thickness-capacity 100
+        :description "A sissy pink frilly diaper. You look adorable with this"
+        :wear-wet-text '(5000 "little yellow streams are leaking down from the leg guards"
+                            2000 "It squishes when you walk"
+                            500 "The hearts on the front have faded"
+                            1 "You can barely tell you wet it")
+        :wear-mess-text '(20000 "Poo is leaking out of the leg guards"
+                             5000 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
+                             1 "You can feel a slight mess back there")))
