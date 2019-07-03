@@ -101,7 +101,7 @@
                                                          (write-line "You don't have a clean stuffer to give her")
                                                          (return))
                                                      (write-line "*You hand the dolphin a stuffer*")
-                                                     (format t "~a: Here, you might want this" (name-of (player-of *game*)))
+                                                     (format t "~a: Here, you might want this~%" (name-of (player-of *game*)))
                                                      (write-line "Dolphin: I'm no infant. I can hold it in.")
                                                      (write-line "*The dolphin panics as his bladder leaks a little*")
                                                      (write-line "Dolphin: Ok ok, I'll take them.")

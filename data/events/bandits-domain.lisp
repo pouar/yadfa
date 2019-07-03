@@ -256,6 +256,11 @@
                                  (name-of (player-of *game*))
                                  (if (malep (player-of *game*)) "his" "her")
                                  (if (malep (player-of *game*)) "his" "her"))))
+                     (multiple-value-bind
+                         (value key)
+                         (pop-from-expansion user a)
+                         (when (eq key :wet/mess)
+                             (setf a value)))
                      (format t "*The raccoon starts laughing*~%~%")
                      (format t "Shop Owner: That never gets old. Here's the key as promised, enjoy ~abutt~%~%"
                          (if (car a)
