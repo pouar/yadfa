@@ -18,7 +18,7 @@
         (sleep 2))
     (set-logical-pathnames)
     (load-mods)
-    (let ((file (uiop:xdg-config-home "yadfa/yadfarc")))
+    (let ((file (translate-logical-pathname "yadfa:config;yadfarc")))
         (when (probe-file file)
             (load file)))
     (in-package :yadfa-user)
@@ -26,11 +26,7 @@
                      (net.didierverna.declt:declt :yadfa
                          :license :gpl
                          :texi-name "yadfa-reference"
-                         :texi-directory (uiop:merge-pathnames*
-                                             "docs/reference/"
-                                             (if uiop:*image-dumped-p*
-                                                 (pathname (directory-namestring (truename (uiop:argv0))))
-                                                 (asdf:system-source-directory :yadfa)))
+                         :texi-directory (translate-logical-pathname "yadfa:home;docs;reference;")
                          :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically")
                      (uiop:quit))
     (use-package :yadfa-world :yadfa-user)
