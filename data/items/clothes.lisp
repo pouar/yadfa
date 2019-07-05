@@ -329,3 +329,11 @@
         :bulge-text '(25 "The skirt does absolutely nothing to hide your padding"
                          #.(* 1/2 25) "The skirt does a good job hiding your padding, as long as you're standing still"
                          0 "It fits quite loosely")))
+(defclass braixen-dress (yadfa:dress) ()
+    (:default-initargs
+        :name "Braixen Dress"
+        :value 150
+        :description "A furry dress that looks like the fur of a Braixen"
+        :bulge-text '(25 "The skirt does absolutely nothing to hide your padding"
+                         #.(* 1/2 25) "The skirt does a good job hiding your padding, as long as you're standing still"
+                         0 "It fits quite nicely")))

@@ -290,6 +290,7 @@
         #:koopa-shell
         #:cheerleader-outfit
         #:ballerina-dress
+        #:braixen-dress
         #:toddler-dress
         #:knights-armor
         #:tshirt
