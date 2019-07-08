@@ -14,9 +14,9 @@
                     (:feature :slynk "slynk")
                     (:feature :swank "swank") (:feature :yadfa-docs "net.didierverna.declt"))
     :components ((:file "packages")
-                    (:file "main" :depends-on ("packages"))
+                    (:file "main" :depends-on ("packages" "core"))
                     (:module "core"
-                        :depends-on ("packages" "main")
+                        :depends-on ("packages")
                         :components ((:file "util")
                                         (:file "structs")
                                         (:file "init" :depends-on ("patches"))

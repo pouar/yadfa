@@ -18,7 +18,7 @@
         (sleep 2))
     (set-logical-pathnames)
     (load-mods)
-    (let ((file (translate-logical-pathname "yadfa:config;yadfarc")))
+    (let ((file #P"yadfa:config;yadfarc"))
         (when (probe-file file)
             (load file)))
     (in-package :yadfa-user)
