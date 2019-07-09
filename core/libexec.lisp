@@ -691,29 +691,51 @@
                                   (> (getf (cdr ,wet/mess) :mess-amount) 0))
                             (pushnew ,i (getf (cdr ,wet/mess) :popped)))
                         (pushnew ,i ,return))))
-        (let ((first t)
+        (let ((last (car (last (wear-of user))))
                  (return ()))
             (iter
                 (for i in (reverse (wear-of user)))
-                (let ((clothing (when (typep i 'bottoms)
-                                    (member i (wear-of user)))))
+                (let* ((clothing (when (or
+                                          (and
+                                              (eq i last)
+                                              (typep i 'bottoms)
+                                              (thickness-capacity-of i)
+                                              (thickness-capacity-threshold-of i))
+                                          (and
+                                              (not (eq i last))
+                                              (typep i 'bottoms)))
+                                    (member i (wear-of user))))
+                         (total-thickness (if (and
+                                                  (typep i 'bottoms)
+                                                  (cadr clothing)
+                                                  (thickness-capacity-of i)
+                                                  (thickness-capacity-threshold-of i)
+                                                  (> (total-thickness
+                                                         (cdr clothing))
+                                                      (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
+                                              (total-thickness
+                                                  (cdr clothing)))))
                     (when
                         (or
                             (and
-                                first
+                                (eq i last)
                                 (typep i 'bottoms)
                                 (cadr clothing)
                                 (thickness-capacity-of i)
                                 (thickness-capacity-threshold-of i)
-                                (> (total-thickness
-                                       (cdr clothing))
+                                (> total-thickness
                                     (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
                             (and
-                                (not first)
+                                (not (eq i last))
                                 (typep i 'bottoms)))
-                        (setf first nil)
                         (cond
-                            ((typep i 'onesie/closed)
+                            ((and
+                                 (typep i 'onesie/closed)
+                                 (cadr clothing)
+                                 (thickness-capacity-of i)
+                                 (thickness-capacity-threshold-of i)
+                                 (> total-thickness
+                                     (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
                                 (toggle-onesie%% i)
                                 (if (lockedp i)
                                     (progn
@@ -733,8 +755,7 @@
                                          (and
                                              (thickness-capacity-of i)
                                              (thickness-capacity-threshold-of i)
-                                             (> (total-thickness
-                                                    (cdr clothing))
+                                             (> total-thickness
                                                  (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i)))))))
                                 (push i (inventory-of
                                             (if (typep user 'team-member)
@@ -748,8 +769,7 @@
                             ((and (typep i '(and bottoms (not incontinence-product)))
                                  (thickness-capacity-of i)
                                  (thickness-capacity-threshold-of i)
-                                 (> (total-thickness
-                                        (cdr clothing))
+                                 (> total-thickness
                                      (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
                                 (removef (wear-of user) i :count 1)
                                 (format t "~a's ~a tears from the expansion and is destroyed~%~%"
