@@ -1,6 +1,6 @@
 (in-package :cl-user)
 (uiop:define-package #:yadfa-util
-    (:use #:cl #:iterate)
+  (:use #:cl #:iterate)
   (:export
    #:shl
    #:shr
@@ -16,7 +16,7 @@
    #:removef-if)
   (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package #:yadfa
-    (:use #:cl #:yadfa-util #:iterate #:ugly-tiny-infix-macro #:alexandria)
+  (:use #:cl #:yadfa-util #:iterate #:ugly-tiny-infix-macro #:alexandria)
   (:import-from #:macro-level #:macro-level)
   (:export
    ;;variables
@@ -247,16 +247,16 @@
    #:fainted-of)
   (:documentation "Yet Another Diaperfur Adventure"))
 (uiop:define-package #:yadfa-bin
-    (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files #:get-inventory-of-type)
+  (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files #:get-inventory-of-type)
   (:documentation "Commands that the player can run anytime"))
 (uiop:define-package #:yadfa-world
-    (:export #:move #:interact #:save-game #:load-game #:go-potty #:tickle #:wash-all-in #:use-item #:add-ally-to-team #:remove-ally-from-team #:swap-team-member #:stats #:place #:reload)
+  (:export #:move #:interact #:save-game #:load-game #:go-potty #:tickle #:wash-all-in #:use-item #:add-ally-to-team #:remove-ally-from-team #:swap-team-member #:stats #:place #:reload)
   (:documentation "contains the commands when in the open world (assuming that's what it's called) (and not in something like a battle). The player probably shouldn't call these with the package prefix unless they're developing"))
 (uiop:define-package #:yadfa-battle
-    (:export #:fight #:run #:use-item #:stats #:reload)
+  (:export #:fight #:run #:use-item #:stats #:reload)
   (:documentation "Contains the commands used when battling. The player probably shouldn't call these with the package prefix unless they're developing"))
 (uiop:define-package #:yadfa-moves
-    (:import-from #:macro-level #:macro-level)
+  (:import-from #:macro-level #:macro-level)
   (:use #:yadfa #:yadfa-util #:cl #:iterate)
   (:export
    #:kamehameha
@@ -268,7 +268,7 @@
    #:mush)
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package #:yadfa-items
-    (:import-from #:macro-level #:macro-level)
+  (:import-from #:macro-level #:macro-level)
   (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:incontinence-pad)
   (:use #:yadfa #:yadfa-util #:cl #:iterate)
   (:export
@@ -377,7 +377,7 @@
    #:itemfinder)
   (:documentation "Contains all the items in the game"))
 (uiop:define-package #:yadfa-enemies
-    (:import-from #:macro-level #:macro-level)
+  (:import-from #:macro-level #:macro-level)
   (:use #:cl #:yadfa #:yadfa-util #:iterate #:alexandria)
   (:export
    #:magikarp
@@ -393,7 +393,7 @@
    #:padded-fursuiter-servant)
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package #:yadfa-status-conditions
-    (:import-from #:macro-level #:macro-level)
+  (:import-from #:macro-level #:macro-level)
   (:use #:cl #:yadfa #:yadfa-util #:iterate)
   (:export
    #:wetting
@@ -402,7 +402,7 @@
    #:tickled)
   (:documentation "Contains all the status condtions in the game"))
 (uiop:define-package #:yadfa-zones
-    (:import-from #:macro-level #:macro-level)
+  (:import-from #:macro-level #:macro-level)
   (:use #:yadfa #:yadfa-util #:cl #:iterate)
   (:export
    #:peachs-castle-wannabe
@@ -426,12 +426,12 @@
    #:your-ship)
   (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package #:yadfa-events
-    (:use #:yadfa #:yadfa-util #:cl #:iterate)
+  (:use #:yadfa #:yadfa-util #:cl #:iterate)
   (:export
    #:get-diaper-locked-1)
   (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package #:yadfa-allies
-    (:use #:yadfa #:yadfa-util #:cl #:iterate)
+  (:use #:yadfa #:yadfa-util #:cl #:iterate)
   (:export
    #:slynk
    #:chris
@@ -439,5 +439,5 @@
    #:furry)
   (:documentation "Contains all the allies in the game"))
 (uiop:define-package #:yadfa-user
-    (:use #:cl #:yadfa #:yadfa-util #:yadfa-bin #:iterate #:ugly-tiny-infix-macro #:alexandria)
+  (:use #:cl #:yadfa #:yadfa-util #:yadfa-bin #:iterate #:ugly-tiny-infix-macro #:alexandria)
   (:documentation "The package that the player typically executes commands from"))
