@@ -83,20 +83,20 @@
     :accessor energy-of
     :documentation "Energy of the character.")
    (default-attack-power
-       :initarg :default-attack-power
-     :initform 40
-     :accessor default-attack-power-of
-     :documentation "The default attack base stat when no attack is selected and no weapon is equipped")
+    :initarg :default-attack-power
+    :initform 40
+    :accessor default-attack-power-of
+    :documentation "The default attack base stat when no attack is selected and no weapon is equipped")
    (default-attack
-       :initarg :default-attack
-     :accessor default-attack-of
-     :initform '(lambda (target user)
-                 (let ((a (calculate-damage target user (default-attack-power-of user))))
-                   (format t "~a attacks ~a~%" (name-of user) (name-of target))
-                   (decf (health-of target) a)
-                   (format t "~a received ~a damage~%" (name-of target) a)
-                   a))
-     :documentation "The default attack when no attack is selected and no weapon is equipped")
+    :initarg :default-attack
+    :accessor default-attack-of
+    :initform '(lambda (target user)
+                (let ((a (calculate-damage target user (default-attack-power-of user))))
+                  (format t "~a attacks ~a~%" (name-of user) (name-of target))
+                  (decf (health-of target) a)
+                  (format t "~a received ~a damage~%" (name-of target) a)
+                  a))
+    :documentation "The default attack when no attack is selected and no weapon is equipped")
    (level
     :initarg :level
     :initform 2
@@ -228,16 +228,14 @@
     :documentation "Whether this ally is potty trained. Valid values so far are :NONE, :REBEL, :SILENT, and LAST-MINUTE"))
   (:documentation "Team member that is not the player")
   (:default-initargs
-      :base-stats (list :health 35 :attack 55 :defense 40 :energy 35 :speed 90)
-    :name "Anon"
-    :level 5
-    :species "fox"
-    :bladder/fill-rate (* (/ 2000 24 60) 2)
-    :bowels/fill-rate (* (/ 12000 24 60) 2)
-    :wear (list (make-instance 'yadfa-items:diaper))
-    :moves (list
-            (make-instance 'yadfa-moves:watersport)
-            (make-instance 'yadfa-moves:mudsport))))
+   :base-stats (list :health 35 :attack 55 :defense 40 :energy 35 :speed 90)
+   :name "Anon"
+   :level 5
+   :species "fox"
+   :bladder/fill-rate (* (/ 2000 24 60) 2)
+   :bowels/fill-rate (* (/ 12000 24 60) 2)
+   :wear (list (make-instance 'yadfa-items:diaper))
+   :moves (list (make-instance 'yadfa-moves:watersport) (make-instance 'yadfa-moves:mudsport))))
 (defmethod print-object ((obj ally) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (format stream "~w" (name-of obj))))
@@ -246,8 +244,7 @@
     ((c base-character) &rest initargs &key &allow-other-keys)
   (declare (ignorable initargs))
   (iter (for (a b) on initargs)
-        (cond
-          ((eq a :base-health)
+    (cond ((eq a :base-health)
            (setf (getf (base-stats-of c) :health)
                  b))
           ((eq a :base-attack)
@@ -263,10 +260,11 @@
            (setf (getf (base-stats-of c) :energy)
                  b))))
   (unless (iter (for (a b) on initargs)
-                (when (eq a :health) (leave t)))
+            (when (eq a :health)
+              (leave t)))
     (setf (health-of c) (calculate-stat c :health)))
   (unless (iter (for (a b) on initargs)
-                (when (eq a :energy) (leave t)))
+            (when (eq a :energy) (leave t)))
     (setf (energy-of c) (calculate-stat c :energy)))
   (setf (exp-of c) (calculate-level-to-exp (level-of c))))
 (defclass player (team-member)
@@ -286,24 +284,23 @@
     :documentation "Alist of moves the player learns by leveling up, first element is the level when you learn them ove, second is a symbol from the `yadfa-moves'"))
   (:documentation "The player")
   (:default-initargs
-      :base-stats (list :health 45 :attack 80 :defense 50 :energy 45 :speed 120)
-    :name "Anon"
-    :description "This is you stupid"
-    :level 5
-    :species "Fox"
-    :bladder/fill-rate (* (/ 2000 24 60) 2)
-    :bowels/fill-rate (* (/ 12000 24 60) 2)
-    :wear (list (make-instance 'yadfa-items:diaper))
-    :moves (list
-            (make-instance 'yadfa-moves:watersport)
-            (make-instance 'yadfa-moves:mudsport)
-            (make-instance 'yadfa-moves:mush)
-            (make-instance 'yadfa-moves:tickle))))
+   :base-stats (list :health 45 :attack 80 :defense 50 :energy 45 :speed 120)
+   :name "Anon"
+   :description "This is you stupid"
+   :level 5
+   :species "Fox"
+   :bladder/fill-rate (* (/ 2000 24 60) 2)
+   :bowels/fill-rate (* (/ 12000 24 60) 2)
+   :wear (list (make-instance 'yadfa-items:diaper))
+   :moves (list (make-instance 'yadfa-moves:watersport)
+                (make-instance 'yadfa-moves:mudsport)
+                (make-instance 'yadfa-moves:mush)
+                (make-instance 'yadfa-moves:tickle))))
 (defmethod initialize-instance :after
     ((c player) &rest initargs)
   (declare (ignorable initargs))
   (unless (iter (for (a b) on initargs)
-                (when (eq a :warp-on-death-point) (leave t)))
+            (when (eq a :warp-on-death-point) (leave t)))
     (setf (warp-on-death-point-of c) (position-of c))))
 (defclass zone (yadfa-class)
   ((description
@@ -804,16 +801,16 @@
 (defclass pullon (padding) ()
   (:default-initargs
    :thickness (* 1/2 25.4)
-    :thickness-capacity 40))
+   :thickness-capacity 40))
 (defclass tabbed-briefs (padding) ()
   (:default-initargs
    :thickness 25.4
-    :thickness-capacity 80
-    :key 'yadfa-items:magic-diaper-key))
+   :thickness-capacity 80
+   :key 'yadfa-items:magic-diaper-key))
 (defclass incontinence-pad (incontinence-product) ()
   (:default-initargs
    :thickness (* 1/4 25.4)
-    :thickness-capacity 20))
+   :thickness-capacity 20))
 (defclass undies (closed-bottoms)
   ()
   (:default-initargs
@@ -828,12 +825,12 @@
   ()
   (:default-initargs
    :thickness-capacity 100
-    :thickness-capacity-threshold nil))
+   :thickness-capacity-threshold nil))
 (defclass dress (full-outfit)
   ()
   (:default-initargs
    :thickness-capacity 100
-    :thickness-capacity-threshold nil))
+   :thickness-capacity-threshold nil))
 (defclass shirt (top)
   ())
 (defclass pants (closed-pants)
@@ -841,106 +838,93 @@
 (defclass toilet (prop) ()
   (:default-initargs
    :name "Toilet"
-    :description "A toilet"
-    :actions (list :use (make-action
-                         :documentation "Use the toilet. if WET or MESS is T, the player will empty his bladder/bowels completely. If a number is given, the player will empty his bladder by that amount, however the player will mess completely no matter what number you give it if you provide a number. If ALLY number is specified, that ALLY uses the toilet, otherwise it's the player"
-                         :lambda '(lambda
-                                   (prop &rest keys &key wet mess pull-pants-down ally &allow-other-keys)
-                                   (declare
-                                    (type prop prop)
-                                    (type boolean pull-pants-down)
-                                    (type (or integer null) ally)
-                                    (type (or boolean number) wet mess))
-                                   (check-type prop prop)
-                                   (check-type pull-pants-down boolean)
-                                   (check-type ally (or integer null))
-                                   (check-type wet (or boolean number))
-                                   (check-type mess (or boolean number))
-                                   (block nil
-                                     (when (and ally (>= ally (list-length (allies-of *game*))))
-                                       (format t "That ally doesn't exist~%")
-                                       (return))
-                                     (potty-on-toilet
-                                      prop
-                                      :wet wet
-                                      :mess mess
-                                      :pants-down pull-pants-down
-                                      :user (if ally
-                                                (nth ally (allies-of *game*))
-                                                (player-of *game*))))))))
+   :description "A toilet"
+   :actions (list :use (make-action
+                        :documentation "Use the toilet. if WET or MESS is T, the player will empty his bladder/bowels completely. If a number is given, the player will empty his bladder by that amount, however the player will mess completely no matter what number you give it if you provide a number. If ALLY number is specified, that ALLY uses the toilet, otherwise it's the player"
+                        :lambda '(lambda (prop &rest keys &key wet mess pull-pants-down ally &allow-other-keys)
+                                  (declare (type prop prop) (type boolean pull-pants-down) (type (or integer null) ally) (type (or boolean number) wet mess))
+                                  (check-type prop prop)
+                                  (check-type pull-pants-down boolean)
+                                  (check-type ally (or integer null))
+                                  (check-type wet (or boolean number))
+                                  (check-type mess (or boolean number))
+                                  (block nil
+                                    (when (and ally (>= ally (list-length (allies-of *game*))))
+                                      (format t "That ally doesn't exist~%")
+                                      (return))
+                                    (potty-on-toilet prop
+                                                     :wet wet
+                                                     :mess mess
+                                                     :pants-down pull-pants-down
+                                                     :user (if ally
+                                                               (nth ally (allies-of *game*))
+                                                               (player-of *game*))))))))
   (:documentation "Class for toilets. I'm pretty sure I don't need to tell you what these are for."))
 (defclass washer (prop) ()
   (:default-initargs
    :name "Washer"
-    :description "A place to clean your reusable diapers and all the clothes you've ruined"
-    :actions (list :use (make-action
-                         :documentation "Wash your clothes in this"
-                         :lambda '(lambda
-                                   (prop &rest keys &key &allow-other-keys)
-                                   (declare (type prop prop))
-                                   (check-type prop prop)
-                                   (yadfa-world:wash-all-in prop)))))
+   :description "A place to clean your reusable diapers and all the clothes you've ruined"
+   :actions (list :use (make-action
+                        :documentation "Wash your clothes in this"
+                        :lambda '(lambda
+                                  (prop &rest keys &key &allow-other-keys)
+                                  (declare (type prop prop))
+                                  (check-type prop prop)
+                                  (yadfa-world:wash-all-in prop)))))
   (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 
 (defclass automatic-changing-table (prop) ()
   (:default-initargs
    :name "Automatic Chainging Table"
-    :description "A changing table that automatically changes you"
-    :actions
-    (list :use
-          (make-action
-           :documentation "Turn it on"
-           :lambda
-           '(lambda
-             (prop &rest keys &key &allow-other-keys)
-             (declare (type prop prop))
-             (check-type prop prop)
-             (iter (for j in (append (list (player-of *game*)) (allies-of *game*)))
-              (let ((a (calculate-diaper-usage j)))
-                (when
-                    (and
-                     (or
-                      (>=
-                       (getf a :sogginess)
-                       (/ (getf a :sogginess-capacity) 4))
-                      (>=
-                       (getf a :messiness)
-                       (/ (getf a :messiness-capacity) 4)))
-                     (filter-items (wear-of j) 'closed-bottoms))
-                  (format t "Mechanical arms come out of the changing table and strap ~a down on the table to prevent ~a from escaping and proceeeds to change ~a~%~%"
-                          (name-of j)
-                          (if (malep j) "him" "her")
-                          (if (malep j) "him" "her"))
-                  (if (filter-items (wear-of j) 'padding)
-                      (progn
-                        (format t "~a: Hey!!! Don't change me here!!! People can see me!!! Stop!!!~%~%"
-                                (name-of j)))
-                      (progn
-                        (format t "~a: Hey!!! I don't need diapers!!! Stop!!!~%~%"
-                                (name-of j))))
-                  (change-the-baby j 'yadfa-items:kurikia-thick-diaper :locked t)
-                  (format t "*The machine removes ~a's soggy clothing (and any clothing that doesn't fit over the new diaper) and puts a thick diaper on ~a, then locks it to prevent the baby from removing it.*~%~%"
-                          (name-of j)
-                          (if (malep j) "him" "her"))
-                  (format t "*The machine unstraps ~a from the table and lets ~a go. The diaper is so thick ~a's legs are spread apart forcing ~a to waddle*~%~%"
-                          (name-of j)
-                          (if (malep j) "him" "her")
-                          (name-of j)
-                          (if (malep j) "him" "her"))
-                  (trigger-event 'yadfa-events:get-diaper-locked-1))))))))
+   :description "A changing table that automatically changes you"
+   :actions (list :use (make-action
+                        :documentation "Turn it on"
+                        :lambda '(lambda (prop &rest keys &key &allow-other-keys)
+                                  (declare (type prop prop))
+                                  (check-type prop prop)
+                                  (iter (for j in (append (list (player-of *game*)) (allies-of *game*)))
+                                    (let ((a (calculate-diaper-usage j)))
+                                      (when (and
+                                             (or
+                                              (>=
+                                               (getf a :sogginess)
+                                               (/ (getf a :sogginess-capacity) 4))
+                                              (>=
+                                               (getf a :messiness)
+                                               (/ (getf a :messiness-capacity) 4)))
+                                             (filter-items (wear-of j) 'closed-bottoms))
+                                        (format t "Mechanical arms come out of the changing table and strap ~a down on the table to prevent ~a from escaping and proceeeds to change ~a~%~%"
+                                                (name-of j)
+                                                (if (malep j) "him" "her")
+                                                (if (malep j) "him" "her"))
+                                        (if (filter-items (wear-of j) 'padding)
+                                            (progn
+                                              (format t "~a: Hey!!! Don't change me here!!! People can see me!!! Stop!!!~%~%"
+                                                      (name-of j)))
+                                            (progn
+                                              (format t "~a: Hey!!! I don't need diapers!!! Stop!!!~%~%"
+                                                      (name-of j))))
+                                        (change-the-baby j 'yadfa-items:kurikia-thick-diaper :locked t)
+                                        (format t "*The machine removes ~a's soggy clothing (and any clothing that doesn't fit over the new diaper) and puts a thick diaper on ~a, then locks it to prevent the baby from removing it.*~%~%"
+                                                (name-of j)
+                                                (if (malep j) "him" "her"))
+                                        (format t "*The machine unstraps ~a from the table and lets ~a go. The diaper is so thick ~a's legs are spread apart forcing ~a to waddle*~%~%"
+                                                (name-of j)
+                                                (if (malep j) "him" "her")
+                                                (name-of j)
+                                                (if (malep j) "him" "her"))
+                                        (trigger-event 'yadfa-events:get-diaper-locked-1))))))))
   (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 (defclass checkpoint (prop) ()
   (:default-initargs
    :name "Checkpoint"
-    :description "You can use this to set this zone as a checkpoint so when you lose a battle, you'll warp to here rather than at the beginning of the game"
-    :actions (list :set-checkpoint (make-action
-                                    :documentation "Set checkpoint"
-                                    :lambda '(lambda
-                                              (prop &rest keys &key &allow-other-keys)
-                                              (declare (type prop prop) (ignore prop))
-                                              (check-type prop prop)
-                                              (setf (warp-on-death-point-of (player-of *game*)) (position-of (player-of *game*)))
-                                              (format t "You will now teleport here when you black out")))))
+   :description "You can use this to set this zone as a checkpoint so when you lose a battle, you'll warp to here rather than at the beginning of the game"
+   :actions (list :set-checkpoint (make-action :documentation "Set checkpoint"
+                                               :lambda '(lambda (prop &rest keys &key &allow-other-keys)
+                                                         (declare (type prop prop) (ignore prop))
+                                                         (check-type prop prop)
+                                                         (setf (warp-on-death-point-of (player-of *game*)) (position-of (player-of *game*)))
+                                                         (format t "You will now teleport here when you black out")))))
   (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 (defclass shop (prop)
   ((items-for-sale
@@ -950,47 +934,34 @@
     :documentation "Quoted list of class names for sale"))
   (:default-initargs
    :name "Shop"
-    :description "A place to buy crap with your bitcoins")
+   :description "A place to buy crap with your bitcoins")
   (:documentation "Class for shops, you can buy stuff from these."))
 (defmethod initialize-instance :after
     ((c shop) &rest args &key &allow-other-keys)
   (declare (ignorable args))
   (appendf (actions-of c)
-           (list
-            :list-items-for-sale (make-action
-                                  :documentation "List items for sale"
-                                  :lambda '(lambda
-                                            (prop &rest keys &key &allow-other-keys)
-                                            (declare (type prop prop)
-                                             (ignore keys))
-                                            (check-type prop prop)
-                                            (shopfun (items-for-sale-of prop) :format-items t)))
-            :buy-items (make-action
-                        :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
-                        :lambda '(lambda
-                                  (prop &rest keys &key items &allow-other-keys)
-                                  (declare
-                                   (type prop prop)
-                                   (type list items)
-                                   (ignore keys))
-                                  (check-type prop prop)
-                                  (check-type items list)
-                                  (shopfun (items-for-sale-of prop)
-                                   :items-to-buy items
-                                   :user (player-of *game*))))
-            :sell-items (make-action
-                         :documentation "Sell items. ITEMS is a list of indexes where each index corrisponds to an item in your inventory"
-                         :lambda '(lambda
-                                   (prop &rest keys &key items &allow-other-keys)
-                                   (declare
-                                    (type prop prop)
-                                    (type list items)
-                                    (ignore keys))
-                                   (check-type prop prop)
-                                   (check-type items list)
-                                   (shopfun (items-for-sale-of prop)
-                                    :items-to-sell items
-                                    :user (player-of *game*)))))))
+           (list :list-items-for-sale (make-action :documentation "List items for sale"
+                                                   :lambda '(lambda (prop &rest keys &key &allow-other-keys)
+                                                             (declare (type prop prop)
+                                                              (ignore keys))
+                                                             (check-type prop prop)
+                                                             (shopfun (items-for-sale-of prop) :format-items t)))
+                 :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
+                                         :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
+                                                   (declare (type prop prop) (type list items) (ignore keys))
+                                                   (check-type prop prop)
+                                                   (check-type items list)
+                                                   (shopfun (items-for-sale-of prop)
+                                                    :items-to-buy items
+                                                    :user (player-of *game*))))
+                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corrisponds to an item in your inventory"
+                                          :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
+                                                    (declare (type prop prop) (type list items) (ignore keys))
+                                                    (check-type prop prop)
+                                                    (check-type items list)
+                                                    (shopfun (items-for-sale-of prop)
+                                                     :items-to-sell items
+                                                     :user (player-of *game*)))))))
 (defclass vending-machine (prop)
   ((items-for-sale
     :initarg :items-for-sale
@@ -999,125 +970,102 @@
     :documentation "Quoted list of class names for sale"))
   (:default-initargs
    :name "Vending Machine"
-    :description "An automated machine where you can buy items from")
+   :description "An automated machine where you can buy items from")
   (:documentation "Class for vending machines, Functions like a shop, but only lets you buy items instead of selling them"))
 (defmethod initialize-instance :after
     ((c vending-machine) &rest args &key &allow-other-keys)
   (declare (ignorable args))
   (appendf (actions-of c)
-           (list
-            :list-items-for-sale (make-action
-                                  :documentation "List items for sale"
-                                  :lambda '(lambda
-                                            (prop &rest keys &key &allow-other-keys)
-                                            (declare (type prop prop))
-                                            (check-type prop prop)
-                                            (shopfun (items-for-sale-of prop) :format-items t)))
-            :buy-items (make-action
-                        :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
-                        :lambda '(lambda
-                                  (prop &rest keys &key items &allow-other-keys)
-                                  (declare (type prop prop) (type list items))
-                                  (check-type prop prop)
-                                  (check-type items list)
-                                  (shopfun (items-for-sale-of prop)
-                                   :items-to-buy items
-                                   :user (player-of *game*)))))))
+           (list :list-items-for-sale (make-action :documentation "List items for sale"
+                                                   :lambda '(lambda (prop &rest keys &key &allow-other-keys)
+                                                             (declare (type prop prop))
+                                                             (check-type prop prop)
+                                                             (shopfun (items-for-sale-of prop) :format-items t)))
+                 :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
+                                         :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
+                                                   (declare (type prop prop) (type list items))
+                                                   (check-type prop prop)
+                                                   (check-type items list)
+                                                   (shopfun (items-for-sale-of prop)
+                                                    :items-to-buy items
+                                                    :user (player-of *game*)))))))
 (defclass debug-shop (prop) ()
   (:default-initargs
    :name "Shop"
-    :description "A place to buy crap with your bitcoins")
+   :description "A place to buy crap with your bitcoins")
   (:documentation "Class for shops, you can buy stuff from these."))
 (defmethod initialize-instance :after
     ((c debug-shop) &rest args &key &allow-other-keys)
   (declare (ignorable args))
   (appendf (actions-of c)
-           (list
-            :list-items-for-sale (make-action
-                                  :documentation "List items for sale"
-                                  :lambda '(lambda
-                                            (prop &rest keys &key &allow-other-keys)
-                                            (declare (type prop prop))
-                                            (check-type prop prop)
-                                            (shopfun
-                                             (let ((a ()))
-                                               (iter
-                                                (for i in (list-all-packages))
-                                                (unless
-                                                    (equal i (find-package :yadfa))
-                                                  (do-external-symbols
-                                                      (s i)
-                                                    (when (and
-                                                           (find-class s nil)
-                                                           (subclassp
-                                                            (find-class s)
-                                                            (find-class 'item))
-                                                           (tossablep (make-instance s)))
-                                                      (push (cons s nil) a)))))
-                                               a)
-                                             :format-items t)))
-            :buy-items (make-action
-                        :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
-                        :lambda '(lambda
-                                  (prop &rest keys &key items &allow-other-keys)
-                                  (declare (type prop prop) (type list items))
-                                  (check-type prop prop)
-                                  (check-type items list)
-                                  (shopfun
-                                   (let ((a ()))
-                                     (iter
-                                      (for i in (list-all-packages))
-                                      (unless
-                                          (equal i (find-package :yadfa))
-                                        (do-external-symbols
-                                            (s i)
-                                          (when (and
-                                                 (find-class s nil)
-                                                 (subclassp
-                                                  (find-class s)
-                                                  (find-class 'item))
-                                                 (tossablep (make-instance s)))
-                                            (push (cons s nil) a)))))
-                                     a)
-                                   :items-to-buy items
-                                   :user (player-of *game*))))
-            :sell-items (make-action
-                         :documentation "Sell items. ITEMS is a list of indexes where each index corrisponds to an item in your inventory"
-                         :lambda '(lambda
-                                   (prop &rest keys &key items &allow-other-keys)
-                                   (declare (type prop prop) (type list items))
-                                   (check-type prop prop)
-                                   (check-type items list)
-                                   (shopfun
-                                    (let ((a ()))
-                                      (iter
-                                       (for i in (list-all-packages))
-                                       (unless
-                                           (equal i (find-package :yadfa))
-                                         (do-external-symbols
-                                             (s i)
-                                           (when (and
-                                                  (find-class s nil)
-                                                  (subclassp
-                                                   (find-class s)
-                                                   (find-class 'item))
-                                                  (tossablep (make-instance s)))
-                                             (push (cons s nil) a)))))
-                                      a)
-                                    :items-to-sell items
-                                    :user (player-of *game*)))))))
+           (list :list-items-for-sale (make-action :documentation "List items for sale"
+                                                   :lambda '(lambda (prop &rest keys &key &allow-other-keys)
+                                                             (declare (type prop prop))
+                                                             (check-type prop prop)
+                                                             (shopfun (let ((a ()))
+                                                                        (iter (for i in (list-all-packages))
+                                                                          (unless (equal i (find-package :yadfa))
+                                                                            (do-external-symbols  (s i)
+                                                                              (when (and
+                                                                                     (find-class s nil)
+                                                                                     (subclassp
+                                                                                      (find-class s)
+                                                                                      (find-class 'item))
+                                                                                     (tossablep (make-instance s)))
+                                                                                (push (cons s nil) a)))))
+                                                                        a)
+                                                              :format-items t)))
+                 :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
+                                         :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
+                                                   (declare (type prop prop) (type list items))
+                                                   (check-type prop prop)
+                                                   (check-type items list)
+                                                   (shopfun
+                                                    (let ((a ()))
+                                                      (iter (for i in (list-all-packages))
+                                                        (unless
+                                                            (equal i (find-package :yadfa))
+                                                          (do-external-symbols (s i)
+                                                            (when (and
+                                                                   (find-class s nil)
+                                                                   (subclassp
+                                                                    (find-class s)
+                                                                    (find-class 'item))
+                                                                   (tossablep (make-instance s)))
+                                                              (push (cons s nil) a)))))
+                                                      a)
+                                                    :items-to-buy items
+                                                    :user (player-of *game*))))
+                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corrisponds to an item in your inventory"
+                                          :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
+                                                    (declare (type prop prop) (type list items))
+                                                    (check-type prop prop)
+                                                    (check-type items list)
+                                                    (shopfun
+                                                     (let ((a ()))
+                                                       (iter
+                                                         (for i in (list-all-packages))
+                                                         (unless (equal i (find-package :yadfa))
+                                                           (do-external-symbols (s i)
+                                                             (when (and
+                                                                    (find-class s nil)
+                                                                    (subclassp
+                                                                     (find-class s)
+                                                                     (find-class 'item))
+                                                                    (tossablep (make-instance s)))
+                                                               (push (cons s nil) a)))))
+                                                       a)
+                                                     :items-to-sell items
+                                                     :user (player-of *game*)))))))
 (defclass bed (prop) ()
   (:default-initargs
    :name "Bed"
-    :description "A place to sleep and recover. Be sure to go potty so you don't wet it."
-    :actions (list
-              :sleep (make-action
-                      :documentation "Sleep in this bed and recover your health and energy. Be sure to go potty before you go to bed so you don't wet it"
-                      :lambda '(lambda
-                                (prop &rest keys &key &allow-other-keys)
-                                (declare (type prop prop) (ignore prop))
-                                (check-type prop prop)
-                                (go-to-sleep)))))
+   :description "A place to sleep and recover. Be sure to go potty so you don't wet it."
+   :actions (list :sleep (make-action :documentation "Sleep in this bed and recover your health and energy. Be sure to go potty before you go to bed so you don't wet it"
+                                      :lambda '(lambda (prop &rest keys &key &allow-other-keys)
+                                                (declare (type prop prop) (ignore prop))
+                                                (check-type prop prop)
+                                                (go-to-sleep)))))
   (:documentation "Class for beds, you can sleep in these."))
 (defclass config (yadfa-class)
   ())
@@ -1156,59 +1104,26 @@
     :initarg :battle-script
     :initform (lambda (self target)
                 (let ((moves-with-health
-                       (iter
-                        (for i in (moves-of self))
-                        (when (and
-                               (>= (energy-of self) (energy-cost-of i))
-                               (position :ai-health-inc (ai-flags-of i)))
-                          (collect i))))
-                      (moves-can-use
-                       (iter
-                        (for i in (moves-of self))
-                        (when (>= (energy-of self) (energy-cost-of i))
-                          (collect i))))
+                        (iter (for i in (moves-of self))
+                          (when (and (>= (energy-of self) (energy-cost-of i)) (position :ai-health-inc (ai-flags-of i)))
+                            (collect i))))
+                      (moves-can-use (iter (for i in (moves-of self))
+                                       (when (>= (energy-of self) (energy-cost-of i))
+                                         (collect i))))
                       (move-to-use nil))
                   (cond
-                    ((and (<= (health-of self) (/ (calculate-stat self :health) 4))
-                          moves-with-health)
-                     (setf move-to-use
-                           (random-elt moves-with-health))
-                     (funcall
-                      (coerce
-                       (attack-of move-to-use)
-                       'function)
-                      target
-                      self
-                      move-to-use))
+                    ((and (<= (health-of self) (/ (calculate-stat self :health) 4)) moves-with-health)
+                     (setf move-to-use (random-elt moves-with-health))
+                     (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use))
                     (t
                      (when moves-can-use
                        (setf move-to-use (random-elt moves-can-use)))
-                     (cond
-                       ((and
-                         moves-can-use
-                         (= (random 2) 0))
-                        (funcall
-                         (coerce
-                          (attack-of move-to-use)
-                          'function)
-                         target
-                         self
-                         move-to-use))
-                       ((wield-of self)
-                        (funcall
-                         (coerce
-                          (attack-script-of (wield-of self))
-                          'function)
-                         target
-                         self
-                         (wield-of self)))
-                       (t
-                        (funcall
-                         (coerce
-                          (default-attack-of self)
-                          'function)
-                         target
-                         self)))))))
+                     (cond ((and moves-can-use (= (random 2) 0))
+                            (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use))
+                           ((wield-of self)
+                            (funcall (coerce (attack-script-of (wield-of self)) 'function) target self (wield-of self)))
+                           (t
+                            (funcall (coerce (default-attack-of self) 'function) target self)))))))
     :accessor battle-script-of
     :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack"))
   (:default-initargs :base-stats (list :health 40 :attack 45 :defense 40 :energy 40 :speed 56) :level (random-from-range 2 5) :bitcoins nil)
@@ -1219,7 +1134,7 @@
 (defclass potty-enemy (enemy) ()
   (:default-initargs
    :bladder/fill-rate (* (/ 2000 24 60) 2)
-    :bowels/fill-rate (* (/ 12000 24 60) 2))
+   :bowels/fill-rate (* (/ 12000 24 60) 2))
   (:documentation "Class for an enemy with a bladder and bowels fill rate. This enemy may {wet,mess} {him,her}self in battle."))
 (defclass battle (yadfa-class)
   ((turn-queue
@@ -1260,11 +1175,11 @@
     (setf
      (enter-battle-text-of c)
      (with-output-to-string (s)
-       (loop for i in (enemies-of c) do
-            (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
-  (setf (turn-queue-of c)
-        (sort (copy-tree (append (enemies-of c) (team-of *game*)))
-              '> :key #'(lambda (a) (calculate-stat a :speed)))))
+       (iter (for i in (enemies-of c))
+         (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
+  (setf (turn-queue-of c) (sort (copy-tree (append (enemies-of c) (team-of *game*))) '>
+                                :key #'(lambda (a)
+                                         (calculate-stat a :speed)))))
 (defclass game (yadfa-class)
   ((zones
     :initarg :zones

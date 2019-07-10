@@ -1,11 +1,10 @@
 (in-package #:yadfa)
 (defun main ()
-  #+slynk (when (and
-                 #+yadfa-docs (not (find "texi" (uiop:command-line-arguments) :test #'string=))
-                 #-yadfa-docs t
-                 uiop:*image-dumped-p*
-                 (not slynk::*servers*)
-                 (position "slynk" (uiop:command-line-arguments) :test #'string=))
+  #+slynk (when (and #+yadfa-docs (not (find "texi" (uiop:command-line-arguments) :test #'string=))
+                     #-yadfa-docs t
+                     uiop:*image-dumped-p*
+                     (not slynk::*servers*)
+                     (position "slynk" (uiop:command-line-arguments) :test #'string=))
             (slynk::create-server :dont-close t))
   #+swank (when (and #+yadfa-docs (not (find "texi" (uiop:command-line-arguments) :test #'string=))
                      #-yadfa-docs t

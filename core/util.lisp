@@ -42,7 +42,7 @@ the result of calling REMOVE-IF with TEST, place, and the KEYWORD-ARGUMENTS.")
   #+ecl (c::valid-type-specifier type-specifier)
   #+clisp (null
            (nth-value 1 (ignore-errors
-                          (ext:type-expand type-specifier))))
+                         (ext:type-expand type-specifier))))
   #-(or sbcl openmcl ecl clisp) (typep type-specifier
                                        '(or
                                          null
