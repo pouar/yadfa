@@ -132,6 +132,7 @@
    #:attributes-of
    #:direction-attributes-of
    #:target-of
+   #:last-process-potty-time-of
    #:battle-script-of
    #:blocks-turn-of
    #:duration-of
@@ -144,6 +145,7 @@
    #:malep
    #:wear-of
    #:species-of
+   #:time-of
    #:bladder/contents-of
    #:bladder/fill-rate-of
    #:bladder/need-to-potty-limit-of
@@ -242,6 +244,8 @@
    #:seen-enemies-of
    #:action-lambda
    #:action-documentation
+   #:action-attributes
+   #:event-attributes
    #:event-lambda
    #:event-repeatable
    #:fainted-of)

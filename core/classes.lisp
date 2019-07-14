@@ -2,7 +2,12 @@
 (defmethod ms:class-persistent-slots ((self standard-object))
   (mapcar #'c2mop:slot-definition-name
           (c2mop:class-slots (class-of self))))
-(defclass yadfa-class () ()
+(defclass yadfa-class ()
+  ((attributes
+    :initarg :attributes
+    :initform '()
+    :accessor attributes-of
+    :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots"))
   (:documentation "All the classes that are part of the game's core inheit this class"))
 (defclass status-condition (yadfa-class)
   ((name
@@ -15,11 +20,6 @@
     :initform nil
     :accessor description-of
     :documentation "description of status conditions")
-   (attributes
-    :initarg :attributes
-    :initform '()
-    :accessor attributes-of
-    :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
    (target
     :initarg :target
     :initform nil
@@ -69,11 +69,6 @@
     :initform :?
     :accessor description-of
     :documentation "Description of the character")
-   (attributes
-    :initarg :attributes
-    :initform '()
-    :accessor attributes-of
-    :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
    (health
     :initarg :health
     :accessor health-of
@@ -117,6 +112,11 @@
     :initform :missingno.
     :accessor species-of
     :documentation "Character's species.")
+   (last-process-potty-time
+    :initarg :last-process-potty-time
+    :initform 0
+    :accessor last-process-potty-time-of
+    :documentation "Last time process-potty was processed")
    (bladder/contents
     :initarg :bladder/contents
     :initform 0
@@ -318,11 +318,6 @@
     :initform '()
     :accessor position-of
     :documentation "Position of the zone. Used when we can't figure out the position of the zone ahead of time and to avoid iterating through the hash table.")
-   (attributes
-    :initarg :attributes
-    :initform '()
-    :accessor attributes-of
-    :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
    (name
     :initarg :name
     :initform "Mystery Zone"
@@ -437,11 +432,6 @@
     :initform :-
     :accessor description-of
     :documentation "Description of move")
-   (attributes
-    :initarg :attributes
-    :initform '()
-    :accessor attributes-of
-    :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
    (energy-cost
     :initarg :energy-cost
     :initform 0
@@ -484,11 +474,6 @@
     :initform nil
     :accessor placeablep
     :documentation "Whether you can place items here")
-   (attributes
-    :initarg :attributes
-    :initform '()
-    :accessor attributes-of
-    :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
    (items
     :initarg :items
     :initform ()
@@ -603,11 +588,6 @@
                   (format t "~a received ~a damage~%" (name-of target) a)))
     :accessor attack-script-of
     :documentation "Script that runs when attacking with this weapon")
-   (attributes
-    :initarg :attributes
-    :initform '()
-    :accessor attributes-of
-    :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots")
    (wear-stats
     :initarg :wear-stats
     :initform ()
@@ -1179,7 +1159,8 @@
          (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
   (setf (turn-queue-of c) (sort (copy-tree (append (enemies-of c) (team-of *game*))) '>
                                 :key #'(lambda (a)
-                                         (calculate-stat a :speed)))))
+                                         (calculate-stat a :speed))))
+  (incf (time-of *game*) 5))
 (defclass game (yadfa-class)
   ((zones
     :initarg :zones
@@ -1206,6 +1187,11 @@
     :initform (make-instance 'config)
     :accessor config-of
     :documentation "Configuration, instance of the config class")
+   (time
+    :initarg :time
+    :initform 0
+    :accessor time-of
+    :documentation "Turns since start of game")
    (events
     :initarg :events
     :initform (make-hash-table)

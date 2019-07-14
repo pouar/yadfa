@@ -119,6 +119,7 @@
                                           (typep key item))))))
         (write-line "That zone is locked and you don't have a key")
         (return-from yadfa-world:move))
+      (incf (time-of *game*))
       (when (or (and (not (eq (lockedp (get-zone new-position)) :nil)) (member (lockedp (get-zone new-position)) (inventory-of (player-of *game*))
                                                                                :test (lambda (item key)
                                                                                        (typep key item))))
@@ -941,6 +942,7 @@
     (when (and user (>= user (list-length (allies-of *game*))))
       (format t "You only have ~d allies~%" (list-length (allies-of *game*)))
       (return-from yadfa-world:use-item))
+    (incf (time-of *game*))
     (let ((this-user (if user (nth user (allies-of *game*)) (player-of *game*))))
       (setf ret (apply #'use-item% selected-item (player-of *game*)
                        :target this-user
