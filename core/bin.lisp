@@ -603,7 +603,7 @@
           ((and
             (not (eq (player-of *game*) selected-user))
             (typep item 'tabbed-briefs)
-            (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
+            (typep user '(not potty-trained-team-member))
             (< (filter-items (wear-of selected-user) 'tabbed-briefs) 2))
            (format t "Letting ~a go without padding is a really bad idea. Don't do it.~%"
                    (name-of selected-user))
@@ -666,16 +666,14 @@
            (format t "That ~a isn't something you can wear~%" (name-of inventory))
            (return-from yadfa-bin:change))
           ((and
-            (not (eq (player-of *game*) selected-user))
-            (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
+            (typep selected-user '(not potty-trained-team-member))
             (typep inventory 'pullon)
             (typep wear 'tabbed-briefs)
             (< (list-length (filter-items (wear-of selected-user) 'tabbed-briefs)) 2))
            (format t "Does ~a look ready for pullups to you?~%" (name-of selected-user))
            (return-from yadfa-bin:change))
           ((and
-            (not (eq (player-of *game*) selected-user))
-            (or (eq (potty-training-of user) :none) (eq (potty-training-of user) :rebel))
+            (typep selected-user '(not potty-trained-team-member))
             (not (typep inventory 'tabbed-briefs))
             (typep wear 'tabbed-briefs)
             (< (list-length (filter-items (wear-of selected-user) 'tabbed-briefs)) 2))

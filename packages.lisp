@@ -84,6 +84,7 @@
    #:stats-view
    #:base-character
    #:team-member
+   #:potty-trained-team-member
    #:ally
    #:ally-no-potty-training
    #:ally-rebel-potty-training
@@ -141,6 +142,7 @@
    #:direction-attributes-of
    #:target-of
    #:last-process-potty-time-of
+   #:process-battle-accident-of
    #:battle-script-of
    #:blocks-turn-of
    #:duration-of
