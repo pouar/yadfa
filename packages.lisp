@@ -73,6 +73,10 @@
    #:ally-join
    #:pushnewmove
    #:get-move
+   ;;methods
+   #:get-process-potty-action-type
+   #:output-process-potty-text
+   #:get-babyish-padding
    ;;constructors
    #:make-action
    ;;classes
@@ -81,6 +85,10 @@
    #:base-character
    #:team-member
    #:ally
+   #:ally-no-potty-training
+   #:ally-rebel-potty-training
+   #:ally-silent-potty-training
+   #:ally-last-minute-potty-training
    #:playable-ally
    #:player
    #:zone
@@ -167,7 +175,6 @@
    #:inventory-of
    #:wield-of
    #:learned-moves-of
-   #:potty-training-of
    #:position-of
    #:warp-on-death-point-of
    #:enter-text-of

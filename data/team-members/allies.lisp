@@ -1,9 +1,8 @@
 (in-package :yadfa-allies)
-(defclass slynk (playable-ally) ()
+(defclass slynk (playable-ally ally-last-minute-potty-training) ()
   (:default-initargs
    :name "Slynk"
    :male t
-   :potty-training :last-minute
    :wear (let ((diaper (progn (c2mop:ensure-finalized (find-class 'yadfa-items:bandit-adjustable-diaper))
                               (c2mop:compute-default-initargs (find-class 'yadfa-items:bandit-adjustable-diaper)))))
            (list (make-instance 'yadfa-items:bandit-uniform-tunic)
@@ -26,29 +25,26 @@
               (leave t)))
     (setf (bowels/contents-of c)
           (random (float (+ (bowels/potty-desperate-limit-of c) (/ (- (bowels/potty-desperate-limit-of c) (bowels/potty-dance-limit-of c)))))))))
-(defclass chris (playable-ally) ()
+(defclass chris (playable-ally ally-rebel-potty-training) ()
   (:default-initargs
    :name "Chris"
    :male t
    :species "Fox"
-   :potty-training :rebel
    :description "An orange fox. has gotten accustomed to being treated like a pet and will typically wear nothing but a collar, refuses to be housebroken like a good fox so he must be diapered at all times."
    :wear (list (make-instance 'yadfa-items:gold-collar)
                (make-instance 'yadfa-items:bandit-diaper))))
-(defclass kristy (playable-ally) ()
+(defclass kristy (playable-ally ally-no-potty-training) ()
   (:default-initargs
    :name "Kristy"
    :male nil
-   :potty-training :none
    :species "Fox"
    :description "A beautiful orange vixen who has a personality that is more like a child than an adult. Loves wearing thick diapers, can't stand pants. Has gone without diapers for so long that she has become dependent on them."
    :wear (list (make-instance 'yadfa-items:toddler-dress)
                (make-instance 'yadfa-items:bandit-female-diaper))))
-(defclass furry (playable-ally) ()
+(defclass furry (playable-ally ally-silent-potty-training) ()
   (:default-initargs
    :name "Furry"
    :male t
-   :potty-training :silent
    :species "Fox"
    :description "A fox that likes to wear a fursuit. Doesn't talk much. The team got him as a pet, and as a plushie."
    :wear (list (make-instance 'yadfa-items:watertight-fursuit)

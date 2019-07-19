@@ -220,12 +220,7 @@
     :initarg :learned-moves
     :accessor learned-moves-of
     :initform (list (cons 100 'yadfa-moves:superglitch) (cons 11 'yadfa-moves:kamehameha) (cons 7 'yadfa-moves:tickle) (cons 8 'yadfa-moves:mush))
-    :documentation "Alist of moves the player learns by leveling up, first element is the level when you learn them ove, second is a symbol from the `yadfa-moves' package")
-   (potty-training
-    :initarg :potty-training
-    :initform :last-minute
-    :accessor potty-training-of
-    :documentation "Whether this ally is potty trained. Valid values so far are :NONE, :REBEL, :SILENT, and LAST-MINUTE"))
+    :documentation "Alist of moves the player learns by leveling up, first element is the level when you learn them ove, second is a symbol from the `yadfa-moves' package"))
   (:documentation "Team member that is not the player")
   (:default-initargs
    :base-stats (list :health 35 :attack 55 :defense 40 :energy 35 :speed 90)
@@ -236,6 +231,10 @@
    :bowels/fill-rate (* (/ 12000 24 60) 2)
    :wear (list (make-instance 'yadfa-items:diaper))
    :moves (list (make-instance 'yadfa-moves:watersport) (make-instance 'yadfa-moves:mudsport))))
+(defclass ally-no-potty-training (ally) ())
+(defclass ally-rebel-potty-training (ally) ())
+(defclass ally-silent-potty-training (ally) ())
+(defclass ally-last-minute-potty-training (ally) ())
 (defmethod print-object ((obj ally) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (format stream "~w" (name-of obj))))
