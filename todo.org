@@ -1,1 +1,3 @@
 * TODO Make more use of AI flags in items and moves
+* TODO Make more use of the items in zones and enemies
+  - Likewise for moves
