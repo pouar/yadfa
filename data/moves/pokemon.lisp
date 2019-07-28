@@ -34,8 +34,9 @@
                                 (if (malep user) "himself" "herself")))))))
 (defclass mudbomb (stat/move) ()
   (:default-initargs
-   :name "Mudbomb"
+   :name "Mud Bomb"
    :description "massively mess your diapers, never fails"
+   :energy-cost 5
    :attack '(lambda (target user self)
              (format t "~a used ~a~%" (name-of user) (name-of self))
              (mess :force-fill-amount (if (< (* 30 24 (bowels/fill-rate-of user)) (bowels/maximum-limit-of user))
