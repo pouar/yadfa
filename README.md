@@ -1,5 +1,4 @@
-[![Build status: Windows](https://img.shields.io/appveyor/ci/pouar/yadfa/master.svg?style=plastic&logo=appveyor&label=appveyor)](https://ci.appveyor.com/project/pouar/yadfa/branch/master)
-[![Build status: Linux](https://img.shields.io/gitlab/pipeline/pouar/yadfa/master.svg?logo=gitlab&style=plastic)](https://gitlab.com/pouar/yadfa/pipelines)
+[![Build status: Windows](https://img.shields.io/appveyor/ci/pouar/yadfa/master.svg?style=plastic&logo=appveyor&label=appveyor)](https://ci.appveyor.com/project/pouar/yadfa/branch/master) [![Build status: Linux](https://img.shields.io/gitlab/pipeline/pouar/yadfa/master.svg?logo=gitlab&style=plastic)](https://gitlab.com/pouar/yadfa/pipelines)
 
 A diaperfur/babyfur themed text adventure/rpg game I'm working on, you play it by typing in Lisp functions, similar to those text adventure games you play by typing in commands, but in Lisp form
 
