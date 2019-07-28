@@ -414,7 +414,8 @@
    #:wetting
    #:messing
    #:mushed
-   #:tickled)
+   #:tickled
+   #:skunked)
   (:documentation "Contains all the status condtions in the game"))
 (uiop:define-package #:yadfa-zones
   (:import-from #:macro-level #:macro-level)

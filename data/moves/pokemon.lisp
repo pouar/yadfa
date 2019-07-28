@@ -44,7 +44,10 @@
                                           (* 30 24 (bowels/fill-rate-of user))) :messer user)
              (format t "~a messed ~a massively~%"
               (name-of user)
-              (if (malep user) "himself" "herself")))))
+              (if (malep user) "himself" "herself"))
+             (iter (for i in (enemies-of *battle*))
+               (set-status-condition 'yadfa-status-conditions:skunked i)
+               (format t "~a is grossed out by the smell~%" (name-of i))))))
 (defclass tickle (stat/move) ()
   (:default-initargs
    :name "Tickle"
