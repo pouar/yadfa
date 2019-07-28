@@ -153,19 +153,19 @@
   (unless (getf (direction-attributes-of (get-zone position)) direction)
     (remf (direction-attributes-of (get-zone position)) direction)))
 (defun set-status-condition (status-condition user &key duration)
-  (let* ((i
-           (if (position
-                status-condition
-                (getf (status-conditions-of *battle*) user)
-                :test (lambda (a b)
-                        (eq a (class-name (class-of b)))))
-               (nth (position
-                     status-condition
-                     (getf (status-conditions-of *battle*) user)
-                     :test (lambda (a b)
-                             (eq a (class-name (class-of b)))))
-                    (getf (status-conditions-of *battle*) user))
-               (make-instance status-condition)))
+  (let* ((status-conditions (iter (for i in (getf (status-conditions-of *battle*) user))
+                              (when (eq (type-of i) status-condition)
+                                (collect i))))
+         (i (if (or (eq (accumulative-of (make-instance status-condition)) t)
+                    (< (length status-conditions) (accumulative-of (make-instance status-condition))))
+                (make-instance status-condition)
+                (car (sort status-conditions (lambda (a b)
+                                               (cond ((eq b t)
+                                                      nil)
+                                                     ((eq a t)
+                                                      t)
+                                                     (t (< a b))))
+                           :key #'duration-of))))
          (duration (if duration duration (duration-of (make-instance status-condition)))))
     (pushnew i (getf (status-conditions-of *battle*) user))
     (when (and (not (eq (duration-of i) t)) (< (duration-of i) duration))

@@ -25,6 +25,11 @@
     :initform nil
     :accessor target-of
     :documentation "Enemy target that the battle script affects")
+   (accumulative
+    :initarg :accumulative
+    :initform 1
+    :accessor accumulative-of
+    :documentation "how many of these the user can have at a time, T if infinite")
    (battle-script
     :initarg :battle-script
     :initform (lambda (target user self)

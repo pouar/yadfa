@@ -156,6 +156,7 @@
    #:wear-of
    #:species-of
    #:time-of
+   #:accumulative-of
    #:bladder/contents-of
    #:bladder/fill-rate-of
    #:bladder/need-to-potty-limit-of
