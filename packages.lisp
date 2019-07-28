@@ -278,7 +278,8 @@
    #:mudsport
    #:tickle
    #:tackle
-   #:mush)
+   #:mush
+   #:mudbomb)
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package #:yadfa-items
   (:import-from #:macro-level #:macro-level)

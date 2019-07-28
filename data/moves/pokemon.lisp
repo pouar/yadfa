@@ -16,24 +16,34 @@
    :description "Soak your diapers"
    :attack '(lambda (target user self)
              (format t "~a used ~a~%" (name-of user) (name-of self))
-             (format t "~a wet ~a~%" (name-of user) (if (malep user) "himself" "herself"))
-             (wet :force-fill-amount (if (< (bladder/contents-of user) (bladder/need-to-potty-limit-of user))
-                                         (bladder/need-to-potty-limit-of user)
-                                         (bladder/contents-of user))
-                  :wetter user))))
+             (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
+                 (format t "But it failed~%")
+                 (progn (wet :wetter user)
+                        (format t "~a wet ~a~%" (name-of user) (if (malep user) "himself" "herself")))))))
 (defclass mudsport (stat/move) ()
   (:default-initargs
    :name "Mudsport"
    :description "mess your diapers"
    :attack '(lambda (target user self)
              (format t "~a used ~a~%" (name-of user) (name-of self))
-             (format t "~a messed ~a~%"
+             (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
+                 (format t "But it failed~%")
+                 (progn (mess :messer user)
+                        (format t "~a messed ~a~%"
+                                (name-of user)
+                                (if (malep user) "himself" "herself")))))))
+(defclass mudbomb (stat/move) ()
+  (:default-initargs
+   :name "Mudbomb"
+   :description "massively mess your diapers, never fails"
+   :attack '(lambda (target user self)
+             (format t "~a used ~a~%" (name-of user) (name-of self))
+             (mess :force-fill-amount (if (< (* 30 24 (bowels/fill-rate-of user)) (bowels/maximum-limit-of user))
+                                          (bowels/maximum-limit-of user)
+                                          (* 30 24 (bowels/fill-rate-of user))) :messer user)
+             (format t "~a messed ~a massively~%"
               (name-of user)
-              (if (malep user) "himself" "herself"))
-             (mess :force-fill-amount (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
-                                          (bowels/need-to-potty-limit-of user)
-                                          (bowels/contents-of user))
-                   :messer user))))
+              (if (malep user) "himself" "herself")))))
 (defclass tickle (stat/move) ()
   (:default-initargs
    :name "Tickle"
