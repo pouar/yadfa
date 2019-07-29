@@ -45,7 +45,9 @@
              (format t "~a messed ~a massively~%"
               (name-of user)
               (if (malep user) "himself" "herself"))
-             (iter (for i in (enemies-of *battle*))
+             (iter (for i in (if (typep user 'team-member)
+                                 (enemies-of *battle*)
+                                 (team-of *game*)))
                (set-status-condition 'yadfa-status-conditions:skunked i)
                (format t "~a is grossed out by the smell~%" (name-of i))))))
 (defclass tickle (stat/move) ()
