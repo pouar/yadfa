@@ -4,5 +4,6 @@
   (:default-initargs
    :name "Skunked"
    :description "User's defenses are reduced due to the smell"
-   :duration 2
+   :duration 5
+   :accumulative 3
    :stat-delta '(:defense -5)))
