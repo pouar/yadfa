@@ -3,34 +3,33 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun set-logical-pathnames ()
     (setf (logical-pathname-translations "YADFA")
-          (list
-           (list "yadfa:data;**;*.*.*" (merge-pathnames
-                                        (make-pathname
-                                         :directory '(:relative "yadfa" :wild-inferiors)
-                                         :name :wild
-                                         :type :wild)
-                                        (uiop:xdg-data-home)))
-           (list "yadfa:config;**;*.*.*" (merge-pathnames
-                                          (make-pathname
-                                           :directory '(:relative "yadfa" :wild-inferiors)
-                                           :name :wild
-                                           :type :wild)
-                                          (uiop:xdg-config-home)))
-           (list "yadfa:home;**;*.*.*" (if uiop:*image-dumped-p*
-                                           (uiop:merge-pathnames*
-                                            (make-pathname
-                                             :directory '(:relative :wild-inferiors)
-                                             :type :wild
-                                             :name :wild)
-                                            (make-pathname
-                                             :device (pathname-device (truename (uiop:argv0)))
-                                             :directory (pathname-directory (truename (uiop:argv0)))))
-                                           (uiop:merge-pathnames*
-                                            (make-pathname
-                                             :directory '(:relative :wild-inferiors)
-                                             :type :wild
-                                             :name :wild)
-                                            (asdf:component-pathname (asdf:find-system "yadfa"))))))))
+          (list (list "yadfa:data;**;*.*.*" (merge-pathnames
+                                             (make-pathname
+                                              :directory '(:relative "yadfa" :wild-inferiors)
+                                              :name :wild
+                                              :type :wild)
+                                             (uiop:xdg-data-home)))
+                (list "yadfa:config;**;*.*.*" (merge-pathnames
+                                               (make-pathname
+                                                :directory '(:relative "yadfa" :wild-inferiors)
+                                                :name :wild
+                                                :type :wild)
+                                               (uiop:xdg-config-home)))
+                (list "yadfa:home;**;*.*.*" (if uiop:*image-dumped-p*
+                                                (uiop:merge-pathnames*
+                                                 (make-pathname
+                                                  :directory '(:relative :wild-inferiors)
+                                                  :type :wild
+                                                  :name :wild)
+                                                 (make-pathname
+                                                  :device (pathname-device (truename (uiop:argv0)))
+                                                  :directory (pathname-directory (truename (uiop:argv0)))))
+                                                (uiop:merge-pathnames*
+                                                 (make-pathname
+                                                  :directory '(:relative :wild-inferiors)
+                                                  :type :wild
+                                                  :name :wild)
+                                                 (asdf:component-pathname (asdf:find-system "yadfa"))))))))
   (set-logical-pathnames))
 (defun get-positions-of-type (type list)
   #+sbcl (declare
