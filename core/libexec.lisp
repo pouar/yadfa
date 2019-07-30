@@ -896,12 +896,15 @@
                                        (t (getf i :enemies))))
                  (return-from move-to-pocket-map))))))))
 (defun wet (&key (wet-amount t) force-fill-amount pants-down accident force-wet-amount (wetter (player-of *game*)))
+  "this function is mostly for mods, doesn't print text or diaper expansion, that's handled by other functions. WETTER is the instance of BASE-CHARACTER doing the flooding. WET-AMOUNT is the amount WETTER floods but won't flood if he/she can't go, passing T to WET-AMOUNT means to use (BLADDER/CONTENTS-OF WETTER), FORCE-WET-AMOUNT causes WETTER to wet regardless. FORCE-FILL-AMOUNT will set (BLADDER/CONTENTS-OF WETTER) to that amount first. PANTS-DOWN is T if WETTER pulls his/her pants down first. ACCIDENT is T if the wetting isn't intentional and WETTER may or may not be able to stop the flow"
   #+sbcl (declare
           (type (or null number) force-fill-amount force-wet-amount)
-          (type (or boolean number) wet-amount))
+          (type (or boolean number) wet-amount)
+          (type base-character wetter))
   (check-type force-fill-amount (or null number))
   (check-type force-wet-amount (or null number))
   (check-type wet-amount (or boolean number))
+  (check-type wetter base-character)
   (let* ((return-value ())
          (affected-clothes ())
          (random (random 4))
@@ -909,25 +912,30 @@
     (when force-fill-amount
       (setf (bladder/contents-of wetter) force-fill-amount))
     (cond (force-wet-amount
-           (setf amount force-wet-amount))
+           (setf amount (cond ((eq force-wet-amount t)
+                               (bladder/contents-of wetter))
+                              ((> force-wet-amount (bladder/contents-of wetter))
+                               (bladder/contents-of wetter))
+                              (t
+                               force-wet-amount))))
           ((< (bladder/contents-of wetter) (bladder/need-to-potty-limit-of wetter))
-           (return-from wet (list
-                             :old-bladder-contents (bladder/contents-of wetter)
-                             :new-bladder-contents (bladder/contents-of wetter)
-                             :affected-clothes ()
-                             :leak-amount 0
-                             :wet-amount 0)))
+           (return-from wet (list :old-bladder-contents (bladder/contents-of wetter)
+                                  :new-bladder-contents (bladder/contents-of wetter)
+                                  :affected-clothes ()
+                                  :leak-amount 0
+                                  :wet-amount 0)))
           (accident
            (setf amount
                  (cond
                    ((< random 2) (bladder/contents-of wetter))
                    ((< random 3) 300)
                    ((< random 4) 10))))
-          ((eq wet-amount t)
-           (setf amount (bladder/contents-of wetter)))
-          ((> wet-amount (bladder/contents-of wetter))
-           (setf amount (bladder/contents-of wetter)))
-          (t (setf amount wet-amount)))
+          (t (setf amount (cond ((eq wet-amount t)
+                                 (bladder/contents-of wetter))
+                                ((> wet-amount (bladder/contents-of wetter))
+                                 (bladder/contents-of wetter))
+                                (t
+                                 wet-amount)))))
     (setf (getf return-value :old-bladder-contents) (bladder/contents-of wetter))
     (let* ((amount-left amount))
       (cond ((or pants-down (not (filter-items (wear-of wetter) 'closed-bottoms)))
@@ -953,19 +961,27 @@
     return-value))
 
 (defun mess (&key (mess-amount t) force-fill-amount pants-down accident force-mess-amount (messer (player-of *game*)))
+  "this function is mostly for mods, doesn't print text or diaper expansion, that's handled by other functions. MESSER is the instance of BASE-CHARACTER doing the messing. MESS-AMOUNT is the amount MESSER messes but won't mess if he/she can't go, passing T to MESS-AMOUNT means to use (BOWELS/CONTENTS-OF MESSER), FORCE-MESS-AMOUNT causes MESSER to mess regardless. FORCE-FILL-AMOUNT will set (BOWELS/CONTENTS-OF MESSER) to that amount first. PANTS-DOWN is T if MESSER pulls his/her pants down first. ACCIDENT is T if the messing isn't intentional"
   #+sbcl (declare
           (type (or null number) force-fill-amount force-mess-amount)
-          (type (or boolean number) mess-amount))
+          (type (or boolean number) mess-amount)
+          (type base-character messer))
   (check-type force-fill-amount (or null number))
   (check-type force-mess-amount (or null number))
   (check-type mess-amount (or boolean number))
+  (check-type messer base-character)
   (let* ((return-value ())
          (affected-clothes ())
          (amount nil))
     (when force-fill-amount
       (setf (bowels/contents-of messer) force-fill-amount))
     (cond (force-mess-amount
-           (setf amount force-mess-amount))
+           (setf amount (cond ((eq force-mess-amount t)
+                               (bowels/contents-of messer))
+                              ((> force-mess-amount (bowels/contents-of messer))
+                               (bowels/contents-of messer))
+                              (t
+                               force-mess-amount))))
           ((< (bowels/contents-of messer) (bowels/need-to-potty-limit-of messer))
            (return-from mess (list :old-bowels-contents (bowels/contents-of messer)
                                    :new-bowels-contents (bowels/contents-of messer)
@@ -974,11 +990,12 @@
                                    :mess-amount 0)))
           (accident
            (setf amount (bowels/contents-of messer)))
-          ((eq mess-amount t)
-           (setf amount (bowels/contents-of messer)))
-          ((> mess-amount (bowels/contents-of messer))
-           (setf amount (bowels/contents-of messer)))
-          (t (setf amount mess-amount)))
+          (t (setf amount (cond ((eq mess-amount t)
+                                 (bowels/contents-of messer))
+                                ((> mess-amount (bowels/contents-of messer))
+                                 (bowels/contents-of messer))
+                                (t
+                                 mess-amount)))))
     (setf (getf return-value :old-bowels-contents) (bowels/contents-of messer))
     (let* ((amount-left amount))
       (cond ((or pants-down (not (filter-items (wear-of messer) 'closed-bottoms)))
@@ -1459,6 +1476,7 @@
                      mess-return-value (cdr value))))
            (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*)))) 'function)
                     (cons wet-return-value mess-return-value) user)))))))
+;;; Wish the API I made for this wasn't so complex, but I wasn't sure how to make it simple and still retain the functionality
 (defgeneric get-babyish-padding (user))
 (defgeneric get-process-potty-action-type (user type had-accident))
 (defgeneric output-process-potty-text (user padding type action had-accident))
