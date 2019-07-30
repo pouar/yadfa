@@ -2761,12 +2761,12 @@
                                   (mess :messer user))))))
     (iter (for i in '(:wet :mess))
       (output-process-potty-text user
-                                (get-babyish-padding user)
-                                i
-                                (get-process-potty-action-type user
-                                                               i
-                                                               had-accident)
-                                had-accident))
+                                 (get-babyish-padding user)
+                                 i
+                                 (get-process-potty-action-type user
+                                                                i
+                                                                had-accident)
+                                 had-accident))
     (multiple-value-bind
           (value key)
         (pop-from-expansion user had-accident)
