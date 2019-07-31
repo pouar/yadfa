@@ -59,6 +59,7 @@
    #:get-items-from-prop
    #:get-bitcoins-from-prop
    #:calculate-diaper-usage
+   #:calculate-diaper-usage*
    #:calculate-level-to-exp
    #:calculate-exp-yield
    #:calculate-wear-stats
