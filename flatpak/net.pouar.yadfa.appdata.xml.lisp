@@ -15,10 +15,7 @@
       ((release :version "0.9" :type "development" :date "2018-10-02")))
     ((content_rating :type "oars-1.1")
       ((content_attribute :id "violence-cartoon") "moderate")
-      ((content_attribute :id "drugs-alcohol") "moderate")
-      ((content_attribute :id "drugs-narcotics") "moderate")
-      ((content_attribute :id "drugs-tobacco") "moderate")
-      ((content_attribute :id "language-profanity") "moderate")
+      ((content_attribute :id "language-profanity") "intense")
       ((content_attribute :id "language-humor") "moderate")
       ((content_attribute :id "money-gambling") "moderate"))
     (screenshots
