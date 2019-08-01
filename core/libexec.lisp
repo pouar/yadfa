@@ -42,15 +42,15 @@
                    (butlast name-args-declares)
                    name-args-declares)
              ,@(if sbclp
-                   `(,(append (if declarep
-                                  (car (last name-args-declares))
-                                  '(declare))
-                              types)
-                     ,@body)
-                   (append
-                    (check t)
-                    `((locally (declare ,@types)
-                        ,@body)))))))))
+                `(,(append (if declarep
+                            (car (last name-args-declares))
+                            '(declare))
+                    types)
+                  ,@body)
+                (append
+                 (check t)
+                 `((locally (declare ,@types)
+                     ,@body)))))))))
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun set-logical-pathnames ()
     (setf (logical-pathname-translations "YADFA")
@@ -69,16 +69,16 @@
                                                 :version :wild)
                                                (uiop:xdg-config-home)))
                 (list "yadfa:home;**;*.*.*" (uiop:merge-pathnames*
+                                             (make-pathname
+                                              :directory '(:relative :wild-inferiors)
+                                              :type :wild
+                                              :name :wild
+                                              :version :wild)
+                                             (if uiop:*image-dumped-p*
                                                  (make-pathname
-                                                  :directory '(:relative :wild-inferiors)
-                                                  :type :wild
-                                                  :name :wild
-                                                  :version :wild)
-                                                 (if uiop:*image-dumped-p*
-                                                     (make-pathname
-                                                      :device (pathname-device (truename (uiop:argv0)))
-                                                      :directory (pathname-directory (truename (uiop:argv0))))
-                                                     (asdf:component-pathname (asdf:find-system "yadfa"))))))))
+                                                  :device (pathname-device (truename (uiop:argv0)))
+                                                  :directory (pathname-directory (truename (uiop:argv0))))
+                                                 (asdf:component-pathname (asdf:find-system "yadfa"))))))))
   (set-logical-pathnames))
 (defunassert (get-positions-of-type (type list))
     (type (or null (and symbol (not keyword)) list class)
