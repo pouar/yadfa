@@ -100,7 +100,7 @@ modules:
       - bash -c 'cd docs/reference;HOME="/app/tmp/home/" makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa-reference.texi'
       - bash -c 'cd docs/reference;export HOME="/app/tmp/home/" PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH" PDFTEX=xetex PDFLATEX=xelatex;makeinfo --no-split --pdf ./yadfa-reference.texi'
       - bash -c 'cd docs/reference;HOME="/app/tmp/home/" makeinfo --no-split ./yadfa-reference.texi'
-      - bash -c 'cd flatpak;SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script create-appstream.lisp'
+      - bash -c 'cd flatpak;SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script create-appstream-metadata.lisp'
       - install -dm755 /app/lib/yadfa
       - git archive HEAD|tar -xf - -C /app/lib/yadfa/
       - cp yadfa /app/lib/yadfa/
