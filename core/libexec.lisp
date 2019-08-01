@@ -515,67 +515,70 @@
     (let ((pattern (print-map-pattern-cache #P"blank.xpm"
                                             (list clim:+background-ink+ clim:+foreground-ink+)))
           (start-position (when clim-listener::*application-frame*
-                            (multiple-value-list (clim:stream-cursor-position *standard-output*))))
-          (position (if (eq position t)
-                        (position-of (player-of *game*))
-                        position)))
+                            (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
       (if clim-listener::*application-frame*
           (push (clim:updating-output (t)
-                  (iter (for y
-                             from (- (second position) 15)
-                             to (+ (second position) 15))
-                    (for y-pos
-                         from (second start-position)
-                         to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
-                         by (clim:pattern-height pattern))
-                    (iter (for x
-                               from (- (first position) 15)
-                               to (+ (first position) 15))
-                      (for x-pos
-                           from (first start-position)
-                           to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
-                           by (clim:pattern-width pattern))
-                      (let* ((current-position (append (list x y) (cddr position)))
-                             (char (cons (if (or (and (get-zone current-position)
-                                                      (hiddenp (get-zone current-position)))
-                                                 (not (get-zone current-position)))
-                                             #P"blank.xpm"
-                                             (a current-position))
-                                         (clim:make-rgb-color (if (and (get-zone current-position)
-                                                                       (warp-points-of (get-zone current-position)))
-                                                                  1
-                                                                  0)
-                                                              (if (equal current-position (position-of (player-of *game*)))
-                                                                  0.7
-                                                                  0)
-                                                              (if (or (travelablep current-position :up)
-                                                                      (travelablep current-position :down))
-                                                                  1
-                                                                  0)))))
-                        (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
-                        (when (get-zone current-position)
-                          (clim:with-output-as-presentation
-                              (*standard-output* (get-zone (list x y (third position) (fourth position))) 'zone)
-                            (clim:draw-pattern* *standard-output* pattern x-pos y-pos)))))))
+                  (let ((position (if (eq position t)
+                                      (position-of (player-of *game*))
+                                      position)))
+                    (iter (for y
+                               from (- (second position) 15)
+                               to (+ (second position) 15))
+                      (for y-pos
+                           from (second start-position)
+                           to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
+                           by (clim:pattern-height pattern))
+                      (iter (for x
+                                 from (- (first position) 15)
+                                 to (+ (first position) 15))
+                        (for x-pos
+                             from (first start-position)
+                             to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
+                             by (clim:pattern-width pattern))
+                        (let* ((current-position (append (list x y) (cddr position)))
+                               (char (cons (if (or (and (get-zone current-position)
+                                                        (hiddenp (get-zone current-position)))
+                                                   (not (get-zone current-position)))
+                                               #P"blank.xpm"
+                                               (a current-position))
+                                           (clim:make-rgb-color (if (and (get-zone current-position)
+                                                                         (warp-points-of (get-zone current-position)))
+                                                                    1
+                                                                    0)
+                                                                (if (equal current-position (position-of (player-of *game*)))
+                                                                    0.7
+                                                                    0)
+                                                                (if (or (travelablep current-position :up)
+                                                                        (travelablep current-position :down))
+                                                                    1
+                                                                    0)))))
+                          (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
+                          (when (get-zone current-position)
+                            (clim:with-output-as-presentation
+                                (*standard-output* (get-zone (list x y (third position) (fourth position))) 'zone)
+                              (clim:draw-pattern* *standard-output* pattern x-pos y-pos))))))))
                 *records*)
-          (iter (for y
-                     from (- (second position) 15)
-                     to (+ (second position) 15))
-            (iter (for x
-                       from (- (first position) 15)
-                       to (+ (first position) 15))
-              (let* ((current-position (append (list x y) (cddr position)))
-                     (char (cond ((equal current-position (position-of (player-of *game*)))
-                                  #\@)
-                                 ((and (get-zone current-position) (hiddenp (get-zone current-position)))
-                                  #\Space)
-                                 ((and (get-zone current-position) (warp-points-of (get-zone current-position)))
-                                  #\▒)
-                                 ((get-zone current-position)
-                                  (a current-position))
-                                 (t #\Space))))
-                (format t "~a" char)))
-            (format t "~%")))
+          (let ((position (if (eq position t)
+                              (position-of (player-of *game*))
+                              position)))
+            (iter (for y
+                       from (- (second position) 15)
+                       to (+ (second position) 15))
+              (iter (for x
+                         from (- (first position) 15)
+                         to (+ (first position) 15))
+                (let* ((current-position (append (list x y) (cddr position)))
+                       (char (cond ((equal current-position (position-of (player-of *game*)))
+                                    #\@)
+                                   ((and (get-zone current-position) (hiddenp (get-zone current-position)))
+                                    #\Space)
+                                   ((and (get-zone current-position) (warp-points-of (get-zone current-position)))
+                                    #\▒)
+                                   ((get-zone current-position)
+                                    (a current-position))
+                                   (t #\Space))))
+                  (format t "~a" char)))
+              (terpri))))
       (when clim-listener::*application-frame*
         (clim:stream-set-cursor-position *standard-output* (first start-position) (+ (second start-position) (* 31 (clim:pattern-height pattern))))))))
 (defun get-zone-text (text)
