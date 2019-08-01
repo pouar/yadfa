@@ -1,3 +1,8 @@
+#-quicklisp
+(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
+                                       (user-homedir-pathname))))
+  (when (probe-file quicklisp-init)
+    (load quicklisp-init)))
 (ql:quickload :plump-sexp)
 (with-open-file (r (uiop:merge-pathnames*
                     (make-pathname :directory '(:relative "flatpak") :name "net.pouar.yadfa.appdata.xml" :type "lisp")
