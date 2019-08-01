@@ -35,3 +35,4 @@ docs/guide/*.html
 docs/guide/*.info
 docs/guide/*.pdf
 mods.conf
+flatpak/net.pouar.yadfa.appdata.xml

@@ -90,7 +90,7 @@ modules:
   - name: yadfa-cache
     buildsystem: simple
     build-commands:
-      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --eval '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' --eval '(progn (ql:update-client :prompt nil) (ql:update-all-dists :prmpt nil) (ql-dist:install-dist "http://dist.ultralisp.org/" :prompt nil) (pushnew :mcclim-ffi-freetype *features*) (pushnew :yadfa-docs *features*) (pushnew :yadfa-mods *features*) (ql:quickload :swank) (ql:quickload :mcclim) (ql:quickload :marshal) (ql:quickload :iterate) (ql:quickload :ugly-tiny-infix-macro) (ql:quickload :closer-mop) (ql:quickload :trivial-features) (ql:quickload :clim-listener) (ql:quickload :trivial-garbage) (ql:quickload :macro-level) (ql:quickload :cl-ansi-text) (ql:quickload :alexandria) (ql:quickload :net.didierverna.declt) (ql:quickload :sb-aclrepl))'
+      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --eval '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' --eval '(progn (ql:update-client :prompt nil) (ql:update-all-dists :prmpt nil) (ql-dist:install-dist "http://dist.ultralisp.org/" :prompt nil) (pushnew :mcclim-ffi-freetype *features*) (pushnew :yadfa-docs *features*) (pushnew :yadfa-mods *features*) (ql:quickload :swank) (ql:quickload :mcclim) (ql:quickload :marshal) (ql:quickload :iterate) (ql:quickload :ugly-tiny-infix-macro) (ql:quickload :closer-mop) (ql:quickload :trivial-features) (ql:quickload :clim-listener) (ql:quickload :trivial-garbage) (ql:quickload :macro-level) (ql:quickload :cl-ansi-text) (ql:quickload :alexandria) (ql:quickload :plump-sexp) (ql:quickload :net.didierverna.declt) (ql:quickload :sb-aclrepl))'
   - name: yadfa
     buildsystem: simple
     build-commands:
@@ -100,6 +100,7 @@ modules:
       - bash -c 'cd docs/reference;HOME="/app/tmp/home/" makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa-reference.texi'
       - bash -c 'cd docs/reference;export HOME="/app/tmp/home/" PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH" PDFTEX=xetex PDFLATEX=xelatex;makeinfo --no-split --pdf ./yadfa-reference.texi'
       - bash -c 'cd docs/reference;HOME="/app/tmp/home/" makeinfo --no-split ./yadfa-reference.texi'
+      - bash -c 'cd flatpak;SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script create-appstream.lisp'
       - install -dm755 /app/lib/yadfa
       - git archive HEAD|tar -xf - -C /app/lib/yadfa/
       - cp yadfa /app/lib/yadfa/
@@ -111,6 +112,7 @@ modules:
       - chmod 644 /app/share/info/yadfa-reference.info.gz
       - install -Dm644 flatpak/net.pouar.yadfa.svg /app/share/icons/hicolor/scalable/apps/net.pouar.yadfa.svg
       - install -Dm644 flatpak/net.pouar.yadfa.appdata.xml /app/share/metainfo/net.pouar.yadfa.appdata.xml
+      - install -Dm644 flatpak/net.pouar.yadfa.appdata.xml /app/share/metainfo/net.pouar.yadfa.appdata.xml.lisp
       - install -Dm755 flatpak/net.pouar.yadfa.desktop /app/share/applications/net.pouar.yadfa.desktop
       - ln -s /app/lib/yadfa/yadfa /app/bin/yadfa
       - bash -c 'LIB="$(readlink /lib/x86_64-linux-gnu/libfreetype.so)"; ln -s "/lib/x86_64-linux-gnu/${LIB%.[0-9]*.[0-9]*}" /app/lib/libfreetype.so'
