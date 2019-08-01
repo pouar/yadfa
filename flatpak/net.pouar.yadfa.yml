@@ -112,7 +112,7 @@ modules:
       - chmod 644 /app/share/info/yadfa-reference.info.gz
       - install -Dm644 flatpak/net.pouar.yadfa.svg /app/share/icons/hicolor/scalable/apps/net.pouar.yadfa.svg
       - install -Dm644 flatpak/net.pouar.yadfa.appdata.xml /app/share/metainfo/net.pouar.yadfa.appdata.xml
-      - install -Dm644 flatpak/net.pouar.yadfa.appdata.xml /app/share/metainfo/net.pouar.yadfa.appdata.xml.lisp
+      - install -Dm644 flatpak/net.pouar.yadfa.appdata.xml.lisp /app/share/metainfo/net.pouar.yadfa.appdata.xml.lisp
       - install -Dm755 flatpak/net.pouar.yadfa.desktop /app/share/applications/net.pouar.yadfa.desktop
       - ln -s /app/lib/yadfa/yadfa /app/bin/yadfa
       - bash -c 'LIB="$(readlink /lib/x86_64-linux-gnu/libfreetype.so)"; ln -s "/lib/x86_64-linux-gnu/${LIB%.[0-9]*.[0-9]*}" /app/lib/libfreetype.so'
