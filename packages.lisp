@@ -1,3 +1,4 @@
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "common-lisp-user"; coding: utf-8-unix; -*-
 (in-package :cl-user)
 (uiop:define-package #:yadfa-util
   (:use #:cl #:iterate)

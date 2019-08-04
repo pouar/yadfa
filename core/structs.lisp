@@ -1,3 +1,4 @@
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package :yadfa)
 (defstruct event
   "An event in the game"

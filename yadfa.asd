@@ -1,4 +1,4 @@
-;;;; -*- Mode: Common-Lisp; -*
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "asdf-user"; coding: utf-8-unix; -*-
 (defsystem "yadfa"
   :name "YADFA"
   :version "0.9"

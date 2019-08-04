@@ -1,3 +1,4 @@
+;;;; -*- mode: Common-Lisp; coding: utf-8-unix; -*-
 (in-package :marshal)
 (defmethod unmarshal-fn ((version (eql (coding-idiom :coding-release-no)))
                          (type (eql (coding-idiom :object))) token &optional (circle-hash nil))

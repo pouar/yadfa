@@ -1,3 +1,4 @@
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package #:yadfa)
 (defun main ()
   #+slynk (when (and #+yadfa-docs (not (find "texi" (uiop:command-line-arguments) :test #'string=))

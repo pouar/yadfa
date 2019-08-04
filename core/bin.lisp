@@ -1,3 +1,4 @@
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 ;;;;this file contains functions the player can enter in the REPL
 
 (in-package :yadfa)

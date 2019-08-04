@@ -1,3 +1,4 @@
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package :yadfa-util)
 (defun shl (x width bits)
   "Compute bitwise left shift of x by 'bits' bits, represented on 'width' bits"

@@ -1,3 +1,4 @@
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-events"; coding: utf-8-unix; -*-
 (in-package :yadfa-events)
 (defevent enter-bandits-village-1
   :lambda '(lambda (self)

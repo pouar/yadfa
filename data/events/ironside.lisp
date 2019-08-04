@@ -1,3 +1,4 @@
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-events"; coding: utf-8-unix; -*-
 (in-package :yadfa-events)
 (defevent ironside-university-joke-1
   :predicate '(lambda (self)
