@@ -164,15 +164,16 @@
     (format t "You only have ~d allies~%" (list-length (allies-of *game*)))
     (return-from yadfa-bin:lst))
   (when inventory
-    (format t "~7a~30a~6a~8a~6a~8a~%" "Index" "Name" "Wet" "Wetcap" "Mess" "Messcap")
+    (format t "~7a~30a~40a~12a~12a~12a~12a~%" "Index" "Name" "Class" "Wet" "Wetcap" "Mess" "Messcap")
     (let ((j 0)) (iter (for i in (inventory-of (player-of *game*)))
                    (when (typep i inventory)
-                     (format t "~7a~30a~6a~8a~6a~8a~%" j
+                     (format t "~7a~30a~40s~12a~12a~12a~12a~%" j
                              (name-of i)
-                             (if (typep i 'closed-bottoms) (sogginess-of i) nil)
-                             (if (typep i 'closed-bottoms) (sogginess-capacity-of i) nil)
-                             (if (typep i 'closed-bottoms) (messiness-of i) nil)
-                             (if (typep i 'closed-bottoms) (messiness-capacity-of i) nil)))
+                             (type-of i)
+                             (if (typep i 'closed-bottoms) (format nil "~12d" (float (sogginess-of i))) nil)
+                             (if (typep i 'closed-bottoms) (format nil "~12d" (float (sogginess-capacity-of i))) nil)
+                             (if (typep i 'closed-bottoms) (format nil "~12d" (float (messiness-of i))) nil)
+                             (if (typep i 'closed-bottoms) (format nil "~12d" (float (messiness-capacity-of i))) nil)))
                    (incf j))
       (format t "~%")))
   (when describe-zone
@@ -199,15 +200,16 @@
                                                         (incf j))
                                                       (finally (return j))))
            (format t "~a:~%~%" (name-of (player-of *game*)))
-           (format t "~7a~40a~6a~8a~6a~8a~%" "Index" "Name" "Wet" "Wetcap" "Mess" "Messcap")
+           (format t "~7a~30a~40a~12a~12a~12a~12a~%" "Index" "Name" "Class" "Wet" "Wetcap" "Mess" "Messcap")
            (let ((j 0)) (iter (for i in (wear-of (player-of *game*)))
                           (when (typep i wear)
-                            (format t "~7a~40a~6a~8a~6a~8a~%" j
+                            (format t "~7a~30a~40s~12a~12a~12a~12a~%" j
                                     (name-of i)
-                                    (if (typep i 'closed-bottoms) (sogginess-of i) nil)
-                                    (if (typep i 'closed-bottoms) (sogginess-capacity-of i) nil)
-                                    (if (typep i 'closed-bottoms) (messiness-of i) nil)
-                                    (if (typep i 'closed-bottoms) (messiness-capacity-of i) nil)))
+                                    (type-of i)
+                                    (if (typep i 'closed-bottoms) (format nil "~12d" (float (sogginess-of i))) nil)
+                                    (if (typep i 'closed-bottoms) (format nil "~12d" (float (sogginess-capacity-of i))) nil)
+                                    (if (typep i 'closed-bottoms) (format nil "~12d" (float (messiness-of i))) nil)
+                                    (if (typep i 'closed-bottoms) (format nil "~12d" (float (messiness-capacity-of i))) nil)))
                           (incf j))
              (format t "~%"))
            (iter (for k in (allies-of *game*))
@@ -477,9 +479,10 @@
   (when (typep take 'list) (loop for i in take do (check-type i unsigned-byte)))
   (when list
     (format t "Bitcoins: ~a~%~%" (get-bitcoins-from-prop prop (position-of (player-of *game*))))
-    (format t "~7a~30a~%" "Index" "Object")
+    (format t "~7a~30a~30a~%" "Index" "Name" "Class")
     (iter (for i in (get-items-from-prop prop (position-of (player-of *game*))))
-      (format t "~7a~30a~%" i (name-of i)))
+      (for j upfrom 0)
+      (format t "~7a~30a~30s~%" j (name-of i) (type-of i)))
     (format t "~%~%Actions: ")
     (iter (for (key value) on (actions-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)) by #'cddr)
       (when value
