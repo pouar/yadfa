@@ -517,6 +517,8 @@
                             (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
       (if clim-listener::*application-frame*
           (push (clim:updating-output (t)
+                  ;; position needs to be bound inside of clim:updating-output and not outside
+                  ;; for the presentation to notice when the floor the player is on changes
                   (let ((position (if (eq position t)
                                       (position-of (player-of *game*))
                                       position)))
