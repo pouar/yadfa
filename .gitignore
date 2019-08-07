@@ -36,3 +36,4 @@ docs/guide/*.info
 docs/guide/*.pdf
 mods.conf
 flatpak/net.pouar.yadfa.appdata.xml
+TAGS
