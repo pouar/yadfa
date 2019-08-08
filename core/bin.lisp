@@ -2,6 +2,7 @@
 ;;;;this file contains functions the player can enter in the REPL
 
 (in-package :yadfa)
+(declaim (inline finished-events clear-pattern-cache clear-mod-registry find-mod pathname<= get-zone-text getf-direction get-zone-text get-event thickest-sort get-props-from-zone get-items-from-prop get-bitcoins-from-prop pushnewmove get-move calculate-level-to-exp calculate-exp-yield wash getf-action-from-prop))
 (defunassert (yadfa-bin:get-inventory-of-type (type))
     (type type-specifier)
   (get-positions-of-type type (inventory-of (player-of *game*))))
@@ -1135,3 +1136,4 @@
           (t
            (format t "~a's ~a is now locked~%" (name-of selected-user) (name-of (nth wear (wear-of selected-user))))
            (setf (lockedp (nth wear (wear-of selected-user))) t)))))
+(declaim (notinline finished-events clear-pattern-cache clear-mod-registry find-mod pathname<= get-zone-text getf-direction get-zone-text get-event thickest-sort get-props-from-zone get-items-from-prop get-bitcoins-from-prop pushnewmove get-move calculate-level-to-exp calculate-exp-yield wash getf-action-from-prop))
