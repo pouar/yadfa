@@ -215,8 +215,6 @@
     (pushnew i (getf (status-conditions-of *battle*) user))
     (when (and (not (eq (duration-of i) t)) (< (duration-of i) duration))
       (setf (duration-of i) duration))))
-(defun pathname<= (pathname1 pathname2)
-  (string<= (namestring pathname1) (namestring pathname2)))
 ;;;(slynk:eval-in-emacs '(with-current-buffer (sly-mrepl--find-buffer) (insert-image (create-image "/tmp/1523307158.liljdude_renamon_boom.jpg"))))
 (defun color-format (color &rest body)
   (cl-ansi-text:with-color (color) (apply #'format t body)))
