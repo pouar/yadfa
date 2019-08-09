@@ -34,7 +34,7 @@
                  (collect `,(check-type% asserts check-type m j))))))
     (let* ((sbclp (uiop:featurep :sbcl))
            (declarep (and sbclp
-                          (> (length name-args-declares) 2)
+                          (> (list-length name-args-declares) 2)
                           (typep (car (last name-args-declares)) 'list)
                           (eq (caar (last name-args-declares)) 'declare)))
            (types (check name-args-declares asserts nil)))
@@ -201,7 +201,7 @@
                               (when (eq (type-of i) status-condition)
                                 (collect i))))
          (i (if (or (eq (accumulative-of (make-instance status-condition)) t)
-                    (< (length status-conditions) (accumulative-of (make-instance status-condition))))
+                    (< (list-length status-conditions) (accumulative-of (make-instance status-condition))))
                 (make-instance status-condition)
                 (car (sort status-conditions (lambda (a b)
                                                (cond ((eq b t)
