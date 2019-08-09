@@ -15,11 +15,15 @@
    #:type-specifier
    #:coerced-function
    #:removef-if
-   #:list-length->)
+   #:list-length->
+   #:list-length->=
+   #:list-length-<
+   #:list-length-<=)
   (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package #:yadfa
   (:use #:cl #:yadfa-util #:iterate #:ugly-tiny-infix-macro #:alexandria)
   (:import-from #:macro-level #:macro-level)
+  (:import-from #:yadfa-util #:defunassert)
   (:export
    ;;variables
    #:*battle*
