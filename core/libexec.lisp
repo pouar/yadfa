@@ -1,7 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 ;;;; files used internally by the game, don't call these unless you're developing/modding (or cheating)
 (in-package :yadfa)
-(declaim (inline finished-events clear-pattern-cache clear-mod-registry find-mod pathname<= get-zone-text getf-direction get-zone-text get-event thickest-sort get-props-from-zone get-items-from-prop get-bitcoins-from-prop pushnewmove get-move calculate-level-to-exp calculate-exp-yield wash getf-action-from-prop))
 (defmacro defunassert (name-args-declares asserts &body body)
   "Wrapper macro that brings the behavior of SBCL's type declaration to other implementations, NAME-ARGS-DECLARES is the function name, lambda list, and optionally the docstring and declarations (omitting the type declarations) ASSERTS is the type specifiers for the lambda list as a plist, BODY is the body of the function"
   (labels ((get-var (_ var)
@@ -3699,4 +3698,3 @@
         (push (make-instance (seventh values))
               (get-items-from-prop :dresser (position-of default))))))
   (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io))
-(declaim (notinline finished-events clear-pattern-cache clear-mod-registry find-mod pathname<= get-zone-text getf-direction get-zone-text get-event thickest-sort get-props-from-zone get-items-from-prop get-bitcoins-from-prop pushnewmove get-move calculate-level-to-exp calculate-exp-yield wash getf-action-from-prop))
