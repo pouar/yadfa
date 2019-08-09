@@ -14,7 +14,8 @@
    #:random-from-range
    #:type-specifier
    #:coerced-function
-   #:removef-if)
+   #:removef-if
+   #:list-length->)
   (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package #:yadfa
   (:use #:cl #:yadfa-util #:iterate #:ugly-tiny-infix-macro #:alexandria)
