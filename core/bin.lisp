@@ -1108,7 +1108,7 @@
     (team-index unsigned-byte)
   (let ((team-length (list-length (team-of *game*))))
     (cond
-      ((<= team-length team-index)
+      ((>= team-index team-length)
        (format t "You only have ~d members in your team~%" team-length)
        (return-from yadfa-world:remove-ally-from-team))
       ((eq (nth team-index (team-of *game*)) (player-of *game*))
