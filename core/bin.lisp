@@ -63,7 +63,7 @@
                                       "Open or closes your onesie. WEAR is the index of a onesie. Leave NIL for the outermost onesie. USER is the index of an ally. Leave NIL to refer to yourself")
     (wear (or unsigned-byte null) user (or unsigned-byte null))
   (let* ((allies-length (list-length (allies-of *game*)))
-         (selected-ally (nth user (allies-of *game*))))
+         (selected-ally (if user (nth user (allies-of *game*)))))
     (cond (user
            (cond ((< allies-length user)
                   (format t "You only have ~d allies~%~%" allies-length))
@@ -538,7 +538,7 @@
     (cond ((not item)
            (format t "INVENTORY isn't a valid item ~%")
            (return-from yadfa-bin:wear))
-          ((<= wear-length wear)
+          ((< wear-length wear)
            (format t "`:WEAR ~d' doesn't refer to a valid position as it can't go past the items you're current wearing which is currently ~d"
                    wear
                    wear-length)
@@ -562,7 +562,8 @@
            (return-from yadfa-bin:wear)))
     (setf a (insert (wear-of selected-user) item wear)
           i (iter (for outer in (reverse (subseq a 0 (1+ wear))))
-              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (total-thickness (cdr (member outer a))) (thickness-capacity-of outer)))
+              (with b = (reverse a))
+              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (fast-thickness b outer 0) (thickness-capacity-of outer)))
                 (leave (first (thickest-sort (cdr (member outer a))))))))
     (if i
         (format t "~a struggles to fit ~a ~a over ~a ~a in a hilarious fashion but fail to do so.~%"
@@ -596,7 +597,7 @@
     (cond ((not item)
            (format t "WEAR isn't a valid item ~%")
            (return-from yadfa-bin:unwear))
-          ((<= inventory-length inventory)
+          ((< inventory-length inventory)
            (format t "`:INVENTORY ~d' doesn't refer to a valid position as it can't go past the items you currently have in your inventory which is currently ~d~%" inventory inventory-length)
            (return-from yadfa-bin:unwear))
           ((and
@@ -686,7 +687,7 @@
            (return-from yadfa-bin:change))
           ((and
             (iter (for i in (butlast (wear-of selected-user) (- (list-length (wear-of selected-user)) (position wear (wear-of selected-user)) 1)))
-              (when (and (typep i 'closed-bottoms) (not (eq (lockedp i) :nil)))
+              (when (and (typep i 'closed-bottoms) (lockedp i))
                 (format t "~a can't remove ~a ~a to put on ~a ~a as it's locked~%"
                         (name-of selected-user)
                         (if (malep selected-user) "his" "her")
@@ -697,7 +698,8 @@
            (return-from yadfa-bin:change)))
     (setf a (substitute inventory wear (wear-of selected-user) :count 1)
           i (iter (for outer in (reverse (subseq a 0 (1+ (position inventory a)))))
-              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (total-thickness (cdr (member outer a))) (thickness-capacity-of outer)))
+              (with b = (reverse a))
+              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (fast-thickness b outer 0) (thickness-capacity-of outer)))
                 (leave outer))))
     (if i
         (format t

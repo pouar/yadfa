@@ -18,7 +18,7 @@
                    (t var)))
            (list-length-> (list length)
              (declare (type list list)
-                      (type length integer))
+                      (type integer length))
              (cond ((<= length 0) t)
                    ((cdr list) (list-length-> (cdr list) (1- length)))))
            (check-type% (asserts check-type m j)
