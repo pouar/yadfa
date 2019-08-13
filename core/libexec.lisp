@@ -44,7 +44,7 @@
                  events
                  (finished-events-of *game*)))))
 (defunassert (get-diaper-expansion (item))
-    (item bottoms)
+    (item closed-bottoms)
   (+
    (* 10
       (/
@@ -678,7 +678,7 @@
 (defunassert (thickest-sort (clothing))
     (clothing list)
   (sort (iter (for i in clothing)
-          (when (typep i 'bottoms)
+          (when (typep i 'closed-bottoms)
             (collect i)))
         '>
         :key 'get-diaper-expansion))
@@ -1005,7 +1005,7 @@
                    (nthcdr (1+ i) (wear-of user))
                    (> (total-thickness (nthcdr (1+ i) (wear-of user)))
                       (thickness-capacity-of (nth i (wear-of user)))))
-              (and (typep (nth i (wear-of user)) 'bottoms)
+              (and (typep (nth i (wear-of user)) 'closed-bottoms)
                    (or (>= (sogginess-of (nth i (wear-of user))) (/ (sogginess-capacity-of (nth i (wear-of user))) 4))
                        (>= (messiness-of (nth i (wear-of user))) (/ (messiness-capacity-of (nth i (wear-of user))) 4)))))
           (progn
@@ -3073,7 +3073,7 @@
   (unuse-package :yadfa-battle :yadfa-user)
   (use-package :yadfa-world :yadfa-user))
 (defun wash (clothing)
-  (loop for i in (filter-items clothing 'bottoms) do (when (not (disposablep i)) (setf (sogginess-of i) 0 (messiness-of i) 0))))
+  (loop for i in (filter-items clothing 'closed-bottoms) do (when (not (disposablep i)) (setf (sogginess-of i) 0 (messiness-of i) 0))))
 (defun go-to-sleep% (user)
   (incf (time-of *game*) 60)
   (let ((time-difference (- (time-of *game*) (last-process-potty-time-of user))))

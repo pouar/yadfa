@@ -700,11 +700,6 @@
     :initform ()
     :accessor bulge-text-of
     :documentation "A list of pairs containing the different text that describes the appearance that your diapers have on your pants based on the thickness, first one is the minimum thickness needed for the second text. the text for thicker padding must be listed first")
-   (thickness
-    :initarg :thickness
-    :initform 1
-    :accessor thickness-of
-    :documentation "the thickness of the undies in mm")
    (thickness-capacity
     :initarg :thickness-capacity
     :initform (* (expt 6.0 1/3) 25.4)
@@ -715,6 +710,22 @@
     :initform 50
     :accessor thickness-capacity-threshold-of
     :documentation "How much higher than the thickness capacity the clothing can handle diaper expansion in mm before popping/tearing, NIL means it won't pop/tear")
+   (key
+    :initarg :key
+    :initform nil
+    :accessor key-of
+    :documentation "Whether this piece of clothing can be locked to prevent removal. Set this to the quoted type specifier that is needed to unlock it")
+   (locked
+    :initarg :locked
+    :initform nil
+    :accessor lockedp
+    :documentation "Whether this clothing is locked to prevent removal")))
+(defclass closed-bottoms (bottoms)
+  ((thickness
+    :initarg :thickness
+    :initform 1
+    :accessor thickness-of
+    :documentation "the thickness of the undies in mm")
    (waterproof
     :initarg :waterproof
     :initform nil
@@ -764,19 +775,7 @@
     :initarg :wear-wet-text
     :initform ()
     :accessor wear-wet-text-of
-    :documentation "Plist that contain the text that comes up in the description when wearing it with the minimal sogginess as the key")
-   (key
-    :initarg :key
-    :initform nil
-    :accessor key-of
-    :documentation "Whether this piece of clothing can be locked to prevent removal. Set this to the quoted type specifier that is needed to unlock it")
-   (locked
-    :initarg :locked
-    :initform nil
-    :accessor lockedp
-    :documentation "Whether this clothing is locked to prevent removal")))
-(defclass closed-bottoms (bottoms)
-  ())
+    :documentation "Plist that contain the text that comes up in the description when wearing it with the minimal sogginess as the key")))
 (defclass full-outfit (top bottoms)
   ())
 (defclass closed-pants (closed-bottoms) ())
