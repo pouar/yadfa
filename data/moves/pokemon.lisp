@@ -64,4 +64,4 @@
 (defclass tackle (stat/move) ()
   (:default-initargs
    :name "Tackle"
-   :description "Tackles the enemey"))
+   :description "Tackles the enemy"))

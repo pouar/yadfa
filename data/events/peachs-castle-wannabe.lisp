@@ -3,7 +3,7 @@
 (defevent got-all-shine-stars
   :lambda '(lambda (self)
             (declare (ignore self))
-            (write-line "You got a Macguffin in exchange for 5 Shine Stars, yay.")
+            (write-line "You got a MacGuffin in exchange for 5 Shine Stars, yay.")
             (push (make-instance 'yadfa-items:macguffin) (inventory-of (player-of *game*)))
             (removef-if (inventory-of (player-of *game*))
              (lambda (e)

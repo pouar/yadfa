@@ -9,7 +9,7 @@
     :initform '()
     :accessor attributes-of
     :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots"))
-  (:documentation "All the classes that are part of the game's core inheit this class"))
+  (:documentation "All the classes that are part of the game's core inherit this class"))
 (defclass status-condition (yadfa-class)
   ((name
     :initarg :name
@@ -217,7 +217,7 @@
     :initarg :wield
     :initform nil
     :accessor wield-of
-    :documentation "Item the character is weilding as a weapon")
+    :documentation "Item the character is wielding as a weapon")
    (process-battle-accident
     :initarg :process-battle-accident
     :initform '(lambda (character attack item reload selected-target)
@@ -994,7 +994,7 @@
                                                    (shopfun (items-for-sale-of prop)
                                                     :items-to-buy items
                                                     :user (player-of *game*))))
-                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corrisponds to an item in your inventory"
+                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory"
                                           :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
                                                     (declare (type prop prop) (type list items) (ignore keys))
                                                     (check-type prop prop)
@@ -1076,7 +1076,7 @@
                                                       a)
                                                     :items-to-buy items
                                                     :user (player-of *game*))))
-                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corrisponds to an item in your inventory"
+                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory"
                                           :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
                                                     (declare (type prop prop) (type list items))
                                                     (check-type prop prop)
@@ -1220,7 +1220,7 @@
     :initarg :turn-queue
     :initform ()
     :accessor turn-queue-of
-    :documentation "The queue of characters specifing the order of who attacks when in battle")
+    :documentation "The queue of characters specifying the order of who attacks when in battle")
    (enter-battle-text
     :initarg :enter-battle-text
     :initform nil

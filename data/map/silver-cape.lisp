@@ -23,10 +23,10 @@
 (ensure-zone (-1 6 0 silver-cape)
   :name "Silver Cape Navy HQ Entrance"
   :description "The entrance to Navy HQ."
-  :enter-text "You're inside Navy HQ. The navy here seems to mostly consist of various aquatic creatures. They're mostly potty trained but still wear pullups just in case they don't make it in time, or if they don't want to hold it any longer. Due to pullups having a lower capacity than diapers, some of them suppliment pullups with stuffers.")
+  :enter-text "You're inside Navy HQ. The navy here seems to mostly consist of various aquatic creatures. They're mostly potty trained but still wear pullups just in case they don't make it in time, or if they don't want to hold it any longer. Due to pullups having a lower capacity than diapers, some of them supplement pullups with stuffers.")
 (ensure-zone (-2 6 -1 silver-cape)
   :name "Silver Cape Jail"
-  :description "The jail beneith Navy HQ"
+  :description "The jail beneath Navy HQ"
   :enter-text "You're inside Navy HQ"
   :locked nil
   :events (list 'yadfa-events:get-location-to-pirate-cove-1))
@@ -62,7 +62,7 @@
                                                                                     (write-line "*The Orca lays the dolphin on the floor*")
                                                                                     (write-line "Dolphin: Please don't change me here!!! Everyone can see me!!!!!")
                                                                                     (write-line "*The Orca ignores his pleas and changes his soggy pullups and puts him in a thick diaper then stands him back up. The diaper is so thick that his legs are forced apart. The dolphin hides his face in embarrassment as he is escorted to a nursery*")
-                                                                                    (write-line "*The Jail beneith the cell is now unguarded and can be entered*")
+                                                                                    (write-line "*The Jail beneath the cell is now unguarded and can be entered*")
                                                                                     (setf (lockedp (get-zone '(-2 6 -1 silver-cape))) :nil
                                                                                      (enter-text-of (get-zone (-2 6 0 silver-cape))) "You're inside Navy HQ.")
                                                                                     (remf (get-props-from-zone (position-of (player-of *game*))) :guard))))
@@ -86,7 +86,7 @@
                                                                             (write-line "Dolphin: Ok ok, I'll take them.")
                                                                             (write-line "*The dolphin quickly inserts the stuffer into his pullups and floods himself*")
                                                                             (write-line "Dolphin: Don't tell anyone about this incident and I'll let you through")
-                                                                            (write-line "*The Jail beneith can now be entered*")
+                                                                            (write-line "*The Jail beneath can now be entered*")
                                                                             (removef (inventory-of (player-of *game*)) (car a))
                                                                             (setf (lockedp (get-zone '(-2 6 -1 silver-cape))) :nil
                                                                                   (enter-text-of (get-zone (-2 6 0 silver-cape))) "You're inside Navy HQ."
@@ -145,8 +145,8 @@
 
 (ensure-zone (-6 9 0 silver-cape)
   :name "Silver Cape Recycling Center"
-  :description "Welcome To Silver Cape Recycling Center. We take all your crap, send it to a recycling plant across the country in a truck belching smoke and polution, process your crap to turn it into less quality crap in machines belching more smoke and pollution, stockpile it and beg people to buy it, then send it all to ~a's garbage collector. Think of it as a more expensive and less environmentally friendly way to throw your stuff away."
-  :enter-text "Welcome To Silver Cape Recycling Center. We take all your crap, send it to a recycling plant across the country in a truck belching smoke and polution, process your crap to turn it into less quality crap in machines belching more smoke and pollution, stockpile it and beg people to buy it, then send it all to ~a's garbage collector. Think of it as a more expensive and less environmentally friendly way to throw your stuff away."
+  :description "Welcome To Silver Cape Recycling Center. We take all your crap, send it to a recycling plant across the country in a truck belching smoke and pollution, process your crap to turn it into less quality crap in machines belching more smoke and pollution, stockpile it and beg people to buy it, then send it all to ~a's garbage collector. Think of it as a more expensive and less environmentally friendly way to throw your stuff away."
+  :enter-text "Welcome To Silver Cape Recycling Center. We take all your crap, send it to a recycling plant across the country in a truck belching smoke and pollution, process your crap to turn it into less quality crap in machines belching more smoke and pollution, stockpile it and beg people to buy it, then send it all to ~a's garbage collector. Think of it as a more expensive and less environmentally friendly way to throw your stuff away."
   :props (list
           :recycling-bin
           (make-instance 'prop

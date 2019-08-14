@@ -93,7 +93,7 @@ the result of calling REMOVE-IF with TEST, place, and the KEYWORD-ARGUMENTS.")
 (defun random-from-range (start end)
   (+ start (random (+ 1 (- end start)))))
 (defun type-specifier-p (type-specifier)
-  "Returns true if TYPE-SPECIFIER is a valid type specfiier."
+  "Returns true if TYPE-SPECIFIER is a valid type specifier."
   #+sbcl (sb-ext:valid-type-specifier-p type-specifier)
   #+openmcl (ccl:type-specifier-p type-specifier)
   #+ecl (c::valid-type-specifier type-specifier)

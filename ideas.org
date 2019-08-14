@@ -15,7 +15,7 @@ This file mostly contains ideas for in game content
     directory known to man (or at least the package file).
 
     As for the package database itself, we'll just do what Windows does and dump the contents of ram to disk because it's faster.
-    Also, the new instalation system is self updating, but can't update itself while it's running, so you need to find some way to run it without running it.
+    Also, the new installation system is self updating, but can't update itself while it's running, so you need to find some way to run it without running it.
 
     How do you use this new easy to use installer to install packages you ask? with this simple and easy to use C function of course:
 
@@ -105,7 +105,7 @@ Oh who cares what you think, you're just some antivirus that I rely on
 
   - Freddy Fazbear jumps up!!! *LOUD SCREECH!!!*. Ok, apparently jumpscares don't work very well in text based games.
 
-  - Good news, Our Brainwashing^[^?Regression therapy service is now sponsered by the Music And Film Association of America (aka MAFIAA)
+  - Good news, Our Brainwashing^[^?Regression therapy service is now sponsored by the Music And Film Association of America (aka MAFIAA)
     and so we're now bundling a few new services with it, so we need you to put up these `motivational posters' in the regression therapy room
 
     *looks through the propaganda posters*
@@ -122,7 +122,7 @@ Oh who cares what you think, you're just some antivirus that I rely on
 
     Well, it turns out that the concept of brainwashing is total bullshit and doesn't really work, but that doesn't really matter
     as long as the victim is stupid enough. As for fixing this, maybe we could convince them that we can talk to plants.
-    It worked when they belived those Brawndo commercials
+    It worked when they believed those Brawndo commercials
 
   - Btw, we had an entire storyline for this game where you receive this device, but we decided to just do what 4Kids did,
     throw all that out and just claim that you had this device all this time but just forgot about it. Makes sense right?
@@ -145,7 +145,7 @@ Oh who cares what you think, you're just some antivirus that I rely on
 * Ideas from a dream I had
   - Candle Carnival :: An amusement park located in the sky, has a giant pool, various rides, and is powered by monkeys
   - Sky Base        :: A giant base located in orbit, has a main structure with various platforms attached to it, similar to the Comet Observatory in Super Mario Galaxy, but bigger with the platforms
-                       spread farther appart. Has a special gravity simulator that pulls you back up if you fall off, kinda like a trampoline. You can use this to move between various platforms
+                       spread farther apart. Has a special gravity simulator that pulls you back up if you fall off, kinda like a trampoline. You can use this to move between various platforms
   - Star City       :: A giant city in space. All the buildings and parks are on floating platforms. You use a space ship or jetpack to travel between the different platforms
   - Flying Mansion  :: A mansion in the middle of the sky
 * Idea from Karmen
