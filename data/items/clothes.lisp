@@ -41,7 +41,7 @@
                  162.5 "The dress does a good job hiding your padding, unless a gust of wind happens to blow by"
                  #.(* 1/2 25) "The dress does a good job hiding your padding"
                  0 "It fits quite loosely")
-   :thickness-capacity (* 16 25.4)))
+   :thickness-capacity (* 16 (+ 25 2/5))))
 (defclass dress (yadfa:dress) ()
   (:default-initargs
    :name "Dress"
@@ -52,7 +52,7 @@
                  #.(* 3 25) "There is a slight bulge, but it's not too noticeable"
                  #.(* 1/2 25) "The dress does a good job hiding your padding"
                  0 "It fits snuggly")
-   :thickness-capacity (* 16 25.4)))
+   :thickness-capacity (* 16 (+ 25 2/5))))
 (defclass sundress (yadfa:dress) ()
   (:default-initargs
    :name "Sundress"
@@ -104,13 +104,13 @@
    :onesie-waterproof t
    :value 600
    :name "Black Rubber Onesie"
-   :onesie-thickness-capacity (cons (* 16 25.4) nil)
+   :onesie-thickness-capacity (cons (* 16 (+ 25 2/5)) nil)
    :onesie-bulge-text '((60 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
                          50 "It stretches which helps accomidate your thick padding"
                          20 "It fits over your diaper quite nicely"
                          0 "It's so baggy that what you're wearing under there is quite visible")
                         .
-                        (#.(* 16 25.4) "You are unable to get the buttons to snap so you just leave the flaps open"
+                        (#.(* 16 (+ 25 2/5)) "You are unable to get the buttons to snap so you just leave the flaps open"
                          #.(* 12 25) "Your padding is clearly visible under there"
                          #.(* 11 25) "The flaps just barely cover the diapers"
                          #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
@@ -136,7 +136,7 @@
   (:default-initargs
    :waterproof t
    :value 1000
-   :thickness-capacity (* 16 25.4)
+   :thickness-capacity (* 16 (+ 25 2/5))
    :bulge-text '(60 "You look like one of those pictures drawn by Kurikia"
                  20 "The diaper bulge makes it clear what you're wearing under there"
                  0 "It fits snuggly")
@@ -273,10 +273,10 @@
    :bulge-text '(225 "Your padding is clearly visible under your dress"
                  200 "Your padding is slightly visible under your dress"
                  175 "The dress does a good job hiding your padding, as long as you're standing still"
-                 162.5 "The dress does a good job hiding your padding, unless a gust of wind happens to blow by"
+                 #.(+ 162 1/2) "The dress does a good job hiding your padding, unless a gust of wind happens to blow by"
                  #.(* 1/2 25) "The dress does a good job hiding your padding"
                  0 "It fits quite loosely")
-   :thickness-capacity (* 16 25.4)))
+   :thickness-capacity (* 16 (+ 25 2/5))))
 (defclass fursuit (closed-full-outfit) ()
   (:default-initargs
    :name "Fursuit"
@@ -321,7 +321,7 @@
    :bulge-text '(25 "The skirt does absolutely nothing to hide your padding"
                  #.(* 1/2 25) "The skirt does a good job hiding your padding, as long as you're standing still"
                  0 "It fits quite loosely")
-   :thickness-capacity (* 16 25.4)))
+   :thickness-capacity (* 16 (+ 25 2/5))))
 (defclass ballerina-dress (yadfa:dress) ()
   (:default-initargs
    :name "Ballerina Dress"

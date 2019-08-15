@@ -20,12 +20,12 @@
             (when (eq a :bladder/contents)
               (leave t)))
     (setf (bladder/contents-of c)
-          (random (float (+ (bladder/potty-desperate-limit-of c) (/ (- (bladder/potty-desperate-limit-of c) (bladder/potty-dance-limit-of c))))))))
+          (random (coerce (+ (bladder/potty-desperate-limit-of c) (/ (- (bladder/potty-desperate-limit-of c) (bladder/potty-dance-limit-of c)))) 'long-float))))
   (unless (iter (for (a b) on args)
             (when (eq a :bowels/contents)
               (leave t)))
     (setf (bowels/contents-of c)
-          (random (float (+ (bowels/potty-desperate-limit-of c) (/ (- (bowels/potty-desperate-limit-of c) (bowels/potty-dance-limit-of c)))))))))
+          (random (coerce (+ (bowels/potty-desperate-limit-of c) (/ (- (bowels/potty-desperate-limit-of c) (bowels/potty-dance-limit-of c)))) 'long-float)))))
 (defclass chris (playable-ally ally-rebel-potty-training) ()
   (:default-initargs
    :name "Chris"

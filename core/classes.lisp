@@ -702,7 +702,7 @@
     :documentation "A list of pairs containing the different text that describes the appearance that your diapers have on your pants based on the thickness, first one is the minimum thickness needed for the second text. the text for thicker padding must be listed first")
    (thickness-capacity
     :initarg :thickness-capacity
-    :initform (* (expt 6.0 1/3) 25.4)
+    :initform (* (expt 6.0 1/3) (+ 25 2/5))
     :accessor thickness-capacity-of
     :documentation "The maximum thickness of your diaper that this can fit over. NIL means infinite")
    (thickness-capacity-threshold
@@ -839,16 +839,16 @@
 (defclass cub-undies (incontinence-product) ())
 (defclass pullon (padding) ()
   (:default-initargs
-   :thickness (* 1/2 25.4)
+   :thickness (* 1/2 (+ 25 2/5))
    :thickness-capacity 40))
 (defclass tabbed-briefs (padding) ()
   (:default-initargs
-   :thickness 25.4
+   :thickness (+ 25 2/5)
    :thickness-capacity 80
    :key 'yadfa-items:magic-diaper-key))
 (defclass incontinence-pad (incontinence-product) ()
   (:default-initargs
-   :thickness (* 1/4 25.4)
+   :thickness (* 1/4 (+ 25 2/5))
    :thickness-capacity 20))
 (defclass undies (closed-bottoms)
   ()
