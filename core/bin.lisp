@@ -26,7 +26,7 @@
 (defun yadfa-bin:disable-mod (system)
   "Disable a mod, the modding system is mostly just asdf, SYSTEM is a keyword which is the name of the system you want to enable"
   (declare (ignorable system))
-  #+yadfa-mods (progn (removef *mods* (asdf:coerce-name system) :test #'string=)
+  #+yadfa-mods (progn (deletef *mods* (asdf:coerce-name system) :test #'string=)
                       (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
                                               :if-does-not-exist :create
                                               :if-exists :supersede
@@ -577,7 +577,7 @@
                          (if (list-length-> (enemies-of *battle*) 1) "enemies" "enemy")
                          (name-of item)))
                (format t "~a puts on ~a ~a~%" (name-of selected-user) (if (malep selected-user) "his" "her") (name-of item))
-               (removef (inventory-of (player-of *game*)) item :count 1)
+               (deletef (inventory-of (player-of *game*)) item :count 1)
                (setf (wear-of selected-user) a)))))
 (defunassert (yadfa-bin:unwear (&key (inventory 0) (wear 0) user)
                                "Unwear an item you're wearing. Inventory is the index you want to place this item. WEAR is the index of the item you're wearing that you want to remove. You can also set WEAR to a type specifier for the outer most clothing of that type. USER is a integer referring to the index of an ally. Leave at NIL to refer to yourself")
@@ -629,7 +629,7 @@
                   "enemy")
               (name-of item)))
     (format t "~a takes off ~a ~a~%" (name-of selected-user) (if (malep selected-user) "his" "her") (name-of item))
-    (removef (wear-of (player-of *game*)) item :count 1)
+    (deletef (wear-of (player-of *game*)) item :count 1)
     (insertf (inventory-of (player-of *game*)) item inventory)))
 (defunassert (yadfa-bin:change (&key (inventory 0) (wear 0) user)
                                "Change one of the clothes you're wearing with one in your inventory. WEAR is the index of the clothing you want to replace. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to replace it with. You can also give INVENTORY and WEAR a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself.")
@@ -847,7 +847,7 @@
         (return-from yadfa-bin:toss)))
     (iter (for i in items)
       (format t "You send ~a straight to /dev/null~%" (name-of i)))
-    (removef (inventory-of (player-of *game*)) items
+    (deletef (inventory-of (player-of *game*)) items
              :test (lambda (o e)
                      (member e o)))))
 (defunassert (yadfa-world:place (prop &rest items)
@@ -881,7 +881,7 @@
     (iter (for i in items)
       (format t "You place your ~a on the ~a~%" (name-of i) (name-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)))
       (push i (get-items-from-prop prop (position-of (player-of *game*)))))
-    (removef (inventory-of (player-of *game*)) items
+    (deletef (inventory-of (player-of *game*)) items
              :test (lambda (o e)
                      (member e o)))))
 (defun yadfa-battle:run ()
@@ -1039,7 +1039,7 @@
         (leave t))
       (when (and (typep item ammo-type) (typep item (ammo-type-of (wield-of user))))
         (push item (ammo-of (wield-of user)))
-        (removef item (inventory-of (player-of *game*)) :count 1)))))
+        (deletef item (inventory-of (player-of *game*)) :count 1)))))
 (defunassert (yadfa-bin:wield (&key user inventory)
                               "Wield an item. Set INVENTORY to the index or a type specifier of an item in your inventory to wield that item. Set USER to the index of an ally to have them to equip it or leave it NIL for the player.")
     (user (or unsigned-byte null)
@@ -1064,7 +1064,7 @@
             (name-of selected-user)
             (if (malep selected-user) "his" "her")
             (name-of item))
-    (removef (inventory-of (player-of *game*)) item :count 1)
+    (deletef (inventory-of (player-of *game*)) item :count 1)
     (when (wield-of selected-user)
       (push (wield-of selected-user) (inventory-of (player-of *game*))))
     (setf (wield-of selected-user) item)))
