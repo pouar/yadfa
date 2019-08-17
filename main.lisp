@@ -16,7 +16,6 @@
   (in-package #:yadfa)
   (when (position "wait" (uiop:command-line-arguments) :test #'string=)
     (sleep 2))
-  (set-logical-pathnames)
   (load-mods)
   (let ((file #P"yadfa:config;yadfarc"))
     (when (probe-file file)

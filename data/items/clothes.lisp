@@ -255,6 +255,19 @@
                  0 "It fits quite loosely")
    :thickness-capacity nil
    :thickness-capacity-threshold nil))
+(defclass skirt (yadfa:skirt) ()
+  (:default-initargs
+   :name "Skirt"
+   :plural-name "Skirts"
+   :value 100
+   :description "A loose fitting skirt."
+   :bulge-text '(75 "Your padding is clearly visible under your dress"
+                 50 "Your padding is slightly visible under your dress"
+                 25 "The dress does a good job hiding your padding, as long as you're standing still"
+                 12 "The dress does a good job hiding your padding, unless a gust of wind happens to blow by"
+                 0 "It fits quite loosely")
+   :thickness-capacity nil
+   :thickness-capacity-threshold nil))
 (defclass navy-shirt (yadfa:shirt) ()
   (:default-initargs
    :name "Navy Shirt"
@@ -315,7 +328,7 @@
    :description "A hard koopa shell"))
 (defclass cheerleader-outfit (yadfa:dress) ()
   (:default-initargs
-   :name "Cheerleader Outfit"
+   :name "Cheerleader Dress"
    :value 150
    :description "A pretty cheerleader dress. Looks great with a diaper to show everyone off with."
    :bulge-text '(25 "The skirt does absolutely nothing to hide your padding"
@@ -338,3 +351,27 @@
    :bulge-text '(25 "The skirt does absolutely nothing to hide your padding"
                  #.(* 1/2 25) "The skirt does a good job hiding your padding, as long as you're standing still"
                  0 "It fits quite nicely")))
+(defclass shendyt (yadfa:skirt) ()
+  (:default-initargs
+   :name "Shendyt"
+   :plural-name "Shendyt"
+   :value 100
+   :description "A skirt like loincloth similar to what the ancient Egyptians wear"
+   :bulge-text '(75 "Your padding is clearly visible under your dress"
+                 50 "Your padding is slightly visible under your dress"
+                 25 "The dress does a good job hiding your padding, as long as you're standing still"
+                 12 "The dress does a good job hiding your padding, unless a gust of wind happens to blow by"
+                 0 "It fits quite loosely")
+   :thickness-capacity nil
+   :thickness-capacity-threshold nil))
+(defclass kalasiris (yadfa:dress) ()
+  (:default-initargs
+   :name "Kalasiris"
+   :plural-name "Kalasirises"
+   :value 200
+   :description "A dress similar to what the ancient Egyptians wear"
+   :bulge-text '(480 "Your padding is completely visible"
+                 430 "Your padding is slightly visible under your dress"
+                 #.(* 1/2 25) "The dress does a good job hiding your padding"
+                 0 "It fits quite loosely")
+   :thickness-capacity nil))

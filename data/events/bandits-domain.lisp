@@ -153,7 +153,7 @@
   :lambda '(lambda (self)
             (declare (ignorable self))
             (pushnew '(yadfa-items:magic-diaper-key . (list :value 10000))
-             (items-for-sale-of (getf (get-props-from-zone '(-3 22 0 yadfa-zones:bandits-domain)) :shop)))
+             (yadfa-props:items-for-sale-of (getf (get-props-from-zone '(-3 22 0 yadfa-zones:bandits-domain)) :shop)))
             (format t "Shop owner: Seems you're stuck in a locked diaper. I can help.~%~%")
             (format t "~a: I'm listenening~%~%" (name-of (player-of *game*)))
             (format t "I got one of those special artifacts that is used to lock and unlock these diapers. I can give it to you for 10000 bitcoins. Better pay up before you ~a yourself~%~%"

@@ -9,13 +9,7 @@
                 :description "A path filled with bandits"
                 :enter-text "You follow the path"
                 :warp-points ,(when (= i 0) '(list 'ironside '(2 0 0 ironside)))
-                :enemy-spawn-list
-                (list '(:max-random 8
-                        :enemies ((yadfa-enemies:female-diapered-raccoon-bandit .
-                                   (list :level (random-from-range 2 5)))))
-                      '(:max-random 8
-                        :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
-                                   (list :level (random-from-range 2 5)))))))))))
+                :enemy-spawn-list 'bandits-way)))))
 
 (macro-level
   `(progn
@@ -99,7 +93,7 @@
                                    "his"
                                    "her"))
                        (return))))
-  :props (list :shop (make-instance 'shop
+  :props (list :shop (make-instance 'yadfa-props:shop
                                     :actions (list :ask-for-bathroom
                                                    (make-action :documentation "Ask the raccoons if you can use the bathroom."
                                                                 :lambda '(lambda
@@ -142,9 +136,9 @@
                                                       (yadfa-items:box-of-7.62×39mm)
                                                       (yadfa-items:pink-sword)
                                                       (yadfa-items:toddler-dress)))
-               :changing-table (make-instance 'automatic-changing-table)
-               :bed (make-instance 'bed)
-               :checkpoint (make-instance 'checkpoint))
+               :changing-table (make-instance 'yadfa-props:automatic-changing-table)
+               :bed (make-instance 'yadfa-props:bed)
+               :checkpoint (make-instance 'yadfa-props:checkpoint))
   :events (list 'yadfa-events:enter-bandits-shop-1 'yadfa-events:obtain-diaper-lock-1 'yadfa-events:enter-bandits-shop-3))
 (ensure-zone (-3 23 0 bandits-domain)
   :name "Bandit's Shop Bathroom"
@@ -183,32 +177,7 @@
                                                :name "Bandit's Cove"
                                                :description "A cove filled with bandits"
                                                :enter-text "You're at a cove runned by bandits"
-                                               :enemy-spawn-list
-                                               (list '(:max-random 10
-                                                       :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
-                                                                  (list :level (random-from-range 2 5)
-                                                                        :wear (list
-                                                                               (make-instance 'yadfa-items:lower-bandit-swim-diaper-cover)
-                                                                               (make-instance 'yadfa-items:bandit-diaper
-                                                                                :sogginess (random 1000)
-                                                                                :messiness (random 6000)))
-                                                                        :level (random-from-range 2 5)))))
-                                                     '(:max-random 10
-                                                       :enemies ((yadfa-enemies:diapered-raccoon-bandit
-                                                                  . (list :level (random-from-range 2 5)
-                                                                          :wear (list (make-instance 'yadfa-items:bandit-swimsuit/closed)
-                                                                                 (make-instance 'bandit-swim-diaper-cover)
-                                                                                 (make-instance 'yadfa-items:bandit-diaper))
-                                                                          :level (random-from-range 2 5)))))
-                                                     '(:max-random 10
-                                                       :enemies ((yadfa-enemies:female-diapered-raccoon-bandit
-                                                                  . (list :level (random-from-range 2 5)
-                                                                          :wear (list (make-instance 'yadfa-items:bandit-uniform-sports-bikini-top)
-                                                                                 (make-instance 'yadfa-items:female-bandit-swim-diaper-cover)
-                                                                                 (make-instance 'yadfa-items:bandit-female-diaper
-                                                                                  :sogginess (random 1000)
-                                                                                  :messiness (random 6000)))
-                                                                          :level (random-from-range 2 5)))))))))))
+                                               :enemy-spawn-list 'bandits-cove)))))
          a)))
 (ensure-zone (6 24 0 bandits-domain)
   :name "Bandit's Cave Entrance"

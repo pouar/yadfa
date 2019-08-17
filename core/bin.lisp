@@ -147,8 +147,8 @@
                (when (trigger-event i)
                  (collect i)))
              (return-from yadfa-world:move))
-            ((enemy-spawn-list-of (get-zone (position-of (player-of *game*))))
-             (iter (for i in (enemy-spawn-list-of (get-zone (position-of (player-of *game*)))))
+            ((enemy-spawn-list (get-zone (position-of (player-of *game*))))
+             (iter (for i in (enemy-spawn-list (get-zone (position-of (player-of *game*)))))
                (let ((random (if (getf i :random) (getf i :random) 1)))
                  (when (< (random (getf i :max-random)) random)
                    (set-new-battle (cond ((getf i :eval)
@@ -563,7 +563,7 @@
     (setf a (insert (wear-of selected-user) item wear)
           i (iter (for outer in (reverse (subseq a 0 (1+ wear))))
               (with b = (reverse a))
-              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (fast-thickness b outer 0) (thickness-capacity-of outer)))
+              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (fast-thickness b outer) (thickness-capacity-of outer)))
                 (leave (first (thickest-sort (cdr (member outer a))))))))
     (if i
         (format t "~a struggles to fit ~a ~a over ~a ~a in a hilarious fashion but fail to do so.~%"
@@ -699,7 +699,7 @@
     (setf a (substitute inventory wear (wear-of selected-user) :count 1)
           i (iter (for outer in (reverse (subseq a 0 (1+ (position inventory a)))))
               (with b = (reverse a))
-              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (fast-thickness b outer 0) (thickness-capacity-of outer)))
+              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (fast-thickness b outer) (thickness-capacity-of outer)))
                 (leave outer))))
     (if i
         (format t
@@ -764,7 +764,7 @@
     (when (and prop (not this-prop))
       (format t "that PROP doesn't exist in this zone~%")
       (return-from yadfa-world:go-potty))
-    (cond ((typep this-prop 'toilet)
+    (cond ((typep this-prop 'yadfa-props:toilet)
            (potty-on-toilet this-prop
                             :wet (if user t wet)
                             :mess (if user t mess)
@@ -814,7 +814,7 @@
                                       "washes your dirty diapers and all the clothes you've ruined. PROP is a keyword identifying the washer you want to put it in. If you're washing it in a body of water, leave PROP out.")
     (prop (or keyword null))
   (cond
-    ((and prop (not (typep (getf (get-props-from-zone (position-of (player-of *game*))) prop) 'washer)))
+    ((and prop (not (typep (getf (get-props-from-zone (position-of (player-of *game*))) prop) 'yadfa-props:washer)))
      (write-line "That's not a washer"))
     ((and (not prop) (not (underwaterp (get-zone (position-of (player-of *game*)))))) (format t "There's no where to wash that~%"))
     ((underwaterp (get-zone (position-of (player-of *game*))))

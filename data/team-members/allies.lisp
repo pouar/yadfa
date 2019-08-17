@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-allies"; coding: utf-8-unix; -*-
 (in-package :yadfa-allies)
-(defclass slynk (playable-ally ally-last-minute-potty-training) ()
+(defclass slynk (playable-ally ally-last-minute-potty-training pantsable-character) ()
   (:default-initargs
    :name "Slynk"
    :male t
@@ -34,7 +34,7 @@
    :description "An orange fox. has gotten accustomed to being treated like a pet and will typically wear nothing but a collar, refuses to be housebroken like a good fox so he must be diapered at all times."
    :wear (list (make-instance 'yadfa-items:gold-collar)
                (make-instance 'yadfa-items:bandit-diaper))))
-(defclass kristy (playable-ally ally-no-potty-training) ()
+(defclass kristy (playable-ally ally-no-potty-training pantsable-character) ()
   (:default-initargs
    :name "Kristy"
    :male nil
@@ -42,7 +42,7 @@
    :description "A beautiful orange vixen who has a personality that is more like a child than an adult. Loves wearing thick diapers, can't stand pants. Has gone without diapers for so long that she has become dependent on them."
    :wear (list (make-instance 'yadfa-items:toddler-dress)
                (make-instance 'yadfa-items:bandit-female-diaper))))
-(defclass furry (playable-ally ally-silent-potty-training) ()
+(defclass furry (playable-ally ally-silent-potty-training pantsable-character) ()
   (:default-initargs
    :name "Furry"
    :male t

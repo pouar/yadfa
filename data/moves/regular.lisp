@@ -11,3 +11,8 @@
                  (format t "But it had no effect!~%")
                  (progn (format t "~a's diaper has been mushed~%" (name-of target))
                         (set-status-condition 'yadfa-status-conditions:mushed target))))))
+(defclass pants (stat/move) ()
+  (:default-initargs
+   :name "Pants"
+   :description "Pants the enemy"
+   :attack 'pants%))

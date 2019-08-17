@@ -4,7 +4,7 @@
   :name "Bedroom"
   :description "Your house only has a bedroom and a bathroom. Because Pouar was too lazy to code you a real house."
   :enter-text "You enter your bedroom."
-  :props (list :bed (make-instance 'bed
+  :props (list :bed (make-instance 'yadfa-props:bed
                                    :name "Your bed"
                                    :description "Pouar wasn't sure what design to put on the sheets, so he decided to leave that up to the player's interpretation.")
                :dresser (make-instance 'prop
@@ -12,12 +12,12 @@
                                        :placeable t
                                        :description "Has all your clothes and diapers in here, until you take them out."
                                        :items ())
-               :checkpoint (make-instance 'checkpoint)))
+               :checkpoint (make-instance 'yadfa-props:checkpoint)))
 (ensure-zone (1 0 0 home)
   :name "Bathroom"
   :description "Your bathroom"
   :enter-text "You enter the bathroom"
-  :props (list :toilet (make-instance 'toilet
+  :props (list :toilet (make-instance 'yadfa-props:toilet
                                       :name "Toilet"
                                       :description "You can use this so you don't wet or mess yourself")
                :cupboard (make-instance 'prop
@@ -25,7 +25,7 @@
                                         :placeable t
                                         :description "A cupboard located on the sink"
                                         :items (list (make-instance 'yadfa-items:potion)))
-               :washer (make-instance 'washer
+               :washer (make-instance 'yadfa-props:washer
                                       :name "Washer"
                                       :description "A place to wash all the clothes that you've ruined")))
 (ensure-zone (0 1 0 home)

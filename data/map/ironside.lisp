@@ -27,7 +27,7 @@
   :can-potty 'can-potty
   :potty-trigger 'trigger-diaper-police
   :props (list
-          :shop (make-instance 'shop
+          :shop (make-instance 'yadfa-props:shop
                                :items-for-sale (list
                                                 '(yadfa-items:monster-energy-drink)
                                                 '(yadfa-items:generic-diapers-package)
@@ -39,7 +39,7 @@
                                                 '(yadfa-items:panties)
                                                 '(yadfa-items:knights-armor)
                                                 '(yadfa-items:potion)))
-          :changing-table (make-instance 'automatic-changing-table)))
+          :changing-table (make-instance 'yadfa-props:automatic-changing-table)))
 
 (ensure-zone (0 -1 0 ironside)
   :name "Ironside ABDL-Mart"
@@ -48,7 +48,7 @@
   :can-potty 'can-potty
   :potty-trigger 'trigger-diaper-police
   :props (list
-          :shop (make-instance 'shop
+          :shop (make-instance 'yadfa-props:shop
                                :items-for-sale (list
                                                 '(yadfa-items:bottle-of-milk)
                                                 '(yadfa-items:incontinence-pad-package)
@@ -56,7 +56,7 @@
                                                 '(yadfa-items:pullups-package)
                                                 '(yadfa-items:toddler-dress)
                                                 '(yadfa-items:onesie/opened)))
-          :changing-table (make-instance 'automatic-changing-table)))
+          :changing-table (make-instance 'yadfa-props:automatic-changing-table)))
 (ensure-zone (2 1 0 ironside)
   :name "Ironside University Entrance"
   :description "An old school university back when universities actually innovated, instead of being dumbed down, commercialized, and simply taught how to use proprietary products."
@@ -143,15 +143,15 @@
   :potty-trigger 'trigger-diaper-police
   :direction-attributes (list :north (list :hidden t))
   :props (list
-          :bed (make-instance 'bed
+          :bed (make-instance 'yadfa-props:bed
                               :name "Your bed"
                               :description "Pouar wasn't sure what design to put on the sheets, so he decided to leave that up to the player's interpretation.")
           :dresser (make-instance 'prop
                                   :name "Dresser"
                                   :placeable t
                                   :description "Has all your clothes and diapers in here, until you take them out.")
-          :checkpoint (make-instance 'checkpoint)
-          :washer (make-instance 'washer
+          :checkpoint (make-instance 'yadfa-props:checkpoint)
+          :washer (make-instance 'yadfa-props:washer
                                  :name "Washer"
                                  :description "A place to wash all the clothes that you've ruined")
           :diaper-dispenser

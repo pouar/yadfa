@@ -28,6 +28,8 @@
    #:defevent
    #:ensure-zone
    #:defzone
+   #:ensure-zone*
+   #:defzone*
    #:defonesie
    #:make-pocket-zone
    ;;functions
@@ -75,10 +77,12 @@
    #:ally-join
    #:pushnewmove
    #:get-move
+   #:process-potty-dance-check
    ;;methods
    #:get-process-potty-action-type
    #:output-process-potty-text
    #:get-babyish-padding
+   #:enemy-spawn-list
    ;;constructors
    #:make-action
    ;;classes
@@ -126,17 +130,10 @@
    #:dress
    #:shirt
    #:pants
-   #:toilet
-   #:washer
-   #:automatic-changing-table
-   #:checkpoint
-   #:shop
-   #:vending-machine
-   #:debug-shop
-   #:bed
    #:enemy
    #:potty-enemy
    #:battle
+   #:pantsable-character
    ;;accessors
    #:name-of
    #:description-of
@@ -145,6 +142,7 @@
    #:target-of
    #:last-process-potty-time-of
    #:process-battle-accident-of
+   #:process-potty-dance-of
    #:battle-script-of
    #:blocks-turn-of
    #:duration-of
@@ -237,7 +235,6 @@
    #:onesie-thickness-capacity-of
    #:onesie-thickness-capacity-threshold-of
    #:onesie-waterproof-p
-   #:items-for-sale-of
    #:watersport-limit-of
    #:mudsport-limit-of
    #:watersport-chance-of
@@ -260,7 +257,8 @@
    #:event-attributes
    #:event-lambda
    #:event-repeatable
-   #:fainted-of)
+   #:fainted-of
+   #:persistentp)
   (:documentation "Yet Another Diaperfur Adventure"))
 (uiop:define-package #:yadfa-bin
   (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files #:get-inventory-of-type)
@@ -273,6 +271,7 @@
   (:documentation "Contains the commands used when battling. The player probably shouldn't call these with the package prefix unless they're developing"))
 (uiop:define-package #:yadfa-moves
   (:import-from #:macro-level #:macro-level)
+  (:shadow #:pants)
   (:use #:yadfa #:yadfa-util #:cl #:iterate)
   (:export
    #:kamehameha
@@ -286,9 +285,10 @@
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package #:yadfa-items
   (:import-from #:macro-level #:macro-level)
-  (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:incontinence-pad)
+  (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:incontinence-pad #:skirt)
   (:use #:yadfa #:yadfa-util #:cl #:iterate)
   (:export
+   #:bandit-swimsuit/closed
    #:revive
    #:shine-star
    #:egg-spear
@@ -308,6 +308,9 @@
    #:cheerleader-outfit
    #:ballerina-dress
    #:braixen-dress
+   #:skirt
+   #:shendyt
+   #:kalasiris
    #:toddler-dress
    #:knights-armor
    #:tshirt
@@ -406,8 +409,23 @@
    #:navy-officer
    #:navy-officer*
    #:diaper-pirate
+   #:diapered-kobold
    #:thickly-diaper-pirate
    #:padded-fursuiter-servant)
+  (:documentation "Contains all the enemies in the game"))
+(uiop:define-package #:yadfa-props
+  (:import-from #:macro-level #:macro-level)
+  (:use #:cl #:yadfa #:yadfa-util #:iterate #:alexandria)
+  (:export
+   #:toilet
+   #:washer
+   #:automatic-changing-table
+   #:checkpoint
+   #:shop
+   #:vending-machine
+   #:debug-shop
+   #:bed
+   #:items-for-sale-of)
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package #:yadfa-status-conditions
   (:import-from #:macro-level #:macro-level)
@@ -416,8 +434,9 @@
    #:wetting
    #:messing
    #:mushed
-   #:tickled
-   #:skunked)
+   #:laughing
+   #:skunked
+   #:pantsed)
   (:documentation "Contains all the status condtions in the game"))
 (uiop:define-package #:yadfa-zones
   (:import-from #:macro-level #:macro-level)
