@@ -1,3 +1,12 @@
 * TODO Make more use of AI flags in items and moves
 * TODO Make more use of the items in zones and enemies
   - Likewise for moves
+* TODO add new move that pantses the enemy to embarrass them
+* TODO update fast-thickness to handle NULL elements and not have to pass 0 all the time
+* TODO create the YADFA-PROPS package and move props to it
+* TODO move the change-the-baby function outside the YADFA package, possibly creating a new package for it
+* TODO go through YADFA:HOME;CORE;BIN.LISP and add the option to specify type specifiers instead of just an UNSIGNED-BYTE
+* TODO have YADFA::SET-LOGICAL-PATHNAMES run when ASDF:CLEAR-CONFIGURATION is done
+* TODO add generated maze
+* TODO add hash table that can hold shared enemy spawn lists
+* TODO add YADFA:ENSURE-EVENT function
