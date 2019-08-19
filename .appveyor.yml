@@ -12,24 +12,29 @@ install:
 - ps: If(!(test-path $env:CACHE )) { mkdir $env:CACHE; }
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://beta.quicklisp.org/quicklisp.lisp" -OutFile $env:CACHE\quicklisp.lisp
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/releases/download/v1.11.5/ccl-1.11.5-windowsx86.zip" -OutFile $env:CACHE\ccl.zip
+- ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/archive/v1.11.6.zip" -OutFile $env:CACHE\ccl-1.11.6.zip
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3.3/asdf-3.3.3.3.zip"  -OutFile $env:CACHE\asdf.zip
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.14/sbcl-1.4.14-x86-64-windows-binary.msi" -OutFile $env:CACHE\sbcl.msi
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/joaotavora/sly/archive/master.zip" -OutFile "$env:CACHE\sly.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/didierverna/declt/archive/master.zip" -OutFile "$env:CACHE\declt.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/McCLIM/McCLIM/archive/master.zip" -OutFile "$env:CACHE\mcclim.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip" -OutFile $env:CACHE\dejavu.zip
-- cmd: 'C:\cygwin64\setup-x86_64.exe --quiet-mode --no-shortcuts --upgrade-also --packages texinfo-tex,texlive-collection-xetex,jq'
+- cmd: 'C:\cygwin64\setup-x86_64.exe --quiet-mode --no-shortcuts --upgrade-also --packages texinfo-tex,texlive-collection-xetex,jq,make,m4,mingw64-x86_64-binutils,mingw64-x86_64-gcc-core,mingw64-x86_64-headers,mingw64-x86_64-pthreads,mingw64-x86_64-runtime'
 - ps: Expand-Archive $env:CACHE\ccl.zip -DestinationPath $env:CACHE
+- ps: Expand-Archive $env:CACHE\ccl-1.11.6.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\asdf.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\sly.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\declt.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\mcclim.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\dejavu.zip -DestinationPath $env:CACHE
+- ps: Copy-Item $env:CACHE\ccl\win64-headers\ -recurse -destination $env:CACHE\ccl-1.11.6\
+- ps: Copy-Item $env:CACHE\ccl\wx86cl64.image -destination $env:CACHE\ccl-1.11.6\
 - ps: Copy-Item $env:CACHE\dejavu-fonts-ttf-2.37\ttf\*.ttf  -destination C:\Windows\Fonts
 - cmd:  refreshenv
 - cmd: 'start /wait msiexec /i %CACHE%\sbcl.msi /quiet /qn /norestart /log sbcl-install.log'
 - ps: Copy-Item $env:CACHE\asdf-3.3.3.3\ -recurse -destination $env:USERPROFILE\common-lisp\
-- cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l "%CACHE%\quicklisp.lisp" -e "(quicklisp-quickstart:install)"  -e "(#__exit 0)"'
+- cmd: 'C:\cygwin64\bin\bash.exe -lc "/cygdrive/c/projects/yadfa/ci/build-ccl.sh /cygdrive/c/cache/ccl-1.11.6"'
+- cmd: '"%CACHE%\ccl-1.11.6\wx86cl64.exe" -b -l "%CACHE%\quicklisp.lisp" -e "(quicklisp-quickstart:install)"  -e "(#__exit 0)"'
 - ps: Copy-Item ci\ccl-init.lisp -Destination $env:USERPROFILE\ccl-init.lisp
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\yadfa -ItemType SymbolicLink -Value $pwd
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\sly -ItemType SymbolicLink -Value $env:CACHE\sly-master
@@ -39,7 +44,7 @@ install:
 build_script:
 - cmd: '"C:\Program Files\Steel Bank Common Lisp\1.4.14\sbcl" --script "appveyor-build-docs.lisp" texi'
 - cmd: 'C:\cygwin64\bin\bash.exe -lc "export PDFTEX=xetex PDFLATEX=xelatex;cd /cygdrive/c/projects/yadfa/docs/reference;makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html yadfa-reference.texi;makeinfo --no-split --pdf yadfa-reference.texi;makeinfo --no-split yadfa-reference.texi"'
-- cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)"'
+- cmd: '"%CACHE%\ccl-1.11.6\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)"'
 - ps: cp chocolatey/yadfa.nuspec yadfa.nuspec # for some reason Chocolatey seems to expect the package build file to be in the same directory as the source directory
 - ps: choco pack yadfa.nuspec --version $(Get-Date -UFormat "0.9.%s")
 artifacts:
