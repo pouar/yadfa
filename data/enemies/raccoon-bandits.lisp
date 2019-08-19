@@ -48,6 +48,20 @@
                                     (funcall (coerce (attack-script-of (wield-of self)) 'function) target self (wield-of self)))
                                    (t
                                     (funcall (coerce (default-attack-of self) 'function) target self)))))))))
+(defmethod process-battle-accident-method ((character diapered-raccoon-bandit) attack item reload selected-target)
+  (let ((wetting (find-if (lambda (o) (typep o 'yadfa-status-conditions:wetting))
+                          (getf (status-conditions-of *battle*) character)))
+        (messing (find-if (lambda (o) (typep o 'yadfa-status-conditions:messing))
+                          (getf (status-conditions-of *battle*) character)))
+        (teammember (find-if (lambda (o)
+                               (and (typep o 'diapered-raccoon-bandit) (not (eq o character))))
+                             (enemies-of *game*))))
+    (cond ((and wetting teammember (= (random 5) 0))
+           (write-line "Other Raccon: Now's not the time to go potty")
+           (write-line "Flooding Raccon Bandit: *whines*"))
+          ((and messing teammember (= (random 5) 0))
+           (write-line "Other Raccon: You couldn't wait until after the battle before doing that?")
+           (write-line "Messing Raccon Bandit: *grunts*")))))
 (defclass rookie-diapered-raccoon-bandit (potty-enemy pantsable-character) ()
   (:default-initargs
    :name "Rookie Diapered Raccoon Bandit"

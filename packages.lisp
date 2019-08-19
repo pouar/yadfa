@@ -82,7 +82,8 @@
    #:get-process-potty-action-type
    #:output-process-potty-text
    #:get-babyish-padding
-   #:enemy-spawn-list
+   #:resolve-enemy-spawn-list
+   #:process-battle-accident-method
    ;;constructors
    #:make-action
    ;;classes
