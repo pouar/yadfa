@@ -9,7 +9,7 @@
    #:eggman-area))
 (defun can-potty (prop &key wet mess pants-down user)
   (declare (ignorable prop wet mess pants-down user))
-  (not (when (and (typep prop '(not toilet)) (or pants-down (filter-items (wear-of user) 'incontinence-product)))
+  (not (when (and (typep prop '(not yadfa-props:toilet)) (or pants-down (filter-items (wear-of user) 'incontinence-product)))
          (format t "STOP!!! THE SIGN SAYS ~A ISN'T ALLOWED TO DO THAT HERE!!!!! Just hold it all in.~%~%" (string-upcase (name-of user)))
          (when (or (>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)) (>= (bowels/contents-of user) (bowels/potty-dance-limit-of user)))
            (format t "*~a whines and continues ~a embarrassing potty dance while the public watches and giggles*~%~%"
@@ -65,5 +65,114 @@
             (name-of user)
             (if (malep user) "him" "her"))
     (format t "Diaper Police: Aww, it looks like the baby is learning how to walk for the first time~%~%")
-    (format t "*~a whines and covers ~a face with ~a paws in embarrassment*~%~%" (name-of user) (if (malep user) "his" "her") (if (malep user) "his" "her"))
+    (format t "*~a whines and covers ~a face with ~a paws in embarrassment*~%~%"
+            (name-of user) (if (malep user) "his" "her") (if (malep user) "his" "her"))
     (trigger-event 'yadfa-events:get-diaper-locked-1)))
+(defevent initialize-enemy-spawn-list
+  :lambda '(lambda (self)
+            (declare (ignore self))
+            (setf
+             (gethash 'bandits-way (enemy-spawn-list-of *game*)) '((:max-random 8
+                                                                    :enemies ((yadfa-enemies:female-diapered-raccoon-bandit .
+                                                                               (list
+                                                                                :level (random-from-range 2 5)))))
+                                                                   (:max-random 8
+                                                                    :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
+                                                                               (list
+                                                                                :level (random-from-range 2 5))))))
+             (gethash 'bandits-cove (enemy-spawn-list-of *game*)) '((:max-random 10
+                                                                     :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
+                                                                                (list
+                                                                                 :level (random-from-range 2 5)
+                                                                                 :wear (list
+                                                                                        (make-instance 'yadfa-items:lower-bandit-swim-diaper-cover)
+                                                                                        (make-instance 'yadfa-items:bandit-diaper
+                                                                                                       :sogginess (random 1000)
+                                                                                                       :messiness (random 6000)))))))
+                                                                    (:max-random 10
+                                                                     :enemies ((yadfa-enemies:diapered-raccoon-bandit .
+                                                                                (list
+                                                                                 :level (random-from-range 2 5)
+                                                                                 :wear (list (make-instance 'yadfa-items:bandit-swimsuit/closed)
+                                                                                        (make-instance 'bandit-swim-diaper-cover)
+                                                                                        (make-instance 'yadfa-items:bandit-diaper))))))
+                                                                    (:max-random 10
+                                                                     :enemies ((yadfa-enemies:female-diapered-raccoon-bandit .
+                                                                                (list
+                                                                                 :level (random-from-range 2 5)
+                                                                                 :wear (list
+                                                                                        (make-instance 'yadfa-items:bandit-uniform-sports-bikini-top)
+                                                                                        (make-instance 'yadfa-items:female-bandit-swim-diaper-cover)
+                                                                                        (make-instance 'yadfa-items:bandit-female-diaper
+                                                                                                       :sogginess (random 1000)
+                                                                                                       :messiness (random 6000)))
+                                                                                 :level (random-from-range 2 5))))))
+             (gethash 'rpgmaker-dungeon (enemy-spawn-list-of *game*)) '((:max-random 20
+                                                                         :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
+                                                                                    (list :level (random-from-range 2 5)))))
+                                                                        (:max-random 20
+                                                                         :enemies ((yadfa-enemies:padded-fursuiter-servant .
+                                                                                    (list :level (random-from-range 2 5)))))
+                                                                        (:max-random 20
+                                                                         :enemies ((yadfa-enemies:navy-officer .
+                                                                                    (list :level (random-from-range 2 5)))
+                                                                                   (yadfa-enemies:navy-officer* .
+                                                                                    (list :level (random-from-range 2 5)))))
+                                                                        (:max-random 20
+                                                                         :enemies ((yadfa-enemies:diaper-pirate .
+                                                                                    (list :level (random-from-range 2 5)))
+                                                                                   (yadfa-enemies:thickly-diaper-pirate .
+                                                                                    (list :level (random-from-range 2 5)))))
+                                                                        (:max-random 20
+                                                                         :enemies ((yadfa-enemies:diapered-raccoon-bandit .
+                                                                                    (list :level (random-from-range 2 5)))
+                                                                                   (yadfa-enemies:rookie-diapered-raccoon-bandit .
+                                                                                    (list :level (random-from-range 2 5)))))
+                                                                        (:max-random 20
+                                                                         :enemies ((yadfa-enemies:diapered-raccoon-bandit .
+                                                                                    (list :level (random-from-range 2 5)))
+                                                                                   (yadfa-enemies:female-diapered-raccoon-bandit .
+                                                                                    (list :level (random-from-range 2 5)))))
+                                                                        (:max-random 20
+                                                                         :enemies ((yadfa-enemies:diapered-kobold .
+                                                                                    (list :level (random-from-range 2 5)))
+                                                                                   (yadfa-enemies:diapered-kobold .
+                                                                                    (list :level (random-from-range 2 5)))))))))
+(trigger-event 'initialize-enemy-spawn-list)
+(defevent create-rpgmaker-dungeon :lambda '(lambda (self)
+                                            (let ((width 10) (height 10))
+                                              (declare (type fixnum width height)
+                                                       (ignore self))
+                                              (labels ((neighbors (x y width height)
+                                                         (declare (type fixnum x y width height))
+                                                         (remove-if
+                                                          (lambda (x-y)
+                                                            (declare (type list x-y))
+                                                            (not (and (< -1 (first x-y) width)
+                                                                      (< -1 (second x-y) height))))
+                                                          `((,x ,(1+ y) :south) (,(1- x) ,y :west) (,x ,(1- y) :north) (,(1+ x) ,y :east))))
+                                                       (remove-wall (width height &optional visited)
+                                                         (labels ((walk (x y width height)
+                                                                    (push (list x y) visited)
+                                                                    (iter (for (u v w) in (alexandria:shuffle (neighbors x y width height)))
+                                                                      (unless (member (list u v) visited :test 'equal)
+                                                                        (setf (getf-direction `(,x ,y 0 rpgmaker-dungeon) w :hidden) nil
+                                                                              (getf-direction `(,u ,v 0 rpgmaker-dungeon)
+                                                                                              (getf '(:south :north
+                                                                                                      :north :south
+                                                                                                      :east :west
+                                                                                                      :west :east) w) :hidden) nil)
+                                                                        (walk u v width height)))))
+                                                           (walk (random width) (random height) width height))))
+                                                (iter (for x from 0 to (1- width))
+                                                  (iter (for y from 0 to (1- height))
+                                                    (defzone* `(,x ,y 0 rpgmaker-dungeon)
+                                                      :name "Generic Cookie Cutter Dungeon"
+                                                      :description "Time for an \"adventure\""
+                                                      :direction-attributes (list :north (list :hidden t)
+                                                                                  :south (list :hidden t)
+                                                                                  :east (list :hidden t)
+                                                                                  :west (list :hidden t))
+                                                      :enemy-spawn-list 'rpgmaker-dungeon)))
+                                                (remove-wall width height)))))
+(trigger-event 'create-rpgmaker-dungeon)

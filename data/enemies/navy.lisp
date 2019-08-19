@@ -1,11 +1,11 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-enemies"; coding: utf-8-unix; -*-
 (in-package :yadfa-enemies)
-(defclass navy-officer (potty-enemy) ()
+(defclass navy-officer (potty-enemy pantsable-character) ()
   (:default-initargs
    :name "Navy Officer"
    :description "The Navy is mainly made up of aquatic creatures. They're all toilet trained but may use their pullups if they don't want to hold it any longer."
    :species (random-elt '("Dolphin" "Orca" "Shark"))
-   :male (random-elt (list t nil))
+   :male (random-elt '(t nil))
    :watersport-chance 3
    :mudsport-chance 3
    :bladder/contents (random 500)

@@ -38,14 +38,20 @@
    :duration t
    :stat-multiplier (list :speed 0.5)
    :blocks-turn t))
-(defclass tickled (status-condition)
+(defclass pantsed (status-condition)
   ()
   (:default-initargs
-   :name "Tickled"
-   :description "User is being tickled"
+   :name "Pantsed"
+   :description "The user has been pantsed revealing his padding to the world"
+   :persistent t))
+(defclass laughing (status-condition)
+  ()
+  (:default-initargs
+   :name "Laughing"
+   :description "User is laughing"
    :battle-script (lambda (target user self)
                     (declare (ignore self target))
-                    (format t "~a is laughing helplessly~%" (name-of user))
+                    (format t "~a is too busy laughing to fight~%" (name-of user))
                     (when (or (>= (bladder/contents-of user) (bladder/potty-dance-limit-of user))
                               (and (>= (bladder/contents-of user) (bladder/need-to-potty-limit-of user)) (= 0 (random 5))))
                       (format t "~a~%"

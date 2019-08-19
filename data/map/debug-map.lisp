@@ -18,9 +18,9 @@
                                                       (list (make-instance 'yadfa-items:sundress)
                                                             (make-instance 'yadfa-items:toddler-dress)
                                                             (make-instance 'yadfa-items:rubber-onesie))))
-               :toilet (make-instance 'toilet)
-               :bed (make-instance 'bed)
-               :shop (make-instance 'debug-shop
+               :toilet (make-instance 'yadfa-props:toilet)
+               :bed (make-instance 'yadfa-props:bed)
+               :shop (make-instance 'yadfa-props:debug-shop
                                     :actions (list :talk (make-action :documentation "Say hi"
                                                                       :lambda '(lambda
                                                                                 (prop &rest keys &key &allow-other-keys)

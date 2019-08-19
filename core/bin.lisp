@@ -26,7 +26,7 @@
 (defun yadfa-bin:disable-mod (system)
   "Disable a mod, the modding system is mostly just asdf, SYSTEM is a keyword which is the name of the system you want to enable"
   (declare (ignorable system))
-  #+yadfa-mods (progn (removef *mods* (asdf:coerce-name system) :test #'string=)
+  #+yadfa-mods (progn (deletef *mods* (asdf:coerce-name system) :test #'string=)
                       (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
                                               :if-does-not-exist :create
                                               :if-exists :supersede
@@ -63,7 +63,7 @@
                                       "Open or closes your onesie. WEAR is the index of a onesie. Leave NIL for the outermost onesie. USER is the index of an ally. Leave NIL to refer to yourself")
     (wear (or unsigned-byte null) user (or unsigned-byte null))
   (let* ((allies-length (list-length (allies-of *game*)))
-         (selected-ally (nth user (allies-of *game*))))
+         (selected-ally (if user (nth user (allies-of *game*)))))
     (cond (user
            (cond ((< allies-length user)
                   (format t "You only have ~d allies~%~%" allies-length))
@@ -147,8 +147,8 @@
                (when (trigger-event i)
                  (collect i)))
              (return-from yadfa-world:move))
-            ((enemy-spawn-list-of (get-zone (position-of (player-of *game*))))
-             (iter (for i in (enemy-spawn-list-of (get-zone (position-of (player-of *game*)))))
+            ((resolve-enemy-spawn-list (get-zone (position-of (player-of *game*))))
+             (iter (for i in (resolve-enemy-spawn-list (get-zone (position-of (player-of *game*)))))
                (let ((random (if (getf i :random) (getf i :random) 1)))
                  (when (< (random (getf i :max-random)) random)
                    (set-new-battle (cond ((getf i :eval)
@@ -173,10 +173,10 @@
                        (format t "~7a~30a~40s~12a~12a~12a~12a~%" j
                                (name-of i)
                                (type-of i)
-                               (if (typep i 'closed-bottoms) (format nil "~12d" (float (sogginess-of i))) nil)
-                               (if (typep i 'closed-bottoms) (format nil "~12d" (float (sogginess-capacity-of i))) nil)
-                               (if (typep i 'closed-bottoms) (format nil "~12d" (float (messiness-of i))) nil)
-                               (if (typep i 'closed-bottoms) (format nil "~12d" (float (messiness-capacity-of i))) nil)))
+                               (if (typep i 'closed-bottoms) (format nil "~12d" (coerce (sogginess-of i) 'long-float)) nil)
+                               (if (typep i 'closed-bottoms) (format nil "~12d" (coerce (sogginess-capacity-of i) 'long-float)) nil)
+                               (if (typep i 'closed-bottoms) (format nil "~12d" (coerce (messiness-of i) 'long-float)) nil)
+                               (if (typep i 'closed-bottoms) (format nil "~12d" (coerce (messiness-capacity-of i) 'long-float)) nil)))
                      (incf j))
         (format t "~%")))
     (when describe-zone
@@ -209,10 +209,10 @@
                               (format t "~7a~30a~40s~12a~12a~12a~12a~%" j
                                       (name-of i)
                                       (type-of i)
-                                      (if (typep i 'closed-bottoms) (format nil "~12d" (float (sogginess-of i))) nil)
-                                      (if (typep i 'closed-bottoms) (format nil "~12d" (float (sogginess-capacity-of i))) nil)
-                                      (if (typep i 'closed-bottoms) (format nil "~12d" (float (messiness-of i))) nil)
-                                      (if (typep i 'closed-bottoms) (format nil "~12d" (float (messiness-capacity-of i))) nil)))
+                                      (if (typep i 'closed-bottoms) (format nil "~12d" (coerce (sogginess-of i) 'long-float)) nil)
+                                      (if (typep i 'closed-bottoms) (format nil "~12d" (coerce (sogginess-capacity-of i) 'long-float)) nil)
+                                      (if (typep i 'closed-bottoms) (format nil "~12d" (coerce (messiness-of i) 'long-float)) nil)
+                                      (if (typep i 'closed-bottoms) (format nil "~12d" (coerce (messiness-capacity-of i) 'long-float)) nil)))
                             (incf j))
                (terpri))
              (iter (for k in (allies-of *game*))
@@ -538,7 +538,7 @@
     (cond ((not item)
            (format t "INVENTORY isn't a valid item ~%")
            (return-from yadfa-bin:wear))
-          ((<= wear-length wear)
+          ((< wear-length wear)
            (format t "`:WEAR ~d' doesn't refer to a valid position as it can't go past the items you're current wearing which is currently ~d"
                    wear
                    wear-length)
@@ -562,7 +562,8 @@
            (return-from yadfa-bin:wear)))
     (setf a (insert (wear-of selected-user) item wear)
           i (iter (for outer in (reverse (subseq a 0 (1+ wear))))
-              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (total-thickness (cdr (member outer a))) (thickness-capacity-of outer)))
+              (with b = (reverse a))
+              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (fast-thickness b outer) (thickness-capacity-of outer)))
                 (leave (first (thickest-sort (cdr (member outer a))))))))
     (if i
         (format t "~a struggles to fit ~a ~a over ~a ~a in a hilarious fashion but fail to do so.~%"
@@ -576,7 +577,7 @@
                          (if (list-length-> (enemies-of *battle*) 1) "enemies" "enemy")
                          (name-of item)))
                (format t "~a puts on ~a ~a~%" (name-of selected-user) (if (malep selected-user) "his" "her") (name-of item))
-               (removef (inventory-of (player-of *game*)) item :count 1)
+               (deletef (inventory-of (player-of *game*)) item :count 1)
                (setf (wear-of selected-user) a)))))
 (defunassert (yadfa-bin:unwear (&key (inventory 0) (wear 0) user)
                                "Unwear an item you're wearing. Inventory is the index you want to place this item. WEAR is the index of the item you're wearing that you want to remove. You can also set WEAR to a type specifier for the outer most clothing of that type. USER is a integer referring to the index of an ally. Leave at NIL to refer to yourself")
@@ -596,7 +597,7 @@
     (cond ((not item)
            (format t "WEAR isn't a valid item ~%")
            (return-from yadfa-bin:unwear))
-          ((<= inventory-length inventory)
+          ((< inventory-length inventory)
            (format t "`:INVENTORY ~d' doesn't refer to a valid position as it can't go past the items you currently have in your inventory which is currently ~d~%" inventory inventory-length)
            (return-from yadfa-bin:unwear))
           ((and
@@ -628,7 +629,7 @@
                   "enemy")
               (name-of item)))
     (format t "~a takes off ~a ~a~%" (name-of selected-user) (if (malep selected-user) "his" "her") (name-of item))
-    (removef (wear-of (player-of *game*)) item :count 1)
+    (deletef (wear-of (player-of *game*)) item :count 1)
     (insertf (inventory-of (player-of *game*)) item inventory)))
 (defunassert (yadfa-bin:change (&key (inventory 0) (wear 0) user)
                                "Change one of the clothes you're wearing with one in your inventory. WEAR is the index of the clothing you want to replace. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to replace it with. You can also give INVENTORY and WEAR a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself.")
@@ -686,7 +687,7 @@
            (return-from yadfa-bin:change))
           ((and
             (iter (for i in (butlast (wear-of selected-user) (- (list-length (wear-of selected-user)) (position wear (wear-of selected-user)) 1)))
-              (when (and (typep i 'closed-bottoms) (not (eq (lockedp i) :nil)))
+              (when (and (typep i 'closed-bottoms) (lockedp i))
                 (format t "~a can't remove ~a ~a to put on ~a ~a as it's locked~%"
                         (name-of selected-user)
                         (if (malep selected-user) "his" "her")
@@ -697,7 +698,8 @@
            (return-from yadfa-bin:change)))
     (setf a (substitute inventory wear (wear-of selected-user) :count 1)
           i (iter (for outer in (reverse (subseq a 0 (1+ (position inventory a)))))
-              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (total-thickness (cdr (member outer a))) (thickness-capacity-of outer)))
+              (with b = (reverse a))
+              (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (fast-thickness b outer) (thickness-capacity-of outer)))
                 (leave outer))))
     (if i
         (format t
@@ -762,7 +764,7 @@
     (when (and prop (not this-prop))
       (format t "that PROP doesn't exist in this zone~%")
       (return-from yadfa-world:go-potty))
-    (cond ((typep this-prop 'toilet)
+    (cond ((typep this-prop 'yadfa-props:toilet)
            (potty-on-toilet this-prop
                             :wet (if user t wet)
                             :mess (if user t mess)
@@ -812,7 +814,7 @@
                                       "washes your dirty diapers and all the clothes you've ruined. PROP is a keyword identifying the washer you want to put it in. If you're washing it in a body of water, leave PROP out.")
     (prop (or keyword null))
   (cond
-    ((and prop (not (typep (getf (get-props-from-zone (position-of (player-of *game*))) prop) 'washer)))
+    ((and prop (not (typep (getf (get-props-from-zone (position-of (player-of *game*))) prop) 'yadfa-props:washer)))
      (write-line "That's not a washer"))
     ((and (not prop) (not (underwaterp (get-zone (position-of (player-of *game*)))))) (format t "There's no where to wash that~%"))
     ((underwaterp (get-zone (position-of (player-of *game*))))
@@ -845,7 +847,7 @@
         (return-from yadfa-bin:toss)))
     (iter (for i in items)
       (format t "You send ~a straight to /dev/null~%" (name-of i)))
-    (removef (inventory-of (player-of *game*)) items
+    (deletef (inventory-of (player-of *game*)) items
              :test (lambda (o e)
                      (member e o)))))
 (defunassert (yadfa-world:place (prop &rest items)
@@ -879,7 +881,7 @@
     (iter (for i in items)
       (format t "You place your ~a on the ~a~%" (name-of i) (name-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)))
       (push i (get-items-from-prop prop (position-of (player-of *game*)))))
-    (removef (inventory-of (player-of *game*)) items
+    (deletef (inventory-of (player-of *game*)) items
              :test (lambda (o e)
                      (member e o)))))
 (defun yadfa-battle:run ()
@@ -1037,7 +1039,7 @@
         (leave t))
       (when (and (typep item ammo-type) (typep item (ammo-type-of (wield-of user))))
         (push item (ammo-of (wield-of user)))
-        (removef item (inventory-of (player-of *game*)) :count 1)))))
+        (deletef item (inventory-of (player-of *game*)) :count 1)))))
 (defunassert (yadfa-bin:wield (&key user inventory)
                               "Wield an item. Set INVENTORY to the index or a type specifier of an item in your inventory to wield that item. Set USER to the index of an ally to have them to equip it or leave it NIL for the player.")
     (user (or unsigned-byte null)
@@ -1062,7 +1064,7 @@
             (name-of selected-user)
             (if (malep selected-user) "his" "her")
             (name-of item))
-    (removef (inventory-of (player-of *game*)) item :count 1)
+    (deletef (inventory-of (player-of *game*)) item :count 1)
     (when (wield-of selected-user)
       (push (wield-of selected-user) (inventory-of (player-of *game*))))
     (setf (wield-of selected-user) item)))
@@ -1108,7 +1110,7 @@
     (team-index unsigned-byte)
   (let ((team-length (list-length (team-of *game*))))
     (cond
-      ((<= team-length team-index)
+      ((>= team-index team-length)
        (format t "You only have ~d members in your team~%" team-length)
        (return-from yadfa-world:remove-ally-from-team))
       ((eq (nth team-index (team-of *game*)) (player-of *game*))

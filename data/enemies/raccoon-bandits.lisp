@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-enemies"; coding: utf-8-unix; -*-
 (in-package :yadfa-enemies)
-(defclass diapered-raccoon-bandit (potty-enemy) ()
+(defclass diapered-raccoon-bandit (potty-enemy pantsable-character) ()
   (:default-initargs
    :name "Diapered Raccoon Bandit"
    :description "The Diapered Raccoon Bandits are a local AB/DL gang here in this world. Apparently wearing (and using) diapers is extremely embarrassing for them, so they wear tunics to hide them."
@@ -48,7 +48,21 @@
                                     (funcall (coerce (attack-script-of (wield-of self)) 'function) target self (wield-of self)))
                                    (t
                                     (funcall (coerce (default-attack-of self) 'function) target self)))))))))
-(defclass rookie-diapered-raccoon-bandit (potty-enemy) ()
+(defmethod process-battle-accident-method ((character diapered-raccoon-bandit) attack item reload selected-target)
+  (let ((wetting (find-if (lambda (o) (typep o 'yadfa-status-conditions:wetting))
+                          (getf (status-conditions-of *battle*) character)))
+        (messing (find-if (lambda (o) (typep o 'yadfa-status-conditions:messing))
+                          (getf (status-conditions-of *battle*) character)))
+        (teammember (find-if (lambda (o)
+                               (and (typep o 'diapered-raccoon-bandit) (not (eq o character))))
+                             (enemies-of *game*))))
+    (cond ((and wetting teammember (= (random 5) 0))
+           (write-line "Other Raccon: Now's not the time to go potty")
+           (write-line "Flooding Raccon Bandit: *whines*"))
+          ((and messing teammember (= (random 5) 0))
+           (write-line "Other Raccon: You couldn't wait until after the battle before doing that?")
+           (write-line "Messing Raccon Bandit: *grunts*")))))
+(defclass rookie-diapered-raccoon-bandit (potty-enemy pantsable-character) ()
   (:default-initargs
    :name "Rookie Diapered Raccoon Bandit"
    :description "The Diapered Raccoon Bandits are a local AB/DL gang here in this world. Despite how embarrassing diapers are for them, the use of toilets and pants in the gang are a privilege and not a right. The ones without these privileges have `babysitters' to keep track of them, as they're not allowed to change themselves. Despite this, they try their best to not wet and/or mess their diapers in a desperate attempt to make their situation less embarrassing."
@@ -68,7 +82,7 @@
                                            (cond ((= a 0) 0)
                                                  ((= a 1) 8000)))))
    :bitcoins-per-level 20))
-(defclass female-diapered-raccoon-bandit (potty-enemy) ()
+(defclass female-diapered-raccoon-bandit (potty-enemy pantsable-character) ()
   (:default-initargs
    :name "Female Diapered Raccoon Bandit"
    :description "The Diapered Raccoon Bandits are a local AB/DL gang here in this world. Apparently gender equality is non-existent in this gang, so the females have the same potty and pants privileges as the rookies, meaning none at all."

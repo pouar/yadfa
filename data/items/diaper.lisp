@@ -112,7 +112,7 @@
    :name "Midnight Diaper"
    :disposable t
    :sellable nil
-   :thickness 50.8
+   :thickness (+ 50 4/5)
    :thickness-capacity 100
    :description "A thick black diaper with blue landing zone, blue leg guards, and red tapes"
    :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
@@ -128,7 +128,7 @@
    :name "Thick Diaper"
    :disposable t
    :sellable nil
-   :thickness 50.8
+   :thickness (+ 50 4/5)
    :thickness-capacity 100
    :description "A thick diaper that can hold more than an normal diaper"
    :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
@@ -178,7 +178,7 @@
    :sogginess-capacity 4000
    :messiness-capacity 17000
    :name "Thick Cloth Diaper"
-   :thickness 50.8
+   :thickness (+ 50 4/5)
    :thickness-capacity 100
    :description "A thick diaper that can hold more than an normal diaper. Can be reused."
    :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
@@ -193,7 +193,7 @@
    :messiness-capacity 25000
    :name "Thick Rubber Diaper"
    :waterproof t
-   :thickness 50.8
+   :thickness (+ 50 4/5)
    :thickness-capacity 100
    :description "A thick rubber diaper that can hold more than an normal diaper. Can be reused."
    :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
@@ -473,7 +473,7 @@
    :name "Thick Diaper"
    :disposable t
    :sellable nil
-   :thickness 50.8
+   :thickness (+ 50 4/5)
    :thickness-capacity 100
    :description "A sissy pink frilly diaper. You look adorable with this"
    :wear-wet-text '(5000 "little yellow streams are leaking down from the leg guards"

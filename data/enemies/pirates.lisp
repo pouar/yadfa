@@ -5,7 +5,7 @@
    :name "Diaper Pirate"
    :description "A generic pirate that has forgoed toilets and will never try to hold it."
    :species (random-elt '("Dolphin" "Orca" "Shark"))
-   :male (random-elt (list t nil))
+   :male (random-elt '(t nil))
    :bladder/contents (random 500)
    :bowels/contents (random 7000)
    :watersport-limit 300

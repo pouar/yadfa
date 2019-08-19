@@ -60,7 +60,7 @@
              (if (getf (attributes-of target) :not-ticklish)
                  (write-line "It has no effect")
                  (progn (format t "~a starts laughing helplessly~%" (name-of target))
-                        (set-status-condition 'yadfa-status-conditions:tickled target))))))
+                        (set-status-condition 'yadfa-status-conditions:laughing target))))))
 (defclass tackle (stat/move) ()
   (:default-initargs
    :name "Tackle"

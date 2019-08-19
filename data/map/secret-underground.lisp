@@ -15,13 +15,13 @@
   :name "Secret Underground Base"
   :description "A path"
   :enter-text "You're wandering around in the secret underground"
-  :props (list :changing-table (make-instance 'automatic-changing-table)
-               :bed (make-instance 'bed)
+  :props (list :changing-table (make-instance 'yadfa-props:automatic-changing-table)
+               :bed (make-instance 'yadfa-props:bed)
                :chest (make-instance 'prop
                                      :name "Dresser"
                                      :placeable t
                                      :description "You can store your items here")
-               :checkpoint (make-instance 'checkpoint)
+               :checkpoint (make-instance 'yadfa-props:checkpoint)
                :diaper-dispenser (make-instance 'prop
                                                 :name "Diaper/Pullup Dispenser"
                                                 :description "Provides an infinite supply of diapers and pullups"
@@ -43,4 +43,4 @@
   :name "Secret Underground Shop"
   :description "This place has everything"
   :enter-text "You're inside the secret underground shop"
-  :props (list :shop (make-instance 'debug-shop)))
+  :props (list :shop (make-instance 'yadfa-props:debug-shop)))

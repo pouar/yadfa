@@ -12,7 +12,7 @@ install:
 - ps: If(!(test-path $env:CACHE )) { mkdir $env:CACHE; }
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://beta.quicklisp.org/quicklisp.lisp" -OutFile $env:CACHE\quicklisp.lisp
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/releases/download/v1.11.5/ccl-1.11.5-windowsx86.zip" -OutFile $env:CACHE\ccl.zip
-- ps: Invoke-WebRequest -UserAgent wget -Uri "https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3/asdf-3.3.3.zip"  -OutFile $env:CACHE\asdf.zip
+- ps: Invoke-WebRequest -UserAgent wget -Uri "https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3.3/asdf-3.3.3.3.zip"  -OutFile $env:CACHE\asdf.zip
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.14/sbcl-1.4.14-x86-64-windows-binary.msi" -OutFile $env:CACHE\sbcl.msi
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/joaotavora/sly/archive/master.zip" -OutFile "$env:CACHE\sly.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/didierverna/declt/archive/master.zip" -OutFile "$env:CACHE\declt.zip"
@@ -28,7 +28,7 @@ install:
 - ps: Copy-Item $env:CACHE\dejavu-fonts-ttf-2.37\ttf\*.ttf  -destination C:\Windows\Fonts
 - cmd:  refreshenv
 - cmd: 'start /wait msiexec /i %CACHE%\sbcl.msi /quiet /qn /norestart /log sbcl-install.log'
-- ps: Copy-Item $env:CACHE\asdf-3.3.3\ -recurse -destination $env:USERPROFILE\common-lisp\
+- ps: Copy-Item $env:CACHE\asdf-3.3.3.3\ -recurse -destination $env:USERPROFILE\common-lisp\
 - cmd: '"%CACHE%\ccl\wx86cl64.exe" -b -l "%CACHE%\quicklisp.lisp" -e "(quicklisp-quickstart:install)"  -e "(#__exit 0)"'
 - ps: Copy-Item ci\ccl-init.lisp -Destination $env:USERPROFILE\ccl-init.lisp
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\yadfa -ItemType SymbolicLink -Value $pwd
