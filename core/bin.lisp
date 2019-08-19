@@ -36,6 +36,7 @@
 (defunassert (yadfa-world:save-game (path)
                                     "This function saves current game to PATH")
     (path (or simple-string pathname))
+  (ensure-directories-exist (make-pathname :host (pathname-host path) :device (pathname-device path) :directory (pathname-directory path)))
   (with-open-file (s path :direction :output :if-exists :supersede :if-does-not-exist :create)
     (write-string (write-to-string (ms:marshal *game*)) s))
   (cond ((typep path 'logical-pathname)
