@@ -110,6 +110,7 @@
    #:top
    #:headpiece
    #:bottoms
+   #:snap-bottoms
    #:closed-bottoms
    #:full-outfit
    #:closed-pants
@@ -124,6 +125,7 @@
    #:tabbed-briefs
    #:incontinence-pad
    #:undies
+   #:top-undies
    #:stuffer
    #:diaper
    #:pullup
@@ -310,6 +312,7 @@
    #:ballerina-dress
    #:braixen-dress
    #:skirt
+   #:denim-skirt
    #:shendyt
    #:kalasiris
    #:toddler-dress

@@ -781,7 +781,7 @@
                            (name-of user)
                            (name-of i)))
                (pushclothing i wet/mess return))
-              ((typep i 'incontinence-product)
+              ((typep i '(or incontinence-product snap-bottoms))
                (push i (inventory-of (if (typep user 'team-member)
                                          (player-of *game*)
                                          user)))
@@ -831,11 +831,16 @@
               (if (malep user) "his" "her")
               (name-of onesie))
       (toggle-onesie%% onesie)))
-(defmacro defonesie (base-class &body body)
+(defmacro defonesie (base-class direct-superclasses &body body)
   "macro that generates the classes and methods of the onesie used to open and close the snaps of them. method used to toggle the onesie is TOGGLE-ONESIE. BASE-CLASS is the name of the class you want to give the onesie. BODY is the slot specifier and class options of BASE-CLASS"
   `(progn
      (defclass ,(format-symbol (symbol-package base-class) "~a" (symbol-name base-class))
-         (yadfa:onesie) ,@body)
+         ,(if (iter (for i in direct-superclasses)
+                 (when (subtypep i 'yadfa:onesie)
+                   (leave t)))
+           direct-superclasses
+           `(yadfa:onesie ,@direct-superclasses))
+       ,@body)
      (defclass ,(format-symbol (symbol-package base-class) "~a/OPENED" (symbol-name base-class))
          (,(format-symbol (symbol-package base-class) "~a" (symbol-name base-class))
           yadfa:onesie/opened) ())

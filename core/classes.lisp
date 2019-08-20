@@ -732,7 +732,8 @@
     :initarg :locked
     :initform nil
     :accessor lockedp
-    :documentation "Whether this clothing is locked to prevent removal")))
+    :documentation "Whether this clothing is locked to prevent removal"))
+  (:documentation "Clothing you wear below the waist"))
 (defclass closed-bottoms (bottoms)
   ((thickness
     :initarg :thickness
@@ -788,10 +789,12 @@
     :initarg :wear-wet-text
     :initform ()
     :accessor wear-wet-text-of
-    :documentation "Plist that contain the text that comes up in the description when wearing it with the minimal sogginess as the key")))
+    :documentation "Plist that contain the text that comes up in the description when wearing it with the minimal sogginess as the key"))
+  (:documentation "these are stuff like pants and underwear and not skirts"))
 (defclass full-outfit (top bottoms)
   ())
-(defclass closed-pants (closed-bottoms) ())
+(defclass closed-pants (closed-bottoms) ()
+  (:documentation "closed bottoms that aren't undies"))
 (defclass closed-full-outfit (full-outfit closed-pants)
   ())
 (defclass onesie (full-outfit)
@@ -847,22 +850,34 @@
   (setf (bulge-text-of c) (car (onesie-bulge-text-of c))))
 (defclass incontinence-product (closed-bottoms) ()
   (:default-initargs
-   :thickness-capacity-threshold nil))
-(defclass padding (incontinence-product) ())
-(defclass cub-undies (incontinence-product) ())
+   :thickness-capacity-threshold nil
+   :disposable t
+   :sellable nil)
+  (:documentation "these include diapers, pullups, and stuffers"))
+(defclass snap-bottoms (bottoms) ()
+  (:documentation "These have snaps on them so don't tear when the diaper expands but instead come apart"))
+(defclass padding (incontinence-product) ()
+  (:documentation "everything but stuffers"))
+(defclass cub-undies (incontinence-product) ()
+  (:documentation "babyish incontinence products"))
 (defclass pullon (padding) ()
   (:default-initargs
    :thickness (* 1/2 (+ 25 2/5))
-   :thickness-capacity 40))
+   :thickness-capacity 40)
+  (:documentation "pullups without the babyish designs"))
 (defclass tabbed-briefs (padding) ()
   (:default-initargs
    :thickness (+ 25 2/5)
    :thickness-capacity 80
-   :key 'yadfa-items:magic-diaper-key))
+   :key 'yadfa-items:magic-diaper-key)
+  (:documentation "Diapers without the babyish designs"))
 (defclass incontinence-pad (incontinence-product) ()
   (:default-initargs
    :thickness (* 1/4 (+ 25 2/5))
-   :thickness-capacity 20))
+   :thickness-capacity 20)
+  (:documentation "stuffers without the babyish designs"))
+(defclass top-undies (top) ()
+  (:documentation "Similar to undies, but inherits top instead of closed-bottoms"))
 (defclass undies (closed-bottoms)
   ()
   (:default-initargs

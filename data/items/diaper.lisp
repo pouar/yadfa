@@ -4,8 +4,6 @@
   (:default-initargs
    :sogginess-capacity 100
    :messiness-capacity 200
-   :sellable nil
-   :disposable t
    :name "Store Brand Diapers"
    :plural-name "Store Brand Diapers"
    :wear-wet-text '(100 "Damn thing is leaking already"
@@ -32,8 +30,6 @@
    :messiness-capacity 200
    :name "Store Brand Pullons"
    :plural-name "Store Brand Pullons"
-   :sellable nil
-   :disposable t
    :wear-wet-text '(100 "Damn thing is leaking already"
                     25 "This thing might not last much longer"
                     1 "Not leaking yet")
@@ -57,8 +53,6 @@
    :sogginess-capacity 1000
    :messiness-capacity 1000
    :name "Incontinence Pad"
-   :sellable nil
-   :disposable t
    :wear-wet-text '(
                     1000 "It's leaking"
                     250 "It's swollen with urine"
@@ -83,6 +77,8 @@
   (:default-initargs
    :sogginess-capacity 1000
    :messiness-capacity 1000
+   :disposable nil
+   :sellable t
    :name "Cloth Incontinence Pad"
    :wear-wet-text '(1000 "It's leaking"
                     250 "It's swollen with urine"
@@ -96,47 +92,35 @@
    :sogginess-capacity 1400
    :messiness-capacity 10000
    :name "Diaper"
-   :disposable t
-   :sellable nil
    :description "A poofy diaper that can hold an accident."
    :wear-wet-text '(1400 "little yellow streams are leaking down from the leg guards"
+                    700 "The front is clearly stained yellow"
                     350 "It squishes when you walk"
                     1 "You can barely tell you wet it")
-   :wear-mess-text '(10000 "Poo is leaking out of the leg guards"
+   :wear-mess-text '(10000 "Poo is leaking out of the leg guards and the back is stained brown"
+                     9000 "The back is clearly stained brown"
                      2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
-                     1 "You can feel a slight mess back there")))
-(defclass midnight-diaper (yadfa:diaper) ()
-  (:default-initargs
-   :sogginess-capacity 4000
-   :messiness-capacity 17000
-   :name "Midnight Diaper"
-   :disposable t
-   :sellable nil
-   :thickness (+ 50 4/5)
-   :thickness-capacity 100
-   :description "A thick black diaper with blue landing zone, blue leg guards, and red tapes"
-   :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
-                    2000 "It squishes when you walk"
-                    1 "You can barely tell you wet it")
-   :wear-mess-text '(20000 "Poo is leaking out of the leg guards"
-                     5000 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
 (defclass thick-diaper (yadfa:diaper) ()
   (:default-initargs
    :sogginess-capacity 4000
    :messiness-capacity 17000
    :name "Thick Diaper"
-   :disposable t
-   :sellable nil
    :thickness (+ 50 4/5)
    :thickness-capacity 100
    :description "A thick diaper that can hold more than an normal diaper"
    :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
-                    2000 "It squishes when you walk"
+                    2000 "The front is stained yellow"
+                    1400 "It squishes when you walk"
                     1 "You can barely tell you wet it")
-   :wear-mess-text '(20000 "Poo is leaking out of the leg guards"
-                     5000 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
+   :wear-mess-text '(17000 "Poo is leaking out of the leg guards"
+                     8500 "The back is clearly stained brown"
+                     4250 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
+(defclass midnight-diaper (thick-diaper) ()
+  (:default-initargs
+   :name "Midnight Diaper"
+   :description "A thick black diaper with blue landing zone, blue leg guards, and red tapes"))
 (defclass thick-diaper-package (item) ()
   (:default-initargs
    :name "Package of Thick Diapers"
@@ -165,6 +149,8 @@
    :sogginess-capacity 1400
    :messiness-capacity 10000
    :value 200
+   :disposable nil
+   :sellable t
    :name "Cloth Diaper"
    :description "A poofy diaper that can hold an accident. Can be reused."
    :wear-wet-text '(1400 "little yellow streams are leaking down from the leg guards"
@@ -173,56 +159,37 @@
    :wear-mess-text '(10000 "Poo is leaking out of the leg guards"
                      2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
-(defclass thick-cloth-diaper (yadfa:diaper) ()
-  (:default-initargs
-   :sogginess-capacity 4000
-   :messiness-capacity 17000
-   :name "Thick Cloth Diaper"
-   :thickness (+ 50 4/5)
-   :thickness-capacity 100
-   :description "A thick diaper that can hold more than an normal diaper. Can be reused."
-   :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
-                    2000 "It squishes when you walk"
-                    1 "You can barely tell you wet it")
-   :wear-mess-text '(20000 "Poo is leaking out of the leg guards"
-                     5000 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
-                     1 "You can feel a slight mess back there")))
-(defclass thick-rubber-diaper (yadfa:diaper) ()
-  (:default-initargs
-   :sogginess-capacity 6000
-   :messiness-capacity 25000
-   :name "Thick Rubber Diaper"
-   :waterproof t
-   :thickness (+ 50 4/5)
-   :thickness-capacity 100
-   :description "A thick rubber diaper that can hold more than an normal diaper. Can be reused."
-   :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
-                    2000 "It squishes when you walk"
-                    1 "You can barely tell you wet it")
-   :wear-mess-text '(20000 "Poo is leaking out of the leg guards"
-                     5000 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
-                     1 "You can feel a slight mess back there")))
 (defclass rubber-diaper (yadfa:diaper) ()
   (:default-initargs
    :sogginess-capacity 2000
    :messiness-capacity 17000
    :value 250
    :waterproof t
+   :disposable nil
+   :sellable t
    :name "Rubber Diaper"
    :description "A poofy rubber diaper that can hold an accident. Can be reused."
-   :wear-wet-text '(1400 "little yellow streams are leaking down from the leg guards"
+   :wear-wet-text '(2000 "little yellow streams are leaking down from the leg guards"
                     350 "It squishes when you walk"
                     1 "You can barely tell you wet it")
-   :wear-mess-text '(10000 "Poo is leaking out of the leg guards"
+   :wear-mess-text '(17000 "Poo is leaking out of the leg guards"
                      2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
+(defclass thick-cloth-diaper (thick-diaper cloth-diaper) ()
+  (:default-initargs
+   :name "Thick Cloth Diaper"
+   :description "A thick diaper that can hold more than an normal diaper. Can be reused."))
+(defclass thick-rubber-diaper (thick-diaper rubber-diaper) ()
+  (:default-initargs
+   :sogginess-capacity 6000
+   :messiness-capacity 25000
+   :name "Thick Rubber Diaper"
+   :description "A thick rubber diaper that can hold more than an normal diaper. Can be reused."))
 (defclass disposable-swim-diaper (yadfa:diaper) ()
   (:default-initargs
    :sogginess-capacity 1400
    :messiness-capacity 10000
-   :disposable t
    :waterproof t
-   :sellable nil
    :name "Disposable Swim Diaper"
    :description "A swim diaper that actually holds just the urine you expel and not all the water in the pool"
    :wear-wet-text '(1400 "little yellow streams are leaking down from the leg guards"
@@ -263,47 +230,31 @@
    :value 60
    :thickness 300
    :thickness-capacity 100
-   :sellable nil
-   :disposable t
-   :wear-stats (list :speed -10)
-   :wear-wet-text '(10000"Pee flows down with every step"
-                    2500 "It sloshes when you walk"
-                    1 "The pee seems to have disappeared into the diaper")
-   :wear-mess-text '(100000"Poo is leaking out of the diaper"
-                     25000 "It smooshes when you walk"
-                     1 "The diaper holds the mess easily")
-   :description "It's like carrying a giant pillow between your legs forcing you to waddle"))
-(defclass kurikia-thick-cloth-diaper (yadfa:diaper) ()
-  (:default-initargs
-   :sogginess-capacity 10000
-   :messiness-capacity 25000
-   :name "Kurikia Thick Cloth Diaper"
-   :value 400
-   :thickness 300
-   :thickness-capacity 100
    :wear-stats (list :speed -10)
    :wear-wet-text '(10000 "Pee flows down with every step"
                     2500 "It sloshes when you walk"
                     1 "The pee seems to have disappeared into the diaper")
-   :wear-mess-text '(100000 "Poo is leaking out of the diaper"
-                     25000 "It smooshes when you walk"
+   :wear-mess-text '(25000 "Poo is leaking out of the diaper"
+                     10000 "It smooshes when you walk"
                      1 "The diaper holds the mess easily")
+   :description "It's like carrying a giant pillow between your legs forcing you to waddle"))
+(defclass kurikia-thick-cloth-diaper (kurikia-thick-diaper cloth-diaper) ()
+  (:default-initargs
+   :name "Kurikia Thick Cloth Diaper"
+   :value 400
    :description "It's like carrying a giant pillow between your legs forcing you to waddle. Can be reused."))
-(defclass kurikia-thick-rubber-diaper (yadfa:diaper) ()
+(defclass kurikia-thick-rubber-diaper (kurikia-thick-diaper rubber-diaper) ()
   (:default-initargs
    :sogginess-capacity 15000
    :messiness-capacity 30000
    :waterproof t
    :name "Kurikia Thick Rubber Diaper"
    :value 400
-   :thickness 300
-   :thickness-capacity 100
-   :wear-stats (list :speed -10)
-   :wear-wet-text '(10000 "Pee flows down with every step"
+   :wear-wet-text '(15000 "Pee flows down with every step"
                     2500 "It sloshes when you walk"
                     1 "The pee seems to have disappeared into the diaper")
-   :wear-mess-text '(100000 "Poo is leaking out of the diaper"
-                     25000 "It smooshes when you walk"
+   :wear-mess-text '(30000 "Poo is leaking out of the diaper"
+                     10000 "It smooshes when you walk"
                      1 "The diaper holds the mess easily")
    :description "A giant thick waterproof diaper. Yes, the waddle is noticable"))
 (defclass hyper-thick-diaper (yadfa:diaper) ()
@@ -314,64 +265,44 @@
    :value 700
    :thickness 1000
    :thickness-capacity 380
-   :disposable t
-   :sellable nil
    :wear-stats (list :speed -20)
    :wear-wet-text '(50000 "Pee flows down with every step"
                     12500 "It sloshes when you walk"
                     1 "The pee seems to have disappeared into the diaper")
-   :wear-mess-text '(500000 "Poo is leaking out of the diaper"
-                     125000 "It smooshes when you walk"
+   :wear-mess-text '(80000 "Poo is leaking out of the diaper"
+                     20000 "It smooshes when you walk"
                      1 "The diaper holds the mess easily")
    :description "When you leak so often that you need a diaper so thick it nearly touches the ground"))
-(defclass hyper-thick-cloth-diaper (yadfa:diaper) ()
+(defclass hyper-thick-cloth-diaper (hyper-thick-diaper cloth-diaper) ()
   (:default-initargs
-   :sogginess-capacity 50000
-   :messiness-capacity 80000
    :name "Hyper Thick Cloth Diaper"
    :value 1000
-   :thickness 1000
-   :thickness-capacity 380
-   :wear-stats (list :speed -20)
-   :wear-wet-text '(50000 "Pee flows down with every step"
-                    12500 "It sloshes when you walk"
-                    1 "The pee seems to have disappeared into the diaper")
-   :wear-mess-text '(500000 "Poo is leaking out of the diaper"
-                     125000 "It smooshes when you walk"
-                     1 "The diaper holds the mess easily")
    :description "When you leak so often that you need a diaper so thick it nearly touches the ground. Can be reused."))
-(defclass hyper-thick-rubber-diaper (yadfa:diaper) ()
+(defclass hyper-thick-rubber-diaper (hyper-thick-diaper rubber-diaper) ()
   (:default-initargs
    :sogginess-capacity 60000
    :messiness-capacity 90000
    :name "Hyper Thick Rubber Diaper"
    :value 1000
-   :thickness 1000
-   :thickness-capacity 380
-   :waterproof t
-   :wear-stats (list :speed -20)
-   :wear-wet-text '(1 "The pee seems to have disappeared into the diaper"
+   :wear-wet-text '(60000 "Pee flows down with every step"
                     12500 "It sloshes when you walk"
-                    50000 "Pee flows down with every step")
-   :wear-mess-text '(1 "The diaper holds the mess easily"
-                     125000 "It smooshes when you walk"
-                     500000 "Poo is leaking out of the diaper")
+                    1 "The pee seems to have disappeared into the diaper")
+   :wear-mess-text '(90000 "Poo is leaking out of the diaper"
+                     20000 "It smooshes when you walk"
+                     1 "The diaper holds the mess easily")
    :description "For when the Thick Rubber Diaper wasn't thick enough. At least it doubles as a bean bag chair."))
 (defclass pullups (pullup) ()
   (:default-initargs
    :sogginess-capacity 800
    :messiness-capacity 10000
-   :disposable t
-   :sellable nil
    :name "Pullup"
-   :description "Wear this and pretend to be a big kid"))
-(defclass navy-pullups (pullup) ()
-  (:default-initargs
-   :value 200
-   :sogginess-capacity 800
-   :messiness-capacity 10000
-   :name "Navy Pullup"
-   :description "Has the Navy insignia on the front. The Navy apparently expects you to keep these dry, but keeps them around just in case. They're made of cloth because they don't expect you to use them that often."))
+   :description "Wear this and pretend to be a big kid"
+   :wear-wet-text '(800 "it is completely drenched, you sure you're ready for these?"
+                    200 "The little pictures on the front have faded"
+                    1 "the pictures haven't faded yet")
+   :wear-mess-text '(10000 "Poo is leaking out of the pullup"
+                     2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
+                     1 "You can feel a slight mess back there")))
 (defclass pullups-package (item) ()
   (:default-initargs
    :name "Package of Pullups"
@@ -384,21 +315,32 @@
                  (format t "You tear open the package and dump all the pullups out of it.~%")
                  (iter (for i from 1 to 20)
                    (push (make-instance 'yadfa-items:pullups) (inventory-of user))))))
-(defclass cloth-pullups (pullup) ()
+(defclass cloth-pullups (pullups) ()
   (:default-initargs
    :value 200
-   :sogginess-capacity 800
-   :messiness-capacity 10000
+   :disposable nil
+   :sellable t
    :name "Cloth Pullup"
-   :description "Wear this and pretend to be a big kid. Can be reused."))
-(defclass rubber-pullups (pullup) ()
+   :description "Wear this and pretend to be a big kid. Can be reused."
+   :wear-wet-text '(800 "it is completely drenched, you sure you're ready for these?"
+                    200 "it is noticably wet"
+                    1 "the pictures haven't faded yet")))
+(defclass navy-pullups (cloth-pullups) ()
   (:default-initargs
    :value 200
-   :sogginess-capacity 800
-   :messiness-capacity 10000
+   :name "Navy Pullup"
+   :description "Has the Navy insignia on the front. The Navy apparently expects you to keep these dry, but keeps them around just in case. They're made of cloth because they don't expect you to use them that often."))
+(defclass rubber-pullups (pullups) ()
+  (:default-initargs
+   :value 200
+   :disposable nil
+   :sellable t
    :waterproof t
    :name "Rubber Pullup"
-   :description "Wear this and pretend to be a big kid. Can be reused."))
+   :description "Wear this and pretend to be a big kid. Can be reused."
+   :wear-wet-text '(800 "it is completely drenched, you sure you're ready for these?"
+                    200 "it is noticably wet"
+                    1 "the pictures haven't faded yet")))
 (defclass swim-diaper-cover (undies) ()
   (:default-initargs
    :waterproof t
@@ -410,6 +352,8 @@
    :sogginess-capacity 1400
    :messiness-capacity 10000
    :value 200
+   :disposable nil
+   :sellable t
    :name "Bandit Diaper"
    :description "A diaper with the Diapered Raccoon Bandits's insignia on the front. the insignia turns yellow when the wearer wets it so the higher ups know when the lower ranks wet their diapers. Unlike most diapers, these are reusable."
    :wear-wet-text '(1400 "little yellow streams are leaking down from the leg guards"
@@ -418,26 +362,16 @@
    :wear-mess-text '(10000 "Poo is leaking out of the leg guards"
                      2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
-(defclass bandit-adjustable-diaper (tabbed-briefs) ()
+(defclass bandit-adjustable-diaper (bandit-diaper) ()
   (:default-initargs
-   :sogginess-capacity 1400
-   :messiness-capacity 10000
-   :value 200
    :name "Bandit Adjustable Diaper"
-   :description "A special diaper that can be pulled down like normal underwear so the wearer can still use the toilet. It has the bandit's insignia on the front whcih turns yellow when the diaper is used. It has tabs on the sides for easy removal. Unlike most diapers, these are reusable."
-   :wear-wet-text '(1400 "little yellow streams are leaking down from the leg guards"
-                    350 "It squishes when you walk"
-                    1 "You can barely tell you wet it")
-   :wear-mess-text '(10000 "Poo is leaking out of the leg guards"
-                     2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
-                     1 "You can feel a slight mess back there")))
-(defclass bandit-female-diaper (tabbed-briefs) ()
+   :description "A special diaper that can be pulled down like normal underwear so the wearer can still use the toilet. It has the bandit's insignia on the front whcih turns yellow when the diaper is used. It has tabs on the sides for easy removal. Unlike most diapers, these are reusable."))
+(defclass bandit-female-diaper (bandit-diaper) ()
   (:default-initargs
    :sogginess-capacity 10000
    :messiness-capacity 25000
    :thickness 300
    :thickness-capacity 100
-   :value 200
    :wear-stats (list :speed -10)
    :name "Female's Bandit Diaper"
    :description "A diaper with the Diapered Raccoon Bandits's insignia on the front. the insignia turns yellow when the wearer wets it so the males know when the lower ranks wet their diapers. It is much thicker than what the males wear. Unlike most diapers, these are reusable."
@@ -469,17 +403,11 @@
 (defclass pink-frilly-diaper (yadfa:diaper) ()
   (:default-initargs
    :sogginess-capacity 5000
-   :messiness-capacity 17000
-   :name "Thick Diaper"
-   :disposable t
-   :sellable nil
+   :name "Pink Diaper"
    :thickness (+ 50 4/5)
    :thickness-capacity 100
    :description "A sissy pink frilly diaper. You look adorable with this"
    :wear-wet-text '(5000 "little yellow streams are leaking down from the leg guards"
                     2000 "It squishes when you walk"
                     500 "The hearts on the front have faded"
-                    1 "You can barely tell you wet it")
-   :wear-mess-text '(20000 "Poo is leaking out of the leg guards"
-                     5000 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
-                     1 "You can feel a slight mess back there")))
+                    1 "You can barely tell you wet it")))
