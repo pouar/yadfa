@@ -1,19 +1,20 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-items"; coding: utf-8-unix; -*-
 (in-package :yadfa-items)
-(defonesie onesie () ()
-  (:default-initargs
-   :name "Onesie"
-   :description "A onesie"
-   :value 400
-   :onesie-bulge-text '((50 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
-                         20 "It fits over your diaper quite nicely"
-                         0 "It's so baggy that what you're wearing under there is quite visible")
-                        .
-                        (100 "You are unable to get the buttons to snap so you just leave the flaps open"
-                         #.(* 12 25) "Your padding is clearly visible under there"
-                         #.(* 11 25) "The flaps just barely cover the diapers"
-                         #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
-                         0 "The flaps hang over covering your underwear like a dress"))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defonesie onesie () ()
+    (:default-initargs
+     :name "Onesie"
+     :description "A onesie"
+     :value 400
+     :onesie-bulge-text '((50 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
+                           20 "It fits over your diaper quite nicely"
+                           0 "It's so baggy that what you're wearing under there is quite visible")
+                          .
+                          (100 "You are unable to get the buttons to snap so you just leave the flaps open"
+                           #.(* 12 25) "Your padding is clearly visible under there"
+                           #.(* 11 25) "The flaps just barely cover the diapers"
+                           #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
+                           0 "The flaps hang over covering your underwear like a dress")))))
 (defonesie roomy-onesie () ()
   (:default-initargs
    :name "Roomy Onesie"
@@ -343,3 +344,8 @@
                  #.(* 1/2 25) "The dress does a good job hiding your padding"
                  0 "It fits quite loosely")
    :thickness-capacity nil))
+(defonesie shortalls (onesie) ()
+  (:default-initargs
+   :name "Shortalls"
+   :plural-name "Shortalls"
+   :description "Denim shortalls with snaps on the front"))
