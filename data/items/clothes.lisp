@@ -235,7 +235,6 @@
 (defclass skirt (yadfa:skirt) ()
   (:default-initargs
    :name "Skirt"
-   :plural-name "Skirts"
    :value 100
    :description "A loose fitting skirt."
    :bulge-text '(75 "Your padding is clearly visible under your dress"
@@ -248,13 +247,11 @@
 (defclass navy-skirt (skirt) ()
   (:default-initargs
    :name "Navy Skirt"
-   :plural-name "Navy Skirts"
    :value 200
    :description "A loose fitting skirt part of the Navy uniform for girls."))
 (defclass denim-skirt (skirt jeans) ()
   (:default-initargs
    :name "Denim Skirt"
-   :plural-name "Denim Skirts"
    :value 100
    :description "A skirt made from the same fabric as jeans."))
 (defclass navy-shirt (yadfa:shirt) ()
