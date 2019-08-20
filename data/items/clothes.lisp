@@ -268,6 +268,7 @@
 (defclass pirate-dress (short-dress) ()
   (:default-initargs
    :name "Pirate Dress"
+   :plural-name "Pirate Dresses"
    :value 100
    :description "A Pirate Dress"))
 (defclass fursuit (closed-full-outfit) ()
@@ -306,6 +307,7 @@
 (defclass cheerleader-outfit (yadfa:dress) ()
   (:default-initargs
    :name "Cheerleader Dress"
+   :plural-name "Cheerleader Dresses"
    :value 150
    :description "A pretty cheerleader dress. Looks great with a diaper to show everyone off with."
    :bulge-text '(25 "The skirt does absolutely nothing to hide your padding"
@@ -315,6 +317,7 @@
 (defclass ballerina-dress (yadfa:dress) ()
   (:default-initargs
    :name "Ballerina Dress"
+   :plural-name "Ballerina Dresses"
    :value 150
    :description "A pretty ballerina dress. Looks great with a diaper to show everyone off with."
    :bulge-text '(25 "The skirt does absolutely nothing to hide your padding"
@@ -323,6 +326,7 @@
 (defclass braixen-dress (yadfa:dress) ()
   (:default-initargs
    :name "Braixen Dress"
+   :plural-name "Ballerina Dresses"
    :value 150
    :description "A furry dress that looks like the fur of a Braixen"
    :bulge-text '(25 "The skirt does absolutely nothing to hide your padding"
@@ -331,7 +335,6 @@
 (defclass shendyt (skirt) ()
   (:default-initargs
    :name "Shendyt"
-   :plural-name "Shendyt"
    :description "A skirt like loincloth similar to what the ancient Egyptians wear"))
 (defclass kalasiris (yadfa:dress) ()
   (:default-initargs
