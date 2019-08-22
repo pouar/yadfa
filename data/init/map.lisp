@@ -137,6 +137,9 @@
                                                                          :enemies ((yadfa-enemies:diapered-kobold .
                                                                                     (list :level (random-from-range 2 5)))
                                                                                    (yadfa-enemies:diapered-kobold .
+                                                                                    (list :level (random-from-range 2 5)))))
+                                                                        (:max-random 20
+                                                                         :enemies ((yadfa-enemies:diapered-skunk .
                                                                                     (list :level (random-from-range 2 5)))))))))
 (trigger-event 'initialize-enemy-spawn-list)
 (defevent create-rpgmaker-dungeon :lambda '(lambda (self)

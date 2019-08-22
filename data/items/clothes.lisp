@@ -182,6 +182,11 @@
    :name "Bra"
    :description "Prevents bouncing and indecent exposure, whether this is a good thing or not depends on your point of view."
    :value 100))
+(defclass bikini-top (shirt) ()
+  (:default-initargs
+   :name "Bikini Top"
+   :description "A sports bikini top"
+   :value 50))
 (defclass tunic (yadfa:dress) ()
   (:default-initargs
    :name "Tunic"
@@ -210,10 +215,9 @@
    :name "Bandit Uniform Shirt"
    :value 100
    :description "This shirt has the Diapered Raccoon Bandits' insignia on it. It's for the lower ranks as they're not allowed to conceal the state of their diaper, unlike the higher ranks."))
-(defclass bandit-uniform-sports-bikini-top (shirt) ()
+(defclass bandit-uniform-sports-bikini-top (bikini-top) ()
   (:default-initargs
    :name "Bandit Uniform Sports Bikini Top"
-   :value 50
    :description "A sports bikini top that has the Raccoon Bandits' insignia on it."))
 (defonesie bandit-swimsuit () ()
   (:default-initargs

@@ -284,7 +284,9 @@
    #:tickle
    #:tackle
    #:mush
-   #:mudbomb)
+   #:mudbomb
+   #:spray
+   #:pants)
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package #:yadfa-items
   (:import-from #:macro-level #:macro-level)
@@ -319,6 +321,7 @@
    #:knights-armor
    #:tshirt
    #:jeans
+   #:snap-jeans
    #:baggy-jeans
    #:orca-suit
    #:stretchable-orca-suit
@@ -327,6 +330,7 @@
    #:boxers
    #:panties
    #:bra
+   #:bikini-top
    #:tunic
    #:bandit-uniform-tunic
    #:bandit-uniform-shirt
@@ -345,6 +349,7 @@
    #:incontinence-pad-package
    #:cloth-incontinence-pad
    #:diaper
+   #:high-capacity-diaper
    #:cloth-diaper
    #:diaper-package
    #:midnight-diaper
@@ -414,6 +419,7 @@
    #:navy-officer*
    #:diaper-pirate
    #:diapered-kobold
+   #:diapered-skunk
    #:thickly-diaper-pirate
    #:padded-fursuiter-servant)
   (:documentation "Contains all the enemies in the game"))
