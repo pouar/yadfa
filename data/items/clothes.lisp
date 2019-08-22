@@ -82,6 +82,16 @@
    :name "T-Shirt"
    :value 50
    :description "A simple plain t-shirt."))
+(defclass black-leather-jacket (shirt) ()
+  (:default-initargs
+   :name "Black Leather Jacket"
+   :value 500
+   :description "Makes you look tough"))
+(defclass cannibal-corpse-tshirt (tshirt) ()
+  (:default-initargs
+   :name "Cannibal Corpse T-Shirt"
+   :value 200
+   :description "T-Shirt with Cannibal Corpse's logo on it"))
 (defclass jeans (pants) ()
   (:default-initargs
    :name "Jeans"

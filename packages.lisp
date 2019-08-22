@@ -323,6 +323,8 @@
    #:jeans
    #:snap-jeans
    #:baggy-jeans
+   #:cannibal-corpse-tshirt
+   #:black-leather-jacket
    #:orca-suit
    #:stretchable-orca-suit
    #:orca-suit-lite
