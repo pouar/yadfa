@@ -46,5 +46,5 @@
             (setf (messiness-of a) (random 8000))
             a)
           (wear-of c))
-    (push (make-instance (if (malep c) 'yadfa-items:snap-jeans 'yadfa-items:denim-skirt)) (wear-of c))
+    (push (make-instance (if (malep c) 'yadfa-items:baggy-jeans 'yadfa-items:denim-skirt)) (wear-of c))
     (push (make-instance (if (malep c) 'yadfa-items:tshirt 'yadfa-items:bikini-top)) (wear-of c))))
