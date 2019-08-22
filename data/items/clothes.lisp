@@ -103,7 +103,7 @@
    :value 150
    :description "For when you need to hide that diaper of yours, sorta"
    :bulge-text '(50 "Your pants puff out humorously"
-                 12 "Your padding keeps poking out of the top of your pants"
+                 12 "Your padding is visibly poking out of the top of your pants"
                  0 "It fits loosely")
    :thickness-capacity (* 16 25.4)))
 (eval-when (:compile-toplevel :load-toplevel :execute)
