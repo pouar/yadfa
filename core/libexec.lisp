@@ -409,7 +409,7 @@
          ,@(iter (for i in options)
              (collect `(progn
                          (fresh-line *query-io*)
-                         (clim:accept ',(first i) ,@(rest i) :stream *query-io*)))))))))
+                         (clim:accept (quasiquote-2.0:dig ,(first i)) ,@(rest i) :stream *query-io*)))))))))
 (defunassert (trigger-event (event-id))
   (event-id symbol)
   (when (and
@@ -3721,18 +3721,13 @@
                                     (string
                                      :prompt "Species"
                                      :default (species-of default) :view clim:+text-field-view+)
-                                    ((clim:completion (yadfa-items:tshirt yadfa-items:short-dress nil))
-                                     :prompt "Top clothes"
-                                     :default 'yadfa-items:tshirt :view clim:+option-pane-view+)
-                                    ((clim:completion (yadfa-items:bra nil))
-                                     :prompt "Top Undies"
-                                     :default 'nil :view clim:+option-pane-view+)
-                                    ((clim:completion (yadfa-items:jeans nil))
-                                     :prompt "Bottom Clothes"
-                                     :default 'nil :view clim:+option-pane-view+)
-                                    ((clim:completion (yadfa-items:diaper yadfa-items:pullups yadfa-items:boxers yadfa-items:panties nil))
-                                     :prompt "Bottom Undies"
-                                     :default 'yadfa-items:diaper :view clim:+option-pane-view+)
+                                    (((clim:subset-completion
+                                       (yadfa-items:tshirt yadfa-items:short-dress yadfa-items:bra yadfa-items:jeans
+                                                           yadfa-items:boxers yadfa-items:panties yadfa-items:pullups yadfa-items:diaper))
+                                      :name-key (quasiquote-2.0:inject (lambda (o) (name-of (make-instance o)))))
+                                     :prompt "Clothes"
+                                     :view clim:+check-box-view+
+                                     :default '(yadfa-items:tshirt yadfa-items:diaper))
                                     ((clim:completion (:normal :low :overactive))
                                      :prompt "Bladder capacity"
                                      :default :normal :view clim:+option-pane-view+))))
@@ -3741,16 +3736,18 @@
                                             :name (first values)
                                             :male (second values)
                                             :species (third values)
-                                            :bladder/need-to-potty-limit (getf '(:normal 300 :low 200 :overactive 149) (eighth values))
-                                            :bladder/potty-dance-limit (getf '(:normal 450 :low 300 :overactive 150) (eighth values))
-                                            :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) (eighth values))
-                                            :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) (eighth values))
-                                            :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) (eighth values))
-                                            :wear (iter (for i in (cdddr (butlast values)))
-                                                    (unless (eq i 'nil) (collect (make-instance i))))))
+                                            :bladder/need-to-potty-limit (getf '(:normal 300 :low 200 :overactive 149) (fifth values))
+                                            :bladder/potty-dance-limit (getf '(:normal 450 :low 300 :overactive 150) (fifth values))
+                                            :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) (fifth values))
+                                            :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) (fifth values))
+                                            :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) (fifth values))
+                                            :wear (iter (for i in (fourth values))
+                                                    (collect (make-instance i)))))
     (setf (team-of *game*) (list (player-of *game*)))
-    (when (member (seventh values) '(yadfa-items:diaper yadfa-items:pullups))
-      (iter (for i from 1 to (random 20))
-        (push (make-instance (seventh values))
-              (get-items-from-prop :dresser (position-of default))))))
+    (iter (for i in (iter (for i in '(yadfa-items:diaper yadfa-items:pullups yadfa-items:boxers yadfa-items:panties))
+                      (when (member i (fourth values) :test 'eq)
+                        (collect i))))
+      (iter (for j from 1 to (random 20))
+        (push (make-instance i)
+              (get-items-from-prop :dresser (position-of (player-of *game*)))))))
   (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io))
