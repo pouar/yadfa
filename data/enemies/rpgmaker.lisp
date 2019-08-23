@@ -26,7 +26,7 @@
 (defclass diapered-skunk (potty-enemy) ()
   (:default-initargs
    :name "Diapered Skunk"
-   :description "Careful, these guys will try to spray you. Their diapers reek of a smell of urine, feces, and skunk spray."
+   :description "They spray their diapers when attacking. Their diapers reek of a smell of urine, feces, and skunk spray."
    :species "Skunk"
    :male (random-elt '(t nil))
    :bladder/contents (random 500)
