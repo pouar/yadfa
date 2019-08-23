@@ -23,7 +23,7 @@
             a)
           (wear-of c))
     (push (make-instance (if (malep c) 'yadfa-items:shendyt 'yadfa-items:kalasiris)) (wear-of c))))
-(defclass diapered-skunk (potty-enemy pantsable-character) ()
+(defclass diapered-skunk (potty-enemy) ()
   (:default-initargs
    :name "Diapered Skunk"
    :description "Careful, these guys will try to spray you. Their diapers reek of a smell of urine, feces, and skunk spray."
@@ -46,7 +46,5 @@
             (setf (messiness-of a) (random 8000))
             a)
           (wear-of c))
-    (push (make-instance (if (malep c) 'yadfa-items:baggy-jeans 'yadfa-items:denim-skirt)) (wear-of c))
     (push (make-instance (if (malep c) 'yadfa-items:cannibal-corpse-tshirt 'yadfa-items:bikini-top)) (wear-of c))
-    (when (malep c)
-      (push (make-instance 'yadfa-items:black-leather-jacket) (wear-of c)))))
+    (push (make-instance 'yadfa-items:black-leather-jacket) (wear-of c))))
