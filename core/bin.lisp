@@ -356,89 +356,15 @@
   (let ((selected-user (if ally (nth ally (allies-of *game*)) (player-of *game*))))
     (when wield
       (let ((i (wield-of selected-user)))
-        (format t
-                "Name: ~a~%Description:~%~a~%Resale Value: ~f~%"
-                (name-of i)
-                (description-of i)
-                (/ (value-of i) 2))
-        (when (typep i 'closed-bottoms)
-          (iter (for (a b) on (wet-text-of i))
-            (when (>= (sogginess-of i) a)
-              (leave (format t "~%~a~%" b))))
-          (iter (for (a b) on (mess-text-of i))
-            (when (>= (messiness-of i) a)
-              (leave (format t "~%~a~%" b))))
-          (format t "Sogginess: ~a~%Sogginess Capacity: ~a~%Messiness: ~a~%Messiness Capacity: ~a~%"
-                  (sogginess-of i)
-                  (sogginess-capacity-of i)
-                  (messiness-of i)
-                  (messiness-capacity-of i)))
-        (when (ammo-type-of i)
-          (format t "Ammo Type: ~s" (ammo-type-of i)))
-        (when (special-actions-of i)
-          (iter (for (a b) on i by #'cddr)
-            (format t "Keyword: ~a~%Other Parameters: ~w~%Documentation: ~a~%~%Describe: ~a~%~%"
-                    a
-                    (cddr (lambda-list (action-lambda b)))
-                    (action-documentation b)
-                    (with-output-to-string (s)
-                      (let ((*standard-output* s))
-                        (describe (action-lambda b)))))))))
+        (describe-item i)))
     (when inventory
       (let ((i (nth inventory (inventory-of selected-user))))
-        (format t
-                "Name: ~a~%Description:~%~a~%Resale Value: ~f~%"
-                (name-of i)
-                (description-of i)
-                (/ (value-of i) 2))
-        (when (typep i 'closed-bottoms)
-          (iter (for (a b) on (wet-text-of i))
-            (when (>= (sogginess-of i) a)
-              (leave (format t "~%~a~%" b))))
-          (iter (for (a b) on (mess-text-of i))
-            (when (>= (messiness-of i) a)
-              (leave (format t "~%~a~%" b))))
-          (format t "Sogginess: ~a~%Sogginess Capacity: ~a~%Messiness: ~a~%Messiness Capacity: ~a~%"
-                  (sogginess-of i)
-                  (sogginess-capacity-of i)
-                  (messiness-of i)
-                  (messiness-capacity-of i)))
-        (when (ammo-type-of i)
-          (format t "Ammo Type: ~s" (ammo-type-of i)))
-        (when (special-actions-of i)
-          (iter (for (a b) on i by #'cddr)
-            (format t "Keyword: ~a~%~%Documentation: ~a~%~%Describe: ~a~%~%"
-                    a
-                    (action-documentation b)
-                    (with-output-to-string (s)
-                      (let ((*standard-output* s))
-                        (describe (action-lambda b)))))))))
+        (describe-item i)))
     (when wear
       (let* ((i (nth wear (wear-of selected-user)))
              (k (nthcdr (1+ wear) (wear-of selected-user)))
              (l nil))
-        (format t "Name: ~a~%Description:~% ~a~%"
-                (name-of i)
-                (format nil "~a"
-                        (with-output-to-string (s)
-                          (format s "~a~%" (description-of i))
-                          (cond ((typep i 'bottoms)
-                                 (setf l (when k
-                                           (iter (for (a b) on (bulge-text-of i) by #'cddr)
-                                             (when (>= (total-thickness k) a)
-                                               (leave b)))))
-                                 (when l
-                                   (format s " ~a~%" l))))
-                          (when (typep i 'closed-bottoms)
-                            (setf l (iter (for (a b) on (wear-wet-text-of i))
-                                      (when (>= (sogginess-of i) a)
-                                        (leave b))))
-                            (when l (format s " ~a~%" l))
-                            (setf l (iter (for (a b) on (wear-mess-text-of i))
-                                      (when (>= (messiness-of i) a)
-                                        (leave b))))
-                            (when l
-                              (format s " ~a~%" l))))))
+        (describe-item i t)
         (when (typep i 'closed-bottoms)
           (format t "Sogginess: ~f~%Sogginess Capacity: ~f~%Messiness: ~f~%Messiness Capacity: ~f~%"
                   (sogginess-of i)
@@ -462,19 +388,7 @@
       (let ((j (getf (get-props-from-zone (position-of (player-of *game*))) prop)))
         (when item
           (let ((i (nth item (items-of j))))
-            (format t "Name: ~a~%Description:~%~a~%" (name-of i) (description-of i))
-            (when (typep i 'closed-bottoms)
-              (iter (for (a b) on (wet-text-of i))
-                (when (>= (sogginess-of i) a)
-                  (leave (format t "~%~a~%" b))))
-              (iter (for (a b) on (mess-text-of i))
-                (when (>= (messiness-of i) a)
-                  (leave (format t "~%~a~%" b))))
-              (format t "Sogginess: ~a~%Sogginess Capacity: ~a~%Messiness: ~a~%Messiness Capacity: ~a~%"
-                      (sogginess-of i)
-                      (sogginess-capacity-of i)
-                      (messiness-of i)
-                      (messiness-capacity-of i)))))))))
+            (describe-item i)))))))
 (defunassert (yadfa-world:interact (prop &rest keys &key list take action describe-action describe &allow-other-keys)
                                    "interacts with PROP. PROP is a keyword, you can get these with `lst' with the PROPS parameter. setting LIST to non-NIL will list all the items and actions in the prop. you can take the items with the TAKE parameter. Setting this to an integer will take the item at that index, while setting it to :ALL will take all the items, setting it to :BITCOINS will take just the bitcoins. You can get this index with the LIST parameter. ACTION is a keyword referring to an action to perform, can also be found with the LIST parameter. You can also specify other keys when using ACTION and this function will pass those keys to that function. set DESCRIBE-ACTION to the keyword of the action to find out how to use it. Set DESCRIBE to T to print the prop's description.")
     (action (or keyword null)
