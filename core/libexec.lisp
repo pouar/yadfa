@@ -409,7 +409,7 @@
          ,@(iter (for i in options)
              (collect `(progn
                          (fresh-line *query-io*)
-                         (clim:accept ',(first i) ,@(rest i) :stream *query-io*)))))))))
+                         (clim:accept (quasiquote-2.0:dig ,(first i)) ,@(rest i) :stream *query-io*)))))))))
 (defunassert (trigger-event (event-id))
   (event-id symbol)
   (when (and
@@ -781,7 +781,7 @@
                            (name-of user)
                            (name-of i)))
                (pushclothing i wet/mess return))
-              ((typep i 'incontinence-product)
+              ((typep i '(or incontinence-product snap-bottoms))
                (push i (inventory-of (if (typep user 'team-member)
                                          (player-of *game*)
                                          user)))
@@ -831,11 +831,16 @@
               (if (malep user) "his" "her")
               (name-of onesie))
       (toggle-onesie%% onesie)))
-(defmacro defonesie (base-class &body body)
+(defmacro defonesie (base-class direct-superclasses &body body)
   "macro that generates the classes and methods of the onesie used to open and close the snaps of them. method used to toggle the onesie is TOGGLE-ONESIE. BASE-CLASS is the name of the class you want to give the onesie. BODY is the slot specifier and class options of BASE-CLASS"
   `(progn
      (defclass ,(format-symbol (symbol-package base-class) "~a" (symbol-name base-class))
-         (yadfa:onesie) ,@body)
+         ,(if (iter (for i in direct-superclasses)
+                 (when (subtypep i 'yadfa:onesie)
+                   (leave t)))
+           direct-superclasses
+           `(yadfa:onesie ,@direct-superclasses))
+       ,@body)
      (defclass ,(format-symbol (symbol-package base-class) "~a/OPENED" (symbol-name base-class))
          (,(format-symbol (symbol-package base-class) "~a" (symbol-name base-class))
           yadfa:onesie/opened) ())
@@ -3122,6 +3127,58 @@
                                                       (format-stats user)))
                                                   *records*))))
 
+(defun describe-item (item)
+  (let ((i (if (listp item)
+               (car item)
+               item)))
+    (format t
+            "Name: ~a~%Resale Value: ~f~%Description:~%~a~%"
+            (name-of i)
+            (/ (value-of i) 2)
+            (description-of i))
+    (when (typep i 'closed-bottoms)
+      (if (listp item)
+          (let (l)
+            (cond ((typep i 'bottoms)
+                   (setf l (when (cdr item)
+                             (iter (for (a b) on (bulge-text-of i) by #'cddr)
+                               (when (>= (total-thickness (cdr item)) a)
+                                 (leave b)))))
+                   (when l
+                     (format t " ~a~%" l))))
+            (when (typep i 'closed-bottoms)
+              (setf l (iter (for (a b) on (wear-wet-text-of i) by 'cddr)
+                        (when (>= (sogginess-of i) a)
+                          (leave b))))
+              (when l (format t " ~a~%" l))
+              (setf l (iter (for (a b) on (wear-mess-text-of i) by 'cddr)
+                        (when (>= (messiness-of i) a)
+                          (leave b))))
+              (when l
+                (format t " ~a~%" l))))
+          (progn
+            (iter (for (a b) on (wet-text-of i))
+              (when (>= (sogginess-of i) a)
+                (leave (format t " ~a~%" b))))
+            (iter (for (a b) on (mess-text-of i))
+              (when (>= (messiness-of i) a)
+                (leave (format t " ~a~%" b))))))
+      (format t "Sogginess: ~a~%Sogginess Capacity: ~a~%Messiness: ~a~%Messiness Capacity: ~a~%"
+              (sogginess-of i)
+              (sogginess-capacity-of i)
+              (messiness-of i)
+              (messiness-capacity-of i)))
+    (when (ammo-type-of i)
+      (format t "Ammo Type: ~s" (ammo-type-of i)))
+    (when (special-actions-of i)
+      (iter (for (a b) on i by #'cddr)
+        (format t "Keyword: ~a~%Other Parameters: ~w~%Documentation: ~a~%~%Describe: ~a~%~%"
+                a
+                (cddr (lambda-list (action-lambda b)))
+                (action-documentation b)
+                (with-output-to-string (s)
+                  (let ((*standard-output* s))
+                    (describe (action-lambda b)))))))))
 (defun finish-battle (&optional lose)
   (if lose
       (progn (format t "~a was defeated~%" (name-of (player-of *game*)))
@@ -3716,18 +3773,13 @@
                                     (string
                                      :prompt "Species"
                                      :default (species-of default) :view clim:+text-field-view+)
-                                    ((clim:completion (yadfa-items:tshirt yadfa-items:short-dress nil))
-                                     :prompt "Top clothes"
-                                     :default 'yadfa-items:tshirt :view clim:+option-pane-view+)
-                                    ((clim:completion (yadfa-items:bra nil))
-                                     :prompt "Top Undies"
-                                     :default 'nil :view clim:+option-pane-view+)
-                                    ((clim:completion (yadfa-items:jeans nil))
-                                     :prompt "Bottom Clothes"
-                                     :default 'nil :view clim:+option-pane-view+)
-                                    ((clim:completion (yadfa-items:diaper yadfa-items:pullups yadfa-items:boxers yadfa-items:panties nil))
-                                     :prompt "Bottom Undies"
-                                     :default 'yadfa-items:diaper :view clim:+option-pane-view+)
+                                    (((clim:subset-completion
+                                       (yadfa-items:tshirt yadfa-items:short-dress yadfa-items:bra yadfa-items:jeans
+                                                           yadfa-items:boxers yadfa-items:panties yadfa-items:pullups yadfa-items:diaper))
+                                      :name-key (quasiquote-2.0:inject (lambda (o) (name-of (make-instance o)))))
+                                     :prompt "Clothes"
+                                     :view clim:+check-box-view+
+                                     :default '(yadfa-items:tshirt yadfa-items:diaper))
                                     ((clim:completion (:normal :low :overactive))
                                      :prompt "Bladder capacity"
                                      :default :normal :view clim:+option-pane-view+))))
@@ -3736,16 +3788,18 @@
                                             :name (first values)
                                             :male (second values)
                                             :species (third values)
-                                            :bladder/need-to-potty-limit (getf '(:normal 300 :low 200 :overactive 149) (eighth values))
-                                            :bladder/potty-dance-limit (getf '(:normal 450 :low 300 :overactive 150) (eighth values))
-                                            :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) (eighth values))
-                                            :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) (eighth values))
-                                            :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) (eighth values))
-                                            :wear (iter (for i in (cdddr (butlast values)))
-                                                    (unless (eq i 'nil) (collect (make-instance i))))))
+                                            :bladder/need-to-potty-limit (getf '(:normal 300 :low 200 :overactive 149) (fifth values))
+                                            :bladder/potty-dance-limit (getf '(:normal 450 :low 300 :overactive 150) (fifth values))
+                                            :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) (fifth values))
+                                            :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) (fifth values))
+                                            :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) (fifth values))
+                                            :wear (iter (for i in (fourth values))
+                                                    (collect (make-instance i)))))
     (setf (team-of *game*) (list (player-of *game*)))
-    (when (member (seventh values) '(yadfa-items:diaper yadfa-items:pullups))
-      (iter (for i from 1 to (random 20))
-        (push (make-instance (seventh values))
-              (get-items-from-prop :dresser (position-of default))))))
+    (iter (for i in (iter (for i in '(yadfa-items:diaper yadfa-items:pullups yadfa-items:boxers yadfa-items:panties))
+                      (when (member i (fourth values) :test 'eq)
+                        (collect i))))
+      (iter (for j from 1 to (random 20))
+        (push (make-instance i)
+              (get-items-from-prop :dresser (position-of (player-of *game*)))))))
   (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io))

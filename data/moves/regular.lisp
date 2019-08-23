@@ -16,3 +16,36 @@
    :name "Pants"
    :description "Pants the enemy"
    :attack 'pants%))
+(defclass spray (stat/move) ()
+  (:default-initargs
+   :name "Spray"
+   :description "Spray the target with skunk spray. Also fills your pamps with skunk spray while your at it."
+   :energy-cost 5
+   :attack '(lambda (target user self)
+             (format t "~a used ~a~%" (name-of user) (name-of self))
+             (let ((amount 50)
+                   (wet (when (random 5))))
+               (iter (while (> amount 0))
+                 (for i in (reverse (wear-of user)))
+                 (when (typep i 'closed-bottoms)
+                   (cond ((> amount (- (sogginess-capacity-of i) (sogginess-of i)))
+                          (decf amount (- (sogginess-capacity-of i) (sogginess-of i)))
+                          (setf (sogginess-of i) (sogginess-capacity-of i)))
+                         ((> amount 0)
+                          (incf (sogginess-of i) amount)
+                          (setf amount 0))))))
+             (let ((clothing (filter-items (wear-of user) 'closed-bottoms)))
+               (cond
+                 ((filter-items clothing 'incontinence-product)
+                  (format t "~a tries to spray the enemy, but ends up spraying in ~a pamps instead~%"
+                          (name-of user)
+                          (if (malep user) "his" "her")))
+                 (clothing
+                  (format t "~a tries to spray the enemy, but ends up spraying in ~a pants instead~%"
+                          (name-of user)
+                          (if (malep user) "his" "her")))
+                 (t
+                  (format t "~a sprays the enemy~%"
+                          (name-of user)))))
+             (format t "~a is grossed out by the smell~%" (name-of target))
+             (set-status-condition 'yadfa-status-conditions:skunked target))))

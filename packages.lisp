@@ -110,6 +110,7 @@
    #:top
    #:headpiece
    #:bottoms
+   #:snap-bottoms
    #:closed-bottoms
    #:full-outfit
    #:closed-pants
@@ -124,6 +125,7 @@
    #:tabbed-briefs
    #:incontinence-pad
    #:undies
+   #:top-undies
    #:stuffer
    #:diaper
    #:pullup
@@ -194,6 +196,10 @@
    #:placeablep
    #:can-potty-p
    #:potty-trigger-of
+   #:wet-text-of
+   #:mess-text-of
+   #:wear-wet-text-of
+   #:wear-mess-text-of
    #:must-wear-of
    #:must-wear*-of
    #:must-not-wear-of
@@ -282,7 +288,9 @@
    #:tickle
    #:tackle
    #:mush
-   #:mudbomb)
+   #:mudbomb
+   #:spray
+   #:pants)
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package #:yadfa-items
   (:import-from #:macro-level #:macro-level)
@@ -310,13 +318,17 @@
    #:ballerina-dress
    #:braixen-dress
    #:skirt
+   #:denim-skirt
    #:shendyt
    #:kalasiris
    #:toddler-dress
    #:knights-armor
    #:tshirt
    #:jeans
+   #:snap-jeans
    #:baggy-jeans
+   #:cannibal-corpse-tshirt
+   #:black-leather-jacket
    #:orca-suit
    #:stretchable-orca-suit
    #:orca-suit-lite
@@ -324,6 +336,7 @@
    #:boxers
    #:panties
    #:bra
+   #:bikini-top
    #:tunic
    #:bandit-uniform-tunic
    #:bandit-uniform-shirt
@@ -342,6 +355,8 @@
    #:incontinence-pad-package
    #:cloth-incontinence-pad
    #:diaper
+   #:high-capacity-diaper
+   #:black-diaper
    #:cloth-diaper
    #:diaper-package
    #:midnight-diaper
@@ -411,6 +426,7 @@
    #:navy-officer*
    #:diaper-pirate
    #:diapered-kobold
+   #:diapered-skunk
    #:thickly-diaper-pirate
    #:padded-fursuiter-servant)
   (:documentation "Contains all the enemies in the game"))
