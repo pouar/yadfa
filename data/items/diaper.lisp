@@ -98,7 +98,7 @@
                     350 "It squishes when you walk"
                     1 "You can barely tell you wet it")
    :wear-mess-text '(10000 "Poo is leaking out of the leg guards and the back is stained brown"
-                     9000 "The back is clearly stained brown"
+                     7000 "The back is clearly stained brown"
                      2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
 (defclass high-capacity-diaper (yadfa:diaper) ()
@@ -108,12 +108,12 @@
    :name "High Capacity Diaper"
    :description "Has similar capacity to the thick diaper without the extra bulk"
    :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
-                    2000 "The front is stained yellow"
-                    1400 "It squishes when you walk"
+                    700 "The front is stained yellow"
+                    350 "It squishes when you walk"
                     1 "You can barely tell you wet it")
    :wear-mess-text '(17000 "Poo is leaking out of the leg guards"
-                     8500 "The back is clearly stained brown"
-                     4250 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
+                     7000 "The back is clearly stained brown"
+                     2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
 (defclass black-diaper (high-capacity-diaper) ()
   (:default-initargs
