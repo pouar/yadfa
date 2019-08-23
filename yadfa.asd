@@ -17,15 +17,15 @@
                (:file "main" :depends-on ("packages" "core"))
                (:module "core"
                 :depends-on ("packages")
-                :components ((:file "util")
-                             (:file "structs")
+                :components ((:file "util" :depends-on ("init"))
+                             (:file "structs" :depends-on ("init"))
                              (:file "init" :depends-on ("patches"))
                              (:file "libexec" :depends-on ("util" "classes" "init" "structs"))
-                             (:file "classes" :depends-on ("util" "patches"))
-                             (:file "game" :depends-on ("classes"))
-                             (:file "bin" :depends-on ("libexec"))
+                             (:file "classes" :depends-on ("util" "patches" "init"))
+                             (:file "game" :depends-on ("classes" "init"))
+                             (:file "bin" :depends-on ("libexec" "init"))
                              (:file "patches")
-                             (:file "mcclim" :depends-on ("patches" "bin"))))
+                             (:file "mcclim" :depends-on ("patches" "bin" "init"))))
                (:module "data"
                 :depends-on ("core")
                 :components ((:module "moves"

@@ -6,12 +6,15 @@
     (type type-specifier)
   (get-positions-of-type type (inventory-of (player-of *game*))))
 (defun yadfa-bin:reload-files (&rest keys &key compiler-verbose &allow-other-keys)
-  "Intended for developers. Use this to recompile the game without having to close it. Accepts the same keyword arguments as asdf:load-system and asdf:operate. Set COMPILER-VERBOSE to T to print the compiling messages. setting LOAD-SOURCE t T will avoid creating fasls"
+  "Intended for developers. Use this to recompile the game without having to close it. Accepts the same keyword arguments as @code{ASDF:LOAD-SYSTEM} and @code{ASDF:OPERATE}. Set @var{COMPILER-VERBOSE} to @code{T} to print the compiling messages. setting @var{LOAD-SOURCE} to @code{T} will avoid creating fasls"
   (let ((*compile-verbose* compiler-verbose) (*compile-print* compiler-verbose))
     (apply #'asdf:load-system :yadfa :allow-other-keys t keys)
     (apply #'load-mods :allow-other-keys t keys)))
 (defun yadfa-bin:enable-mod (system)
-  "Enable a mod, the modding system is mostly just asdf, SYSTEM is a keyword which is the name of the system you want to enable"
+  #.(format nil "Enable a mod, the modding system is mostly just asdf, @var{SYSTEM} is a keyword which is the name of the system you want to enable
+
+~a."
+            (xref yadfa-bin:disable-mod :function))
   (declare (ignorable system))
   #+yadfa-mods (if (asdf:find-system system nil)
                    (progn (pushnew (asdf:coerce-name system) *mods* :test #'string=)
@@ -24,7 +27,10 @@
                    (write-line "That system doesn't exist"))
   #-yadfa-mods (write-line "Mod support is not enabled for this build"))
 (defun yadfa-bin:disable-mod (system)
-  "Disable a mod, the modding system is mostly just asdf, SYSTEM is a keyword which is the name of the system you want to enable"
+  #.(format nil "Disable a mod, the modding system is mostly just asdf, @var{SYSTEM} is a keyword which is the name of the system you want to enable
+
+~a."
+            (xref yadfa-bin:enable-mod :function))
   (declare (ignorable system))
   #+yadfa-mods (progn (deletef *mods* (asdf:coerce-name system) :test #'string=)
                       (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
@@ -34,7 +40,10 @@
                         (write *mods* :stream stream)))
   #-yadfa-mods (write-line "Mod support is not enabled for this build"))
 (defunassert (yadfa-world:save-game (path)
-                                    "This function saves current game to PATH")
+                                    #.(format nil "This function saves current game to @var{PATH}
+
+~a."
+                                              (xref yadfa-world:load-game :function)))
     (path (or simple-string pathname))
   (ensure-directories-exist (make-pathname :host (pathname-host path) :device (pathname-device path) :directory (pathname-directory path)))
   (with-open-file (s path :direction :output :if-exists :supersede :if-does-not-exist :create)
@@ -48,7 +57,10 @@
            (type-error () (parse-namestring path))
            (file-error () nil)))))
 (defunassert (yadfa-world:load-game (path)
-                                    "This function loads a saved game from PATH")
+                                    #.(format nil "This function loads a saved game from @var{PATH}
+
+~a."
+                                              (xref yadfa-world:save-game :function)))
     (path (or simple-string pathname))
   (with-open-file (stream path)
     (setf *game* (ms:unmarshal (read stream))))
@@ -61,7 +73,7 @@
            (type-error () (parse-namestring path))
            (file-error () nil)))))
 (defunassert (yadfa-bin:toggle-onesie (&key wear user)
-                                      "Open or closes your onesie. WEAR is the index of a onesie. Leave NIL for the outermost onesie. USER is the index of an ally. Leave NIL to refer to yourself")
+                                      "Open or closes your onesie. @var{WEAR} is the index of a onesie. Leave @code{NIL} for the outermost onesie. @var{USER} is the index of an ally. Leave @code{NIL} to refer to yourself")
     (wear (or unsigned-byte null) user (or unsigned-byte null))
   (let* ((allies-length (list-length (allies-of *game*)))
          (selected-ally (if user (nth user (allies-of *game*)))))
@@ -88,7 +100,11 @@
         (incf j)
         (finally (write-line "You're not wearing a onesie")))))
 (defunassert (yadfa-world:move (&rest directions)
-                               "type in the direction as a keyword to move in that direction, valid directions can be found with `(lst :directions t)'. you can also specify multiple directions, for example `(move :south :south)' will move 2 zones south. `(move :south :west :south)' will move south, then west, then south.")
+                               #.(format nil "type in the direction as a keyword to move in that direction, valid directions can be found with @code{(lst :directions t)}.
+You can also specify multiple directions, for example @code{(move :south :south)} will move 2 zones south. @code{(move :south :west :south)} will move south, then west, then south.
+
+~a."
+                                         (xref yadfa-bin:lst :function)))
     (directions list)
   (iter (for direction in directions)
     (let* ((new-position (get-path-end (get-destination direction (position-of (player-of *game*))) (position-of (player-of *game*)) direction))
@@ -159,7 +175,7 @@
                                          (t (getf i :enemies))))
                    (return-from yadfa-world:move)))))))))
 (defunassert (yadfa-bin:lst (&key inventory inventory-group props wear user directions moves position map descriptions describe-zone)
-                            "used to list various objects and properties, INVENTORY takes a type specifier for the items you want to list in your inventory. setting INVENTORY to T will list all the items. INVENTORY-GROUP is similar to INVENTORY, but will group the items by class name. WEAR is similar to INVENTORY but lists clothes you're wearing instead. setting DIRECTIONS to non-NIL will list the directions you can walk.setting MOVES to non-NIL will list the moves you know. setting USER to T will cause MOVES and WEAR to apply to the player, setting it to an integer will cause it to apply it to an ally. Leaving it at NIL will cause it to apply to everyone. setting POSITION to true will print your current position. Setting MAP to a number will print the map with the floor number set to MAP, setting MAP to T will print the map of the current floor you're on. When printing the map in McCLIM, red means there's a warp point, dark green is the zone with the player, blue means there are stairs. These 3 colors will blend with each other to make the final color")
+                            "used to list various objects and properties, @var{INVENTORY} takes a type specifier for the items you want to list in your inventory. setting @var{INVENTORY} to @code{T} will list all the items. @var{INVENTORY-GROUP} is similar to @var{INVENTORY}, but will group the items by class name. @var{WEAR} is similar to @var{INVENTORY} but lists clothes you're wearing instead. setting @var{DIRECTIONS} to non-NIL will list the directions you can walk.setting @var{MOVES} to non-NIL will list the moves you know. setting @var{USER} to @code{T} will cause @var{MOVES} and @var{WEAR} to apply to the player, setting it to an integer will cause it to apply it to an ally. Leaving it at @code{NIL} will cause it to apply to everyone. setting @var{POSITION} to true will print your current position. Setting @var{MAP} to a number will print the map with the floor number set to @var{MAP}, setting @var{MAP} to @code{T} will print the map of the current floor you're on. When printing the map in McCLIM, red means there's a warp point, dark green is the zone with the player, blue means there are stairs. These 3 colors will blend with each other to make the final color")
     (user (or unsigned-byte boolean)
           map (or boolean integer)
           inventory type-specifier)
@@ -344,16 +360,28 @@
                      (description-of (player-of *game*)))
              (iter (for i in (allies-of *game*))
                (format t "Name: ~a~%Species: ~a~%Description: ~a~%~%" (name-of i) (species-of i) (description-of i))))))))
-(defunassert (yadfa-bin:get-stats (&key inventory wear prop item attack ally wield)
-                                  "lists stats about various items in various places. INVENTORY is the index of an item in your inventory. WEAR is the index of what you or your ally is wearing. PROP is a keyword that refers to the prop you're selecting. ITEM is the index of an item that a prop has and is used to print information about that prop. ATTACK is a keyword reffering to the move you or your ally has when showing that move. ALLY is the index of an ally on your team when selecting INVENTORY or MOVE, don't set ALLY if you want to select yourself.")
-    (ally (or null unsigned-byte)
+(defunassert (yadfa-bin:get-stats (&key inventory wear prop item attack ally wield enemy)
+                                  "lists stats about various items in various places. @var{INVENTORY} is the index of an item in your inventory. @var{WEAR} is the index of what you or your ally is wearing. @var{PROP} is a keyword that refers to the prop you're selecting. @var{ITEM} is the index of an item that a prop has and is used to print information about that prop. @var{ATTACK} is a keyword reffering to the move you or your ally has when showing that move. @var{ALLY} is the index of an ally on your team when selecting @var{INVENTORY} or @var{MOVE}, don't set @var{ALLY} if you want to select yourself.")
+    (ally (or null unsigned-byte type-specifier)
           wear (or null unsigned-byte type-specifier)
           inventory (or null unsigned-byte type-specifier)
+          enemy (or null unsigned-byte type-specifier)
           prop (or null keyword))
   (when (and ally (list-length-< (allies-of *game*) ally))
     (write-line "That ally doesn't exist")
     (return-from yadfa-bin:get-stats))
-  (let* ((selected-user (if ally (nth ally (allies-of *game*)) (player-of *game*)))
+  (let* ((selected-user (cond (ally (if (typep ally 'type-specifier)
+                                        (find ally (allies-of *game*)
+                                              :test (lambda (o e)
+                                                      (typep e o)))
+                                        (nth ally (allies-of *game*))))
+                              ((and enemy *battle*)
+                               (if (typep enemy 'type-specifier)
+                                   (find enemy (enemies-of *battle*)
+                                         :test (lambda (o e)
+                                                 (typep e o)))
+                                   (nth enemy (enemies-of *battle*))))
+                              (t (player-of *game*))))
          (wear (cond ((typep wear 'type-specifier)
                       (find wear (wear-of selected-user)
                             :test (lambda (o e)
@@ -383,7 +411,10 @@
           (let ((i (nth item (items-of j))))
             (describe-item i)))))))
 (defunassert (yadfa-world:interact (prop &rest keys &key list take action describe-action describe &allow-other-keys)
-                                   "interacts with PROP. PROP is a keyword, you can get these with `lst' with the PROPS parameter. setting LIST to non-NIL will list all the items and actions in the prop. you can take the items with the TAKE parameter. Setting this to an integer will take the item at that index, while setting it to :ALL will take all the items, setting it to :BITCOINS will take just the bitcoins. You can get this index with the LIST parameter. ACTION is a keyword referring to an action to perform, can also be found with the LIST parameter. You can also specify other keys when using ACTION and this function will pass those keys to that function. set DESCRIBE-ACTION to the keyword of the action to find out how to use it. Set DESCRIBE to T to print the prop's description.")
+                                   #.(format nil "interacts with @var{PROP}. @var{PROP} is a keyword, you can get these with @code{LST} with the @var{PROPS} parameter. setting @var{LIST} to non-NIL will list all the items and actions in the prop. you can take the items with the @var{TAKE} parameter. Setting this to an integer will take the item at that index, while setting it to @code{:ALL} will take all the items, setting it to @code{:BITCOINS} will take just the bitcoins. You can get this index with the @var{LIST} parameter. @var{ACTION} is a keyword referring to an action to perform, can also be found with the @var{LIST} parameter. You can also specify other keys when using @var{ACTION} and this function will pass those keys to that function. set @var{DESCRIBE-ACTION} to the keyword of the action to find out how to use it. Set @var{DESCRIBE} to @code{T} to print the prop's description.
+
+~a."
+                                             (xref yadfa-bin:lst :function)))
     (action (or keyword null)
             describe-action (or keyword null)
             prop symbol
@@ -427,7 +458,10 @@
   (when describe
     (format t "~a~%" (description-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)))))
 (defunassert (yadfa-bin:wear (&key (inventory 0) (wear 0) user)
-                             "Wear an item in your inventory. WEAR is the index you want to place this item. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to wear. You can also give it a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself.")
+                             #.(format nil "Wear an item in your inventory. @var{WEAR} is the index you want to place this item. Smaller index refers to outer clothing. @var{INVENTORY} is an index in your inventory of the item you want to wear. You can also give it a type specifier which will pick the first item in your inventory of that type. @var{USER} is an index of an ally. Leave this at @code{NIL} to refer to yourself.
+
+~a, ~a, and ~a."
+                                       (xref yadfa-bin:unwear :function) (xref yadfa-bin:change :function) (xref yadfa-bin:lst :function)))
     (user (or null unsigned-byte)
           wear unsigned-byte
           inventory (or type-specifier unsigned-byte))
@@ -488,7 +522,10 @@
                (deletef (inventory-of (player-of *game*)) item :count 1)
                (setf (wear-of selected-user) a)))))
 (defunassert (yadfa-bin:unwear (&key (inventory 0) (wear 0) user)
-                               "Unwear an item you're wearing. Inventory is the index you want to place this item. WEAR is the index of the item you're wearing that you want to remove. You can also set WEAR to a type specifier for the outer most clothing of that type. USER is a integer referring to the index of an ally. Leave at NIL to refer to yourself")
+                               #.(format nil "Unwear an item you're wearing. @var{INVENTORY} is the index you want to place this item. @var{WEAR} is the index of the item you're wearing that you want to remove. You can also set @var{WEAR} to a type specifier for the outer most clothing of that type. @var{USER} is a integer referring to the index of an ally. Leave at @code{NIL} to refer to yourself
+
+~a, ~a, and ~a."
+                                         (xref yadfa-bin:wear :function) (xref yadfa-bin:change :function) (xref yadfa-bin:lst :function)))
     (user (or unsigned-byte null)
           inventory unsigned-byte
           wear (or type-specifier unsigned-byte))
@@ -540,7 +577,10 @@
     (deletef (wear-of (player-of *game*)) item :count 1)
     (insertf (inventory-of (player-of *game*)) item inventory)))
 (defunassert (yadfa-bin:change (&key (inventory 0) (wear 0) user)
-                               "Change one of the clothes you're wearing with one in your inventory. WEAR is the index of the clothing you want to replace. Smaller index refers to outer clothing. INVENTORY is an index in your inventory of the item you want to replace it with. You can also give INVENTORY and WEAR a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. USER is an index of an ally. Leave this at NIL to refer to yourself.")
+                               #.(format nil "Change one of the clothes you're wearing with one in your inventory. @var{WEAR} is the index of the clothing you want to replace. Smaller index refers to outer clothing. @var{INVENTORY} is an index in your inventory of the item you want to replace it with. You can also give @var{INVENTORY} and @var{WEAR} a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. @var{USER} is an index of an ally. Leave this at @code{NIL} to refer to yourself.
+
+~a, ~a, and ~a."
+                                         (xref yadfa-bin:unwear :function) (xref yadfa-bin:wear :function) (xref yadfa-bin:lst :function)))
     (user (or null unsigned-byte)
           inventory (or type-specifier unsigned-byte)
           wear (or type-specifier unsigned-byte))
@@ -630,12 +670,12 @@
                (substitutef (inventory-of selected-user) wear inventory :count 1)
                (setf (wear-of selected-user) a)))))
 (defunassert (yadfa-battle:fight (attack &key target friendly-target)
-                                 "Use a move on an enemy. ATTACK* is either a keyword which is the indicator to select an attack that you know, or T for default. USER is the index of a member in your team that you want to fight. TARGET is the index of the enemy you're attacking. FRIENDLY-TARGET is a member on your team you're using the move on instead. Only specify either a FRIENDLY-TARGET or TARGET. Setting both might make the game's code unhappy")
+                                 "Use a move on an enemy. @var{ATTACK} is either a keyword which is the indicator to select an attack that you know, or @code{T} for default. @var{TARGET} is the index of the enemy you're attacking. @var{FRIENDLY-TARGET} is a member on your team you're using the move on instead. Only specify either a @var{FRIENDLY-TARGET} or @var{TARGET}. Setting both might make the game's code unhappy")
     (target (or null unsigned-byte)
             attack (or symbol boolean))
   (process-battle :attack attack :target target :friendly-target friendly-target))
 (defunassert (yadfa-battle:stats (&key user enemy)
-                                 "Prints the current stats in battle, essentially this game's equivelant of a health and energy bar in battle. USER is the index of the member in your team, ENEMY is the index of the enemy in battle. Set both to NIL to show the stats for everyone.")
+                                 "Prints the current stats in battle, essentially this game's equivelant of a health and energy bar in battle. @var{USER} is the index of the member in your team, @var{ENEMY} is the index of the enemy in battle. Set both to @code{NIL} to show the stats for everyone.")
     (user (or unsigned-byte null)
           enemy (or unsigned-byte null))
   (cond (user
@@ -650,7 +690,7 @@
          (iter (for i in (enemies-of *battle*))
            (present-stats i)))))
 (defunassert (yadfa-world:stats (&optional user)
-                                "Prints the current stats, essentially this game's equivelant of a health and energy bar in battle. Set USER to the index of an ally to show that ally's stats or set it to T to show your stats, leave it at NIL to show everyone's stats")
+                                "Prints the current stats, essentially this game's equivelant of a health and energy bar in battle. Set @var{USER} to the index of an ally to show that ally's stats or set it to @code{T} to show your stats, leave it at @code{NIL} to show everyone's stats")
     (user (or unsigned-byte boolean))
   (cond ((eq user t)
          (present-stats (player-of *game*)))
@@ -660,7 +700,7 @@
          (iter (for i in (cons (player-of *game*) (allies-of *game*)))
            (present-stats i)))))
 (defunassert (yadfa-world:go-potty (&key prop wet mess pull-pants-down user)
-                                   "Go potty. PROP is a keyword identifying the prop you want to use. If it's a toilet, use the toilet like a big boy. if it's not. Go potty on it like an animal. If you want to wet yourself, leave PROP as NIL. WET is the amount you want to pee in ml. MESS is the amount in cg, set WET and/or MESS to T to empty yourself completely. set PULL-PANTS-DOWN to non-NIL to pull your pants down first. USER is the index value of an ALLY you have. Set this to NIL if you're referring to yourself")
+                                   "Go potty. @var{PROP} is a keyword identifying the prop you want to use. If it's a toilet, use the toilet like a big boy. if it's not. Go potty on it like an animal. If you want to wet yourself, leave @var{PROP} as @code{NIL}. @var{WET} is the amount you want to pee in ml. @var{MESS} is the amount in cg, set @var{WET} and/or @var{MESS} to @code{T} to empty yourself completely. set @var{PULL-PANTS-DOWN} to non-NIL to pull your pants down first. @var{USER} is the index value of an ALLY you have. Set this to @code{NIL} if you're referring to yourself")
     (user (or null number)
           prop (or null keyword)
           wet (or boolean number)
@@ -685,7 +725,7 @@
                                   :pants-down pull-pants-down
                                   :user selected-user)))))
 (defunassert (yadfa-world:tickle (ally)
-                                 "Tickle an ally. ALLY is an integer that is the index of you allies")
+                                 "Tickle an ally. @var{ALLY} is an integer that is the index of you allies")
     (ally unsigned-byte)
   (when (list-length-< (allies-of *game*) ally)
     (write-line "That ally doesn't exist")
@@ -719,7 +759,7 @@
                    (name-of selected-ally)
                    (name-of selected-ally))))))
 (defunassert (yadfa-world:wash-all-in (&optional prop)
-                                      "washes your dirty diapers and all the clothes you've ruined. PROP is a keyword identifying the washer you want to put it in. If you're washing it in a body of water, leave PROP out.")
+                                      "washes your dirty diapers and all the clothes you've ruined. @var{PROP} is a keyword identifying the washer you want to put it in. If you're washing it in a body of water, leave @var{PROP} out.")
     (prop (or keyword null))
   (cond
     ((and prop (not (typep (getf (get-props-from-zone (position-of (player-of *game*))) prop) 'yadfa-props:washer)))
@@ -730,7 +770,7 @@
      (write-line "You washed all your soggy and messy clothing. Try not to wet and mess them next time"))
     (t (wash-in-washer (getf (get-props-from-zone (position-of (player-of *game*))) prop)))))
 (defunassert (yadfa-bin:toss (&rest items)
-                             "Throw an item in your inventory away. ITEM is the index of the item in your inventory")
+                             "Throw an item in your inventory away. @var{ITEM} is the index of the item in your inventory")
     (items list)
   (let ((value (iter (for i in items)
                  (unless (typep i 'unsigned-byte)
@@ -759,7 +799,7 @@
              :test (lambda (o e)
                      (member e o)))))
 (defunassert (yadfa-world:place (prop &rest items)
-                                "Store items in a prop. ITEMS is a list of indexes of the items in your inventory. PROP is a keyword")
+                                "Store items in a prop. @var{ITEMS} is a list of indexes of the items in your inventory. @var{PROP} is a keyword")
     (items list
            prop symbol)
   (let ((value (iter (for i in items)
@@ -829,7 +869,7 @@
   (unuse-package :yadfa-battle :yadfa-user)
   (use-package :yadfa-world :yadfa-user))
 (defunassert (yadfa-world:use-item (item &rest keys &key user action &allow-other-keys)
-                                   "Uses an item. Item is an index of an item in your inventory. USER is an index of an ally. Setting this to NIL will use it on yourself. ACTION is a keyword when specified will perform a special action with the item, all the other keys specified in this function will be passed to that action. ACTION doesn't work in battle."
+                                   "Uses an item. @var{ITEM} is an index of an item in your inventory. @var{USER} is an index of an ally. Setting this to @code{NIL} will use it on yourself. @var{ACTION} is a keyword when specified will perform a special action with the item, all the other keys specified in this function will be passed to that action. @var{ACTION} doesn't work in battle."
                                    (declare (ignorable action)))
     (item (or unsigned-byte (and symbol (not keyword)) list)
           action (or null keyword)
@@ -858,7 +898,7 @@
         (process-potty i))
       ret)))
 (defunassert (yadfa-battle:use-item (item &key target enemy-target)
-                                    "Uses an item. Item is an index of an item in your inventory. TARGET is an index of your team. Setting this to 0 will use it on yourself. ENEMY-TARGET is an index of an enemy in battle if you're using it on an enemy in battle. Only specify either a TARGET or ENEMY-TARGET. Setting both might make the game's code unhappy")
+                                    "Uses an item. @var{ITEM} is an index of an item in your inventory. @var{TARGET} is an index of your team. Setting this to 0 will use it on yourself. @var{ENEMY-TARGET} is an index of an enemy in battle if you're using it on an enemy in battle. Only specify either a @var{TARGET} or @var{ENEMY-TARGET}. Setting both might make the game's code unhappy")
     (item (or unsigned-byte (and symbol (not keyword)) list)
           target (or null unsigned-byte)
           enemy-target (or null unsigned-byte))
@@ -949,7 +989,7 @@
         (push item (ammo-of (wield-of user)))
         (deletef item (inventory-of (player-of *game*)) :count 1)))))
 (defunassert (yadfa-bin:wield (&key user inventory)
-                              "Wield an item. Set INVENTORY to the index or a type specifier of an item in your inventory to wield that item. Set USER to the index of an ally to have them to equip it or leave it NIL for the player.")
+                              "Wield an item. Set @var{INVENTORY} to the index or a type specifier of an item in your inventory to wield that item. Set @var{USER} to the index of an ally to have them to equip it or leave it @code{NIL} for the player.")
     (user (or unsigned-byte null)
           inventory (or (and symbol (not keyword)) list class null unsigned-byte))
   (let* ((selected-user (if user
@@ -977,7 +1017,7 @@
       (push (wield-of selected-user) (inventory-of (player-of *game*))))
     (setf (wield-of selected-user) item)))
 (defunassert (yadfa-bin:unwield (&key user)
-                                "Unield an item. Set USER to the index of an ally to have them to unequip it or leave it NIL for the player.")
+                                "Unield an item. Set @var{USER} to the index of an ally to have them to unequip it or leave it @code{NIL} for the player.")
     (user (or integer null))
   (let ((selected-user
           (if user
@@ -989,7 +1029,7 @@
                (setf (wield-of selected-user) nil))
         (format t "~a hasn't equiped a weapon~%" (name-of selected-user)))))
 (defun yadfa-bin:pokedex (&optional enemy)
-  "Browse enemies in your pokedex, ENEMY is a quoted symbol that is the same as the class name of the enemy you want to view. Leave it to NIL to list available entries"
+  "Browse enemies in your pokedex, @var{ENEMY} is a quoted symbol that is the same as the class name of the enemy you want to view. Leave it to @code{NIL} to list available entries"
   (if enemy
       (let ((a (if (member enemy (seen-enemies-of *game*))
                    (make-instance enemy)
@@ -1001,7 +1041,7 @@
                (let ((a (make-instance i)))
                  (format t "~30a~30a~%" i (name-of a)))))))
 (defunassert (yadfa-world:add-ally-to-team (ally-index)
-                                           "Adds an ally to your battle team. ALLY-INDEX is the index of an ally in your list of allies")
+                                           "Adds an ally to your battle team. @var{ALLY-INDEX} is the index of an ally in your list of allies")
     (ally-index unsigned-byte)
   (let ((allies-length (list-length (allies-of *game*))))
     (if (< allies-length ally-index)
@@ -1014,7 +1054,7 @@
                                (format t "~a has joined the battle team~%" (name-of ally)))
                            result))))))
 (defunassert (yadfa-world:remove-ally-from-team (team-index)
-                                                "Removes an ally to your battle team. TEAM-INDEX is the index of an ally in your battle team list")
+                                                "Removes an ally to your battle team. @var{TEAM-INDEX} is the index of an ally in your battle team list")
     (team-index unsigned-byte)
   (let ((team-length (list-length (team-of *game*))))
     (cond
@@ -1026,7 +1066,7 @@
        (return-from yadfa-world:remove-ally-from-team))
       (t (setf (team-of *game*) (remove-nth team-index (team-of *game*)))))))
 (defunassert (yadfa-world:swap-team-member (team-index-1 team-index-2)
-                                           "swap the positions of 2 battle team members. TEAM-INDEX-1 and TEAM-INDEX-2 are the index numbers of these members in your battle team list")
+                                           "swap the positions of 2 battle team members. @var{TEAM-INDEX-1} and @var{TEAM-INDEX-2} are the index numbers of these members in your battle team list")
     (team-index-1 unsigned-byte
                   team-index-2 unsigned-byte)
   (cond ((or (list-length-< (team-of *game*) team-index-1) (list-length-< (team-of *game*) team-index-2))
@@ -1037,7 +1077,7 @@
          (return-from yadfa-world:swap-team-member))
         (t (rotatef (nth team-index-1 (team-of *game*)) (nth team-index-2 (team-of *game*))))))
 (defunassert (yadfa-bin:toggle-lock (wear key &optional user)
-                                    "Toggle the lock on one of the clothes a user is wearing. WEAR is the index of an item a user is wearing, KEY is the index of a key in your inventory, USER is a number that is the index of an ally, leave this to NIL to select the player.")
+                                    "Toggle the lock on one of the clothes a user is wearing. @var{WEAR} is the index of an item a user is wearing, @var{KEY} is the index of a key in your inventory, @var{USER} is a number that is the index of an ally, leave this to @code{NIL} to select the player.")
     (wear unsigned-byte
           key unsigned-byte
           user (or unsigned-byte null))

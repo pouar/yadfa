@@ -27,7 +27,7 @@
 (declaim (notinline list-length-> list-length->=))
 
 (defmacro defunassert (name-args-declares asserts &body body)
-  "Wrapper macro that brings the behavior of SBCL's type declaration to other implementations, NAME-ARGS-DECLARES is the function name, lambda list, and optionally the docstring and declarations (omitting the type declarations) ASSERTS is the type specifiers for the lambda list as a plist, BODY is the body of the function"
+  "Wrapper macro that brings the behavior of SBCL's type declaration to other implementations, @var{NAME-ARGS-DECLARES} is the function name, lambda list, and optionally the docstring and declarations (omitting the type declarations) @var{ASSERTS} is the type specifiers for the lambda list as a plist, @var{BODY} is the body of the function"
   (labels ((get-var (_ var)
              (cond ((eq _ '&key)
                     (cond ((and (typep var 'list)
@@ -697,7 +697,7 @@
   (setf (position-of new-value) position)
   (setf (gethash position (zones-of *game*)) new-value))
 (defunassert (filter-items (items type)
-                           "This function will return all items in the list ITEMS that is of type TYPE")
+                           "This function will return all items in the list @var{ITEMS} that is of type @var{TYPE}")
     (items list)
   (iter (for i in items)
     (when (typep i type)
@@ -832,7 +832,10 @@
               (name-of onesie))
       (toggle-onesie%% onesie)))
 (defmacro defonesie (base-class direct-superclasses &body body)
-  "macro that generates the classes and methods of the onesie used to open and close the snaps of them. method used to toggle the onesie is TOGGLE-ONESIE. BASE-CLASS is the name of the class you want to give the onesie. BODY is the slot specifier and class options of BASE-CLASS"
+  #.(format nil "macro that generates the classes and methods of the onesie used to open and close the snaps of them. method used to toggle the onesie is @code{TOGGLE-ONESIE}. @var{BASE-CLASS} is the name of the class you want to give the onesie.@var{DIRECT-SUPERCLASSES} are the direct superclasses of @var{BASE-CLASS} (obviously). @var{BODY} is the slot specifier and class options of @var{BASE-CLASS}
+
+~a."
+            (xref yadfa-bin:toggle-onesie :function))
   `(progn
      (defclass ,(format-symbol (symbol-package base-class) "~a" (symbol-name base-class))
          ,(if (iter (for i in direct-superclasses)
@@ -855,7 +858,10 @@
      (defmethod toggle-onesie%% ((self ,(format-symbol (symbol-package base-class) "~a/CLOSED" (symbol-name base-class))))
        (change-class self ',(format-symbol (symbol-package base-class) "~a/OPENED" (symbol-name base-class))))))
 (defmacro ensure-zone (position &body body)
-  "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
+  #.(format nil "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there
+
+~a, ~a, ~a."
+            (xref defzone :macro) (xref defzone* :macro) (xref ensure-zone* :macro))
   #+sbcl (declare (type list position))
   (check-type position list)
   `(progn (unless (get-zone ',position)
@@ -864,7 +870,10 @@
           (export ',(fourth position) ',(symbol-package (fourth position)))
           (get-zone ',position)))
 (defmacro defzone (position &body body)
-  "defines the classes of the zones and adds an instance of them to the game's map hash table. Intended to be used to replace existing zones in more intrusive mods. Best to wrap this in an event and run trigger-event so it doesn't overwrite the zone every time this piece of code is loaded"
+  #.(format nil "defines the classes of the zones and adds an instance of them to the game's map hash table. Intended to be used to replace existing zones in more intrusive mods. Best to wrap this in an event and run trigger-event so it doesn't overwrite the zone every time this piece of code is loaded
+
+~a, ~a, ~a."
+            (xref defzone* :macro) (xref ensure-zone :macro) (xref ensure-zone* :macro))
   #+sbcl (declare (type list position))
   (check-type position list)
   `(progn
@@ -873,7 +882,10 @@
      (export ',(fourth position) ',(symbol-package (fourth position)))
      (get-zone ',position)))
 (defmacro ensure-zone* (position &body body)
-  "Like ENSURE-ZONE, but position is a quoted list"
+  #.(format nil "Like @code{ENSURE-ZONE}, but position is a quoted list
+
+~a, ~a, ~a."
+            (xref defzone :macro) (xref defzone* :macro) (xref ensure-zone :macro))
   #+sbcl (declare (type list position))
   (check-type position list)
   `(progn (unless (get-zone ,position)
@@ -882,7 +894,10 @@
           (export ',(fourth position) ',(symbol-package (fourth position)))
           (get-zone ,position)))
 (defmacro defzone* (position &body body)
-  "Like DEFZONE, but position is a quoted list"
+  #.(format nil "Like @code{DEFZONE}, but position is a quoted list
+
+~a, ~a, ~a."
+            (xref defzone :macro) (xref ensure-zone :macro) (xref ensure-zone* :macro))
   #+sbcl (declare (type list position))
   (check-type position list)
   `(progn
@@ -1019,7 +1034,10 @@
                                        (t (getf i :enemies))))
                  (return-from move-to-pocket-map))))))))
 (defunassert (wet (&key (wet-amount t) force-fill-amount pants-down accident force-wet-amount (wetter (player-of *game*)))
-                  "this function is mostly for mods, doesn't print text or diaper expansion, that's handled by other functions. WETTER is the instance of BASE-CHARACTER doing the flooding. WET-AMOUNT is the amount WETTER floods but won't flood if he/she can't go, passing T to WET-AMOUNT means to use (BLADDER/CONTENTS-OF WETTER), FORCE-WET-AMOUNT causes WETTER to wet regardless. FORCE-FILL-AMOUNT will set (BLADDER/CONTENTS-OF WETTER) to that amount first. PANTS-DOWN is T if WETTER pulls his/her pants down first. ACCIDENT is T if the wetting isn't intentional and WETTER may or may not be able to stop the flow")
+                  #.(format nil "this function is mostly for mods, doesn't print text or diaper expansion, that's handled by other functions. @var{WETTER} is the instance of @code{BASE-CHARACTER} doing the flooding. @var{WET-AMOUNT} is the amount @var{WETTER} floods but won't flood if he/she can't go, passing @code{T} to @var{WET-AMOUNT} means to use @code{(BLADDER/CONTENTS-OF WETTER)}, @var{FORCE-WET-AMOUNT} causes @var{WETTER} to wet regardless. @var{FORCE-FILL-AMOUNT} will set @code{(BLADDER/CONTENTS-OF WETTER)} to that amount first. @var{PANTS-DOWN} is @code{T} if @var{WETTER} pulls his/her pants down first. @var{ACCIDENT} is @code{T} if the wetting isn't intentional and @var{WETTER} may or may not be able to stop the flow
+
+~a."
+                            (xref mess :function)))
     (force-fill-amount (or null number)
                        force-wet-amount (or null number)
                        wet-amount (or boolean number)
@@ -1080,7 +1098,10 @@
     return-value))
 
 (defunassert (mess (&key (mess-amount t) force-fill-amount pants-down accident force-mess-amount (messer (player-of *game*)))
-                   "this function is mostly for mods, doesn't print text or diaper expansion, that's handled by other functions. MESSER is the instance of BASE-CHARACTER doing the messing. MESS-AMOUNT is the amount MESSER messes but won't mess if he/she can't go, passing T to MESS-AMOUNT means to use (BOWELS/CONTENTS-OF MESSER), FORCE-MESS-AMOUNT causes MESSER to mess regardless. FORCE-FILL-AMOUNT will set (BOWELS/CONTENTS-OF MESSER) to that amount first. PANTS-DOWN is T if MESSER pulls his/her pants down first. ACCIDENT is T if the messing isn't intentional")
+                   #.(format nil "this function is mostly for mods, doesn't print text or diaper expansion, that's handled by other functions. @var{MESSER} is the instance of @code{BASE-CHARACTER} doing the messing. @var{MESS-AMOUNT} is the amount @var{MESSER} messes but won't mess if he/she can't go, passing @code{T} to @var{MESS-AMOUNT} means to use @code{(BOWELS/CONTENTS-OF MESSER)}, @var{FORCE-MESS-AMOUNT} causes @var{MESSER} to mess regardless. @var{FORCE-FILL-AMOUNT} will set @code{(BOWELS/CONTENTS-OF MESSER)} to that amount first. @var{PANTS-DOWN} is @code{T} if @var{MESSER} pulls his/her pants down first. @var{ACCIDENT} is @code{T} if the messing isn't intentional
+
+~a."
+                             (xref wet :function)))
     (force-fill-amount (or null number)
                        force-mess-amount (or null number)
                        mess-amount (or boolean number)
