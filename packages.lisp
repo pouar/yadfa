@@ -352,6 +352,7 @@
    #:cloth-incontinence-pad
    #:diaper
    #:high-capacity-diaper
+   #:black-diaper
    #:cloth-diaper
    #:diaper-package
    #:midnight-diaper

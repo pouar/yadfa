@@ -115,6 +115,10 @@
                      8500 "The back is clearly stained brown"
                      4250 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
+(defclass black-diaper (high-capacity-diaper) ()
+  (:default-initargs
+   :name "Black Diaper"
+   :description "A Black diaper with a blood red landing zone"))
 (defclass thick-diaper (yadfa:diaper) ()
   (:default-initargs
    :sogginess-capacity 4000
