@@ -37,7 +37,7 @@
    :inventory (iter (for i from 0 to (random 10))
                 (collect (make-instance 'yadfa-items:high-capacity-diaper)))))
 (defmethod initialize-instance :after
-    ((c diapered-kobold) &rest args &key &allow-other-keys)
+    ((c diapered-skunk) &rest args &key &allow-other-keys)
   (unless (iter (for (a b) on args)
             (when (eq a :wear)
               (leave t)))
