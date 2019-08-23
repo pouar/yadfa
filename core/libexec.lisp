@@ -3127,57 +3127,58 @@
                                                       (format-stats user)))
                                                   *records*))))
 
-(defun describe-item (item &optional wear)
-  (format t
-          "Name: ~a~%Description:~%~a~%Resale Value: ~f~%"
-          (name-of i)
-          (description-of i)
-          (/ (value-of i) 2))
-  (when (typep i 'closed-bottoms)
-    (if wear
-        (format nil "~a"
+(defun describe-item (item)
+  (let ((i (if (listp item)
+               (car item)
+               item)))
+    (format t
+            "Name: ~a~%Resale Value: ~f~%Description:~%~a~%"
+            (name-of i)
+            (/ (value-of i) 2)
+            (description-of i))
+    (when (typep i 'closed-bottoms)
+      (if (listp item)
+          (let (l)
+            (cond ((typep i 'bottoms)
+                   (setf l (when (cdr item)
+                             (iter (for (a b) on (bulge-text-of i) by #'cddr)
+                               (when (>= (total-thickness (cdr item)) a)
+                                 (leave b)))))
+                   (when l
+                     (format t " ~a~%" l))))
+            (when (typep i 'closed-bottoms)
+              (setf l (iter (for (a b) on (wear-wet-text-of i) by 'cddr)
+                        (when (>= (sogginess-of i) a)
+                          (leave b))))
+              (when l (format t " ~a~%" l))
+              (setf l (iter (for (a b) on (wear-mess-text-of i) by 'cddr)
+                        (when (>= (messiness-of i) a)
+                          (leave b))))
+              (when l
+                (format t " ~a~%" l))))
+          (progn
+            (iter (for (a b) on (wet-text-of i))
+              (when (>= (sogginess-of i) a)
+                (leave (format t " ~a~%" b))))
+            (iter (for (a b) on (mess-text-of i))
+              (when (>= (messiness-of i) a)
+                (leave (format t " ~a~%" b))))))
+      (format t "Sogginess: ~a~%Sogginess Capacity: ~a~%Messiness: ~a~%Messiness Capacity: ~a~%"
+              (sogginess-of i)
+              (sogginess-capacity-of i)
+              (messiness-of i)
+              (messiness-capacity-of i)))
+    (when (ammo-type-of i)
+      (format t "Ammo Type: ~s" (ammo-type-of i)))
+    (when (special-actions-of i)
+      (iter (for (a b) on i by #'cddr)
+        (format t "Keyword: ~a~%Other Parameters: ~w~%Documentation: ~a~%~%Describe: ~a~%~%"
+                a
+                (cddr (lambda-list (action-lambda b)))
+                (action-documentation b)
                 (with-output-to-string (s)
-                  (format s "~a~%" (description-of i))
-                  (cond ((typep i 'bottoms)
-                         (setf l (when k
-                                   (iter (for (a b) on (bulge-text-of i) by #'cddr)
-                                     (when (>= (total-thickness k) a)
-                                       (leave b)))))
-                         (when l
-                           (format s " ~a~%" l))))
-                  (when (typep i 'closed-bottoms)
-                    (setf l (iter (for (a b) on (wear-wet-text-of i))
-                              (when (>= (sogginess-of i) a)
-                                (leave b))))
-                    (when l (format s " ~a~%" l))
-                    (setf l (iter (for (a b) on (wear-mess-text-of i))
-                              (when (>= (messiness-of i) a)
-                                (leave b))))
-                    (when l
-                      (format s " ~a~%" l)))))
-        (progn
-          (iter (for (a b) on (wet-text-of i))
-            (when (>= (sogginess-of i) a)
-              (leave (format t "~%~a~%" b))))
-          (iter (for (a b) on (mess-text-of i))
-            (when (>= (messiness-of i) a)
-              (leave (format t "~%~a~%" b))))))
-    (format t "Sogginess: ~a~%Sogginess Capacity: ~a~%Messiness: ~a~%Messiness Capacity: ~a~%"
-            (sogginess-of i)
-            (sogginess-capacity-of i)
-            (messiness-of i)
-            (messiness-capacity-of i)))
-  (when (ammo-type-of i)
-    (format t "Ammo Type: ~s" (ammo-type-of i)))
-  (when (special-actions-of i)
-    (iter (for (a b) on i by #'cddr)
-      (format t "Keyword: ~a~%Other Parameters: ~w~%Documentation: ~a~%~%Describe: ~a~%~%"
-              a
-              (cddr (lambda-list (action-lambda b)))
-              (action-documentation b)
-              (with-output-to-string (s)
-                (let ((*standard-output* s))
-                  (describe (action-lambda b))))))))
+                  (let ((*standard-output* s))
+                    (describe (action-lambda b)))))))))
 (defun finish-battle (&optional lose)
   (if lose
       (progn (format t "~a was defeated~%" (name-of (player-of *game*)))

@@ -196,6 +196,10 @@
    #:placeablep
    #:can-potty-p
    #:potty-trigger-of
+   #:wet-text-of
+   #:mess-text-of
+   #:wear-wet-text-of
+   #:wear-mess-text-of
    #:must-wear-of
    #:must-wear*-of
    #:must-not-wear-of
