@@ -366,7 +366,9 @@
             (if interactorp
                 (format frame-query-io "~&Command aborted.~&")
                 (beep))))))))
+#+yadfa-docs
 (in-package :net.didierverna.declt)
+#+yadfa-docs
 (defun render-docstring (item)
   "Render ITEM's documentation string.
 Rendering is done on *standard-output*."
