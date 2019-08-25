@@ -1,11 +1,11 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package :yadfa-util)
 (defun shl (x width bits)
-  "Compute bitwise left shift of x by 'bits' bits, represented on 'width' bits"
+  "Compute bitwise left shift of @var{X} by @var{BITS} bits, represented on @var{WIDTH} bits"
   (logand (ash x bits)
           (1- (ash 1 width))))
 (defun shr (x width bits)
-  "Compute bitwise right shift of x by 'bits' bits, represented on 'width' bits"
+  "Compute bitwise right shift of @var{X} by @var{BITS} bits, represented on @var{WIDTH} bits"
   (logand (ash x (- bits))
           (1- (ash 1 width))))
 (defmethod lambda-list ((lambda-exp list))
@@ -26,18 +26,18 @@
   (apply #'substitute new old sequence keyword-arguments))
 (define-modify-macro substitutef (new old &rest keyword-arguments)
   substitute/swapped-arguments
-  "Modify-macro for SUBSTITUTE. Sets place designated by the first argument to
-the result of calling SUSTITUTE with OLD NEW, place, and the KEYWORD-ARGUMENTS.")
+  "Modify-macro for @code{SUBSTITUTE}. Sets place designated by the first argument to
+the result of calling @code{SUSTITUTE} with @var{OLD}, @var{NEW}, place, and the @var{KEYWORD-ARGUMENTS}.")
 (defun remove-if/swapped-arguments (sequence test &rest keyword-arguments)
   (apply #'remove-if test sequence keyword-arguments))
 (define-modify-macro removef-if (test &rest keyword-arguments)
   remove-if/swapped-arguments
-  "Modify-macro for REMOVE-IF. Sets place designated by the first argument to
-the result of calling REMOVE-IF with TEST, place, and the KEYWORD-ARGUMENTS.")
+  "Modify-macro for @code{REMOVE-IF}. Sets place designated by the first argument to
+the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYWORD-ARGUMENTS}.")
 (defun random-from-range (start end)
   (+ start (random (+ 1 (- end start)))))
 (defun type-specifier-p (type-specifier)
-  "Returns true if TYPE-SPECIFIER is a valid type specifier."
+  "Returns true if @var{TYPE-SPECIFIER} is a valid type specifier."
   #+sbcl (sb-ext:valid-type-specifier-p type-specifier)
   #+openmcl (ccl:type-specifier-p type-specifier)
   #+ecl (c::valid-type-specifier type-specifier)

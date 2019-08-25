@@ -30,24 +30,24 @@
     :initarg :accumulative
     :initform 1
     :accessor accumulative-of
-    :documentation "how many of these the user can have at a time, T if infinite")
+    :documentation "how many of these the user can have at a time, @code{T} if infinite")
    (battle-script
     :initarg :battle-script
     :initform (lambda (target user self)
                 (declare (ignorable target user self))
                 nil)
     :accessor battle-script-of
-    :documentation "function that runs at the beginning of the user's turn. USER is the user with the condition. TARGET is the enemy of said user, and SELF is the condition itself")
+    :documentation "function that runs at the beginning of the user's turn. @var{USER} is the user with the condition. @var{TARGET} is the enemy of said user, and @var{SELF} is the condition itself")
    (blocks-turn
     :initarg :blocks-turn
     :initform nil
     :accessor blocks-turn-of
-    :documentation "If T this condition prevents the player from moving")
+    :documentation "If @code{T} this condition prevents the player from moving")
    (duration
     :initarg :duration
     :initform t
     :accessor duration-of
-    :documentation "How many turns this condition lasts. T means it lasts indefinitely.")
+    :documentation "How many turns this condition lasts. @code{T} means it lasts indefinitely.")
    (stat-delta
     :initarg :stat-delta
     :initform '()
@@ -158,7 +158,7 @@
     :initarg :bladder/maximum-limit
     :initform 600
     :accessor bladder/maximum-limit-of
-    :documentation "When the character's bladder gets this full, {s,he} wets {him,her}self")
+    :documentation "When the character's bladder gets this full, @{s,he@} wets @{him,her@}self")
    (bowels/contents
     :initarg :bowels/contents
     :initform 0
@@ -188,7 +188,7 @@
     :initarg :bowels/maximum-limit
     :initform 8000
     :accessor bowels/maximum-limit-of
-    :documentation "When the character's bowels gets this full, {he,she} messes {him,her}self")
+    :documentation "When the character's bowels gets this full, @{he,she@} messes @{him,her@}self")
    (moves
     :initarg :moves
     :initform ()
@@ -213,7 +213,7 @@
     :initarg :bitcoins
     :initform 0
     :accessor bitcoins-of
-    :documentation "Amount of ₿itcoins the character has. Not limited to a single country.")
+    :documentation "Amount of Bitcoins the character has. Not limited to a single country.")
    (inventory
     :initarg :inventory
     :initform ()
@@ -349,7 +349,7 @@
    (warp-on-death-point
     :initarg :warp-on-death-point
     :accessor warp-on-death-point-of
-    :documentation "Where the player warps to when {s,}he dies, same format as POSITION")
+    :documentation "Where the player warps to when @{s,@}he dies, same format as POSITION")
    (learned-moves
     :initarg :learned-moves
     :accessor learned-moves-of
@@ -400,7 +400,10 @@
     :initarg :props
     :initform ()
     :accessor props-of
-    :documentation "Plist of props in the room, and by `props' I mean instances of the PROP class")
+    :documentation #.(format nil "Plist of props in the room, and by `props' I mean instances of the @code{PROP} class
+
+~a."
+                             (xref yadfa:prop :class)))
    (events
     :initarg :events
     :initform ()
@@ -420,12 +423,15 @@
     :initarg :warp-points
     :initform ()
     :accessor warp-points-of
-    :documentation "Plist of warp points to different maps, values are lists in the same form as the position of the player, keys are passed to the `move` function")
+    :documentation #.(format nil "Plist of warp points to different maps, values are lists in the same form as the position of the player, keys are passed to the @code{MOVE} function
+
+~a."
+                             (xref yadfa-world:move :function)))
    (locked
     :initarg :locked
     :initform :nil
     :accessor lockedp
-    :documentation "Whether this area is locked or not. contains the type specifier of the key needed to unlock it if locked, set to nil if it isn't locked")
+    :documentation "Whether this area is locked or not. contains the type specifier of the key needed to unlock it if locked, set to @code{NIL} if it isn't locked")
    (hidden
     :initarg :hidden
     :initform nil
@@ -442,42 +448,42 @@
                 (declare (ignore prop wet mess pants-down user))
                 t)
     :accessor can-potty-p
-    :documentation "Whether you're allowed to go potty in this zone. PROP is the prop you're going potty on if any while USER is the one going potty. PANTS-DOWN is T when USER pulls his/her pants down and WET and MESS are the arguments")
+    :documentation "Whether you're allowed to go potty in this zone. @var{PROP} is the prop you're going potty on if any while @var{USER} is the one going potty. @var{PANTS-DOWN} is @code{T} when @var{USER} pulls his/her pants down and @var{WET} and @var{MESS} are the arguments")
    (potty-trigger
     :initarg :potty-trigger
     :initform '(lambda (had-accident user)
                 (declare (ignore had-accident user))
                 nil)
     :accessor potty-trigger-of
-    :documentation "Runs whenever the user goes potty, whether on purpose or by accident, arguments are the cons called HAD-ACCIDENT that gets passed from the process-potty function, and USER which is the user who did it")
+    :documentation "Runs whenever the user goes potty, whether on purpose or by accident, arguments are the cons called @var{HAD-ACCIDENT} that gets passed from the process-potty function, and @var{USER} which is the user who did it")
    (must-wear
     :initarg :must-wear
     :initform '(t . (lambda (user)
                       (declare (ignore user))
                       t))
     :accessor must-wear-of
-    :documentation "Used to determine whether you can enter the zone based on what you're wearing. Is a cons with the type specifier of what you must be wearing and a lambda expression or function that runs to determine if you can enter the zone")
+    :documentation "Used to determine whether you can enter the zone based on what you're wearing. @var{USER} is a cons with the type specifier of what you must be wearing and a lambda expression or function that runs to determine if you can enter the zone")
    (must-wear*
     :initarg :must-wear*
     :initform '(t . (lambda (user)
                       (declare (ignore user))
                       t))
     :accessor must-wear*-of
-    :documentation "Similar to the must-wear slot but is done when you try to wear or change while still inside the zone")
+    :documentation "Similar to the @code{MUST-WEAR} slot but is done when you try to wear or change while still inside the zone")
    (must-not-wear
     :initarg :must-not-wear
     :initform '(nil . (lambda (user)
                         (declare (ignore user))
                         t))
     :accessor must-not-wear-of
-    :documentation "Used to determine whether you can enter the zone based on what you're wearing. Is a cons with the type specifier of what you must not be wearing and a lambda expression or function that runs to determine if you can enter the zone")
+    :documentation "Used to determine whether you can enter the zone based on what you're wearing. @var{USER} is a cons with the type specifier of what you must not be wearing and a lambda expression or function that runs to determine if you can enter the zone")
    (must-not-wear*
     :initarg :must-not-wear*
     :initform '(nil . (lambda (user)
                         (declare (ignore user))
                         t))
     :accessor must-not-wear*-of
-    :documentation "Similar to the must-not-wear slot but is done when you try to wear or change while still inside the zone")
+    :documentation "Similar to the @code{MUST-NOT-WEAR} slot but is done when you try to wear or change while still inside the zone")
    (no-wetting/messing
     :initarg no-wetting/messing
     :initform '(lambda (user)
@@ -489,7 +495,7 @@
     :initarg :enemy-spawn-list
     :initform ()
     :accessor enemy-spawn-list-of
-    :documentation "list containing what enemies might show up when you enter an area. Each entry looks like this `(:random random :max-random max-random :enemies enemies)' If RANDOM is specified, then the probability of the enemy being spawn is RANDOM/MAX-RANDOM otherwise it is 1/MAX-RANDOM"))
+    :documentation "list containing what enemies might show up when you enter an area. Each entry looks like this @code{(:random random :max-random max-random :enemies enemies)} If @var{RANDOM} is specified, then the probability of the enemy being spawn is @var{RANDOM}/@var{MAX-RANDOM} otherwise it is 1/@var{MAX-RANDOM}"))
   (:documentation "A zone on the map"))
 (defmethod print-object ((obj zone) stream)
   (print-unreadable-object (obj stream :type t :identity t)
@@ -529,7 +535,7 @@
                   (format t "~a received ~a damage~%" (name-of target) a)
                   a))
     :accessor attack-of
-    :documentation "function that performs the move. TARGET is the enemy that is being attacked and USER is the one doing the attacking, SELF is the move itself"))
+    :documentation "function that performs the move. @var{TARGET} is the enemy that is being attacked and @var{USER} is the one doing the attacking, @var{SELF} is the move itself"))
   (:documentation "base class of moves used in battle"))
 (defclass prop (yadfa-class)
   ((description
@@ -561,7 +567,7 @@
     :initarg :actions
     :initform ()
     :accessor actions-of
-    :documentation "Plist of actions who's lambda-list is `(prop &key &allow-other-keys)' that the player sees as actions they can perform with the prop, PROP is the instance that this slot belongs to"))
+    :documentation "Plist of actions who's lambda-list is @code{(prop &key &allow-other-keys)} that the player sees as actions they can perform with the prop, @var{PROP} is the instance that this slot belongs to"))
   (:documentation "Tangible objects in the AREA that the player can interact with"))
 (defmethod print-object ((obj prop) stream)
   (print-unreadable-object (obj stream :type t :identity t)
@@ -665,32 +671,32 @@
     :initarg :wear-stats
     :initform ()
     :accessor wear-stats-of
-    :documentation "stat boost when wearing this item. Is a plist in the form of (list :attack attack :defense defense :health health :energy energy :speed speed)")
+    :documentation "stat boost when wearing this item. Is a plist in the form of @code{(list :attack attack :defense defense :health health :energy energy :speed speed)}")
    (wield-stats
     :initarg :wield-stats
     :initform ()
     :accessor wield-stats-of
-    :documentation "stat boost when wielding this item. Is a plist in the form of (list :attack attack :defense defense :health health :energy energy :speed speed)")
+    :documentation "stat boost when wielding this item. Is a plist in the form of @code{(list :attack attack :defense defense :health health :energy energy :speed speed)}")
    (special-actions
     :initarg :special-actions
     :initform ()
     :accessor special-actions-of
-    :documentation "Plist of actions that the player sees as actions with a lambda with the lambda-list `(item user &key &allow-other-keys)' they can perform with the item, ITEM is the instance that this slot belongs to, USER is the user using the item")
+    :documentation "Plist of actions that the player sees as actions with a lambda with the lambda-list @code{(item user &key &allow-other-keys)} they can perform with the item, @var{ITEM} is the instance that this slot belongs to, @var{USER} is the user using the item")
    (use-script
     :initarg :use-script
     :initform '()
     :accessor use-script-of
-    :documentation "Function that runs when ITEM is used on USER. The lambda list is `(ITEM USER)' where ITEM is the instance of the item and USER is the user you're using it on.")
+    :documentation "Function that runs when @var{ITEM} is used on @var{USER}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on.")
    (wield-script
     :initarg :wield-script
     :initform '()
     :accessor wield-script-of
-    :documentation "Function that runs when USER is wielding ITEM. The lambda list is `(ITEM USER)' where ITEM is the instance of the item and USER is the user you're using it on.")
+    :documentation "Function that runs when @var{USER} is wielding @var{ITEM}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on.")
    (wear-script
     :initarg :wear-script
     :initform '()
     :accessor wear-script-of
-    :documentation "Function that runs when USER is wearing ITEM. The lambda list is `(ITEM USER)' where ITEM is the instance of the item and USER is the user you're using it on."))
+    :documentation "Function that runs when @var{USER} is wearing @var{ITEM}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on."))
   (:documentation "Something you can store in your inventory and use"))
 (defclass consumable (item)
   ()
@@ -717,12 +723,12 @@
     :initarg :thickness-capacity
     :initform (* (expt 6.0 1/3) (+ 25 2/5))
     :accessor thickness-capacity-of
-    :documentation "The maximum thickness of your diaper that this can fit over. NIL means infinite")
+    :documentation "The maximum thickness of your diaper that this can fit over. @code{NIL} means infinite")
    (thickness-capacity-threshold
     :initarg :thickness-capacity-threshold
     :initform 50
     :accessor thickness-capacity-threshold-of
-    :documentation "How much higher than the thickness capacity the clothing can handle diaper expansion in mm before popping/tearing, NIL means it won't pop/tear")
+    :documentation "How much higher than the thickness capacity the clothing can handle diaper expansion in mm before popping/tearing, @code{NIL} means it won't pop/tear")
    (key
     :initarg :key
     :initform nil
@@ -919,22 +925,22 @@
     :initarg :watersport-limit
     :initform nil
     :accessor watersport-limit-of
-    :documentation "How close to bladder/maximum-limit in ml the enemy is before voluntarily wetting his/her diapers. A value of nil means he'll/she'll never wet voluntarily")
+    :documentation "How close to @var{BLADDER/MAXIMUM-LIMIT} in ml the enemy is before voluntarily wetting his/her diapers. A value of @code{NIL} means he'll/she'll never wet voluntarily")
    (mudsport-limit
     :initarg :mudsport-limit
     :initform nil
     :accessor mudsport-limit-of
-    :documentation "How close to bowels/maximum-limit in cg the enemy is before voluntarily wetting his/her diapers. A value of nil means he'll/she'll never mess voluntarily")
+    :documentation "How close to @var{BOWELS/MAXIMUM-LIMIT} in cg the enemy is before voluntarily wetting his/her diapers. A value of @code{NIL} means he'll/she'll never mess voluntarily")
    (watersport-chance
     :initarg :watersport-chance
     :initform 1
     :accessor watersport-chance-of
-    :documentation "when WATERSPORT-LIMIT is reached, there is a 1 in WATERSPORT-CHANCE he'll voluntarily wet himself")
+    :documentation "when @var{WATERSPORT-LIMIT} is reached, there is a 1 in @var{WATERSPORT-CHANCE} he'll voluntarily wet himself")
    (mudsport-chance
     :initarg :mudsport-chance
     :initform 1
     :accessor mudsport-chance-of
-    :documentation "when MUDSPORT-LIMIT is reached, there is a 1 in MUDSPORT-CHANCE he'll voluntarily mess himself")
+    :documentation "when @var{MUDSPORT-LIMIT} is reached, there is a 1 in @var{MUDSPORT-CHANCE} he'll voluntarily mess himself")
    (battle-script
     :initarg :battle-script
     :initform (lambda (self target)
@@ -1009,7 +1015,7 @@
   (:default-initargs
    :bladder/fill-rate (* (/ 2000 24 60) 2)
    :bowels/fill-rate (* (/ 12000 24 60) 2))
-  (:documentation "Class for an enemy with a bladder and bowels fill rate. This enemy may {wet,mess} {him,her}self in battle."))
+  (:documentation "Class for an enemy with a bladder and bowels fill rate. This enemy may @{wet,mess@} @{him,her@}self in battle."))
 (defclass pantsable-character (base-character) ())
 (defclass battle (yadfa-class)
   ((turn-queue
