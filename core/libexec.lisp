@@ -3785,7 +3785,7 @@
   (setf (clim:stream-end-of-line-action query-io) :wrap*)
   (write-line "Enter your character's name, gender, and species" query-io)
   (let* ((default (make-instance 'player))
-         (wear '(yadfa-items:tshirt yadfa-items:short-dress yadfa-items:bra yadfa-items:jeans
+         (wear '(yadfa-items:short-dress yadfa-items:tshirt yadfa-items:bra yadfa-items:jeans
                  yadfa-items:boxers yadfa-items:panties yadfa-items:pullups yadfa-items:diaper))
          (values (prompt-for-values (string
                                      :prompt "Name"
