@@ -1065,12 +1065,12 @@
 (defclass game (yadfa-class)
   ((zones
     :initarg :zones
-    :initform (make-hash-table :test 'equal)
+    :initform (make-hash-table :test #'equal)
     :accessor zones-of
     :documentation "Hash table of zones in the game")
    (enemy-spawn-list
     :initarg :enemy-spawn-list
-    :initform (make-hash-table :test 'equal)
+    :initform (make-hash-table :test #'equal)
     :accessor enemy-spawn-list-of
     :documentation "contains enemy spawn lists that can be reused. Use a symbol instead of a list in the enemy spawn list to use a key")
    (player
@@ -1100,7 +1100,7 @@
     :documentation "Turns since start of game")
    (events
     :initarg :events
-    :initform (make-hash-table :test 'equal)
+    :initform (make-hash-table :test #'equal)
     :accessor events-of
     :documentation "hash table containing all the events in the game")
    (finished-events

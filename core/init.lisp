@@ -27,7 +27,7 @@
                     (format nil "~s" ',symbol))))
 (defvar *battle* nil)
 (defvar *mod-registry* nil)
-(defvar *pattern-cache* (make-hash-table :test 'equal))
+(defvar *pattern-cache* (make-hash-table :test #'equal))
 (defvar *records* ())
 #+yadfa-mods
 (defvar *mods* '())

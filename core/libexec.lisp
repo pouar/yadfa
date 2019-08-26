@@ -165,7 +165,7 @@
   (:method ((element zone)) (resolve-enemy-spawn-list (enemy-spawn-list-of element))))
 
 (defun initialize-mod-registry ()
-  (setf *mod-registry* (make-hash-table :test 'equal))
+  (setf *mod-registry* (make-hash-table :test #'equal))
   (labels ((preferred-mod (old new)
              (cond ((not old)
                     new)
@@ -3820,7 +3820,7 @@
                                                       (collect (make-instance i))))))
     (setf (team-of *game*) (list (player-of *game*)))
     (iter (for i in (iter (for i in '(yadfa-items:diaper yadfa-items:pullups yadfa-items:boxers yadfa-items:panties))
-                      (when (member i (fourth values) :test 'eq)
+                      (when (member i (fourth values) :test #'eq)
                         (collect i))))
       (iter (for j from 1 to (random 20))
         (push (make-instance i)
