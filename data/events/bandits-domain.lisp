@@ -58,26 +58,26 @@
   :lambda '(lambda (self)
             (declare (ignorable self))
             (if (< (random 15) 1)
-                (progn
-                  (format t "You found a treasure chest, use `(interact :chest :take :all)' to take all the treasure from it~%")
-                  (setf (getf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest)
-                        (make-instance 'prop
-                                       :name "Treasure Chest"
-                                       :description "A treasure chest"
-                                       :items (cond ((< (random 10))
-                                                     (list (make-instance 'yadfa-items:gold-collar
-                                                                          :value (random-from-range 25000 50000))))
-                                                    ((< (random 10))
-                                                     (list (make-instance 'yadfa-items:gold-pacifier
-                                                                          :value (random-from-range 10000 20000))))
-                                                    ((< (random 10))
-                                                     (list (make-instance 'yadfa-items:gem
-                                                                          :value (random-from-range 25000 50000))))
-                                                    ((< (random 20))
-                                                     (list (make-instance 'yadfa-items:gold-bar
-                                                                          :value (random-from-range 50000 100000)))))
-                                       :bitcoins (random-from-range 12500 25000))))
-                (remf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest))
+             (progn
+               (format t "You found a treasure chest, use `(interact :chest :take :all)' to take all the treasure from it~%")
+               (setf (getf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest)
+                     (make-instance 'prop
+                                    :name "Treasure Chest"
+                                    :description "A treasure chest"
+                                    :items (cond ((< (random 10))
+                                                  (list (make-instance 'yadfa-items:gold-collar
+                                                                       :value (random-from-range 25000 50000))))
+                                                 ((< (random 10))
+                                                  (list (make-instance 'yadfa-items:gold-pacifier
+                                                                       :value (random-from-range 10000 20000))))
+                                                 ((< (random 10))
+                                                  (list (make-instance 'yadfa-items:gem
+                                                                       :value (random-from-range 25000 50000))))
+                                                 ((< (random 20))
+                                                  (list (make-instance 'yadfa-items:gold-bar
+                                                                       :value (random-from-range 50000 100000)))))
+                                    :bitcoins (random-from-range 12500 25000))))
+             (remf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest))
             (cond
               ((< (random 12) 1)
                (set-new-battle '((yadfa-enemies:diapered-raccoon-bandit . (list
@@ -170,12 +170,12 @@
              (if (>
                   (bladder/contents-of (player-of *game*))
                   (* (bladder/maximum-limit-of (player-of *game*)) 5/6))
-                 (format nil "crosses ~a legs and clenches the front of ~a diaper"
-                         (if (malep (player-of *game*)) "his" "her")
-                         (if (malep (player-of *game*)) "his" "her"))
-                 (format nil "grabs the back of ~a diaper while clenching ~a butt cheeks"
-                         (if (malep (player-of *game*)) "his" "her")
-                         (if (malep (player-of *game*)) "his" "her"))))
+              (format nil "crosses ~a legs and clenches the front of ~a diaper"
+               (if (malep (player-of *game*)) "his" "her")
+               (if (malep (player-of *game*)) "his" "her"))
+              (format nil "grabs the back of ~a diaper while clenching ~a butt cheeks"
+               (if (malep (player-of *game*)) "his" "her")
+               (if (malep (player-of *game*)) "his" "her"))))
             (format t "~a: On second thought, GIVE ME THAT KEY!!!!~%~%" (name-of (player-of *game*)))
             (format t "*~a pays up*~%~%" (name-of (player-of *game*)))
             (format t "Shop Owner: Thank you for your business, but before I hand you the key~%~%")

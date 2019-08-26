@@ -72,26 +72,26 @@
                                                      '(lambda
                                                        (prop &rest keys &key index &allow-other-keys)
                                                        (if (nth index (getf (attributes-of prop) :destinations))
-                                                           (progn
-                                                             (format t "Name: ~a~%~%Description: ~a~%~%Coordinates: ~s~%~%"
-                                                                     (name-of (nth index (getf (attributes-of prop) :destinations)))
-                                                                     (description-of (nth index (getf (attributes-of prop) :destinations)))
-                                                                     (nth index (getf (attributes-of prop) :destinations))))
-                                                           (format t "That's not a valid destination~%"))))
+                                                        (progn
+                                                          (format t "Name: ~a~%~%Description: ~a~%~%Coordinates: ~s~%~%"
+                                                                  (name-of (nth index (getf (attributes-of prop) :destinations)))
+                                                                  (description-of (nth index (getf (attributes-of prop) :destinations)))
+                                                                  (nth index (getf (attributes-of prop) :destinations))))
+                                                        (format t "That's not a valid destination~%"))))
                                     :set-sail (make-action
                                                :documentation "Set sail to a place. INDEX is an index from :list-places-to-sail"
                                                :lambda '(lambda
                                                          (prop &rest keys &key index &allow-other-keys)
                                                          (if (nth index (getf (attributes-of prop) :destinations))
-                                                             (progn (remf (warp-points-of (get-zone (getf (warp-points-of (get-zone '(-1 6 0 your-ship)))
-                                                                                                          :exit)))
-                                                                          :your-ship)
-                                                                    (setf (getf (warp-points-of (get-zone '(-1 6 0 your-ship))) :exit)
-                                                                          (nth index (getf (attributes-of prop) :destinations))
-                                                                          (getf (warp-points-of (get-zone (nth index (getf (attributes-of prop) :destinations))))
-                                                                                :your-ship)
-                                                                          '(-1 6 0 your-ship)))
-                                                             (format t "That's not a valid destination~%"))))))))
+                                                          (progn (remf (warp-points-of (get-zone (getf (warp-points-of (get-zone '(-1 6 0 your-ship)))
+                                                                                                       :exit)))
+                                                                       :your-ship)
+                                                                 (setf (getf (warp-points-of (get-zone '(-1 6 0 your-ship))) :exit)
+                                                                       (nth index (getf (attributes-of prop) :destinations))
+                                                                       (getf (warp-points-of (get-zone (nth index (getf (attributes-of prop) :destinations))))
+                                                                             :your-ship)
+                                                                       '(-1 6 0 your-ship)))
+                                                          (format t "That's not a valid destination~%"))))))))
 (ensure-zone (0 3 -1 your-ship)
   :name "Hold"
   :description "You have a chest here that can hold your crap"
