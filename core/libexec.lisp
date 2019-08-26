@@ -3785,6 +3785,8 @@
   (setf (clim:stream-end-of-line-action query-io) :wrap*)
   (write-line "Enter your character's name, gender, and species" query-io)
   (let* ((default (make-instance 'player))
+         (wear '(yadfa-items:tshirt yadfa-items:short-dress yadfa-items:bra yadfa-items:jeans
+                 yadfa-items:boxers yadfa-items:panties yadfa-items:pullups yadfa-items:diaper))
          (values (prompt-for-values (string
                                      :prompt "Name"
                                      :default (name-of default) :view clim:+text-field-view+)
@@ -3795,8 +3797,7 @@
                                      :prompt "Species"
                                      :default (species-of default) :view clim:+text-field-view+)
                                     (((clim:subset-completion
-                                       (yadfa-items:tshirt yadfa-items:short-dress yadfa-items:bra yadfa-items:jeans
-                                                           yadfa-items:boxers yadfa-items:panties yadfa-items:pullups yadfa-items:diaper))
+                                       (quasiquote-2.0:inject wear))
                                       :name-key (quasiquote-2.0:inject (lambda (o) (name-of (make-instance o)))))
                                      :prompt "Clothes"
                                      :view clim:+check-box-view+
@@ -3814,8 +3815,9 @@
                                             :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) (fifth values))
                                             :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) (fifth values))
                                             :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) (fifth values))
-                                            :wear (iter (for i in (fourth values))
-                                                    (collect (make-instance i)))))
+                                            :wear (iter (for i in wear)
+                                                    (when (member i (fourth values) :test #'eq)
+                                                      (collect (make-instance i))))))
     (setf (team-of *game*) (list (player-of *game*)))
     (iter (for i in (iter (for i in '(yadfa-items:diaper yadfa-items:pullups yadfa-items:boxers yadfa-items:panties))
                       (when (member i (fourth values) :test 'eq)
