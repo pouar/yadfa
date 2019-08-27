@@ -26,5 +26,5 @@
     (requires
       (memory 192))
     ((launchable :type "desktop-id") "net.pouar.yadfa.desktop")
-    (description "An experimetnal text based adventure you play by typing in Lisp code in a REPL")
+    (description "An experimental text based adventure you play by typing in Lisp code in a REPL")
     ((url :type "homepage") "https://cgit.pouar.net/yadfa.git/about")))

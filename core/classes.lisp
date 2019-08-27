@@ -9,7 +9,7 @@
     :initform '()
     :accessor attributes-of
     :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots"))
-  (:documentation "All the classes that are part of the game's core inheit this class"))
+  (:documentation "All the classes that are part of the game's core inherit this class"))
 (defclass status-condition (yadfa-class)
   ((name
     :initarg :name
@@ -223,7 +223,7 @@
     :initarg :wield
     :initform nil
     :accessor wield-of
-    :documentation "Item the character is weilding as a weapon")
+    :documentation "Item the character is wielding as a weapon")
    (process-battle-accident
     :initarg :process-battle-accident
     :initform 'process-battle-accident-method
@@ -676,7 +676,7 @@
     :initarg :wield-stats
     :initform ()
     :accessor wield-stats-of
-    :documentation "stat boost when weilding this item. Is a plist in the form of @code{(list :attack attack :defense defense :health health :energy energy :speed speed)}")
+    :documentation "stat boost when wielding this item. Is a plist in the form of @code{(list :attack attack :defense defense :health health :energy energy :speed speed)}")
    (special-actions
     :initarg :special-actions
     :initform ()
@@ -1022,7 +1022,7 @@
     :initarg :turn-queue
     :initform ()
     :accessor turn-queue-of
-    :documentation "The queue of characters specifing the order of who attacks when in battle")
+    :documentation "The queue of characters specifying the order of who attacks when in battle")
    (enter-battle-text
     :initarg :enter-battle-text
     :initform nil

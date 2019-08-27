@@ -15,7 +15,7 @@
             (format t "Rookie Diapered Raccoon Bandit Servant: NOOOO!!! STOP!!!! I CAN'T HOLD IT!!!!~%~%")
             (format t "*The rookie starts laughing and thrashing about, the insignia that doubles as a wetness indicator on the front of his diaper then turns from blue to yellow.*~%~%")
             (format t "Shop Owner: There, you went, now go see to the customer.~%~%")
-            (format t "*The now blushy Rookie Diapered Raccoon Bandit waddles and squshes over to the back of the counter*~%~%")))
+            (format t "*The now blushy Rookie Diapered Raccoon Bandit waddles and squishes over to the back of the counter*~%~%")))
 (defevent enter-bandits-shop-3
   :predicate '(lambda (self)
                (declare (ignore self))
@@ -89,7 +89,7 @@
                                                                            :bowels/contents (random 5000))))
                                :enter-battle-text (format nil "Random Raccoon 1: Hey, I need to take a break. I really gotta go.~%~%Random Raccoon 2: Well you're gonna have to hold it, as we seem to have an intruder.~%~%Random Raccoon 1: But.. but... ooooohhhh *clutches the front of his diaper pressing his knees together*~%~%Time for battle!!!~%~%")))
               ((< (random 12) 1)
-               (format t "*~a hears grunting and looks to find one of the raccoons squating down and messing his pamps. After finishing, he quickly stands up blushing heavily.*~%~%"
+               (format t "*~a hears grunting and looks to find one of the raccoons squatting down and messing his pamps. After finishing, he quickly stands up blushing heavily.*~%~%"
                        (name-of (player-of *game*)))
                (format t "Diapered Raccoon Bandit: You didn't see nothing.~%~%")
                (format t "~a: Oh really? *~a lifts up the back of the raccoon's tunic and press hard against the back of the raccoon's diaper hard.*~%~%"
@@ -155,7 +155,7 @@
             (pushnew '(yadfa-items:magic-diaper-key . (list :value 10000))
              (yadfa-props:items-for-sale-of (getf (get-props-from-zone '(-3 22 0 yadfa-zones:bandits-domain)) :shop)))
             (format t "Shop owner: Seems you're stuck in a locked diaper. I can help.~%~%")
-            (format t "~a: I'm listenening~%~%" (name-of (player-of *game*)))
+            (format t "~a: I'm listening~%~%" (name-of (player-of *game*)))
             (format t "I got one of those special artifacts that is used to lock and unlock these diapers. I can give it to you for 10000 bitcoins. Better pay up before you ~a yourself~%~%"
              (cond ((and (> (bladder/contents-of (player-of *game*)) (* (bladder/maximum-limit-of (player-of *game*)) 5/6))
                          (> (bowels/contents-of (player-of *game*)) (* (bowels/maximum-limit-of (player-of *game*)) 5/6)))
@@ -197,7 +197,7 @@
                              (name-of (player-of *game*))
                              (if (malep (player-of *game*)) "his" "her")))
                     ((cdr a)
-                     (format t "*The raccoon puts on earplugs, thenturns on the speakers in the room which starts playing the brown note~%~%")
+                     (format t "*The raccoon puts on earplugs, then turns on the speakers in the room which starts playing the brown note~%~%")
                      (format t "*~a quickly grabs the back of ~a diapers before messing ~aself*~%~%"
                              (name-of (player-of *game*))
                              (if (malep (player-of *game*)) "his" "her")
@@ -225,7 +225,7 @@
                   (b nil))
               (format t "*You enter the kennel and in 2 of the cages you see 2 orange foxes in heavily used diapers.*~%~%")
               (format t "Vixen: Hey! someone has entered the kennel for once!!!~%~%")
-              (format t "Fox: Could you let us out? We're the town's `pets' but they seemed to have fogotten about us.~%~%")
+              (format t "Fox: Could you let us out? We're the town's `pets' but they seemed to have forgotten about us.~%~%")
               (format t "Fox: and while you're at it, could you give us... umm... you know.... *blushes heavily*~%~%")
               (format t "~a: A diaper change?~%~%" (name-of (player-of *game*)))
               (format t "*the fox nods with a blush on his face*~%~%")
@@ -233,7 +233,7 @@
               (format t "*the 2 foxes sit down and waits, or in their case, crouches down and waits*~%~%")
               (format t "*as sitting in diapers in that state is out of the question~%~%")
               (format t "*~a enters the Bandit's shop, find a whimpering Rookie Raccoon in a toddler's dress and messy diaper being bounced on shop owner's knee*~%~%" (name-of (player-of *game*)))
-              (format t " At least you now know why this shop carries Toddler dresses, while they're destracted*~%~%")
+              (format t " At least you now know why this shop carries Toddler dresses, while they're distracted*~%~%")
               (format t "*You grab a couple of adjustable diapers and a gold collar for the fox and a toddler's dress*~%~%")
               (format t "and a few of the much thicker diapers that the female raccoons wear for the vixen, you then head back to the kennel and dress the foxes and give them a diaper change*~%~%")
               (format t "~a: I'm back, and got you some new clothes~%~%" (name-of (player-of *game*)))

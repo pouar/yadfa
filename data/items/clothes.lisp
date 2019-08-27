@@ -18,7 +18,7 @@
 (defonesie roomy-onesie () ()
   (:default-initargs
    :name "Roomy Onesie"
-   :description "A onesie intended to accomidate thicker diapers"
+   :description "A onesie intended to accommodate thicker diapers"
    :onesie-thickness-capacity (cons (* 16 25.4) nil)
    :value 400
    :onesie-bulge-text '((60 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
@@ -236,7 +236,7 @@
    :name "Bandit Swimsuit"
    :onesie-thickness-capacity (cons (* 16 25.4) nil)
    :onesie-bulge-text '((60 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
-                         50 "It stretches which helps accomidate your thick padding"
+                         50 "It stretches which helps accommodate your thick padding"
                          20 "It fits over your diaper quite nicely"
                          0 "It's so baggy that what you're wearing under there is quite visible")
                         .
@@ -297,7 +297,7 @@
                  0 "It's warm and snuggly")
    :wear-wet-text '(200 "Just wipe off the excess with a towel and you'll be fine."
                     100 "You're wet and smelly but at least you're not leaving a trail"
-                    10 "Well it's not noticable"
+                    10 "Well it's not noticeable"
                     0 "It's clean")))
 (defclass watertight-fursuit (fursuit) ()
   (:default-initargs
@@ -309,7 +309,7 @@
    :description "So you're fursuiting, but then all of a sudden you gotta go, but then don't make it, and then end up in a smelly soggy fursuit, and then no one wants to touch you cause you're soggy and smelly. Well with this baby, all those nasty smells and waste stay inside your suit, usually. Now the only one who has to suffer is you. Isn't that great?"
    :wear-wet-text '(400 "Even though no one else can tell, you're drenched in your own bodily fluids from the waist down."
                     100 "You're wet and smelly underneath, but at least no one else will notice."
-                    10 "Well it's not noticable"
+                    10 "Well it's not noticeable"
                     0 "It's clean")))
 (defclass koopa-shell (closed-full-outfit) ()
   (:default-initargs

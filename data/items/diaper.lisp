@@ -35,12 +35,12 @@
                     1 "Not leaking yet")
    :wear-mess-text '(200 "This was never designed to hold a mess, and the mess leaking down the leg guards show it"
                      1 "You can feel a slight mess back there")
-   :description "Our new Super Absorbant Briefs in Pullon form!!! They look just like real underwear!!! And is about as absorbent as real underwear too!!!!"))
+   :description "Our new Super Absorbent Briefs in Pullon form!!! They look just like real underwear!!! And is about as absorbent as real underwear too!!!!"))
 (defclass generic-pullons-package (item) ()
   (:default-initargs
    :name "Package of Store Brand Pullons"
    :plural-name "Packages of Store Brand Pullons"
-   :description "Our new Super Absorbant Briefs in Pullon form!!! They look just like real underwear!!! And is about as absorbent as real underwear too!!!!"
+   :description "Our new Super Absorbent Briefs in Pullon form!!! They look just like real underwear!!! And is about as absorbent as real underwear too!!!!"
    :consumable t
    :value 200
    :use-script '(lambda (item user)
@@ -274,7 +274,7 @@
    :wear-mess-text '(30000 "Poo is leaking out of the diaper"
                      10000 "It smooshes when you walk"
                      1 "The diaper holds the mess easily")
-   :description "A giant thick waterproof diaper. Yes, the waddle is noticable"))
+   :description "A giant thick waterproof diaper. Yes, the waddle is noticeable"))
 (defclass hyper-thick-diaper (yadfa:diaper) ()
   (:default-initargs
    :sogginess-capacity 50000
@@ -383,7 +383,7 @@
 (defclass bandit-adjustable-diaper (bandit-diaper) ()
   (:default-initargs
    :name "Bandit Adjustable Diaper"
-   :description "A special diaper that can be pulled down like normal underwear so the wearer can still use the toilet. It has the bandit's insignia on the front whcih turns yellow when the diaper is used. It has tabs on the sides for easy removal. Unlike most diapers, these are reusable."))
+   :description "A special diaper that can be pulled down like normal underwear so the wearer can still use the toilet. It has the bandit's insignia on the front which turns yellow when the diaper is used. It has tabs on the sides for easy removal. Unlike most diapers, these are reusable."))
 (defclass bandit-female-diaper (bandit-diaper) ()
   (:default-initargs
    :sogginess-capacity 10000

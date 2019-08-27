@@ -27,30 +27,30 @@
   :enter-text "You enter the Bandit's Shop"
   :must-wear '(padding . (lambda (user)
                            (declare (ignore user))
-                           (write-line "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.")
+                           (write-line "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
                            nil))
   :must-wear* '(padding . (lambda (user)
                             (declare (ignore user))
-                            (write-line "This area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.")
+                            (write-line "This area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
                             nil))
   :must-not-wear '((and closed-bottoms (not incontinence-product))
                    . (lambda (user)
                        (declare (ignore user))
-                       (write-line "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.")
+                       (write-line "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
                        nil))
   :must-not-wear* '((and closed-bottoms (not incontinence-product))
                     . (lambda (user)
                         (declare (ignore user))
-                        (write-line "This area is a diapers only pants free zone. Pants are strictly prohibited and padding is manditory.")
+                        (write-line "This area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
                         nil))
   :can-potty '(lambda
                (prop &key wet mess pants-down user)
                (declare (ignorable prop wet mess pants-down user))
                (not (when (or pants-down (not (filter-items (wear-of user) 'closed-bottoms)))
                       (format t "*The shopkeeper baps ~a on the nose with a newspaper before ~a gets the chance to go*~%" (name-of user) (name-of user))
-                      (format t "Shoppkeeper: Bad ~a, no going potty inside~%" (species-of user))
+                      (format t "Shopkeeper: Bad ~a, no going potty inside~%" (species-of user))
                       (when (or (>= (bladder/contents-of user) (bladder/potty-dance-limit-of user))
-                                (>= (bowels/contents-of user) (bowles/potty-dance-limit-of user))))
+                                (>= (bowels/contents-of user) (bowels/potty-dance-limit-of user))))
                       (format t "*~a whines and continues ~a embarrassing potty dance while the shopkeeper watches in amusement*~%~%"
                               (name-of user)
                               (if (malep user)
@@ -61,10 +61,10 @@
                    (block nil
                      (when (not (filter-items (wear-of user) 'incontinence-product))
                        (format t "*The shopkeeper baps ~a on the nose with a newspaper*~%" (name-of user))
-                       (format t "Shoppkeeper: Bad ~a, no going potty inside~%" (species-of user)))
+                       (format t "Shopkeeper: Bad ~a, no going potty inside~%" (species-of user)))
                      (when (or (getf (car had-accident) :popped)
                                (getf (cdr had-accident) :popped))
-                       (format t "*The shopkeeper falls over laughing with his diaper clearly exposed from under his tunic, then gets an embarrased look on his face when he floods his diaper from the laughter, which is incredibly obvious from the wetness indicator changing color*~%~%")
+                       (format t "*The shopkeeper falls over laughing with his diaper clearly exposed from under his tunic, then gets an embarrassed look on his face when he floods his diaper from the laughter, which is incredibly obvious from the wetness indicator changing color*~%~%")
                        (format t "*A random raccoon in the shop records the shopkeeper flooding his pamps then uploads it to the internet*~%~%")
                        (trigger-event 'yadfa-events:shopkeeper-floods-himself-1))
                      (when (> (getf (car had-accident) :leak-amount) 0)
@@ -79,7 +79,7 @@
                                   '("her" "her")))
                        (return))
                      (when (> (getf (car had-accident) :wet-amount) 0)
-                       (format t "Shopkeper: Aww, is ~a using ~a diapers like a baby?~%"
+                       (format t "Shopkeeper: Aww, is ~a using ~a diapers like a baby?~%"
                                (name-of user)
                                (if (malep user)
                                    "his"
@@ -99,7 +99,7 @@
                                                                 :lambda '(lambda
                                                                           (prop &rest keys &key &allow-other-keys)
                                                                           (declare (ignore prop keys))
-                                                                          (format t "Diapered Raccon Bandit Shop Owner: Sorry, only I'm allowed in there. Everyone else can just use their diapers. Isn't that right mushbutt?~%~%*The Shop Owner slaps the back of the Rookie's diaper*~%~%*Rookie yelps then grabs the back of his diaper and struggles to unmush it*~%~%*The Shop Owner laughs*~%~%Rookie Raccoon: Can I please get a diaper change now?~%~%Shop Owner: Keep asking me that and I'll make you sit in it in timeout again.~%~%Rookie Raccoon: NO! PLEASE! I'LL BE GOOD!~%~%")))
+                                                                          (format t "Diapered Raccoon Bandit Shop Owner: Sorry, only I'm allowed in there. Everyone else can just use their diapers. Isn't that right mushbutt?~%~%*The Shop Owner slaps the back of the Rookie's diaper*~%~%*Rookie yelps then grabs the back of his diaper and struggles to unmush it*~%~%*The Shop Owner laughs*~%~%Rookie Raccoon: Can I please get a diaper change now?~%~%Shop Owner: Keep asking me that and I'll make you sit in it in timeout again.~%~%Rookie Raccoon: NO! PLEASE! I'LL BE GOOD!~%~%")))
                                                    :ask-why-youre-allowed-to-shop (make-action :documentation "Ask the raccoons why you're allowed to shop here without the gang attacking you"
                                                                                                :lambda '(lambda
                                                                                                          (prop &rest keys &key &allow-other-keys)
@@ -146,13 +146,13 @@
   :locked nil)
 (ensure-zone (-5 22 0 bandits-domain)
   :name "Bandit's Kennel"
-  :description "A grungey looking kennel where the Raccoon Bandits keep their `pets'. Negleted so much that they literally forgot about their existence"
+  :description "A grungy looking kennel where the Raccoon Bandits keep their `pets'. Neglected so much that they literally forgot about their existence"
   :enter-text "You enter the kennel"
   :events (list 'yadfa-events:enter-bandits-kennel-1))
 (ensure-zone (0 21 0 bandits-domain)
   :name "Bandit's Town Entrance"
-  :description "The enterance to Bandit Town"
-  :enter-text "You're at the enterance of Bandit Town"
+  :description "The entrance to Bandit Town"
+  :enter-text "You're at the entrance of Bandit Town"
   :warp-points (list 'home '(0 1 0 home))
   :events (list 'yadfa-events:enter-bandits-village-1))
 (macro-level
@@ -176,7 +176,7 @@
                                    (collect `(ensure-zone (,x ,y 0 bandits-domain)
                                                :name "Bandit's Cove"
                                                :description "A cove filled with bandits"
-                                               :enter-text "You're at a cove runned by bandits"
+                                               :enter-text "You're at a cove run by bandits"
                                                :enemy-spawn-list 'bandits-cove)))))
          a)))
 (ensure-zone (6 24 0 bandits-domain)

@@ -38,7 +38,7 @@
                                                                "Peach: You still have ~d shine stars to collect, hurry before the player gets bored of this stupid quest."
                                                                (- 5 (list-length (filter-items (inventory-of (player-of *game*)) 'yadfa-items:shine-star)))))
                                                       (t
-                                                       (write-line "Peach: You got all the Shine Stars, have a Macguffin for putting up with this crappy quest")
+                                                       (write-line "Peach: You got all the Shine Stars, have a MacGuffin for putting up with this crappy quest")
                                                        (trigger-event 'yadfa-events:got-all-shine-stars)))))))))
 (ensure-zone (0 -2 0 peachs-castle-wannabe)
   :name "Castle Hallway"

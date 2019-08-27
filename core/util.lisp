@@ -37,7 +37,7 @@ the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYW
 (defun random-from-range (start end)
   (+ start (random (+ 1 (- end start)))))
 (defun type-specifier-p (type-specifier)
-  "Returns true if @var{TYPE-SPECIFIER} is a valid type specfiier."
+  "Returns true if @var{TYPE-SPECIFIER} is a valid type specifier."
   #+sbcl (sb-ext:valid-type-specifier-p type-specifier)
   #+openmcl (ccl:type-specifier-p type-specifier)
   #+ecl (c::valid-type-specifier type-specifier)
