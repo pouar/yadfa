@@ -16,6 +16,5 @@
        (ql-dist:installedp (ql-dist:find-dist "ultralisp")))
   (ql-dist:install-dist "http://dist.ultralisp.org/"
                         :prompt nil))
-(pushnew :yadfa-mods *features*)
 (asdf:make :yadfa)
 (#__exit 0)

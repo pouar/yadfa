@@ -10,9 +10,7 @@
   :build-operation :program-op
   :build-pathname "yadfa"
   :entry-point "yadfa::main"
-  :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria" "quasiquote-2.0"
-                         (:feature :slynk "slynk")
-                         (:feature :swank "swank") (:feature :yadfa-docs "net.didierverna.declt"))
+  :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria" "quasiquote-2.0")
   :components ((:file "packages")
                (:file "main" :depends-on ("packages" "core"))
                (:module "core"
@@ -117,3 +115,8 @@
                                                       :directory '(:relative "data" "status-conditions")
                                                       :name :wild
                                                       :type "lisp"))))))))
+(defsystem "yadfa/docs"
+  :depends-on ("net.didierverna.declt")
+  :description "Used for building the docs. Contains patches to Declt for using Texinfo commands in docstrings"
+  :components ((:module "core"
+                :components ((:file "declt-patches")))))

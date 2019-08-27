@@ -203,45 +203,43 @@
   (unless *mod-registry* (initialize-mod-registry))
   (gethash (asdf:primary-system-name system) *mod-registry*))
 (defun load-mods (&rest keys &key compiler-verbose &allow-other-keys)
-  #-yadfa-mods nil
-  #+yadfa-mods (unless
-                   #+yadfa-docs (find "texi" (uiop:command-line-arguments) :test #'string=)
-                   #-yadfa-docs nil
-                   (when uiop:*image-dumped-p*
-                     (pushnew
-                      'yadfa::find-mod
-                      asdf:*system-definition-search-functions*)
-                     (uiop:register-clear-configuration-hook 'clear-mod-registry)
-                     (uiop:register-clear-configuration-hook 'clear-pattern-cache)
-                     (uiop:register-clear-configuration-hook 'set-logical-pathnames))
-                   (asdf:clear-configuration)
-                   (let* ((file #P"yadfa:config;mods.conf")
-                          (mods '()))
-                     (ensure-directories-exist #P"yadfa:config;")
-                     (handler-case (with-open-file (stream file :if-does-not-exist :error)
-                                     (setf mods (read stream)))
-                       (file-error ()
-                         (write-line "The configuration file containing the list of enabled mods seems missing, creating a new one")
-                         (with-open-file (stream file
-                                                 :if-does-not-exist :create
-                                                 :direction :output
-                                                 :if-exists :supersede)
-                           (write *mods* :stream stream)))
-                       (error ()
-                         (write-line "The configuration file containing the list of enabled mods seems broken, ignoring")))
-                     (if (and
-                          (typep mods 'list)
-                          (iter (for i in mods)
-                            (unless (typep i '(or string symbol asdf/component:component))
-                              (leave nil))
-                            (finally (return t))))
-                         (setf *mods* mods)
-                         (write-line "The configuration file containing the list of enabled mods isn't valid, ignoring")))
-                   (let ((*compile-verbose* compiler-verbose)
-                         (*compile-print* compiler-verbose))
-                     (iter (for i in *mods*)
-                       (when (asdf:find-system i nil)
-                         (apply #'asdf:load-system i :allow-other-keys t keys))))))
+  (unless
+      (and (find "texi" (uiop:command-line-arguments) :test #'string=) (asdf:component-loaded-p "yadfa/docs"))
+    (when uiop:*image-dumped-p*
+      (pushnew
+       'yadfa::find-mod
+       asdf:*system-definition-search-functions*)
+      (uiop:register-clear-configuration-hook 'clear-mod-registry)
+      (uiop:register-clear-configuration-hook 'clear-pattern-cache)
+      (uiop:register-clear-configuration-hook 'set-logical-pathnames))
+    (asdf:clear-configuration)
+    (let* ((file #P"yadfa:config;mods.conf")
+           (mods '()))
+      (ensure-directories-exist #P"yadfa:config;")
+      (handler-case (with-open-file (stream file :if-does-not-exist :error)
+                      (setf mods (read stream)))
+        (file-error ()
+          (write-line "The configuration file containing the list of enabled mods seems missing, creating a new one")
+          (with-open-file (stream file
+                                  :if-does-not-exist :create
+                                  :direction :output
+                                  :if-exists :supersede)
+            (write *mods* :stream stream)))
+        (error ()
+          (write-line "The configuration file containing the list of enabled mods seems broken, ignoring")))
+      (if (and
+           (typep mods 'list)
+           (iter (for i in mods)
+             (unless (typep i '(or string symbol asdf/component:component))
+               (leave nil))
+             (finally (return t))))
+          (setf *mods* mods)
+          (write-line "The configuration file containing the list of enabled mods isn't valid, ignoring")))
+    (let ((*compile-verbose* compiler-verbose)
+          (*compile-print* compiler-verbose))
+      (iter (for i in *mods*)
+        (when (asdf:find-system i nil)
+          (apply #'asdf:load-system i :allow-other-keys t keys))))))
 (defun (setf getf-direction) (new-value position direction attribute)
   (setf (getf (getf (direction-attributes-of (get-zone position)) direction) attribute) new-value))
 (defun getf-direction (position direction attribute)
@@ -278,23 +276,23 @@
 ;;;(slynk:eval-in-emacs '(with-current-buffer (sly-mrepl--find-buffer) (insert-image (create-image "/tmp/1523307158.liljdude_renamon_boom.jpg"))))
 (defun color-format (color &rest body)
   (cl-ansi-text:with-color (color) (apply #'format t body)))
-#+(or slynk swank)
 (define-condition invalid-emacs-type-for-promp (error)
   ((invalid-type :initarg :invalid-type :reader invalid-type))
   (:report (lambda (condition stream)
              (format stream "Invalid Emacs Type: ~S"
                      (invalid-type condition)))))
 ;;; error handling of these 2 functions could be better
-#+(or slynk swank)
 (defun emacs-prompt (options &optional error-message)
   (let* ((eval-in-emacs (cond
-                          #+slynk ((find "slynk" (uiop:command-line-arguments) :test #'string=) #'slynk:eval-in-emacs)
-                          #+swank ((find "swank" (uiop:command-line-arguments) :test #'string=) #'swank:eval-in-emacs)))
+                          ((and (uiop:featurep :slynk) (find "slynk" (uiop:command-line-arguments) :test #'string=))
+                           (uiop:find-symbol* '#:eval-in-emacs '#:slynk))
+                          ((and (uiop:featurep :swank) (find "swank" (uiop:command-line-arguments) :test #'string=))
+                           (uiop:find-symbol* '#:eval-in-emacs '#:swank))))
          (wait-for-event (cond
-                           #+slynk ((find "slynk" (uiop:command-line-arguments) :test #'string=)
-                                    #'slynk::wait-for-event)
-                           #+swank ((find "swank" (uiop:command-line-arguments) :test #'string=)
-                                    #'swank::wait-for-event))))
+                           ((and (uiop:featurep :slynk) (find "slynk" (uiop:command-line-arguments) :test #'string=))
+                            (uiop:find-symbol* '#:wait-for-event '#:slynk))
+                           ((and (uiop:featurep :swank) (find "swank" (uiop:command-line-arguments) :test #'string=))
+                            (uiop:find-symbol* '#:wait-for-event '#:swank)))))
     (funcall eval-in-emacs
              `(progn (require 'widget)
                      (eval-when-compile
@@ -366,14 +364,12 @@
                        (widget-create 'push-button
                                       :notify (lambda (top widget &optional reason)
                                                 (sly-send (list :emacs-return ,(cond
-                                                                                 #+slynk ((find "slynk"
-                                                                                                (uiop:command-line-arguments)
-                                                                                                :test #'string=)
-                                                                                          (slynk::current-thread-id))
-                                                                                 #+swank ((find "swank"
-                                                                                                (uiop:command-line-arguments)
-                                                                                                :test #'string=)
-                                                                                          (swank::current-thread-id)))
+                                                                                 ((and (uiop:featurep :slynk)
+                                                                                       (find "slynk" (uiop:command-line-arguments) :test #'string=))
+                                                                                  (uiop:symbol-call '#:slynk '#:current-thread-id))
+                                                                                 ((and (uiop:featurep :swank)
+                                                                                       (find "swank" (uiop:command-line-arguments) :test #'string=))
+                                                                                  (uiop:symbol-call '#:swank '#:current-thread-id)))
                                                                 :yadfa-response (list ,@(iter (for j from 0) (for i in options)
                                                                                           (declare (ignorable i))
                                                                                           (collect `(widget-value ,(intern (format nil "a~d" j))))))))

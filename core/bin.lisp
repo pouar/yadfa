@@ -16,29 +16,27 @@
 ~a."
             (xref yadfa-bin:disable-mod :function))
   (declare (ignorable system))
-  #+yadfa-mods (if (asdf:find-system system nil)
-                   (progn (pushnew (asdf:coerce-name system) *mods* :test #'string=)
-                          (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
-                                                  :if-does-not-exist :create
-                                                  :if-exists :supersede
-                                                  :direction :output)
-                            (write *mods* :stream stream))
-                          (asdf:load-system system))
-                   (write-line "That system doesn't exist"))
-  #-yadfa-mods (write-line "Mod support is not enabled for this build"))
+  (if (asdf:find-system system nil)
+      (progn (pushnew (asdf:coerce-name system) *mods* :test #'string=)
+             (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
+                                     :if-does-not-exist :create
+                                     :if-exists :supersede
+                                     :direction :output)
+               (write *mods* :stream stream))
+             (asdf:load-system system))
+      (write-line "That system doesn't exist")))
 (defun yadfa-bin:disable-mod (system)
   #.(format nil "Disable a mod, the modding system is mostly just asdf, @var{SYSTEM} is a keyword which is the name of the system you want to enable
 
 ~a."
             (xref yadfa-bin:enable-mod :function))
   (declare (ignorable system))
-  #+yadfa-mods (progn (deletef *mods* (asdf:coerce-name system) :test #'string=)
-                      (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
-                                              :if-does-not-exist :create
-                                              :if-exists :supersede
-                                              :direction :output)
-                        (write *mods* :stream stream)))
-  #-yadfa-mods (write-line "Mod support is not enabled for this build"))
+  (progn (deletef *mods* (asdf:coerce-name system) :test #'string=)
+         (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
+                                 :if-does-not-exist :create
+                                 :if-exists :supersede
+                                 :direction :output)
+           (write *mods* :stream stream))))
 (defunassert (yadfa-world:save-game (path)
                                     #.(format nil "This function saves current game to @var{PATH}
 

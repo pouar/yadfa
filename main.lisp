@@ -1,18 +1,20 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package #:yadfa)
 (defun main ()
-  #+slynk (when (and #+yadfa-docs (not (find "texi" (uiop:command-line-arguments) :test #'string=))
-                     #-yadfa-docs t
-                     uiop:*image-dumped-p*
-                     (not slynk::*servers*)
-                     (position "slynk" (uiop:command-line-arguments) :test #'string=))
-            (slynk::create-server :dont-close t))
-  #+swank (when (and #+yadfa-docs (not (find "texi" (uiop:command-line-arguments) :test #'string=))
-                     #-yadfa-docs t
-                     uiop:*image-dumped-p*
-                     (not swank::*servers*)
-                     (position "swank" (uiop:command-line-arguments) :test #'string=))
-            (swank::create-server :dont-close t))
+  (when (and (not (find "texi" (uiop:command-line-arguments) :test #'string=))
+             (position "slynk" (uiop:command-line-arguments) :test #'string=))
+    (when (or (and (uiop:featurep :slynk) uiop:*image-dumped-p* (not (symbol-value (uiop:find-symbol* '#:*servers* '#:slynk))))
+              (when (and (asdf:find-system "slynk" nil)
+                         (not (asdf:component-loaded-p "slynk")))
+                (asdf:load-system "slynk")))
+      (uiop:symbol-call '#:slynk '#:create-server :dont-close t)))
+  (when (and (not (find "texi" (uiop:command-line-arguments) :test #'string=))
+             (position "swank" (uiop:command-line-arguments) :test #'string=))
+    (when (or (and (uiop:featurep :swank) uiop:*image-dumped-p* (not (symbol-value (uiop:find-symbol* '#:*servers* '#:swank))))
+              (when (and (asdf:find-system "swank" nil)
+                         (not (asdf:component-loaded-p "swank")))
+                (asdf:load-system "swank")))
+      (uiop:symbol-call '#:swank '#:create-server :dont-close t)))
   (in-package #:yadfa)
   (when (position "wait" (uiop:command-line-arguments) :test #'string=)
     (sleep 2))
@@ -21,15 +23,20 @@
     (when (probe-file file)
       (load file)))
   (in-package :yadfa-user)
-  #+yadfa-docs (when (find "texi" (uiop:command-line-arguments) :test #'string=)
-                 (net.didierverna.declt:declt :yadfa
-                                              :license :gpl
-                                              :texi-name "yadfa-reference"
-                                              :texi-directory (translate-logical-pathname "yadfa:home;docs;reference;")
-                                              :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically")
-                 (uiop:quit))
+  (when (find "texi" (uiop:command-line-arguments) :test #'string=)
+    (when (or (asdf:component-loaded-p "yadfa/docs")
+              (when (asdf:find-system "net.didierverna.declt" nil)
+                (asdf:load-system "yadfa/docs")))
+      (uiop:symbol-call '#:net.didierverna.declt '#:declt :yadfa
+                        :license :gpl
+                        :texi-name "yadfa-reference"
+                        :texi-directory (translate-logical-pathname "yadfa:home;docs;reference;")
+                        :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically"))
+    (uiop:quit))
   (use-package :yadfa-world :yadfa-user)
-  #+mcclim-ffi-freetype (setf freetype2:*library* (freetype2:make-freetype))
+  (when (featurep :mcclim-ffi-freetype)
+    (setf (symbol-value (uiop:find-symbol* '#:*library* '#:freetype2))
+          (uiop:symbol-call '#:freetype2 '#:make-freetype)))
   (clim-listener:run-listener
    :package :yadfa-user
    :process-name "yadfa"
