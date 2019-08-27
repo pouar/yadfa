@@ -1,6 +1,13 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package #:yadfa)
 (defun main ()
+  (pushnew
+   'yadfa::find-mod
+   asdf:*system-definition-search-functions*)
+  (uiop:register-clear-configuration-hook 'clear-mod-registry)
+  (uiop:register-clear-configuration-hook 'clear-pattern-cache)
+  (uiop:register-clear-configuration-hook 'set-logical-pathnames)
+  (asdf:clear-configuration)
   (when (and (not (find "texi" (uiop:command-line-arguments) :test #'string=))
              (position "slynk" (uiop:command-line-arguments) :test #'string=))
     (when (or (and (uiop:featurep :slynk) uiop:*image-dumped-p* (not (symbol-value (uiop:find-symbol* '#:*servers* '#:slynk))))

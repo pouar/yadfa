@@ -205,14 +205,6 @@
 (defun load-mods (&rest keys &key compiler-verbose &allow-other-keys)
   (unless
       (and (find "texi" (uiop:command-line-arguments) :test #'string=) (asdf:component-loaded-p "yadfa/docs"))
-    (when uiop:*image-dumped-p*
-      (pushnew
-       'yadfa::find-mod
-       asdf:*system-definition-search-functions*)
-      (uiop:register-clear-configuration-hook 'clear-mod-registry)
-      (uiop:register-clear-configuration-hook 'clear-pattern-cache)
-      (uiop:register-clear-configuration-hook 'set-logical-pathnames))
-    (asdf:clear-configuration)
     (let* ((file #P"yadfa:config;mods.conf")
            (mods '()))
       (ensure-directories-exist #P"yadfa:config;")
