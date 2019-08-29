@@ -1,4 +1,4 @@
-;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-clim"; coding: utf-8-unix; -*-
 (in-package :yadfa-clim)
 (define-command-table yadfa-menu-commands)
 (define-command-table yadfa-presentation-commands)

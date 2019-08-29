@@ -31,9 +31,7 @@
       (load file)))
   (in-package :yadfa-user)
   (when (find "texi" (uiop:command-line-arguments) :test #'string=)
-    (when (or (asdf:component-loaded-p "yadfa/docs")
-              (when (asdf:find-system "net.didierverna.declt" nil)
-                (asdf:load-system "yadfa/docs")))
+    (when (asdf:component-loaded-p "yadfa/docs")
       (uiop:symbol-call '#:net.didierverna.declt '#:declt :yadfa
                         :license :gpl
                         :texi-name "yadfa-reference"

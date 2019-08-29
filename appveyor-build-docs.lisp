@@ -6,7 +6,6 @@
     (load quicklisp-init)))
 #+(and gmp sbcl) (require 'sb-gmp)
 #+(and sbcl gmp) (sb-gmp:install-gmp-funs)
-(ql:quickload "yadfa/docs")
 (ql:update-client
  :prompt nil)
 (ql:update-all-dists

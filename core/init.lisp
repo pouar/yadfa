@@ -3,10 +3,7 @@
 (defvar yadfa-clim::*records* ())
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defmacro ref (symbol type)
-    `(if (or (asdf:component-loaded-p "yadfa/docs")
-             (when (and (featurep :sbcl)
-                        (asdf:find-system "net.didierverna.declt" nil))
-               (asdf:load-system "yadfa/docs")))
+    `(if (asdf:component-loaded-p "yadfa/docs")
          (format nil "@ref{~a,@code{~a} in @code{~a},@code{~a} in @code{~a}}"
                  (uiop:symbol-call '#:net.didierverna.declt '#:escape-anchor
                                    (uiop:symbol-call '#:net.didierverna.declt '#:anchor-name
@@ -20,10 +17,7 @@
          (let ((*package* (find-package :cl)))
            (format nil "~s" ',symbol))))
   (defmacro xref (symbol type)
-    `(if (or (asdf:component-loaded-p "yadfa/docs")
-             (when (and (featurep :sbcl)
-                        (asdf:find-system "net.didierverna.declt" nil))
-               (asdf:load-system "yadfa/docs")))
+    `(if (asdf:component-loaded-p "yadfa/docs")
          (format nil "@xref{~a,@code{~a} in @code{~a},@code{~a} in @code{~a}}"
                  (uiop:symbol-call '#:net.didierverna.declt '#:escape-anchor
                                    (uiop:symbol-call '#:net.didierverna.declt '#:anchor-name

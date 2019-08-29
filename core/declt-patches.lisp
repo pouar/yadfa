@@ -1,3 +1,4 @@
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "net.didierverna.declt"; coding: utf-8-unix; -*-
 (in-package :net.didierverna.declt)
 (defun render-docstring (item)
   "Render ITEM's documentation string.
