@@ -18,7 +18,7 @@
                 :components ((:file "util" :depends-on ("init"))
                              (:file "structs" :depends-on ("init"))
                              (:file "init")
-                             (:file "libexec" :depends-on ("util" "classes" "init" "structs"))
+                             (:file "libexec" :depends-on ("util" "classes" "patches" "init" "structs"))
                              (:file "classes" :depends-on ("util" "patches" "init"))
                              (:file "game" :depends-on ("classes" "init"))
                              (:file "bin" :depends-on ("libexec" "init"))
