@@ -23,7 +23,6 @@
    ;;variables
    #:*battle*
    #:*game*
-   #:*records*
    ;;macros
    #:defevent
    #:ensure-zone
@@ -32,12 +31,13 @@
    #:defzone*
    #:defonesie
    #:make-pocket-zone
+   #:accept-with-frame-resolved
+   #:present-with-frame-resolved
    ;;functions
    #:get-positions-of-type
    #:trigger-event
    #:intro-function
    #:set-player
-   #:prompt-for-values
    #:set-status-condition
    #:set-new-battle
    #:get-inventory-list
@@ -495,3 +495,6 @@
 (uiop:define-package #:yadfa-user
   (:use #:cl #:yadfa #:yadfa-util #:yadfa-bin #:iterate #:ugly-tiny-infix-macro #:alexandria)
   (:documentation "The package that the player typically executes commands from"))
+(uiop:define-package #:yadfa-clim
+  (:use #:yadfa #:iterate #:clim #:clim-lisp #:clim-extensions)
+  (:documentation "CLIM related stuff"))

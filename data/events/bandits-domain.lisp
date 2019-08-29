@@ -241,27 +241,39 @@
               (format t "Vixen: Yay~%~%")
               (format t "*the 2 wag their tails happily*~%~%")
               (format t "~a: Mind telling me your names?~%~%" (name-of (player-of *game*)))
-              (let ((c (prompt-for-values (string :prompt "Fox Name"
-                                                  :default #.(second
-                                                              (assoc :name (progn (c2mop:ensure-finalized (find-class 'yadfa-allies:chris))
-                                                                                  (c2mop:compute-default-initargs
-                                                                                   (find-class 'yadfa-allies:chris)))))
-                                                  :view clim:+text-field-view+)
-                                          (string :prompt "Vixen Name"
-                                                  :default #.(second
-                                                              (assoc :name (progn (c2mop:ensure-finalized (find-class 'yadfa-allies:kristy))
-                                                                                  (c2mop:compute-default-initargs
-                                                                                   (find-class 'yadfa-allies:kristy)))))
-                                                  :view clim:+text-field-view+))))
-                (setf a (make-instance 'yadfa-allies:chris :name (first c))
-                      b (make-instance 'yadfa-allies:kristy :name (second c)))
-                (iter (for i in (list a b))
-                  (do-push i (team-of *game*) (allies-of *game*)))
-                (format t "Fox: I'm ~a~%~%" (name-of a))
-                (format t "Vixen: And I'm ~a~%~%" (name-of b))
-                (format t "~a: What's yours?~%~%" (name-of a))
-                (format t "~a: I'm ~a. Now lets get you dressed~%~%" (name-of (player-of *game*)) (name-of (player-of *game*)))
-                (format t "*~a puts the new clothes and diapers on the foxes*~%~%" (name-of a))))))
+              (finish-output)
+              (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+                                            (fresh-line *query-io*)
+                                            (setf a (make-instance 'yadfa-allies:chris
+                                                                   :name (clim:accept 'string
+                                                                                      :prompt "Fox Name"
+                                                                                      :default (second
+                                                                                                (assoc :name (progn
+                                                                                                               (c2mop:ensure-finalized
+                                                                                                                (find-class 'yadfa-allies:chris))
+                                                                                                               (c2mop:compute-default-initargs
+                                                                                                                (find-class 'yadfa-allies:chris)))))
+                                                                                      :view clim:+text-field-view+
+                                                                                      :stream *query-io*)))
+                                            (fresh-line *query-io*)
+                                            (setf b (make-instance 'yadfa-allies:kristy
+                                                                   :name (clim:accept 'string
+                                                                                      :prompt "Vixen Name"
+                                                                                      :default (second
+                                                                                                (assoc :name (progn
+                                                                                                               (c2mop:ensure-finalized
+                                                                                                                (find-class 'yadfa-allies:kristy))
+                                                                                                               (c2mop:compute-default-initargs
+                                                                                                                (find-class 'yadfa-allies:kristy)))))
+                                                                                      :view clim:+text-field-view+
+                                                                                      :stream *query-io*)))))
+              (iter (for i in (list a b))
+                (do-push i (team-of *game*) (allies-of *game*)))
+              (format t "Fox: I'm ~a~%~%" (name-of a))
+              (format t "Vixen: And I'm ~a~%~%" (name-of b))
+              (format t "~a: What's yours?~%~%" (name-of a))
+              (format t "~a: I'm ~a. Now lets get you dressed~%~%" (name-of (player-of *game*)) (name-of (player-of *game*)))
+              (format t "*~a puts the new clothes and diapers on the foxes*~%~%" (name-of a)))))
 (defevent get-warp-pipe-summoner-1
   :finished-depends '(enter-bandits-shop-1 enter-bandits-kennel-1)
   :lambda '(lambda (self)

@@ -1,20 +1,21 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
-(in-package :yadfa)
-(clim:define-command-table yadfa-menu-commands)
-(clim:define-command-table yadfa-presentation-commands)
-(clim:define-command (yadfa-set-eol-action :command-table yadfa-menu-commands :menu "Set EOL Action")
+(in-package :yadfa-clim)
+(defvar *records* ())
+(define-command-table yadfa-menu-commands)
+(define-command-table yadfa-presentation-commands)
+(define-command (yadfa-set-eol-action :command-table yadfa-menu-commands :menu "Set EOL Action")
     ((keyword '(member :scroll :allow :wrap :wrap*)
               :prompt "Keyword"))
-  (setf (clim:stream-end-of-line-action clim-listener::*query-io*) keyword))
-(clim:define-command (yadfa-gc :command-table yadfa-menu-commands :menu "GC")
+  (setf (stream-end-of-line-action clim-listener::*query-io*) keyword))
+(define-command (yadfa-gc :command-table yadfa-menu-commands :menu "GC")
     ()
   (trivial-garbage:gc :full t))
 (unless
-    (clim:find-menu-item "Yadfa" (clim:find-command-table 'clim-listener::listener) :errorp nil)
-  (clim:add-menu-item-to-command-table (clim:find-command-table 'clim-listener::listener) "Yadfa" :menu (clim:find-command-table 'yadfa-menu-commands)))
-(pushnew (clim:find-command-table 'yadfa-menu-commands) (clim:command-table-inherit-from (clim:find-command-table 'clim-listener::listener)))
-(pushnew (clim:find-command-table 'yadfa-presentation-commands) (clim:command-table-inherit-from (clim:find-command-table 'clim-listener::listener)))
-(clim:define-command (com-yadfa-move :command-table yadfa-presentation-commands :menu t :name "Move Here")
+    (find-menu-item "Yadfa" (find-command-table 'clim-listener::listener) :errorp nil)
+  (add-menu-item-to-command-table (find-command-table 'clim-listener::listener) "Yadfa" :menu (find-command-table 'yadfa-menu-commands)))
+(pushnew (find-command-table 'yadfa-menu-commands) (command-table-inherit-from (find-command-table 'clim-listener::listener)))
+(pushnew (find-command-table 'yadfa-presentation-commands) (command-table-inherit-from (find-command-table 'clim-listener::listener)))
+(define-command (com-yadfa-move :command-table yadfa-presentation-commands :menu t :name "Move Here")
     ((zone zone))
   (block nil
     (apply #'yadfa-world:move
@@ -93,10 +94,10 @@
              (t
               (format t "You're either already on that zone or you tried specifying a path that involves turning (which this interface can't do because Pouar sucks at writing code that generates paths)~%")
               (return))))))
-(clim:define-command (com-yadfa-describe-zone :command-table yadfa-presentation-commands :menu t :name "Print Zone Description")
+(define-command (com-yadfa-describe-zone :command-table yadfa-presentation-commands :menu t :name "Print Zone Description")
     ((zone zone))
   (yadfa-bin:lst :describe-zone zone))
-(clim:define-presentation-to-command-translator com-yadfa-move-translator
+(define-presentation-to-command-translator com-yadfa-move-translator
     (zone com-yadfa-move yadfa-presentation-commands
      :documentation "Move"
      :pointer-documentation "Move Here"
@@ -104,7 +105,7 @@
      :menu t)
     (object)
   (list object))
-(clim:define-presentation-to-command-translator com-yadfa-describe-zone-translator
+(define-presentation-to-command-translator com-yadfa-describe-zone-translator
     (zone com-yadfa-describe-zone yadfa-presentation-commands
      :documentation "Print Zone Description"
      :pointer-documentation "Print Zone Description"
@@ -112,3 +113,43 @@
      :menu t)
     (object)
   (list object))
+(define-application-frame emacs-frame (standard-application-frame)
+  ((lambda :accessor emacs-frame-lambda
+     :initarg :emacs-frame-lambda
+     :initform (lambda (frame)
+                 (declare (ignore frame))
+                 t)))
+  (:panes (int :interactor :height 400 :width 600))
+  (:layouts
+   (default int)))
+(defmethod default-frame-top-level :around ((frame emacs-frame)
+                                            &key (command-parser 'command-line-command-parser)
+                                                 (command-unparser 'command-line-command-unparser)
+                                                 (partial-command-parser
+                                                  'command-line-read-remaining-arguments-for-partial-command)
+                                                 (prompt "Command: "))
+  (declare (ignore prompt))
+  (let* ((frame-query-io (frame-query-io frame))
+         (interactorp (typep frame-query-io 'interactor-pane))
+         (*standard-input*  (or (frame-standard-input frame)  *standard-input*))
+         (*standard-output* (or (frame-standard-output frame) *standard-output*))
+         (*query-io* (or frame-query-io *query-io*))
+         ;; during development, don't alter *error-output*
+         ;; (*error-output* (frame-error-output frame))
+         (*pointer-documentation-output* (frame-pointer-documentation-output frame))
+         (*command-parser* command-parser)
+         (*command-unparser* command-unparser)
+         (*partial-command-parser* partial-command-parser))
+    (restart-case
+        (flet ((execute-command ()
+                 (funcall (emacs-frame-lambda frame) frame)))
+          (redisplay-frame-panes frame :force-p t)
+          (when interactorp
+            (setf (cursor-visibility (stream-text-cursor frame-query-io)) nil))
+          (let ((out (execute-command)))
+            out))
+      (abort ()
+        :report "Return to application command loop."
+        (if interactorp
+            (format frame-query-io "~&Command aborted.~&")
+            (beep))))))

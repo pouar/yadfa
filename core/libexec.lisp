@@ -265,139 +265,26 @@
         (pushnew i (getf (status-conditions-of *battle*) user)))
     (when (and (not (eq (duration-of i) t)) (< (duration-of i) duration))
       (setf (duration-of i) duration))))
-;;;(slynk:eval-in-emacs '(with-current-buffer (sly-mrepl--find-buffer) (insert-image (create-image "/tmp/1523307158.liljdude_renamon_boom.jpg"))))
-(defun color-format (color &rest body)
-  (cl-ansi-text:with-color (color) (apply #'format t body)))
-(define-condition invalid-emacs-type-for-promp (error)
-  ((invalid-type :initarg :invalid-type :reader invalid-type))
-  (:report (lambda (condition stream)
-             (format stream "Invalid Emacs Type: ~S"
-                     (invalid-type condition)))))
-;;; error handling of these 2 functions could be better
-(defun emacs-prompt (options &optional error-message)
-  (let* ((eval-in-emacs (cond
-                          ((and (uiop:featurep :slynk) (find "slynk" (uiop:command-line-arguments) :test #'string=))
-                           (uiop:find-symbol* '#:eval-in-emacs '#:slynk))
-                          ((and (uiop:featurep :swank) (find "swank" (uiop:command-line-arguments) :test #'string=))
-                           (uiop:find-symbol* '#:eval-in-emacs '#:swank))))
-         (wait-for-event (cond
-                           ((and (uiop:featurep :slynk) (find "slynk" (uiop:command-line-arguments) :test #'string=))
-                            (uiop:find-symbol* '#:wait-for-event '#:slynk))
-                           ((and (uiop:featurep :swank) (find "swank" (uiop:command-line-arguments) :test #'string=))
-                            (uiop:find-symbol* '#:wait-for-event '#:swank)))))
-    (funcall eval-in-emacs
-             `(progn (require 'widget)
-                     (eval-when-compile
-                      (require 'wid-edit))
-                     (defvar yadfa-contents nil)
-                     (defun yadfa-widget ()
-                       "Widget generated from the CL side as a dialog for my game"
-                       (interactive)
-                       (switch-to-buffer-other-window "*YADFA*")
-                       (kill-all-local-variables)
-                       (let ((inhibit-read-only t))
-                         (erase-buffer))
-                       (remove-overlays)
-                       (widget-insert
-                        ,(if error-message
-                             (format nil "~a~%" error-message)
-                             (format nil "Please answer in this \"Window\"~%")))
-                       ,@(iter (for j from 0)
-                           (for i in options)
-                           (cond
-                             ((and
-                               (typep (first i) 'list)
-                               (member (caar i)
-                                       '(member clim:completion)
-                                       :test #'eq))
-                              (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                             (widget-create 'menu-choice
-                                                            :tag ,(format nil "~a: " (getf (rest i) :prompt))
-                                                            :value ,(if (and
-                                                                         (typep (getf (rest i) :default) 'list)
-                                                                         (eq (car (getf (rest i) :default)) 'quote)
-                                                                         (typep (cdr (getf (rest i) :default)) 'list)
-                                                                         (typep (cadr (getf (rest i) :default)) '(and symbol (not keyword))))
-                                                                        (list
-                                                                         'quote
-                                                                         (list :intern
-                                                                               (symbol-name (cadr (getf (rest i) :default)))
-                                                                               (package-name (symbol-package (cadr (getf (rest i) :default))))))
-                                                                        (eval (getf (rest i) :default)))
-                                                            ,@(iter (for k in (cond
-                                                                                ((eq (caar i) 'member)
-                                                                                 (cdar i))
-                                                                                ((eq (caar i) 'clim:completion)
-                                                                                 (cadar i))))
-                                                                (if (typep k '(and symbol (not keyword)))
-                                                                    (collect `',(list 'item
-                                                                                      :tag (symbol-name k)
-                                                                                      (list
-                                                                                       :intern
-                                                                                       (symbol-name k)
-                                                                                       (package-name (symbol-package k)))))
-                                                                    (collect `',(list 'item :value k))))))))
-                             ((member (first i) '(boolean string integer number)
-                                      :test #'eq)
-                              (collect `(widget-insert ,(format nil "~a: " (getf (rest i) :prompt))))
-                              (collect `(set (make-local-variable ',(intern (format nil "a~d" j)))
-                                             (widget-create ',(if (member (first i) '(boolean string))
-                                                                  (getf
-                                                                   '(boolean checkbox
-                                                                     string editable-field)
-                                                                   (first i))
-                                                                  (first i))
-                                                            ,(when (getf (rest i) :default)
-                                                               (eval (getf (rest i) :default)))))))
-                             (t
-                              (error 'invalid-emacs-type-for-promp
-                                     :invalid-type i)))
-                           (collect `(widget-insert ,#\linefeed)))
-                       (widget-create 'push-button
-                                      :notify (lambda (top widget &optional reason)
-                                                (sly-send (list :emacs-return ,(cond
-                                                                                 ((and (uiop:featurep :slynk)
-                                                                                       (find "slynk" (uiop:command-line-arguments) :test #'string=))
-                                                                                  (uiop:symbol-call '#:slynk '#:current-thread-id))
-                                                                                 ((and (uiop:featurep :swank)
-                                                                                       (find "swank" (uiop:command-line-arguments) :test #'string=))
-                                                                                  (uiop:symbol-call '#:swank '#:current-thread-id)))
-                                                                :yadfa-response (list ,@(iter (for j from 0) (for i in options)
-                                                                                          (declare (ignorable i))
-                                                                                          (collect `(widget-value ,(intern (format nil "a~d" j))))))))
-                                                (kill-buffer-and-window))
-                                      "Apply")
-                       (use-local-map widget-keymap)
-                       (widget-setup)
-                       nil)
-                     (yadfa-widget)))
-    (iter (for i in (third (funcall wait-for-event '(:emacs-return :yadfa-response result))))
-      (collect (if (and (typep i 'list) (eq (car i) :intern))
-                   (apply #'intern (cdr i))
-                   i)))))
-(defmacro prompt-for-values (&rest options)
+
+(defmacro accept-with-frame-resolved (&body body)
   `(cond
-     #+(or slynk swank)
-     ((not clim-listener::*application-frame*)
-      (let ((out (emacs-prompt ',options))
-            (err nil))
-        (iter (while
-               (iter (for i in out) (for j in ',options)
-                 (unless (cond
-                           ((typep (first j) 'list)
-                            t)
-                           (t (typep i (first j))))
-                   (setf err (format nil "~a isn't of type ~a" i (first j)))
-                   (leave t))))
-          (setf out (emacs-prompt ',options err)))
-        out))
      (clim-listener::*application-frame*
-      (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
-        (list
-         ,@(iter (for i in options)
-             (collect `(progn
-                         (fresh-line *query-io*)
-                         (clim:accept (quasiquote-2.0:dig ,(first i)) ,@(rest i) :stream *query-io*)))))))))
+      ,@body)
+     (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame
+                                                               :emacs-frame-lambda (lambda (frame)
+                                                                                     (let ((*query-io* (clim:frame-query-io frame)))
+                                                                                       ,@body)))))))
+(defmacro present-with-frame-resolved (&body body)
+  `(cond
+     (clim-listener::*application-frame*
+      (push (clim:updating-output (*query-io*)
+              ,@body)
+            yadfa-clim::*records*))
+     (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame :width 768 :height 800
+                                                               :emacs-frame-lambda (lambda (frame)
+                                                                                     (let ((*query-io* (clim:frame-query-io frame)))
+                                                                                       ,@body
+                                                                                       (read-char *query-io*))))))))
 (defunassert (trigger-event (event-id))
     (event-id symbol)
   (when (and
@@ -407,10 +294,10 @@
          (or (event-repeatable (get-event event-id)) (not (finished-events (list event-id))))
          (finished-events (event-finished-depends (get-event event-id)))
          (or (not (event-optional (get-event event-id)))
-             (car (prompt-for-values (boolean
-                                      :prompt "accept quest"
-                                      :default t
-                                      :view clim:+toggle-button-view+)))))
+             (progn
+               (finish-output)
+               (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+                                             (clim:accept 'boolean :prompt "accept quest" :default t :view clim:+toggle-button-view+ :stream *query-io*))))))
     (setf (major-event-of *game*) event-id)
     (funcall (coerce (event-lambda (get-event event-id)) 'function) (get-event event-id))
     (unless (event-major (get-event event-id))
@@ -521,8 +408,7 @@
            (a (position)
              (let ((b 0)
                    (array
-                     (if clim-listener::*application-frame*
-                         #1A(#P"nsew.xpm"
+                     #1A(#P"nsew.xpm"
                                #P"nsw.xpm"
                                #P"nse.xpm"
                                #P"ns.xpm"
@@ -537,103 +423,65 @@
                                #P"ew.xpm"
                                #P"w.xpm"
                                #P"e.xpm"
-                               #P"dot.xpm")
-                         "╋╋╋┼┫┫┫┤┣┣┣├┃┃┃│┻┻┻┴┛┛┛┘┗┗┗└╹╹╹╵┳┳┳┬┓┓┓┐┏┏┏┌╻╻╻╷━━━─╸╸╸╴╺╺╺╶▮▮▮▯")))
-               (if clim-listener::*application-frame*
-                   (progn (unless (travelablep position :north)
-                            (setf b (logior b (shl 1 8 3))))
-                          (unless (travelablep position :south)
-                            (setf b (logior b (shl 1 8 2))))
-                          (unless (travelablep position :west)
-                            (setf b (logior b (shl 1 8 1))))
-                          (unless (travelablep position :east)
-                            (setf b (logior b (shl 1 8 0)))))
-                   (progn (unless (travelablep position :north)
-                            (setf b (logior b (shl 1 8 5))))
-                          (unless (travelablep position :south)
-                            (setf b (logior b (shl 1 8 4))))
-                          (unless (travelablep position :west)
-                            (setf b (logior b (shl 1 8 3))))
-                          (unless (travelablep position :east)
-                            (setf b (logior b (shl 1 8 2))))
-                          (unless (travelablep position :up)
-                            (setf b (logior b (shl 1 8 1))))
-                          (unless (travelablep position :down)
-                            (setf b (logior b (shl 1 8 0))))))
-               (if clim:*application-frame*
-                   (eval (aref array b))
-                   (aref array b)))))
-    (let ((pattern (print-map-pattern-cache #P"blank.xpm"
-                                            (list clim:+background-ink+ clim:+foreground-ink+)))
-          (start-position (when clim-listener::*application-frame*
-                            (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
-      (if clim-listener::*application-frame*
-          (push (clim:updating-output (t)
-                  ;; position needs to be bound inside of clim:updating-output and not outside
-                  ;; for the presentation to notice when the floor the player is on changes
-                  (let ((position (if (eq position t)
-                                      (position-of (player-of *game*))
-                                      position)))
-                    (iter (for y
-                               from (- (second position) 15)
-                               to (+ (second position) 15))
-                      (for y-pos
-                           from (second start-position)
-                           to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
-                           by (clim:pattern-height pattern))
-                      (iter (for x
-                                 from (- (first position) 15)
-                                 to (+ (first position) 15))
-                        (for x-pos
-                             from (first start-position)
-                             to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
-                             by (clim:pattern-width pattern))
-                        (let* ((current-position (append (list x y) (cddr position)))
-                               (char (cons (if (or (and (get-zone current-position)
-                                                        (hiddenp (get-zone current-position)))
-                                                   (not (get-zone current-position)))
-                                               #P"blank.xpm"
-                                               (a current-position))
-                                           (clim:make-rgb-color (if (and (get-zone current-position)
-                                                                         (warp-points-of (get-zone current-position)))
-                                                                    1
-                                                                    0)
-                                                                (if (equal current-position (position-of (player-of *game*)))
-                                                                    0.7
-                                                                    0)
-                                                                (if (or (travelablep current-position :up)
-                                                                        (travelablep current-position :down))
-                                                                    1
-                                                                    0)))))
-                          (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
-                          (when (get-zone current-position)
-                            (clim:with-output-as-presentation
-                                (*standard-output* (get-zone (list x y (third position) (fourth position))) 'zone)
-                              (clim:draw-pattern* *standard-output* pattern x-pos y-pos))))))))
-                *records*)
-          (let ((position (if (eq position t)
-                              (position-of (player-of *game*))
-                              position)))
-            (iter (for y
-                       from (- (second position) 15)
-                       to (+ (second position) 15))
-              (iter (for x
-                         from (- (first position) 15)
-                         to (+ (first position) 15))
-                (let* ((current-position (append (list x y) (cddr position)))
-                       (char (cond ((equal current-position (position-of (player-of *game*)))
-                                    #\@)
-                                   ((and (get-zone current-position) (hiddenp (get-zone current-position)))
-                                    #\Space)
-                                   ((and (get-zone current-position) (warp-points-of (get-zone current-position)))
-                                    #\▒)
-                                   ((get-zone current-position)
-                                    (a current-position))
-                                   (t #\Space))))
-                  (format t "~a" char)))
-              (terpri))))
-      (when clim-listener::*application-frame*
-        (clim:stream-set-cursor-position *standard-output* (first start-position) (+ (second start-position) (* 31 (clim:pattern-height pattern))))))))
+                               #P"dot.xpm")))
+               (progn (unless (travelablep position :north)
+                        (setf b (logior b (shl 1 8 3))))
+                      (unless (travelablep position :south)
+                        (setf b (logior b (shl 1 8 2))))
+                      (unless (travelablep position :west)
+                        (setf b (logior b (shl 1 8 1))))
+                      (unless (travelablep position :east)
+                        (setf b (logior b (shl 1 8 0)))))
+               (eval (aref array b)))))
+    (present-with-frame-resolved
+      (let ((pattern (print-map-pattern-cache #P"blank.xpm"
+                                              (list clim:+background-ink+ clim:+foreground-ink+)))
+            (start-position (when clim-listener::*application-frame*
+                              (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
+        (clim:updating-output (t)
+                ;; position needs to be bound inside of clim:updating-output and not outside
+                ;; for the presentation to notice when the floor the player is on changes
+                (let ((position (if (eq position t)
+                                    (position-of (player-of *game*))
+                                    position)))
+                  (iter (for y
+                             from (- (second position) 15)
+                             to (+ (second position) 15))
+                    (for y-pos
+                         from (second start-position)
+                         to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
+                         by (clim:pattern-height pattern))
+                    (iter (for x
+                               from (- (first position) 15)
+                               to (+ (first position) 15))
+                      (for x-pos
+                           from (first start-position)
+                           to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
+                           by (clim:pattern-width pattern))
+                      (let* ((current-position (append (list x y) (cddr position)))
+                             (char (cons (if (or (and (get-zone current-position)
+                                                      (hiddenp (get-zone current-position)))
+                                                 (not (get-zone current-position)))
+                                             #P"blank.xpm"
+                                             (a current-position))
+                                         (clim:make-rgb-color (if (and (get-zone current-position)
+                                                                       (warp-points-of (get-zone current-position)))
+                                                                  1
+                                                                  0)
+                                                              (if (equal current-position (position-of (player-of *game*)))
+                                                                  0.7
+                                                                  0)
+                                                              (if (or (travelablep current-position :up)
+                                                                      (travelablep current-position :down))
+                                                                  1
+                                                                  0)))))
+                        (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
+                        (when (get-zone current-position)
+                          (clim:with-output-as-presentation
+                              (*standard-output* (get-zone (list x y (third position) (fourth position))) 'zone)
+                            (clim:draw-pattern* *standard-output* pattern x-pos y-pos))))))))
+        (when clim-listener::*application-frame*
+          (clim:stream-set-cursor-position *standard-output* (first start-position) (+ (second start-position) (* 31 (clim:pattern-height pattern)))))))))
 (defunassert (get-zone-text (text))
     (text (or simple-string coerced-function))
   (cond
@@ -3011,32 +2859,17 @@
                + 2)
             * ($ (random-from-range 85 100) / 100))))
 (defmacro draw-bar (stat &rest colors)
-  `(if clim-listener::*application-frame*
-       (multiple-value-bind (x y) (clim:stream-cursor-position *standard-output*)
-         (clim:draw-rectangle* *standard-output* x y (+ x (* ,stat 400)) (+ y 15)
-                               :ink (cond ,@(iter (for i in colors)
-                                              (collect `(,(car i) ,(intern (format nil "+~a+"
-                                                                                   (if (typep (car (last i)) 'cons)
-                                                                                       (caar (last i))
-                                                                                       (car (last i))))
-                                                                           "CLIM"))))))
-         (clim:draw-rectangle* *standard-output* x y (+ x 400) (+ y 15)
-                               :filled nil)
-         (clim:stream-set-cursor-position *standard-output* (+ x 400) y))
-       (cl-ansi-text:with-color ((cond ,@(iter (for i in colors)
-                                           (collect `(,(car i)
-                                                      ,(if (typep (car (last i)) 'cons)
-                                                           (cadar (last i))
-                                                           (car (last i))))))))
-         (color-format (cond ,@(iter (for i in colors)
-                                 (collect (let ((col (last i)))
-                                            (if (typep (car col) 'cons)
-                                                (append (butlast i)
-                                                        (cdar col))
-                                                i)))))
-                       "[~{~a~}]"
-                       (iter (for i from 0 below 40)
-                         (collect (if (< i (* ,stat 40)) "#" " ")))))))
+  `(multiple-value-bind (x y) (clim:stream-cursor-position *standard-output*)
+     (clim:draw-rectangle* *standard-output* x y (+ x (* ,stat 400)) (+ y 15)
+                           :ink (cond ,@(iter (for i in colors)
+                                          (collect `(,(car i) ,(intern (format nil "+~a+"
+                                                                               (if (typep (car (last i)) 'cons)
+                                                                                   (caar (last i))
+                                                                                   (car (last i))))
+                                                                       "CLIM"))))))
+     (clim:draw-rectangle* *standard-output* x y (+ x 400) (+ y 15)
+                           :filled nil)
+     (clim:stream-set-cursor-position *standard-output* (+ x 400) y)))
 (defun format-stats (user)
   (format t "Name: ~a~%" (name-of user))
   (format t "Species: ~a~%" (species-of user))
@@ -3129,12 +2962,10 @@
             (t :green))
   (terpri))
 (defun present-stats (user)
-  (cond #+(or slynk swank) ((not clim-listener::*application-frame*)
-                            (format-stats user))
-        (clim-listener::*application-frame* (push (clim:updating-output (clim-listener::*standard-output*)
-                                                    (clim:with-output-as-presentation (t user 'yadfa-class :single-box t)
-                                                      (format-stats user)))
-                                                  *records*))))
+  (present-with-frame-resolved
+    (clim:updating-output (*query-io*)
+      (clim:with-output-as-presentation (t user 'yadfa-class :single-box t)
+        (format-stats user)))))
 
 (defun describe-item (item)
   (let ((i (if (listp item)
@@ -3775,40 +3606,39 @@
   (let* ((default (make-instance 'player))
          (wear '(yadfa-items:short-dress yadfa-items:tshirt yadfa-items:bra yadfa-items:jeans
                  yadfa-items:boxers yadfa-items:panties yadfa-items:pullups yadfa-items:diaper))
-         (values (prompt-for-values (string
-                                     :prompt "Name"
-                                     :default (name-of default) :view clim:+text-field-view+)
-                                    (boolean
-                                     :prompt "Is Male"
-                                     :default (malep default) :view clim:+toggle-button-view+)
-                                    (string
-                                     :prompt "Species"
-                                     :default (species-of default) :view clim:+text-field-view+)
-                                    (((clim:subset-completion
-                                       (quasiquote-2.0:inject wear))
-                                      :name-key (quasiquote-2.0:inject (lambda (o) (name-of (make-instance o)))))
-                                     :prompt "Clothes"
-                                     :view clim:+check-box-view+
-                                     :default '(yadfa-items:tshirt yadfa-items:diaper))
-                                    ((clim:completion (:normal :low :overactive))
-                                     :prompt "Bladder capacity"
-                                     :default :normal :view clim:+option-pane-view+))))
+         name male species clothes bladder)
+    (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+      (fresh-line *query-io*)
+      (setf name (clim:accept 'string :prompt "Name" :default (name-of default) :view clim:+text-field-view+ :stream *query-io*))
+      (fresh-line *query-io*)
+      (setf male (clim:accept 'boolean :prompt "Is Male"
+                                       :default (malep default) :view clim:+toggle-button-view+ :stream *query-io*))
+      (fresh-line *query-io*)
+      (setf species (clim:accept 'string :prompt "Species"
+                                         :default (species-of default) :view clim:+text-field-view+ :stream *query-io*))
+      (fresh-line *query-io*)
+      (setf clothes (clim:accept `((clim:subset-completion ,wear) :name-key ,(lambda (o) (name-of (make-instance o))))
+                                 :prompt "Clothes" :view clim:+check-box-view+ :default '(yadfa-items:tshirt yadfa-items:diaper)
+                                 :stream *query-io*))
+      (fresh-line *query-io*)
+      (setf bladder (clim:accept '(clim:completion (:normal :low :overactive))
+                                 :prompt "Bladder capacity" :default :normal :view clim:+option-pane-view+ :stream *query-io*)))
     (setf (player-of *game*) (make-instance 'player
                                             :position '(0 0 0 yadfa-zones:home)
-                                            :name (first values)
-                                            :male (second values)
-                                            :species (third values)
-                                            :bladder/need-to-potty-limit (getf '(:normal 300 :low 200 :overactive 149) (fifth values))
-                                            :bladder/potty-dance-limit (getf '(:normal 450 :low 300 :overactive 150) (fifth values))
-                                            :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) (fifth values))
-                                            :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) (fifth values))
-                                            :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) (fifth values))
+                                            :name name
+                                            :male male
+                                            :species species
+                                            :bladder/need-to-potty-limit (getf '(:normal 300 :low 200 :overactive 149) bladder)
+                                            :bladder/potty-dance-limit (getf '(:normal 450 :low 300 :overactive 150) bladder)
+                                            :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) bladder)
+                                            :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) bladder)
+                                            :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) bladder)
                                             :wear (iter (for i in wear)
-                                                    (when (member i (fourth values) :test #'eq)
+                                                    (when (member i clothes :test #'eq)
                                                       (collect (make-instance i))))))
     (setf (team-of *game*) (list (player-of *game*)))
     (iter (for i in (iter (for i in '(yadfa-items:diaper yadfa-items:pullups yadfa-items:boxers yadfa-items:panties))
-                      (when (member i (fourth values) :test #'eq)
+                      (when (member i clothes :test #'eq)
                         (collect i))))
       (iter (for j from 1 to (random 20))
         (push (make-instance i)
