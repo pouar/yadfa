@@ -1,5 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package :yadfa)
+(defvar yadfa-clim::*records* ())
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defmacro ref (symbol type)
     `(if (or (asdf:component-loaded-p "yadfa/docs")
@@ -39,3 +40,5 @@
 (defvar *mod-registry* nil)
 (defvar *pattern-cache* (make-hash-table :test #'equal))
 (defvar *mods* '())
+(defvar *game* nil
+  "contains the information to be serialized when saving and loading a game")

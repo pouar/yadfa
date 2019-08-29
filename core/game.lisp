@@ -2,3 +2,4 @@
 (in-package :yadfa)
 (defvar *game* (make-instance 'game)
   "contains the information to be serialized when saving and loading a game")
+(unless *game* (setf *game* (make-instance 'game)))
