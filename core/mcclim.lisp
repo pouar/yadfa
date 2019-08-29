@@ -140,13 +140,11 @@
          (*command-unparser* command-unparser)
          (*partial-command-parser* partial-command-parser))
     (restart-case
-        (flet ((execute-command ()
-                 (funcall (emacs-frame-lambda frame) frame)))
+        (progn
           (redisplay-frame-panes frame :force-p t)
           (when interactorp
             (setf (cursor-visibility (stream-text-cursor frame-query-io)) nil))
-          (let ((out (execute-command)))
-            out))
+          (funcall (emacs-frame-lambda frame) frame))
       (abort ()
         :report "Return to application command loop."
         (if interactorp
