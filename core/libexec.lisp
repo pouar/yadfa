@@ -280,7 +280,7 @@
       (push (clim:updating-output (*query-io*)
               ,@body)
             yadfa-clim::*records*))
-     (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame :width 768 :height 800
+     (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame :width 1024 :height 768
                                                                :emacs-frame-lambda (lambda (frame)
                                                                                      (let ((*query-io* (clim:frame-query-io frame)))
                                                                                        ,@body
