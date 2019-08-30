@@ -33,6 +33,7 @@
    #:make-pocket-zone
    #:accept-with-frame-resolved
    #:present-with-frame-resolved
+   #:updating-present-frame-resolved
    ;;functions
    #:get-positions-of-type
    #:trigger-event

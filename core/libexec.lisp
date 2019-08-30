@@ -285,6 +285,30 @@
                                                                                      (let ((*query-io* (clim:frame-query-io frame)))
                                                                                        ,@body
                                                                                        (read-char *query-io*))))))))
+(defmacro updating-present-frame-resolved
+    ((stream
+      &key (unique-id nil unique-id-supplied-p) (id-test nil id-test-supplied-p)
+           (cache-value nil cache-value-supplied-p)
+           (cache-test nil cache-test-supplied-p)
+           (fixed-position nil fixed-position-supplied-p)
+           (all-new nil all-new-supplied-p)
+           (parent-cache nil parent-cache-supplied-p)
+           (record-type nil record-type-supplied-p)
+      &allow-other-keys) &body body)
+  `(cond
+     (clim-listener::*application-frame*
+      (push (clim:updating-output (,stream ,@(and unique-id-supplied-p `(:unique-id ,unique-id)) ,@(and id-test-supplied-p `(:id-test ,id-test))
+                                   ,@(and cache-value-supplied-p `(:cache-value ,cache-value)) ,@(and cache-test-supplied-p `(:cache-test ,cache-test))
+                                   ,@(and fixed-position-supplied-p `(:fixed-position ,fixed-position)) ,@(and all-new-supplied-p `(:all-new ,all-new))
+                                   ,@(and parent-cache-supplied-p `(:parent-cache ,parent-cache))
+                                   ,@(and record-type-supplied-p (and `(:record-type ,record-type))))
+              ,@body)
+            yadfa-clim::*records*))
+     (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame :width 1024 :height 768
+                                                                                        :emacs-frame-lambda (lambda (frame)
+                                                                                                              (let ((*query-io* (clim:frame-query-io frame)))
+                                                                                                                ,@body
+                                                                                                                (read-char *query-io*))))))))
 (defunassert (trigger-event (event-id))
     (event-id symbol)
   (when (and
@@ -399,31 +423,31 @@
               #P"yadfa:home;pixmaps;map-patterns;")
              :format :xpm
              :designs designs))))
+(defun travelablep (position direction)
+  (and (get-zone (get-destination direction position))
+       (get-zone position)
+       (not (getf-direction position direction :hidden))
+       (not (hiddenp (get-zone (get-destination direction position))))))
 (defun print-map (position)
-  (labels ((travelablep (position direction)
-             (and (get-zone (get-destination direction position))
-                  (get-zone position)
-                  (not (getf-direction position direction :hidden))
-                  (not (hiddenp (get-zone (get-destination direction position))))))
-           (a (position)
+  (labels ((a (position)
              (let ((b 0)
                    (array
                      #1A(#P"nsew.xpm"
-                               #P"nsw.xpm"
-                               #P"nse.xpm"
-                               #P"ns.xpm"
-                               #P"new.xpm"
-                               #P"nw.xpm"
-                               #P"ne.xpm"
-                               #P"n.xpm"
-                               #P"sew.xpm"
-                               #P"sw.xpm"
-                               #P"se.xpm"
-                               #P"s.xpm"
-                               #P"ew.xpm"
-                               #P"w.xpm"
-                               #P"e.xpm"
-                               #P"dot.xpm")))
+                           #P"nsw.xpm"
+                           #P"nse.xpm"
+                           #P"ns.xpm"
+                           #P"new.xpm"
+                           #P"nw.xpm"
+                           #P"ne.xpm"
+                           #P"n.xpm"
+                           #P"sew.xpm"
+                           #P"sw.xpm"
+                           #P"se.xpm"
+                           #P"s.xpm"
+                           #P"ew.xpm"
+                           #P"w.xpm"
+                           #P"e.xpm"
+                           #P"dot.xpm")))
                (progn (unless (travelablep position :north)
                         (setf b (logior b (shl 1 8 3))))
                       (unless (travelablep position :south)
@@ -433,53 +457,59 @@
                       (unless (travelablep position :east)
                         (setf b (logior b (shl 1 8 0)))))
                (eval (aref array b)))))
-    (present-with-frame-resolved
+    (updating-present-frame-resolved (*query-io* :unique-id `(map% ,position)
+                                                 :id-test #'equal
+                                                 :cache-value (sxhash (list (position-of (player-of *game*))
+                                                                            (iter (for i in '(:north :south :east :west :up :down))
+                                                                              (collect (travelablep (position-of (player-of *game*)) i)))
+                                                                            (and (get-zone (position-of (player-of *game*)))
+                                                                                 (warp-points-of (get-zone (position-of (player-of *game*))))))))
       (let ((pattern (print-map-pattern-cache #P"blank.xpm"
                                               (list clim:+background-ink+ clim:+foreground-ink+)))
             (start-position (when clim-listener::*application-frame*
                               (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
         (clim:updating-output (t)
-                ;; position needs to be bound inside of clim:updating-output and not outside
-                ;; for the presentation to notice when the floor the player is on changes
-                (let ((position (if (eq position t)
-                                    (position-of (player-of *game*))
-                                    position)))
-                  (iter (for y
-                             from (- (second position) 15)
-                             to (+ (second position) 15))
-                    (for y-pos
-                         from (second start-position)
-                         to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
-                         by (clim:pattern-height pattern))
-                    (iter (for x
-                               from (- (first position) 15)
-                               to (+ (first position) 15))
-                      (for x-pos
-                           from (first start-position)
-                           to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
-                           by (clim:pattern-width pattern))
-                      (let* ((current-position (append (list x y) (cddr position)))
-                             (char (cons (if (or (and (get-zone current-position)
-                                                      (hiddenp (get-zone current-position)))
-                                                 (not (get-zone current-position)))
-                                             #P"blank.xpm"
-                                             (a current-position))
-                                         (clim:make-rgb-color (if (and (get-zone current-position)
-                                                                       (warp-points-of (get-zone current-position)))
-                                                                  1
-                                                                  0)
-                                                              (if (equal current-position (position-of (player-of *game*)))
-                                                                  0.7
-                                                                  0)
-                                                              (if (or (travelablep current-position :up)
-                                                                      (travelablep current-position :down))
-                                                                  1
-                                                                  0)))))
-                        (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
-                        (when (get-zone current-position)
-                          (clim:with-output-as-presentation
-                              (*standard-output* (get-zone (list x y (third position) (fourth position))) 'zone)
-                            (clim:draw-pattern* *standard-output* pattern x-pos y-pos))))))))
+          ;; position needs to be bound inside of clim:updating-output and not outside
+          ;; for the presentation to notice when the floor the player is on changes
+          (let ((position (if (eq position t)
+                              (position-of (player-of *game*))
+                              position)))
+            (iter (for y
+                       from (- (second position) 15)
+                       to (+ (second position) 15))
+              (for y-pos
+                   from (second start-position)
+                   to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
+                   by (clim:pattern-height pattern))
+              (iter (for x
+                         from (- (first position) 15)
+                         to (+ (first position) 15))
+                (for x-pos
+                     from (first start-position)
+                     to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
+                     by (clim:pattern-width pattern))
+                (let* ((current-position (append (list x y) (cddr position)))
+                       (char (cons (if (or (and (get-zone current-position)
+                                                (hiddenp (get-zone current-position)))
+                                           (not (get-zone current-position)))
+                                       #P"blank.xpm"
+                                       (a current-position))
+                                   (clim:make-rgb-color (if (and (get-zone current-position)
+                                                                 (warp-points-of (get-zone current-position)))
+                                                            1
+                                                            0)
+                                                        (if (equal current-position (position-of (player-of *game*)))
+                                                            0.7
+                                                            0)
+                                                        (if (or (travelablep current-position :up)
+                                                                (travelablep current-position :down))
+                                                            1
+                                                            0)))))
+                  (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
+                  (when (get-zone current-position)
+                    (clim:with-output-as-presentation
+                        (*standard-output* (get-zone (list x y (third position) (fourth position))) 'zone)
+                      (clim:draw-pattern* *standard-output* pattern x-pos y-pos))))))))
         (when clim-listener::*application-frame*
           (clim:stream-set-cursor-position *standard-output* (first start-position) (+ (second start-position) (* 31 (clim:pattern-height pattern)))))))))
 (defunassert (get-zone-text (text))
@@ -2962,7 +2992,7 @@
             (t :green))
   (terpri))
 (defun present-stats (user)
-  (present-with-frame-resolved
+  (updating-present-frame-resolved (*query-io* :unique-id `(stats% ,user) :id-test #'equal)
     (clim:updating-output (*query-io*)
       (clim:with-output-as-presentation (t user 'yadfa-class :single-box t)
         (format-stats user)))))
