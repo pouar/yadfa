@@ -281,10 +281,10 @@
               ,@body)
             yadfa-clim::*records*))
      (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame :width 1024 :height 768
-                                                               :emacs-frame-lambda (lambda (frame)
-                                                                                     (let ((*query-io* (clim:frame-query-io frame)))
-                                                                                       ,@body
-                                                                                       (read-char *query-io*))))))))
+                                                                                        :emacs-frame-lambda (lambda (frame)
+                                                                                                              (let ((*query-io* (clim:frame-query-io frame)))
+                                                                                                                ,@body
+                                                                                                                (read-char *query-io*))))))))
 (defmacro updating-present-frame-resolved
     ((stream
       &key (unique-id nil unique-id-supplied-p) (id-test nil id-test-supplied-p)
