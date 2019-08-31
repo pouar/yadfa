@@ -448,14 +448,10 @@
                            #P"w.xpm"
                            #P"e.xpm"
                            #P"dot.xpm")))
-               (progn (unless (travelablep position :north)
-                        (setf b (logior b (shl 1 8 3))))
-                      (unless (travelablep position :south)
-                        (setf b (logior b (shl 1 8 2))))
-                      (unless (travelablep position :west)
-                        (setf b (logior b (shl 1 8 1))))
-                      (unless (travelablep position :east)
-                        (setf b (logior b (shl 1 8 0)))))
+               (iter (for direction in '(:east :west :south :north))
+                 (for byte-position upfrom 0)
+                 (unless (travelablep position direction)
+                   (setf (ldb (byte 1 byte-position) b) 1)))
                (eval (aref array b)))))
     (updating-present-frame-resolved (*query-io* :unique-id `(map% ,position)
                                                  :id-test #'equal
