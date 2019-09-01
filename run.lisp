@@ -32,7 +32,5 @@
 (when (position "wait" (uiop:command-line-arguments) :test #'string=)
   (sleep 2))
 (ql:quickload :yadfa)
-(when (position "texi" (uiop:command-line-arguments) :test #'string=)
-  (ql:quickload "yadfa/docs"))
 (in-package :yadfa)
 (yadfa::main)
