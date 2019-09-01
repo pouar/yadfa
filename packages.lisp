@@ -468,8 +468,8 @@
    #:home
    #:debug-map
    #:bandits-domain
-   #:|1|
-   #:|2|
+   #:\1
+   #:\2
    #:ironside
    #:silver-cape
    #:bandits-way
