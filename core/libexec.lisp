@@ -215,7 +215,8 @@
           (with-open-file (stream file
                                   :if-does-not-exist :create
                                   :direction :output
-                                  :if-exists :supersede)
+                                  :if-exists :supersede
+                                  :external-format :utf-8)
             (write *mods* :stream stream)))
         (error ()
           (write-line "The configuration file containing the list of enabled mods seems broken, ignoring")))

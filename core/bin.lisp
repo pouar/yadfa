@@ -21,7 +21,8 @@
              (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
                                      :if-does-not-exist :create
                                      :if-exists :supersede
-                                     :direction :output)
+                                     :direction :output
+                                     :external-format :utf-8)
                (write *mods* :stream stream))
              (asdf:load-system system))
       (write-line "That system doesn't exist")))
@@ -35,7 +36,8 @@
          (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
                                  :if-does-not-exist :create
                                  :if-exists :supersede
-                                 :direction :output)
+                                 :direction :output
+                                 :external-format :utf-8)
            (write *mods* :stream stream))))
 (defunassert (yadfa-world:save-game (path)
                                     #.(format nil "This function saves current game to @var{PATH}
@@ -44,7 +46,7 @@
                                               (xref yadfa-world:load-game :function)))
     (path (or simple-string pathname))
   (ensure-directories-exist (make-pathname :host (pathname-host path) :device (pathname-device path) :directory (pathname-directory path)))
-  (with-open-file (s path :direction :output :if-exists :supersede :if-does-not-exist :create)
+  (with-open-file (s path :direction :output :if-exists :supersede :if-does-not-exist :create :external-format :utf-8)
     (write-string (write-to-string (ms:marshal *game*)) s))
   (cond ((typep path 'logical-pathname)
          (translate-logical-pathname path))
