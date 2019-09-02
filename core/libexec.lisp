@@ -254,15 +254,8 @@
                                                       t)
                                                      (t (< a b))))
                            :key #'duration-of))))
-         (pass ())
          (duration (if duration duration (duration-of (make-instance status-condition)))))
-    (when test
-      (setf pass (nconc pass (list :test test))))
-    (when key
-      (setf pass (nconc pass (list :key key))))
-    (if pass
-        (eval `(pushnew i (getf (status-conditions-of *battle*) user) ,@pass))
-        (pushnew i (getf (status-conditions-of *battle*) user)))
+    (pushnew i (getf (status-conditions-of *battle*) user) :test (or test #'eql) :key (or key #'identity))
     (when (and (not (eq (duration-of i) t)) (< (duration-of i) duration))
       (setf (duration-of i) duration))))
 
