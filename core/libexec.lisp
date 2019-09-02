@@ -3583,12 +3583,12 @@
         (check-if-done)
         (unless (turn-queue-of *battle*)
           (incf (time-of *game*) 5)
-          (appendf (turn-queue-of *battle*)
-                   (sort (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
-                           (when (> (health-of i) 0)
-                             (collect i)))
-                         '>
-                         :key #'(lambda (a) (calculate-stat a :speed))))))
+          (setf (cdr (last (turn-queue-of *battle*)))
+                (sort (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
+                        (when (> (health-of i) 0)
+                          (collect i)))
+                      '>
+                      :key #'(lambda (a) (calculate-stat a :speed))))))
       (format t "~a is next in battle~%" (name-of (first (turn-queue-of *battle*))))
       ret)))
 (defun ally-join (ally)
