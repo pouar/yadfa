@@ -79,6 +79,7 @@
    #:pushnewmove
    #:get-move
    #:process-potty-dance-check
+   #:clear-configuration-hook
    ;;methods
    #:get-process-potty-action-type
    #:output-process-potty-text

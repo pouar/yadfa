@@ -199,6 +199,10 @@
 (defunassert (find-mod (system))
     (system (or symbol simple-string))
   (gethash (asdf:primary-system-name system) *mod-registry*))
+(defun clear-configuration-hook ()
+  (set-logical-pathnames)
+  (clear-pattern-cache)
+  (initialize-mod-registry))
 (defun load-mods (&rest keys &key compiler-verbose &allow-other-keys)
   (unless
       (and (find "texi" (uiop:command-line-arguments) :test #'string=) (asdf:component-loaded-p "yadfa/docs"))

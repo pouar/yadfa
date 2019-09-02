@@ -4,9 +4,7 @@
   (pushnew
    'yadfa::find-mod
    asdf:*system-definition-search-functions*)
-  (uiop:register-clear-configuration-hook 'initialize-mod-registry)
-  (uiop:register-clear-configuration-hook 'clear-pattern-cache)
-  (uiop:register-clear-configuration-hook 'set-logical-pathnames)
+  (uiop:register-clear-configuration-hook 'clear-configuration-hook)
   (asdf:clear-configuration)
   (when (and (not (find "texi" (uiop:command-line-arguments) :test #'string=))
              (position "slynk" (uiop:command-line-arguments) :test #'string=))
