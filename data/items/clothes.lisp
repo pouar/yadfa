@@ -19,13 +19,13 @@
   (:default-initargs
    :name "Roomy Onesie"
    :description "A onesie intended to accommodate thicker diapers"
-   :onesie-thickness-capacity (cons (* 16 25.4) nil)
+   :onesie-thickness-capacity (cons (* 16 (+ 25 2/5)) nil)
    :value 400
    :onesie-bulge-text '((60 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
                          20 "It fits over your diaper quite nicely"
                          0 "It's so baggy that what you're wearing under there is quite visible")
                         .
-                        (#.(* 16 25.4) "You are unable to get the buttons to snap so you just leave the flaps open"
+                        (#.(* 16 (+ 25 2/5)) "You are unable to get the buttons to snap so you just leave the flaps open"
                          #.(* 12 25) "Your padding is clearly visible under there"
                          #.(* 11 25) "The flaps just barely cover the diapers"
                          #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
@@ -115,7 +115,7 @@
    :bulge-text '(50 "Your pants puff out humorously"
                  12 "Your padding is visibly poking out of the top of your pants"
                  0 "It fits loosely")
-   :thickness-capacity (* 16 25.4)))
+   :thickness-capacity (* 16 (+ 25 2/5))))
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defonesie rubber-onesie () ()
     (:default-initargs
@@ -168,7 +168,7 @@
 (defclass orca-suit-lite (orca-suit) ()
   (:default-initargs
    :value 1000
-   :thickness-capacity (* 16 25.4)
+   :thickness-capacity (* 16 (+ 25 2/5))
    :name "Orca Suit Lite"
    :description "An orca suit similar to the one Gabby wears, minus the swim boots and arm covers. You don't need 'em"))
 (defclass stretchable-orca-suit-lite (stretchable-orca-suit orca-suit-lite) ()
@@ -234,13 +234,13 @@
    :onesie-waterproof t
    :value 600
    :name "Bandit Swimsuit"
-   :onesie-thickness-capacity (cons (* 16 25.4) nil)
+   :onesie-thickness-capacity (cons (* 16 (+ 25 2/5)) nil)
    :onesie-bulge-text '((60 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
                          50 "It stretches which helps accommodate your thick padding"
                          20 "It fits over your diaper quite nicely"
                          0 "It's so baggy that what you're wearing under there is quite visible")
                         .
-                        (#.(* 16 25.4) "You are unable to get the buttons to snap so you just leave the flaps open"
+                        (#.(* 16 (+ 25 2/5)) "You are unable to get the buttons to snap so you just leave the flaps open"
                          #.(* 12 25) "Your padding is clearly visible under there"
                          #.(* 11 25) "The flaps just barely cover the diapers"
                          #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
