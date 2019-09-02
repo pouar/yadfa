@@ -31,7 +31,7 @@
          (let ((*package* (find-package :cl)))
            (format nil "See ~s" ',symbol)))))
 (defvar *battle* nil)
-(defvar *mod-registry* nil)
+(defvar *mod-registry* (make-hash-table :test #'equal))
 (defvar *pattern-cache* (make-hash-table :test #'equal))
 (defvar *mods* '())
 (defvar *game* nil

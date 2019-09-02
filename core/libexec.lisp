@@ -165,7 +165,7 @@
   (:method ((element zone)) (resolve-enemy-spawn-list (enemy-spawn-list-of element))))
 
 (defun initialize-mod-registry ()
-  (setf *mod-registry* (make-hash-table :test #'equal))
+  (clrhash *mod-registry*)
   (labels ((preferred-mod (old new)
              (cond ((not old)
                     new)
@@ -196,11 +196,8 @@
                                                      "yadfa:data;mods;**;*.*.*"))))))))
 (defun clear-pattern-cache ()
   (clrhash *pattern-cache*))
-(defun clear-mod-registry ()
-  (setf *mod-registry* nil))
 (defunassert (find-mod (system))
     (system (or symbol simple-string))
-  (unless *mod-registry* (initialize-mod-registry))
   (gethash (asdf:primary-system-name system) *mod-registry*))
 (defun load-mods (&rest keys &key compiler-verbose &allow-other-keys)
   (unless

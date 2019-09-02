@@ -4,7 +4,7 @@
   (pushnew
    'yadfa::find-mod
    asdf:*system-definition-search-functions*)
-  (uiop:register-clear-configuration-hook 'clear-mod-registry)
+  (uiop:register-clear-configuration-hook 'initialize-mod-registry)
   (uiop:register-clear-configuration-hook 'clear-pattern-cache)
   (uiop:register-clear-configuration-hook 'set-logical-pathnames)
   (asdf:clear-configuration)
