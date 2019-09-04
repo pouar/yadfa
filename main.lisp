@@ -6,6 +6,7 @@
    asdf:*system-definition-search-functions*)
   (uiop:register-clear-configuration-hook 'clear-configuration-hook)
   (asdf:clear-configuration)
+  (setf *random-state* (make-random-state t))
   (when (and (not (find "texi" (uiop:command-line-arguments) :test #'string=))
              (position "slynk" (uiop:command-line-arguments) :test #'string=))
     (when (or (and (uiop:featurep :slynk) uiop:*image-dumped-p* (not (symbol-value (uiop:find-symbol* '#:*servers* '#:slynk))))
