@@ -431,7 +431,7 @@
     :initarg :locked
     :initform :nil
     :accessor lockedp
-    :documentation "Whether this area is locked or not. contains the type specifier of the key needed to unlock it if locked, set to @code{NIL} if it isn't locked")
+    :documentation "Whether this area is locked or not. contains the type specifier of the key needed to unlock it if locked, set to @code{:NIL} if it isn't locked")
    (hidden
     :initarg :hidden
     :initform nil
