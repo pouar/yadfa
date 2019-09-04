@@ -15,7 +15,6 @@ cleanup:
   - /lib/yadfa/flatpak
   - /lib/yadfa/chocolatey
   - /lib/yadfa/.*
-  - /lib/yadfa/docs
   - /lib/yadfa/appveyor-*.lisp
 finish-args:
   - --share=ipc
@@ -102,10 +101,11 @@ modules:
       - bash -c 'cd flatpak;SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script create-appstream-metadata.lisp'
       - install -dm755 /app/lib/yadfa
       - git archive HEAD|tar -xf - -C /app/lib/yadfa/
-      - cp yadfa /app/lib/yadfa/
+      - install -Dm755 yadfa /app/lib/yadfa/
+      - install -Dm644 docs/reference/yadfa-reference.texi /app/lib/yadfa/docs/reference/
       - rm /app/tmp/home/quicklisp/local-projects/yadfa
       - mkdir -p /app/bin /app/share/doc/yadfa /app/share/info /app/share/icons/hicolor/scalable/apps /app/share/applications /app/share/metainfo /app/lib
-      - install -Dm644 docs/reference/yadfa-reference.{html,pdf,dvi,ps,xml,texi} /app/share/doc/yadfa/
+      - install -Dm644 docs/reference/yadfa-reference.{html,pdf,dvi,ps,xml} /app/share/doc/yadfa/
       - gzip -c docs/reference/yadfa-reference.info > /app/share/info/yadfa-reference.info.gz
       - chmod 644 /app/share/info/yadfa-reference.info.gz
       - install -Dm644 flatpak/net.pouar.yadfa.svg /app/share/icons/hicolor/scalable/apps/net.pouar.yadfa.svg
