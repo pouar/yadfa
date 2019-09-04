@@ -10,6 +10,8 @@
                 :enter-text "You enter the street"
                 :warp-points ,(when (= i 0) '(list 'bandits-domain '(0 30 0 bandits-domain)))
                 :hidden ,(when (= i 0) t)
+                ,@(cond ((= i 7)
+                         '(:direction-attributes (list :east (list :hidden t)))))
                 ,@(when (= i 0) '(:events (list 'yadfa-events:enter-silver-cape-1))))))))
 (macro-level
   `(progn
@@ -137,6 +139,29 @@
                                                               (check-type prop prop)
                                                               (write-line "Cashier: Welcome To The Quadruple Bypazz. We recently to moved to automated kiosks for placing your orders, since that is now all the rage nowadays, so we got one designed by the IRS, written in IBM 7074 assembly of course. What you do is you take this form and fill out your order. You fill in your name and payment method, your order number and internal serial number (cause our new automated order system is too crappy to figure this out on its own) credit/debit card information (cause our new automated order system is too crappy to get this from the card reader) and the food you want to order and its prices and sales tax (cause our new automated order system is too crappy to get the menu and pricing information out of it). You then mail this form to our main HQ where we'll manually enter it into the system by hand and you should get your food in about 3 weeks.")
                                                               (write-line "*You decide ordering isn't worth the hassle*")))))))
+(ensure-zone (1 7 0 silver-cape)
+  :name "Bathroom Door"
+  :description "It's always occupied so nyah"
+  :direction-attributes (list :west (list :hidden t))
+  :enter-text '(lambda ()
+                (cond ((>= (bladder/contents-of (player-of *game*)) (bladder/potty-dance-limit-of (player-of *game*)))
+                       (alexandria:random-elt '("One of the diapered raccoon bandits waddles by you crinkling clutching the front of his diaper and scurries into the bathroom and locks the door. You groan while doing a potty dance in response."
+                                                "An orca in pullups rushes by you clutching the front of his pullups and runs into the bathroom and locks the door. You groan while doing a potty dance in response."
+                                                "A diapered raccoon bandit is whining hopping from foot to foot in front of the locked bathroom door holding the front of his diaper waiting for it to open until he floods his diapers, then waddles away in embarrassment. You nearly piddle yourself from the sound of him piddling."
+                                                "You see a diapered skunk in front of the locked bathroom door with a look of relief on his face flooding his diapers. You're almost jealous of him."
+                                                "You head to the bathroom then groan while doing a potty dance when you find that the door is locked.")))
+                      ((>= (bowels/contents-of (player-of *game*)) (bowels/potty-dance-limit-of (player-of *game*)))
+                       (alexandria:random-elt '("One of the diapered raccoon bandits waddles by you crinkling clutching the front of his diaper and scurries into the bathroom and locks the door. You groan while doing a potty dance in response."
+                                                "An orca in pullups rushes by you clutching the front of his pullups and runs into the bathroom and locks the door. You groan while doing a potty dance in response."
+                                                "A diapered raccoon bandit waiting in front of the bathroom door involuntarily squats down and messes his pamps, then waddles away in embarrassment. You nearly mess yourself from the sound of him messing."
+                                                "You see a diapered skunk in front of the locked bathroom door squatting down and filling his diapers. You're almost jealous of him."
+                                                "You head to the bathroom then groan while doing a potty dance when you find that the door is locked.")))
+                      (t
+                       (alexandria:random-elt '("One of the diapered raccoon bandits waddles by you crinkling clutching the front of his diaper and scurries into the bathroom and locks the door."
+                                                "An orca in pullups rushes by you clutching the front of his pullups and runs into the bathroom and locks the door."
+                                                "A diapered raccoon bandit is whining hopping from foot to foot in front of the locked bathroom door holding the front of his diaper waiting for it to open until he floods his diapers, then waddles away in embarrassment."
+                                                "A diapered raccoon bandit waiting in front of the bathroom door involuntarily squats down and messes his pamps, then waddles away in embarrassment."
+                                                "You're standing in front of a locked bathroom door."))))))
 (ensure-zone (0 21 0 silver-cape)
   :name "Silver Cape Dock"
   :description "A Dock that heads to the ocean"
