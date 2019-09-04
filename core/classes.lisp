@@ -126,7 +126,7 @@
     :documentation "Character's species.")
    (last-process-potty-time
     :initarg :last-process-potty-time
-    :initform 0
+    :initform (if *game* (time-of *game*) 0)
     :accessor last-process-potty-time-of
     :documentation "Last time process-potty was processed")
    (bladder/contents
