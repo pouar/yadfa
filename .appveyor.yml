@@ -60,6 +60,12 @@ test_script:
     Else { echo "yadfa-reference.pdf was built"; }
     If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.info )) { echo "yadfa-reference.info was not built";exit 1; }
     Else { echo "yadfa-reference.info was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.ps )) { echo "yadfa-reference.ps was not built";exit 1; }
+    Else { echo "yadfa-reference.ps was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.dvi )) { echo "yadfa-reference.dvi was not built";exit 1; }
+    Else { echo "yadfa-reference.dvi was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.xml )) { echo "yadfa-reference.xml was not built";exit 1; }
+    Else { echo "yadfa-reference.xml was built"; }
     If(!(Get-ChildItem C:\projects\yadfa\yadfa*.nupkg )) { echo "nupkg was not built";exit 1; }
     Else { echo "nupkg was built"; }
 deploy_script:
