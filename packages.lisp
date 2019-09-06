@@ -349,6 +349,7 @@
    #:potion
    #:cannibal-corp-meat
    #:maximum-tomato
+   #:holy-hand-grenade
    #:generic-diapers
    #:generic-diapers-package
    #:generic-pullons

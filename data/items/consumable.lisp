@@ -102,3 +102,33 @@
    :use-script '(lambda (item user)
                  (declare (ignore item))
                  (setf (health-of user) (calculate-stat user :health)))))
+(defclass holy-hand-grenade (consumable) ()
+  (:default-initargs
+   :name "Holy Hand Grenade of Antioch"
+   :description  "And Saint Atila raised the hand grenade up on high saying, `Oh, Lord, bless this thy hand grenade that with it thou mayest blow thy enemies to tiny bits, in thy mercy.' And the Lord did grin, and people did feast upon the lambs, and sloths, and carp, and anchovies, and orangutans, and breakfast cereals, and fruit bats, and large..."
+   :value 50
+   :consumable t
+   :cant-use-predicate (lambda (item user &rest keys &key target action &allow-other-keys)
+                         (declare (ignorable item user keys target action))
+                         (unless *battle*
+                          (write-line "You can only use that in battle")))
+   :use-script (lambda (item user)
+                 (declare (ignore item))
+                 (if (or (and (typep user 'team-member) (cdr (team-of *game*))
+                          (typep user 'enemy) (cdr (enemies-of *battle*))))
+                  (progn
+                    (format t "~a: One, Two, Five~%" (name-of user))
+                    (format t "~a: Three ~a~%" (name-of (if (typep user 'team-member)
+                                                            (or (second (member user (team-of *game*)))
+                                                                (player-of *game*))
+                                                            (or (second (member user (enemies-of *battle*)))
+                                                                (first (enemies-of *battle*)))))
+                            (if (malep user) "Sir" "Ma'am"))
+                    (format t "~a: Three!!!" (name-of user)))
+                  (format t "~a: One, Two, Five, I mean Three!!!" (name-of user)))
+                 (write-line " *throws hand grenade")
+                 (write-line "*BOOM*")
+                 (iter (for i in (if (typep user 'team-member)
+                                     (enemies-of *battle*)
+                                     (team-of *game*)))
+                   (decf (health-of i) 120)))))
