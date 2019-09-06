@@ -110,11 +110,11 @@
    :description  "And Saint Attila raised the hand grenade up on high, saying, `O Lord, bless this thy hand grenade. That with it, thou mayest blow thine enemies to tiny bits, in thy mercy' And the Lord did grin, and the people did feast upon the lambs, and sloths, and carp, and anchovies, and orangutans, and breakfast cereals, and fruit bats, and..."
    :value 200
    :consumable t
-   :cant-use-predicate (lambda (item user &rest keys &key target action &allow-other-keys)
+   :cant-use-predicate '(lambda (item user &rest keys &key target action &allow-other-keys)
                          (declare (ignorable item user keys target action))
                          (unless *battle*
-                          (write-line "You can only use that in battle")))
-   :use-script (lambda (item user)
+                           (write-line "You can only use that in battle")))
+   :use-script '(lambda (item user)
                  (declare (ignore item))
                  (if (or (and (typep user 'team-member) (cdr (team-of *game*))
                           (typep user 'enemy) (cdr (enemies-of *battle*))))
