@@ -128,7 +128,7 @@
                             (if (malep user) "Sir" "Ma'am"))
                     (format t "~a: Three!!!" (name-of user)))
                   (format t "~a: One, Two, Five, I mean Three!!!" (name-of user)))
-                 (write-line " *throws hand grenade")
+                 (write-line " *throws hand grenade*")
                  (write-line "*BOOM*")
                  (iter (for i in (if (typep user 'team-member)
                                      (enemies-of *battle*)
