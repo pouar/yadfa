@@ -107,7 +107,7 @@
 (defclass holy-hand-grenade (consumable) ()
   (:default-initargs
    :name "Holy Hand Grenade of Antioch"
-   :description  "And Saint Atila raised the hand grenade up on high saying, `Oh, Lord, bless this thy hand grenade that with it thou mayest blow thy enemies to tiny bits, in thy mercy.' And the Lord did grin, and people did feast upon the lambs, and sloths, and carp, and anchovies, and orangutans, and breakfast cereals, and fruit bats, and large..."
+   :description  "And Saint Attila raised the hand grenade up on high saying, `Oh, Lord, bless this thy hand grenade that with it thou mayest blow thy enemies to tiny bits, in thy mercy.' And the Lord did grin, and people did feast upon the lambs, and sloths, and carp, and anchovies, and orangutans, and breakfast cereals, and fruit bats, and large..."
    :value 200
    :consumable t
    :cant-use-predicate (lambda (item user &rest keys &key target action &allow-other-keys)
