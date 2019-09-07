@@ -36,16 +36,18 @@
                       (if (malep a) "his" "her"))
               (write-line "Raccoon: umm, thanks.")
               (format t "~a: got a name?~%" (name-of (player-of *game*)))
-              (setf coon (make-instance 'yadfa-allies:slynk
-                                        :name (first (prompt-for-values (string :prompt "Raccoon Name"
-                                                                                :default #.(second
-                                                                                            (assoc :name
-                                                                                                   (progn
-                                                                                                     (c2mop:ensure-finalized
-                                                                                                      (find-class 'yadfa-allies:slynk))
-                                                                                                     (c2mop:compute-default-initargs
-                                                                                                      (find-class 'yadfa-allies:slynk)))))
-                                                                                :view clim:+text-field-view+)))))
+              (finish-output)
+              (accept-with-frame-resolved
+                (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+                  (setf coon (clim:accept 'string :stream *query-io* :prompt "Raccoon Name"
+                                                  :default #.(second
+                                                              (assoc :name
+                                                                     (progn
+                                                                       (c2mop:ensure-finalized
+                                                                        (find-class 'yadfa-allies:slynk))
+                                                                       (c2mop:compute-default-initargs
+                                                                        (find-class 'yadfa-allies:slynk)))))
+                                                  :view clim:+text-field-view+))))
               (format t "Raccoon: It's ~a~%" (name-of coon))
               (format t "~a decides you can't be all bad since you're the first one to be nice to him (plus the Raccoon Bandits abandoned him) and decides to join your team~%"
                       (name-of coon))

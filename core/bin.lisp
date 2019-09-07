@@ -16,29 +16,29 @@
 ~a."
             (xref yadfa-bin:disable-mod :function))
   (declare (ignorable system))
-  #+yadfa-mods (if (asdf:find-system system nil)
-                   (progn (pushnew (asdf:coerce-name system) *mods* :test #'string=)
-                          (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
-                                                  :if-does-not-exist :create
-                                                  :if-exists :supersede
-                                                  :direction :output)
-                            (write *mods* :stream stream))
-                          (asdf:load-system system))
-                   (write-line "That system doesn't exist"))
-  #-yadfa-mods (write-line "Mod support is not enabled for this build"))
+  (if (asdf:find-system system nil)
+      (progn (pushnew (asdf:coerce-name system) *mods* :test #'string=)
+             (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
+                                     :if-does-not-exist :create
+                                     :if-exists :supersede
+                                     :direction :output
+                                     :external-format :utf-8)
+               (write *mods* :stream stream))
+             (asdf:load-system system))
+      (write-line "That system doesn't exist")))
 (defun yadfa-bin:disable-mod (system)
   #.(format nil "Disable a mod, the modding system is mostly just asdf, @var{SYSTEM} is a keyword which is the name of the system you want to enable
 
 ~a."
             (xref yadfa-bin:enable-mod :function))
   (declare (ignorable system))
-  #+yadfa-mods (progn (deletef *mods* (asdf:coerce-name system) :test #'string=)
-                      (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
-                                              :if-does-not-exist :create
-                                              :if-exists :supersede
-                                              :direction :output)
-                        (write *mods* :stream stream)))
-  #-yadfa-mods (write-line "Mod support is not enabled for this build"))
+  (progn (deletef *mods* (asdf:coerce-name system) :test #'string=)
+         (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
+                                 :if-does-not-exist :create
+                                 :if-exists :supersede
+                                 :direction :output
+                                 :external-format :utf-8)
+           (write *mods* :stream stream))))
 (defunassert (yadfa-world:save-game (path)
                                     #.(format nil "This function saves current game to @var{PATH}
 
@@ -46,7 +46,7 @@
                                               (xref yadfa-world:load-game :function)))
     (path (or simple-string pathname))
   (ensure-directories-exist (make-pathname :host (pathname-host path) :device (pathname-device path) :directory (pathname-directory path)))
-  (with-open-file (s path :direction :output :if-exists :supersede :if-does-not-exist :create)
+  (with-open-file (s path :direction :output :if-exists :supersede :if-does-not-exist :create :external-format :utf-8)
     (write-string (write-to-string (ms:marshal *game*)) s))
   (cond ((typep path 'logical-pathname)
          (translate-logical-pathname path))
@@ -166,7 +166,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
              (return-from yadfa-world:move))
             ((resolve-enemy-spawn-list (get-zone (position-of (player-of *game*))))
              (iter (for i in (resolve-enemy-spawn-list (get-zone (position-of (player-of *game*)))))
-               (let ((random (if (getf i :random) (getf i :random) 1)))
+               (let ((random (or (getf i :random) 1)))
                  (when (< (random (getf i :max-random)) random)
                    (set-new-battle (cond ((getf i :eval)
                                           (eval (getf i :eval)))

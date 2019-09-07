@@ -126,7 +126,7 @@
     :documentation "Character's species.")
    (last-process-potty-time
     :initarg :last-process-potty-time
-    :initform 0
+    :initform (if *game* (time-of *game*) 0)
     :accessor last-process-potty-time-of
     :documentation "Last time process-potty was processed")
    (bladder/contents
@@ -385,7 +385,7 @@
     :initarg :enter-text
     :initform "Seems Pouar didn't make the text for this room yet, get to it you lazy fuck"
     :accessor enter-text-of
-    :documentation "Text that pops up when you enter the room")
+    :documentation "Text that pops up when you enter the room. either a string or a function designator or lambda expression with @code{NIL} as the lambda list that returns a string.")
    (position
     :initarg :position
     :initform '()
@@ -431,7 +431,7 @@
     :initarg :locked
     :initform :nil
     :accessor lockedp
-    :documentation "Whether this area is locked or not. contains the type specifier of the key needed to unlock it if locked, set to @code{NIL} if it isn't locked")
+    :documentation "Whether this area is locked or not. contains the type specifier of the key needed to unlock it if locked, set to @code{:NIL} if it isn't locked")
    (hidden
     :initarg :hidden
     :initform nil
@@ -1058,19 +1058,19 @@
      (with-output-to-string (s)
        (iter (for i in (enemies-of c))
          (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
-  (setf (turn-queue-of c) (sort (copy-tree (append (enemies-of c) (team-of *game*))) '>
+  (setf (turn-queue-of c) (sort (append (enemies-of c) (team-of *game*)) '>
                                 :key (lambda (a)
                                        (calculate-stat a :speed))))
   (incf (time-of *game*) 5))
 (defclass game (yadfa-class)
   ((zones
     :initarg :zones
-    :initform (make-hash-table :test 'equal)
+    :initform (make-hash-table :test #'equal)
     :accessor zones-of
     :documentation "Hash table of zones in the game")
    (enemy-spawn-list
     :initarg :enemy-spawn-list
-    :initform (make-hash-table :test 'equal)
+    :initform (make-hash-table :test #'equal)
     :accessor enemy-spawn-list-of
     :documentation "contains enemy spawn lists that can be reused. Use a symbol instead of a list in the enemy spawn list to use a key")
    (player
@@ -1100,7 +1100,7 @@
     :documentation "Turns since start of game")
    (events
     :initarg :events
-    :initform (make-hash-table :test 'equal)
+    :initform (make-hash-table :test #'equal)
     :accessor events-of
     :documentation "hash table containing all the events in the game")
    (finished-events

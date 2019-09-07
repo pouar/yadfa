@@ -1,5 +1,52 @@
 ;;;; -*- mode: Common-Lisp; coding: utf-8-unix; -*-
+(in-package :serialization-format)
+(defun array-values (expr)
+  (elt expr 6))
+(defun array-fill-pointer (expr)
+  (elt expr 4))
+(defun array-adjustable (expr)
+  (elt expr 5))
 (in-package :marshal)
+(defmethod marshal ((array array) &optional (circle-hash nil))
+  (let* ((ckey nil)
+         (output nil)
+         (dummy nil))
+    (setf ckey (getvalue circle-hash array))
+    (if ckey
+        (setq output (list (coding-idiom :reference) ckey))
+        (progn
+          (setq ckey (genkey circle-hash))
+          (setvalue circle-hash array ckey)
+          (setq output (list (coding-idiom :array) ckey
+                             (array-dimensions array) (array-element-type array)
+                             (when (array-has-fill-pointer-p array)
+                               (fill-pointer array))
+                             (adjustable-array-p array)))
+          (dotimes (walker (array-total-size array))
+            (push (marshal (row-major-aref array walker) circle-hash) dummy))
+          (setq output (nconc output (list (nreverse dummy))))))
+    output))
+(defmethod unmarshal-fn ((version (eql (coding-idiom :coding-release-no)))
+                         (type (eql (coding-idiom :array))) token &optional (circle-hash nil))
+  (let ((out (make-array (fmt:array-sizes token)
+                         :element-type (fmt:array-elements-type token)
+                         :fill-pointer (fmt::array-fill-pointer token)
+                         :adjustable (fmt::array-adjustable token)))
+        (elements (fmt:array-values token)))
+
+    (setf (gethash (fmt:id token) circle-hash) out)
+
+    (loop
+      for walker in elements
+      for e from 0 to (1- (length elements))
+      do (if (listp walker)
+             (setf (row-major-aref out e)
+                   (unmarshal-fn version
+                                 (fmt:data-type walker)
+                                 walker
+                                 circle-hash))
+             (setf (row-major-aref out e) (unmarshal-fn version t walker circle-hash))))
+    out))
 (defmethod unmarshal-fn ((version (eql (coding-idiom :coding-release-no)))
                          (type (eql (coding-idiom :object))) token &optional (circle-hash nil))
   (let* ((package (find-package (fmt:object-package-name token)))
@@ -232,7 +279,7 @@
                                   :provide-output-destination-keyword nil)
     ()
   (window-clear *standard-output*)
-  (setf yadfa::*records* ()))
+  (setf yadfa-clim::*records* ()))
 
 ;;; The CLIM Listener has the fonts hardcoded, the following 8 forms change them
 (defmethod read-frame-command ((frame listener) &key (stream *standard-input*))
@@ -345,7 +392,7 @@
                        (setq needs-redisplay t)
                        (execute-frame-command frame command))))
               (when needs-redisplay
-                (loop for i in yadfa:*records* do (redisplay i *standard-output*))
+                (loop for i in yadfa-clim::*records* do (redisplay i *standard-output*))
                 (redisplay-frame-panes frame :force-p first-time)
                 (when first-time
                   (yadfa:intro-function frame-query-io))
@@ -366,11 +413,3 @@
             (if interactorp
                 (format frame-query-io "~&Command aborted.~&")
                 (beep))))))))
-#+yadfa-docs
-(in-package :net.didierverna.declt)
-#+yadfa-docs
-(defun render-docstring (item)
-  "Render ITEM's documentation string.
-Rendering is done on *standard-output*."
-  (when-let ((docstring (docstring item)))
-    (write-string docstring *standard-output*)))

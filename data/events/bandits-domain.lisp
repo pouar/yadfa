@@ -58,26 +58,26 @@
   :lambda '(lambda (self)
             (declare (ignorable self))
             (if (< (random 15) 1)
-                (progn
-                  (format t "You found a treasure chest, use `(interact :chest :take :all)' to take all the treasure from it~%")
-                  (setf (getf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest)
-                        (make-instance 'prop
-                                       :name "Treasure Chest"
-                                       :description "A treasure chest"
-                                       :items (cond ((< (random 10))
-                                                     (list (make-instance 'yadfa-items:gold-collar
-                                                                          :value (random-from-range 25000 50000))))
-                                                    ((< (random 10))
-                                                     (list (make-instance 'yadfa-items:gold-pacifier
-                                                                          :value (random-from-range 10000 20000))))
-                                                    ((< (random 10))
-                                                     (list (make-instance 'yadfa-items:gem
-                                                                          :value (random-from-range 25000 50000))))
-                                                    ((< (random 20))
-                                                     (list (make-instance 'yadfa-items:gold-bar
-                                                                          :value (random-from-range 50000 100000)))))
-                                       :bitcoins (random-from-range 12500 25000))))
-                (remf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest))
+             (progn
+               (format t "You found a treasure chest, use `(interact :chest :take :all)' to take all the treasure from it~%")
+               (setf (getf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest)
+                     (make-instance 'prop
+                                    :name "Treasure Chest"
+                                    :description "A treasure chest"
+                                    :items (cond ((< (random 10))
+                                                  (list (make-instance 'yadfa-items:gold-collar
+                                                                       :value (random-from-range 25000 50000))))
+                                                 ((< (random 10))
+                                                  (list (make-instance 'yadfa-items:gold-pacifier
+                                                                       :value (random-from-range 10000 20000))))
+                                                 ((< (random 10))
+                                                  (list (make-instance 'yadfa-items:gem
+                                                                       :value (random-from-range 25000 50000))))
+                                                 ((< (random 20))
+                                                  (list (make-instance 'yadfa-items:gold-bar
+                                                                       :value (random-from-range 50000 100000)))))
+                                    :bitcoins (random-from-range 12500 25000))))
+             (remf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest))
             (cond
               ((< (random 12) 1)
                (set-new-battle '((yadfa-enemies:diapered-raccoon-bandit . (list
@@ -170,12 +170,12 @@
              (if (>
                   (bladder/contents-of (player-of *game*))
                   (* (bladder/maximum-limit-of (player-of *game*)) 5/6))
-                 (format nil "crosses ~a legs and clenches the front of ~a diaper"
-                         (if (malep (player-of *game*)) "his" "her")
-                         (if (malep (player-of *game*)) "his" "her"))
-                 (format nil "grabs the back of ~a diaper while clenching ~a butt cheeks"
-                         (if (malep (player-of *game*)) "his" "her")
-                         (if (malep (player-of *game*)) "his" "her"))))
+              (format nil "crosses ~a legs and clenches the front of ~a diaper"
+               (if (malep (player-of *game*)) "his" "her")
+               (if (malep (player-of *game*)) "his" "her"))
+              (format nil "grabs the back of ~a diaper while clenching ~a butt cheeks"
+               (if (malep (player-of *game*)) "his" "her")
+               (if (malep (player-of *game*)) "his" "her"))))
             (format t "~a: On second thought, GIVE ME THAT KEY!!!!~%~%" (name-of (player-of *game*)))
             (format t "*~a pays up*~%~%" (name-of (player-of *game*)))
             (format t "Shop Owner: Thank you for your business, but before I hand you the key~%~%")
@@ -241,27 +241,39 @@
               (format t "Vixen: Yay~%~%")
               (format t "*the 2 wag their tails happily*~%~%")
               (format t "~a: Mind telling me your names?~%~%" (name-of (player-of *game*)))
-              (let ((c (prompt-for-values (string :prompt "Fox Name"
-                                                  :default #.(second
-                                                              (assoc :name (progn (c2mop:ensure-finalized (find-class 'yadfa-allies:chris))
-                                                                                  (c2mop:compute-default-initargs
-                                                                                   (find-class 'yadfa-allies:chris)))))
-                                                  :view clim:+text-field-view+)
-                                          (string :prompt "Vixen Name"
-                                                  :default #.(second
-                                                              (assoc :name (progn (c2mop:ensure-finalized (find-class 'yadfa-allies:kristy))
-                                                                                  (c2mop:compute-default-initargs
-                                                                                   (find-class 'yadfa-allies:kristy)))))
-                                                  :view clim:+text-field-view+))))
-                (setf a (make-instance 'yadfa-allies:chris :name (first c))
-                      b (make-instance 'yadfa-allies:kristy :name (second c)))
-                (iter (for i in (list a b))
-                  (do-push i (team-of *game*) (allies-of *game*)))
-                (format t "Fox: I'm ~a~%~%" (name-of a))
-                (format t "Vixen: And I'm ~a~%~%" (name-of b))
-                (format t "~a: What's yours?~%~%" (name-of a))
-                (format t "~a: I'm ~a. Now lets get you dressed~%~%" (name-of (player-of *game*)) (name-of (player-of *game*)))
-                (format t "*~a puts the new clothes and diapers on the foxes*~%~%" (name-of a))))))
+              (finish-output)
+              (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+                                            (fresh-line *query-io*)
+                                            (setf a (make-instance 'yadfa-allies:chris
+                                                                   :name (clim:accept 'string
+                                                                                      :prompt "Fox Name"
+                                                                                      :default (second
+                                                                                                (assoc :name (progn
+                                                                                                               (c2mop:ensure-finalized
+                                                                                                                (find-class 'yadfa-allies:chris))
+                                                                                                               (c2mop:compute-default-initargs
+                                                                                                                (find-class 'yadfa-allies:chris)))))
+                                                                                      :view clim:+text-field-view+
+                                                                                      :stream *query-io*)))
+                                            (fresh-line *query-io*)
+                                            (setf b (make-instance 'yadfa-allies:kristy
+                                                                   :name (clim:accept 'string
+                                                                                      :prompt "Vixen Name"
+                                                                                      :default (second
+                                                                                                (assoc :name (progn
+                                                                                                               (c2mop:ensure-finalized
+                                                                                                                (find-class 'yadfa-allies:kristy))
+                                                                                                               (c2mop:compute-default-initargs
+                                                                                                                (find-class 'yadfa-allies:kristy)))))
+                                                                                      :view clim:+text-field-view+
+                                                                                      :stream *query-io*)))))
+              (iter (for i in (list a b))
+                (do-push i (team-of *game*) (allies-of *game*)))
+              (format t "Fox: I'm ~a~%~%" (name-of a))
+              (format t "Vixen: And I'm ~a~%~%" (name-of b))
+              (format t "~a: What's yours?~%~%" (name-of a))
+              (format t "~a: I'm ~a. Now lets get you dressed~%~%" (name-of (player-of *game*)) (name-of (player-of *game*)))
+              (format t "*~a puts the new clothes and diapers on the foxes*~%~%" (name-of a)))))
 (defevent get-warp-pipe-summoner-1
   :finished-depends '(enter-bandits-shop-1 enter-bandits-kennel-1)
   :lambda '(lambda (self)

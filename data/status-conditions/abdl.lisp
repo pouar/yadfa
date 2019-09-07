@@ -36,7 +36,7 @@
                            (setf (blocks-turn-of self) t))
                           (t (setf (blocks-turn-of self) nil))))
    :duration t
-   :stat-multiplier (list :speed 0.5)
+   :stat-multiplier (list :speed 1/2)
    :blocks-turn t))
 (defclass pantsed (status-condition)
   ()

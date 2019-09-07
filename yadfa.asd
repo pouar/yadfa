@@ -10,21 +10,19 @@
   :build-operation :program-op
   :build-pathname "yadfa"
   :entry-point "yadfa::main"
-  :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria" "quasiquote-2.0"
-                         (:feature :slynk "slynk")
-                         (:feature :swank "swank") (:feature :yadfa-docs "net.didierverna.declt"))
+  :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria" (:feature :sbcl "yadfa/docs"))
   :components ((:file "packages")
                (:file "main" :depends-on ("packages" "core"))
                (:module "core"
                 :depends-on ("packages")
                 :components ((:file "util" :depends-on ("init"))
                              (:file "structs" :depends-on ("init"))
-                             (:file "init" :depends-on ("patches"))
-                             (:file "libexec" :depends-on ("util" "classes" "init" "structs"))
+                             (:file "init")
+                             (:file "libexec" :depends-on ("util" "classes" "patches" "init" "structs"))
                              (:file "classes" :depends-on ("util" "patches" "init"))
                              (:file "game" :depends-on ("classes" "init"))
                              (:file "bin" :depends-on ("libexec" "init"))
-                             (:file "patches")
+                             (:file "patches" :depends-on ("init"))
                              (:file "mcclim" :depends-on ("patches" "bin" "init"))))
                (:module "data"
                 :depends-on ("core")
@@ -117,3 +115,8 @@
                                                       :directory '(:relative "data" "status-conditions")
                                                       :name :wild
                                                       :type "lisp"))))))))
+(defsystem "yadfa/docs"
+  :depends-on ("net.didierverna.declt")
+  :description "Used for building the docs. Contains patches to Declt for using Texinfo commands in docstrings"
+  :components ((:module "core"
+                :components ((:file "declt-patches")))))
