@@ -124,7 +124,7 @@
      :name "Black Rubber Onesie"
      :onesie-thickness-capacity (cons (* 16 (+ 25 2/5)) nil)
      :onesie-bulge-text '((60 "It fits over your diaper so tightly it looks like the buttons are about to go flying off"
-                           50 "It stretches which helps accomidate your thick padding"
+                           50 "It stretches which helps accommodate your thick padding"
                            20 "It fits over your diaper quite nicely"
                            0 "It's so baggy that what you're wearing under there is quite visible")
                           .

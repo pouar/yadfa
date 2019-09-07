@@ -43,7 +43,7 @@
 
 (defclass automatic-changing-table (prop) ()
   (:default-initargs
-   :name "Automatic Chainging Table"
+   :name "Automatic Changing Table"
    :description "A changing table that automatically changes you"
    :actions (list :use (make-action
                         :documentation "Turn it on"
@@ -62,7 +62,7 @@
                                                (getf a :messiness)
                                                (/ (getf a :messiness-capacity) 4)))
                                              (filter-items (wear-of j) 'closed-bottoms))
-                                        (format t "Mechanical arms come out of the changing table and strap ~a down on the table to prevent ~a from escaping and proceeeds to change ~a~%~%"
+                                        (format t "Mechanical arms come out of the changing table and strap ~a down on the table to prevent ~a from escaping and proceeds to change ~a~%~%"
                                                 (name-of j)
                                                 (if (malep j) "him" "her")
                                                 (if (malep j) "him" "her"))
@@ -124,7 +124,7 @@
                                                    (shopfun (items-for-sale-of prop)
                                                     :items-to-buy items
                                                     :user (player-of *game*))))
-                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corrisponds to an item in your inventory"
+                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory"
                                           :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
                                                     (declare (type prop prop) (type list items) (ignore keys))
                                                     (check-type prop prop)
@@ -214,7 +214,7 @@
                                                       a)
                                                     :items-to-buy items
                                                     :user (player-of *game*))))
-                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corrisponds to an item in your inventory"
+                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory"
                                           :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
                                                     (declare #+sbcl (type prop prop)
                                                              #+sbcl (type list items)

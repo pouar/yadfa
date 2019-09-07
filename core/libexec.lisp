@@ -1680,7 +1680,7 @@
 (defmethod output-process-potty-text ((user player) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
           (let ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
-                          (list "You ghasp in horror as a little leaks out"
+                          (list "You gasp in horror as a little leaks out"
                                 "You think you just leaked a little"
                                 (format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
                                         (random-elt '("groan" "whine")))))

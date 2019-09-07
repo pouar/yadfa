@@ -341,7 +341,7 @@
    :name "Cloth Pullup"
    :description "Wear this and pretend to be a big kid. Can be reused."
    :wear-wet-text '(800 "it is completely drenched, you sure you're ready for these?"
-                    200 "it is noticably wet"
+                    200 "it is noticeably wet"
                     1 "the pictures haven't faded yet")))
 (defclass navy-pullups (cloth-pullups) ()
   (:default-initargs
@@ -357,7 +357,7 @@
    :name "Rubber Pullup"
    :description "Wear this and pretend to be a big kid. Can be reused."
    :wear-wet-text '(800 "it is completely drenched, you sure you're ready for these?"
-                    200 "it is noticably wet"
+                    200 "it is noticeably wet"
                     1 "the pictures haven't faded yet")))
 (defclass swim-diaper-cover (undies) ()
   (:default-initargs
@@ -373,7 +373,7 @@
    :disposable nil
    :sellable t
    :name "Bandit Diaper"
-   :description "A diaper with the Diapered Raccoon Bandits's insignia on the front. the insignia turns yellow when the wearer wets it so the higher ups know when the lower ranks wet their diapers. Unlike most diapers, these are reusable."
+   :description "A diaper with the Diapered Raccoon Bandits' insignia on the front. the insignia turns yellow when the wearer wets it so the higher ups know when the lower ranks wet their diapers. Unlike most diapers, these are reusable."
    :wear-wet-text '(1400 "little yellow streams are leaking down from the leg guards"
                     350 "The insignia on the front has turned yellow"
                     1 "The insignia on the front is still blue")
@@ -392,7 +392,7 @@
    :thickness-capacity 100
    :wear-stats (list :speed -10)
    :name "Female's Bandit Diaper"
-   :description "A diaper with the Diapered Raccoon Bandits's insignia on the front. the insignia turns yellow when the wearer wets it so the males know when the lower ranks wet their diapers. It is much thicker than what the males wear. Unlike most diapers, these are reusable."
+   :description "A diaper with the Diapered Raccoon Bandits' insignia on the front. the insignia turns yellow when the wearer wets it so the males know when the lower ranks wet their diapers. It is much thicker than what the males wear. Unlike most diapers, these are reusable."
    :wear-wet-text '(10000 "little yellow streams are leaking down from the leg guards"
                     2500 "The insignia on the front has turned yellow"
                     1 "The insignia on the front is still pink")

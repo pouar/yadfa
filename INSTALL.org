@@ -22,7 +22,7 @@ I think the minimum version of ASDF required for this game is 3.3.2.4. You can d
 
 [[https://gitlab.common-lisp.net/asdf/asdf/tags][https://gitlab.common-lisp.net/asdf/asdf/tags]]
 
-create a directory called =~/common-lisp=. (In Windows, the equivelant of =~= is =C:\Users\$User=) extract ASDF in there. (only needed for compiling)
+create a directory called =~/common-lisp=. (In Windows, the equivalent of =~= is =C:\Users\$User=) extract ASDF in there. (only needed for compiling)
 
 You will also need to install Quicklisp, which can be downloaded from here (only needed for compiling)
 

@@ -29,7 +29,7 @@
                            (name-of user)
                            (name-of target)))
                   ((filter-items pants 'dress)
-                   (format t "~a raises's ~a's ~a~%"
+                   (format t "~a raises ~a's ~a~%"
                            (name-of user)
                            (name-of target)
                            (name-of (car (filter-items pants 'dress))))))

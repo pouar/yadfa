@@ -57,11 +57,11 @@
                                (and (typep o 'diapered-raccoon-bandit) (not (eq o character))))
                              (enemies-of *game*))))
     (cond ((and wetting teammember (= (random 5) 0))
-           (write-line "Other Raccon: Now's not the time to go potty")
-           (write-line "Flooding Raccon Bandit: *whines*"))
+           (write-line "Other Raccoon: Now's not the time to go potty")
+           (write-line "Flooding Raccoon Bandit: *whines*"))
           ((and messing teammember (= (random 5) 0))
-           (write-line "Other Raccon: You couldn't wait until after the battle before doing that?")
-           (write-line "Messing Raccon Bandit: *grunts*")))))
+           (write-line "Other Raccoon: You couldn't wait until after the battle before doing that?")
+           (write-line "Messing Raccoon Bandit: *grunts*")))))
 (defclass rookie-diapered-raccoon-bandit (potty-enemy pantsable-character) ()
   (:default-initargs
    :name "Rookie Diapered Raccoon Bandit"

@@ -22,7 +22,7 @@
             (let* ((a (make-instance 'yadfa-enemies:diaper-pirate))
                    (coon nil))
               (write-line "You find the diapered raccoon bandit back from Navy HQ in a pillory wearing nothing but 2 layers of thoroughly flooded and messy diapers")
-              (write-line "Diapered Raccoon Bandit: Ok! I learned my lesson! Can I please get a diaper change now?!?!? >///<")
+              (write-line "Diapered Raccoon Bandit: OK! I learned my lesson! Can I please get a diaper change now?!?!? >///<")
               (format t "*one of the ~as changes the outer layer of his diaper but still leaves him in the flooded and messy inner layer*~%"
                       (species-of a))
               (write-line "Diapered Raccoon Bandit: That's not what I meant!!!")

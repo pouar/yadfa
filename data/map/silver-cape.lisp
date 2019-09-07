@@ -83,7 +83,7 @@
                                                                             (format t "~a: Here, you might want this~%" (name-of (player-of *game*)))
                                                                             (write-line "Dolphin: I'm no infant. I can hold it in.")
                                                                             (write-line "*The dolphin panics as his bladder leaks a little*")
-                                                                            (write-line "Dolphin: Ok ok, I'll take them.")
+                                                                            (write-line "Dolphin: OK, OK, I'll take them.")
                                                                             (write-line "*The dolphin quickly inserts the stuffer into his pullups and floods himself*")
                                                                             (write-line "Dolphin: Don't tell anyone about this incident and I'll let you through")
                                                                             (write-line "*The Jail beneath can now be entered*")

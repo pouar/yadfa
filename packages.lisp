@@ -454,7 +454,7 @@
    #:laughing
    #:skunked
    #:pantsed)
-  (:documentation "Contains all the status condtions in the game"))
+  (:documentation "Contains all the status conditions in the game"))
 (uiop:define-package #:yadfa-zones
   (:import-from #:macro-level #:macro-level)
   (:use #:yadfa #:yadfa-util #:cl #:iterate)

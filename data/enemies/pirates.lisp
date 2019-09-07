@@ -3,7 +3,7 @@
 (defclass diaper-pirate (potty-enemy) ()
   (:default-initargs
    :name "Diaper Pirate"
-   :description "A generic pirate that has forgoed toilets and will never try to hold it."
+   :description "A generic pirate that has forgone toilets and will never try to hold it."
    :species (random-elt '("Dolphin" "Orca" "Shark"))
    :male (random-elt '(t nil))
    :bladder/contents (random 500)
