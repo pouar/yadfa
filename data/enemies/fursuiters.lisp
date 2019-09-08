@@ -27,7 +27,7 @@
 (defclass fursuiter-servant (potty-enemy) ()
   (:default-initargs
    :name "Fursuiter Servant"
-   :description "Claims that he \"doesn't want to be associated with diapers\" and that he will \"sweat all the fluids out\". So he's kept in one of those watertight fursuits to keep him from making puddles until he changes his mind"
+   :description "Claims that he \"doesn't want to be associated with diapers\" and that he will \"sweat all the fluids out\", so he's kept in one of those watertight fursuits to keep him from making puddles until he changes his mind."
    :male (random-elt '(t nil))
    :species "Fox"
    :bladder/contents (random 500)
