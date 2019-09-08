@@ -431,7 +431,8 @@
    #:diapered-kobold
    #:diapered-skunk
    #:thickly-diaper-pirate
-   #:padded-fursuiter-servant)
+   #:padded-fursuiter-servant
+   #:fursuiter-servant)
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package :yadfa-props
   (:import-from :macro-level :macro-level)
