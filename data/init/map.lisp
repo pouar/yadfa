@@ -114,6 +114,9 @@
                                                                          :enemies ((yadfa-enemies:padded-fursuiter-servant .
                                                                                     (list :level (random-from-range 2 5)))))
                                                                         (:max-random 20
+                                                                         :enemies ((yadfa-enemies:fursuiter-servant .
+                                                                                    (list :level (random-from-range 2 5)))))
+                                                                        (:max-random 20
                                                                          :enemies ((yadfa-enemies:navy-officer .
                                                                                     (list :level (random-from-range 2 5)))
                                                                                    (yadfa-enemies:navy-officer* .
