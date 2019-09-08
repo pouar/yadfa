@@ -730,10 +730,10 @@
           (export ',(fourth position) ',(symbol-package (fourth position)))
           (get-zone ',position)))
 (defmacro defzone (position &body body)
-  #.(format nil "defines the classes of the zones and adds an instance of them to the game's map hash table. Intended to be used to replace existing zones in more intrusive mods. Best to wrap this in an event and run trigger-event so it doesn't overwrite the zone every time this piece of code is loaded
+  #.(format nil "defines the classes of the zones and adds an instance of them to the game's map hash table. Intended to be used to replace existing zones in more intrusive mods. Best to wrap this in an event and run @code{TRIGGER-EVENT} so it doesn't overwrite the zone every time this piece of code is loaded
 
-~a, ~a, ~a."
-            (xref defzone* :macro) (xref ensure-zone :macro) (xref ensure-zone* :macro))
+~a, ~a, ~a, ~a."
+            (xref defzone* :macro) (xref ensure-zone :macro) (xref ensure-zone* :macro) (xref trigger-event :function))
   #+sbcl (declare (type list position))
   (check-type position list)
   `(progn
