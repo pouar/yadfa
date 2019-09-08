@@ -486,7 +486,8 @@
 (uiop:define-package :yadfa-events
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
-   #:get-diaper-locked-1)
+   #:get-diaper-locked-1
+   #:create-rpgmaker-dungeon)
   (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package :yadfa-allies
   (:use :yadfa :yadfa-util :cl :iterate)
