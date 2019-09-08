@@ -481,13 +481,13 @@
    #:bandits-entrance
    #:secret-underground
    #:pirates-cove
-   #:your-ship)
+   #:your-ship
+   #:create-rpgmaker-dungeon)
   (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package :yadfa-events
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
-   #:get-diaper-locked-1
-   #:create-rpgmaker-dungeon)
+   #:get-diaper-locked-1)
   (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package :yadfa-allies
   (:use :yadfa :yadfa-util :cl :iterate)
