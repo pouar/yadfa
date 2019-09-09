@@ -210,13 +210,11 @@
     (let* ((file #P"yadfa:config;mods.conf")
            (mods '()))
       (ensure-directories-exist #P"yadfa:config;")
-      (handler-case (with-open-file (stream file :if-does-not-exist :error)
+      (handler-case (with-input-from-file (stream file)
                       (setf mods (read stream)))
         (file-error ()
           (write-line "The configuration file containing the list of enabled mods seems missing, creating a new one")
-          (with-open-file (stream file
-                                  :if-does-not-exist :create
-                                  :direction :output
+          (with-output-to-file (stream file
                                   :if-exists :supersede
                                   :external-format :utf-8)
             (write *mods* :stream stream)))

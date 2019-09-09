@@ -22,10 +22,8 @@
     (dolist (system systems)
       (pushnew system *mods* :test #'string=)
       (asdf:load-system system))
-    (with-open-file (stream #P"yadfa:config;mods.conf"
-                            :if-does-not-exist :create
+    (with-output-to-file (stream #P"yadfa:config;mods.conf"
                             :if-exists :supersede
-                            :direction :output
                             :external-format :utf-8)
       (write *mods* :stream stream)))
   systems)
@@ -39,10 +37,8 @@
                                     :test #'string=)))
     (deletef *mods* systems :test (lambda (o e)
                                     (member e o :test #'string=)))
-    (with-open-file (stream #P"yadfa:config;mods.conf"
-                            :if-does-not-exist :create
+    (with-output-to-file (stream #P"yadfa:config;mods.conf"
                             :if-exists :supersede
-                            :direction :output
                             :external-format :utf-8)
       (write *mods* :stream stream)))
   systems)
@@ -53,7 +49,7 @@
                                               (xref yadfa-world:load-game :function)))
     (path (or simple-string pathname))
   (ensure-directories-exist (make-pathname :host (pathname-host path) :device (pathname-device path) :directory (pathname-directory path)))
-  (with-open-file (s path :direction :output :if-exists :supersede :if-does-not-exist :create :external-format :utf-8)
+  (with-output-to-file (s path :if-exists :supersede :external-format :utf-8)
     (write-string (write-to-string (ms:marshal *game*)) s))
   (cond ((typep path 'logical-pathname)
          (translate-logical-pathname path))
@@ -69,7 +65,7 @@
 ~a."
                                               (xref yadfa-world:save-game :function)))
     (path (or simple-string pathname))
-  (with-open-file (stream path)
+  (with-input-from-file (stream path)
     (setf *game* (ms:unmarshal (read stream))))
   (cond ((typep path 'logical-pathname)
          (translate-logical-pathname path))
