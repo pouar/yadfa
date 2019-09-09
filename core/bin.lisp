@@ -14,7 +14,7 @@
   #.(format nil "Enable a mod, the modding system is mostly just asdf, @var{SYSTEM} is a keyword which is the name of the system you want to enable
 
 ~a."
-            (xref yadfa-bin:disable-mod :function))
+            (xref yadfa-bin:disable-mods :function))
   (let ((systems (iter (for i in (ensure-list systems))
                    (collect (asdf:coerce-name i)))))
     (dolist (system (remove-duplicates systems :test #'string=))
@@ -33,7 +33,7 @@
   #.(format nil "Disable a mod, the modding system is mostly just asdf, @var{SYSTEM} is a keyword which is the name of the system you want to enable
 
 ~a."
-            (xref yadfa-bin:enable-mod :function))
+            (xref yadfa-bin:enable-mods :function))
   (let ((systems (delete-duplicates (iter (for i in (ensure-list systems))
                                       (collect (asdf:coerce-name i)))
                                     :test #'string=)))
