@@ -10,35 +10,42 @@
   (let ((*compile-verbose* compiler-verbose) (*compile-print* compiler-verbose))
     (apply #'asdf:load-system :yadfa :allow-other-keys t keys)
     (apply #'load-mods :allow-other-keys t keys)))
-(defun yadfa-bin:enable-mod (system)
+(defun yadfa-bin:enable-mods (systems)
   #.(format nil "Enable a mod, the modding system is mostly just asdf, @var{SYSTEM} is a keyword which is the name of the system you want to enable
 
 ~a."
             (xref yadfa-bin:disable-mod :function))
-  (declare (ignorable system))
-  (if (asdf:find-system system nil)
-      (progn (pushnew (asdf:coerce-name system) *mods* :test #'string=)
-             (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
-                                     :if-does-not-exist :create
-                                     :if-exists :supersede
-                                     :direction :output
-                                     :external-format :utf-8)
-               (write *mods* :stream stream))
-             (asdf:load-system system))
-      (write-line "That system doesn't exist")))
-(defun yadfa-bin:disable-mod (system)
+  (let ((systems (iter (for i in (ensure-list systems))
+                   (collect (asdf:coerce-name i)))))
+    (dolist (system (remove-duplicates systems :test #'string=))
+      (asdf:find-system system))
+    (dolist (system systems)
+      (pushnew system *mods* :test #'string=)
+      (asdf:load-system system))
+    (with-open-file (stream #P"yadfa:config;mods.conf"
+                            :if-does-not-exist :create
+                            :if-exists :supersede
+                            :direction :output
+                            :external-format :utf-8)
+      (write *mods* :stream stream)))
+  systems)
+(defun yadfa-bin:disable-mods (systems)
   #.(format nil "Disable a mod, the modding system is mostly just asdf, @var{SYSTEM} is a keyword which is the name of the system you want to enable
 
 ~a."
             (xref yadfa-bin:enable-mod :function))
-  (declare (ignorable system))
-  (progn (deletef *mods* (asdf:coerce-name system) :test #'string=)
-         (with-open-file (stream (uiop:xdg-config-home "yadfa/mods.conf")
-                                 :if-does-not-exist :create
-                                 :if-exists :supersede
-                                 :direction :output
-                                 :external-format :utf-8)
-           (write *mods* :stream stream))))
+  (let ((systems (delete-duplicates (iter (for i in (ensure-list systems))
+                                      (collect (asdf:coerce-name i)))
+                                    :test #'string=)))
+    (deletef *mods* systems :test (lambda (o e)
+                                    (member e o :test #'string=)))
+    (with-open-file (stream #P"yadfa:config;mods.conf"
+                            :if-does-not-exist :create
+                            :if-exists :supersede
+                            :direction :output
+                            :external-format :utf-8)
+      (write *mods* :stream stream)))
+  systems)
 (defunassert (yadfa-world:save-game (path)
                                     #.(format nil "This function saves current game to @var{PATH}
 
