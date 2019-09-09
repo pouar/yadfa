@@ -146,9 +146,9 @@
                                                                                     (list :level (random-from-range 2 5)))))))))
 (trigger-event 'initialize-enemy-spawn-list)
 (defun create-rpgmaker-dungeon% (self)
+  (declare (ignore self))
   (let ((width 10) (height 10))
-    (declare (type fixnum width height)
-             (ignore self))
+    (declare (type fixnum width height))
     (labels ((neighbors (x y width height)
                (declare (type fixnum x y width height))
                (remove-if
