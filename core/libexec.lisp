@@ -132,11 +132,11 @@
       (collect j))))
 
 (defun finished-events (events)
-  (=
-   (list-length events)
-   (list-length (intersection
-                 events
-                 (finished-events-of *game*)))))
+  (length=
+   events
+   (intersection
+    events
+    (finished-events-of *game*))))
 (defunassert (get-diaper-expansion (item))
     (item closed-bottoms)
   (+
