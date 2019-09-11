@@ -3516,7 +3516,8 @@
                       (pop (ammo-of (wield-of character)))))
              (funcall (coerce (default-attack-of character) 'function) selected-target character)))
         (attack
-         (funcall (coerce (attack-of (get-move attack character)) 'function) selected-target character (get-move attack character)))))
+         (funcall (coerce (attack-of (get-move attack character)) 'function) selected-target character (get-move attack character))
+         (decf (energy-of character) (energy-cost-of attack)))))
 (defunassert (process-battle (&key attack item reload target friendly-target no-team-attack selected-target))
     (target (or null integer)
             attack (or symbol boolean)
@@ -3560,6 +3561,10 @@
       (check-if-done)
       (unless (or (eq attack t) (get-move attack (first (turn-queue-of *battle*))))
         (format t "~a doesn't know ~a~%" (name-of (first (turn-queue-of *battle*))) attack)
+        (return-from process-battle))
+      (unless (and (not (eq attack t)) (< (energy-of (first (turn-queue-of *battle*))) (energy-cost-of (get-move attack (first (turn-queue-of *battle*))))))
+        (format t "~a doesn't have enough energy to use ~a~%"
+                (name-of (first (turn-queue-of *battle*))) (name-of (get-move attack (first (turn-queue-of *battle*)))))
         (return-from process-battle))
       (iter (until (and team-attacked (typep (first (turn-queue-of *battle*)) 'team-member)))
         (check-if-done)

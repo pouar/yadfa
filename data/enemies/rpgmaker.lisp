@@ -93,3 +93,25 @@
              (mess :messer character)
              (set-status-condition 'yadfa-status-conditions:messing character))
            t))))
+(defclass diapered-dragon (potty-enemy pantsable-character) ()
+  (:default-initargs
+   :name "Diapered Dragon"
+   :description "Keeps kobolds as pets. Wears pants to hide his padding. Waits until the last minute because \"he's not some hatchling that has to use the potty all the time\""
+   :species "Dragon"
+   :male t
+   :bladder/contents (random 500)
+   :bowels/contents (random 7000)
+   :bladder/fill-rate (* (/ 2000 24 60) 2)
+   :bowels/fill-rate (* (/ 12000 24 60) 2)
+   :bitcoins-per-level 100
+   :wear (list (make-instance 'yadfa-items:black-leather-jacket)
+               (make-instance 'yadfa-items:baggy-jeans)
+               (make-instance 'yadfa-items:high-capacity-diaper))
+   :inventory (nconc (iter (for i from 0 to (random 20))
+                       (collect (make-instance 'yadfa-items:high-capacity-diaper)))
+                     (iter (for i from 0 to (random 20))
+                       (collect (make-instance 'yadfa-items:kurikia-thick-diaper))))
+   :moves (list (make-instance 'yadfa-moves:tickle)
+                (make-instance 'yadfa-moves:roar)
+                (make-instance 'yadfa-moves:mush)
+                (make-instance 'yadfa-moves:fire-breath))))

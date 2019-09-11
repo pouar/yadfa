@@ -292,7 +292,9 @@
    #:mush
    #:mudbomb
    #:spray
-   #:pants)
+   #:pants
+   #:fire-breath
+   #:roar)
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package :yadfa-items
   (:import-from :macro-level :macro-level)
@@ -432,7 +434,8 @@
    #:diapered-skunk
    #:thickly-diaper-pirate
    #:padded-fursuiter-servant
-   #:fursuiter-servant)
+   #:fursuiter-servant
+   #:diapered-dragon)
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package :yadfa-props
   (:import-from :macro-level :macro-level)

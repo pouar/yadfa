@@ -65,3 +65,20 @@
   (:default-initargs
    :name "Tackle"
    :description "Tackles the enemy"))
+(defclass roar (stat/move) ()
+  (:default-initargs
+   :name "Roar"
+   :energy-cost 2
+   :description "Scares enemies into flooding themselves"
+   :attack '(lambda (target user self)
+             (declare (ignore target))
+             (format t "~a used ~a~%" (name-of user) (name-of self))
+             (when (iter (for i in (if (typep user 'team-member)
+                                       (enemies-of *battle)
+                                       (team-of *game*)))
+                     (when (>= (bladder/contents-of i) (bladder/need-to-potty-limit-of i))
+                       (format t "~a jumps and wets ~aself~%" (name-of i) (if (malep i) "him" "her"))
+                       (wet :wetter i)
+                       (set-status-condition 'yadfa-status-conditions:wetting i)
+                       (collect i)))
+               (write-line "it had no effect")))))

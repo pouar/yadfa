@@ -960,7 +960,8 @@
                      (when moves-can-use
                        (setf move-to-use (random-elt moves-can-use)))
                      (cond ((and moves-can-use (= (random 2) 0))
-                            (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use))
+                            (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use)
+                            (decf (energy-of self) (energy-cost-of move-to-use)))
                            ((wield-of self)
                             (funcall (coerce (attack-script-of (wield-of self)) 'function) target self (wield-of self)))
                            (t
