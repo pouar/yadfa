@@ -147,6 +147,12 @@
                                                                                    (yadfa-enemies:diapered-kobold .
                                                                                     (list :level (random-from-range 2 5)
                                                                                           :wear (list (make-instance 'yadfa-items:kurikia-thick-diaper))))))
+                                                                        (:max-random 25
+                                                                         :enemies ((yadfa-enemies:diapered-dragon* .
+                                                                                    (list :level (random-from-range 4 10)))
+                                                                                   (yadfa-enemies:diapered-kobold .
+                                                                                    (list :level (random-from-range 2 5)
+                                                                                          :wear (list (make-instance 'yadfa-items:kurikia-thick-diaper))))))
                                                                         (:max-random 20
                                                                          :enemies ((yadfa-enemies:diapered-skunk .
                                                                                     (list :level (random-from-range 2 5)))))))))

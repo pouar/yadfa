@@ -435,6 +435,7 @@
    #:thickly-diaper-pirate
    #:padded-fursuiter-servant
    #:fursuiter-servant
+   #:diapered-dragon*
    #:diapered-dragon)
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package :yadfa-props
