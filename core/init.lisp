@@ -1,6 +1,5 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package :yadfa)
-(defvar yadfa-clim::*records* ())
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defmacro ref (symbol type)
     `(if (asdf:component-loaded-p "yadfa/docs")
@@ -34,6 +33,7 @@
   #+sbcl `(sb-ext:defglobal ,name ,value ,doc)
   #+ccl `(ccl:defstatic ,name ,value ,doc)
   #-(or sbcl ccl) `(defvar ,name ,value ,doc))
+(defglobal yadfa-clim::*records* ())
 (defglobal *battle* nil)
 (defglobal *mod-registry* (make-hash-table :test #'equal))
 (defglobal *pattern-cache* (make-hash-table :test #'equal))
