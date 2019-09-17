@@ -30,9 +30,13 @@
                  (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol))))
          (let ((*package* (find-package :cl)))
            (format nil "See ~s" ',symbol)))))
-(defvar *battle* nil)
-(defvar *mod-registry* (make-hash-table :test #'equal))
-(defvar *pattern-cache* (make-hash-table :test #'equal))
-(defvar *mods* '())
-(defvar *game* nil
+(defmacro defglobal (name value &optional doc)
+  #+sbcl `(sb-ext:defglobal ,name ,value ,doc)
+  #+ccl `(ccl:defstatic ,name ,value ,doc)
+  #-(or sbcl ccl) `(defvar ,name ,value ,doc))
+(defglobal *battle* nil)
+(defglobal *mod-registry* (make-hash-table :test #'equal))
+(defglobal *pattern-cache* (make-hash-table :test #'equal))
+(defglobal *mods* '())
+(defglobal *game* nil
   "contains the information to be serialized when saving and loading a game")
