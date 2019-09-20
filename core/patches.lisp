@@ -390,10 +390,11 @@
             (flet ((execute-command ()
                      (alexandria:when-let ((command (read-frame-command frame :stream frame-query-io)))
                        (setq needs-redisplay t)
-                       (execute-frame-command frame command))))
+                       (apply 'serapeum:run-hooks '(yadfa:*read-frame-command-hooks* yadfa:*cheat-hooks*))
+                       (execute-frame-command frame command)
+                       (serapeum:run-hooks 'yadfa:*execute-frame-command-hooks*))))
               (when needs-redisplay
                 (dolist (i yadfa-clim::*records*) do (redisplay i *standard-output*))
-                (serapeum:run-hooks yadfa:*clim-hooks*)
                 (redisplay-frame-panes frame :force-p first-time)
                 (when first-time
                   (yadfa:intro-function frame-query-io))

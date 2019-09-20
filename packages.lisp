@@ -25,7 +25,12 @@
    ;;variables
    #:*battle*
    #:*game*
-   #:*clim-hooks*
+   #:*read-frame-command-hooks*
+   #:*execute-frame-command-hooks*
+   #:*redisplay-frame-panes-hooks*
+   #:*cheat-hooks*
+   #:*move-hooks*
+   #:*process-potty-hooks*
    ;;macros
    #:defevent
    #:ensure-zone
