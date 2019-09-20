@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package :yadfa)
-(eval-when (:compile-toplevel :load-toplevel :execute)
+(eval-always
   (defmacro ref (symbol type)
     `(if (asdf:component-loaded-p "yadfa/docs")
          (format nil "@ref{~a,@code{~a} in @code{~a},@code{~a} in @code{~a}}"
@@ -29,14 +29,11 @@
                  (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol))))
          (let ((*package* (find-package :cl)))
            (format nil "See ~s" ',symbol)))))
-(defmacro defglobal (name value &optional (doc nil doc-supplied-p))
-  #+sbcl `(sb-ext:defglobal ,name ,value ,@(when doc-supplied-p `(,doc)))
-  #+ccl `(ccl:defstatic ,name ,value ,@(when doc-supplied-p `(,doc)))
-  #-(or sbcl ccl) `(defvar ,name ,value ,@(when doc-supplied-p `(,doc))))
-(defglobal yadfa-clim::*records* ())
-(defglobal *battle* nil)
-(defglobal *mod-registry* (make-hash-table :test #'equal))
-(defglobal *pattern-cache* (make-hash-table :test #'equal))
-(defglobal *mods* '())
-(defglobal *game* nil
+(define-global-var yadfa-clim::*records* ())
+(define-global-var *battle* nil)
+(define-global-var *mod-registry* (make-hash-table :test #'equal))
+(define-global-var *pattern-cache* (make-hash-table :test #'equal))
+(define-global-var *mods* '())
+(define-global-var *clim-hooks* '())
+(define-global-var *game* nil
   "contains the information to be serialized when saving and loading a game")

@@ -17,12 +17,15 @@
    #:removef-if)
   (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package :yadfa
-  (:use #:cl :yadfa-util :iterate :ugly-tiny-infix-macro :alexandria)
+  (:use #:cl :yadfa-util :ugly-tiny-infix-macro :alexandria :global-vars)
+  (:mix :iterate :serapeum)
   (:import-from :macro-level #:macro-level)
+  (:shadow )
   (:export
    ;;variables
    #:*battle*
    #:*game*
+   #:*clim-hooks*
    ;;macros
    #:defevent
    #:ensure-zone
@@ -53,6 +56,7 @@
    #:filter-items
    #:total-thickness
    #:thickest-sort
+   #:thickest
    #:wet
    #:mess
    #:get-event
@@ -502,7 +506,8 @@
    #:furry)
   (:documentation "Contains all the allies in the game"))
 (uiop:define-package :yadfa-user
-  (:use :cl :yadfa :yadfa-util :yadfa-bin :iterate :ugly-tiny-infix-macro :alexandria)
+  (:use :cl :yadfa :yadfa-util :yadfa-bin :ugly-tiny-infix-macro :alexandria)
+  (:mix :iterate :serapeum)
   (:documentation "The package that the player typically executes commands from"))
 (uiop:define-package :yadfa-clim
   (:use :yadfa :iterate :clim :clim-lisp :clim-extensions)

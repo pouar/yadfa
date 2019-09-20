@@ -23,8 +23,8 @@
       (pushnew system *mods* :test #'string=)
       (asdf:load-system system))
     (with-output-to-file (stream #P"yadfa:config;mods.conf"
-                            :if-exists :supersede
-                            :external-format :utf-8)
+                                 :if-exists :supersede
+                                 :external-format :utf-8)
       (write *mods* :stream stream)))
   systems)
 (defun yadfa-bin:disable-mods (systems)
@@ -38,8 +38,8 @@
     (deletef *mods* systems :test (lambda (o e)
                                     (member e o :test #'string=)))
     (with-output-to-file (stream #P"yadfa:config;mods.conf"
-                            :if-exists :supersede
-                            :external-format :utf-8)
+                                 :if-exists :supersede
+                                 :external-format :utf-8)
       (write *mods* :stream stream)))
   systems)
 (defunassert (yadfa-world:save-game (path)
@@ -51,14 +51,12 @@
   (ensure-directories-exist (make-pathname :host (pathname-host path) :device (pathname-device path) :directory (pathname-directory path)))
   (with-output-to-file (s path :if-exists :supersede :external-format :utf-8)
     (write-string (write-to-string (ms:marshal *game*)) s))
-  (cond ((typep path 'logical-pathname)
-         (translate-logical-pathname path))
-        ((typep path 'pathname)
-         path)
-        ((typep path 'simple-string)
-         (handler-case (translate-logical-pathname path)
-           (type-error () (parse-namestring path))
-           (file-error () nil)))))
+  (typecase path
+    (logical-pathname (translate-logical-pathname path))
+    (pathname path)
+    (simple-string (handler-case (translate-logical-pathname path)
+                     (type-error () (parse-namestring path))
+                     (file-error () nil)))))
 (defunassert (yadfa-world:load-game (path)
                                     #.(format nil "This function loads a saved game from @var{PATH}
 
@@ -67,14 +65,12 @@
     (path (or simple-string pathname))
   (with-input-from-file (stream path)
     (setf *game* (ms:unmarshal (read stream))))
-  (cond ((typep path 'logical-pathname)
-         (translate-logical-pathname path))
-        ((typep path 'pathname)
-         path)
-        ((typep path 'simple-string)
-         (handler-case (translate-logical-pathname path)
-           (type-error () (parse-namestring path))
-           (file-error () nil)))))
+  (typecase path
+    (logical-pathname (translate-logical-pathname path))
+    (pathname path)
+    (simple-string (handler-case (translate-logical-pathname path)
+                     (type-error () (parse-namestring path))
+                     (file-error () nil)))))
 (defunassert (yadfa-bin:toggle-onesie (&key wear user)
                                       "Open or closes your onesie. @var{WEAR} is the index of a onesie. Leave @code{NIL} for the outermost onesie. @var{USER} is the index of an ally. Leave @code{NIL} to refer to yourself")
     (wear (or unsigned-byte null) user (or unsigned-byte null))
@@ -385,18 +381,18 @@ You can also specify multiple directions, for example @code{(move :south :south)
                                                  (typep e o)))
                                    (nth enemy (enemies-of *battle*))))
                               (t (player-of *game*))))
-         (wear (cond ((typep wear 'type-specifier)
-                      (find wear (wear-of selected-user)
-                            :test (lambda (o e)
-                                    (typep e o))))
-                     ((typep wear 'unsigned-byte)
-                      (nth wear (wear-of selected-user)))))
-         (inventory (cond ((typep inventory 'type-specifier)
-                           (find inventory (inventory-of (player-of *game*))
-                                 :test (lambda (o e)
-                                         (typep e o))))
-                          ((typep inventory 'unsigned-byte)
-                           (nth inventory (inventory-of (player-of *game*)))))))
+         (wear (typecase wear
+                 (type-specifier (find wear (wear-of selected-user)
+                                       :test (lambda (o e)
+                                               (typep e o))))
+                 (unsigned-byte (nth wear (wear-of selected-user)))))
+         (inventory (typecase inventory
+                      (type-specifier
+                       (find inventory (inventory-of (player-of *game*))
+                             :test (lambda (o e)
+                                     (typep e o))))
+                      (unsigned-byte
+                       (nth inventory (inventory-of (player-of *game*)))))))
     (when wield
       (describe-item (wield-of selected-user)))
     (when inventory
@@ -471,14 +467,14 @@ You can also specify multiple directions, for example @code{(move :south :south)
   (let* ((selected-user (if user
                             (nth user (allies-of *game*))
                             (player-of *game*)))
-         (item (cond ((typep inventory 'unsigned-byte)
-                      (nth inventory (inventory-of (player-of *game*))))
-                     ((typep inventory 'type-specifier)
-                      (find inventory (inventory-of (player-of *game*))
-                            :test #'(lambda (type-specifier obj)
-                                      (typep obj type-specifier))))))
-         (i nil)
-         (a ())
+         (item (typecase inventory
+                 (unsigned-byte
+                  (nth inventory (inventory-of (player-of *game*))))
+                 (type-specifier
+                  (find inventory (inventory-of (player-of *game*))
+                        :test #'(lambda (type-specifier obj)
+                                  (typep obj type-specifier))))))
+         i a
          (wear-length (list-length (wear-of selected-user))))
     (cond ((not item)
            (format t "INVENTORY isn't a valid item ~%")
@@ -509,7 +505,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
           i (iter (for outer in (reverse (subseq a 0 (1+ wear))))
               (with b = (reverse a))
               (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (fast-thickness b outer) (thickness-capacity-of outer)))
-                (leave (first (thickest-sort (cdr (member outer a))))))))
+                (leave (thickest (cdr (member outer a)))))))
     (if i
         (format t "~a struggles to fit ~a ~a over ~a ~a in a hilarious fashion but fail to do so.~%"
                 (name-of selected-user)
@@ -535,12 +531,13 @@ You can also specify multiple directions, for example @code{(move :south :south)
   (let* ((selected-user (if user
                             (nth user (allies-of *game*))
                             (player-of *game*)))
-         (item (cond ((typep wear 'unsigned-byte)
-                      (nth wear (wear-of (player-of *game*))))
-                     ((typep wear 'type-specifier)
-                      (find wear (wear-of (player-of *game*))
-                            :test #'(lambda (type-specifier obj)
-                                      (typep obj type-specifier))))))
+         (item (typecase wear
+                 (unsigned-byte
+                  (nth wear (wear-of (player-of *game*))))
+                 (type-specifier
+                  (find wear (wear-of (player-of *game*))
+                        :test #'(lambda (type-specifier obj)
+                                  (typep obj type-specifier))))))
          (inventory-length (list-length (inventory-of (player-of *game*)))))
     (cond ((not item)
            (format t "WEAR isn't a valid item ~%")
@@ -590,20 +587,21 @@ You can also specify multiple directions, for example @code{(move :south :south)
   (let* ((selected-user (if user
                             (nth user (allies-of *game*))
                             (player-of *game*)))
-         (inventory (cond ((typep inventory 'unsigned-byte)
-                           (nth inventory (inventory-of (player-of *game*))))
-                          ((typep inventory 'type-specifier)
-                           (find inventory (inventory-of (player-of *game*))
-                                 :test #'(lambda (type-specifier obj)
-                                           (typep obj type-specifier))))))
-         (wear (cond ((typep wear 'unsigned-byte)
-                      (nth wear (wear-of (player-of *game*))))
-                     ((typep wear 'type-specifier)
-                      (find wear (wear-of (player-of *game*))
-                            :test #'(lambda (type-specifier obj)
-                                      (typep obj type-specifier))))))
-         (i nil)
-         (a nil))
+         (inventory (typecase inventory
+                      (unsigned-byte
+                       (nth inventory (inventory-of (player-of *game*))))
+                      (type-specifier
+                       (find inventory (inventory-of (player-of *game*))
+                             :test #'(lambda (type-specifier obj)
+                                       (typep obj type-specifier))))))
+         (wear (typecase wear
+                 (unsigned-byte
+                  (nth wear (wear-of (player-of *game*))))
+                 (type-specifier
+                  (find wear (wear-of (player-of *game*))
+                        :test #'(lambda (type-specifier obj)
+                                  (typep obj type-specifier))))))
+         i a)
     (cond ((not inventory)
            (write-line "INVENTORY isn't valid")
            (return-from yadfa-bin:change))
@@ -715,18 +713,19 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (when (and prop (not this-prop))
       (format t "that PROP doesn't exist in this zone~%")
       (return-from yadfa-world:go-potty))
-    (cond ((typep this-prop 'yadfa-props:toilet)
-           (potty-on-toilet this-prop
-                            :wet (if user t wet)
-                            :mess (if user t mess)
-                            :pants-down pull-pants-down
-                            :user selected-user))
-          (t
-           (potty-on-self-or-prop this-prop
-                                  :wet (if user t wet)
-                                  :mess (if user t mess)
-                                  :pants-down pull-pants-down
-                                  :user selected-user)))))
+    (typecase this-prop
+      (yadfa-props:toilet
+       (potty-on-toilet this-prop
+                        :wet (if user t wet)
+                        :mess (if user t mess)
+                        :pants-down pull-pants-down
+                        :user selected-user))
+      (t
+       (potty-on-self-or-prop this-prop
+                              :wet (if user t wet)
+                              :mess (if user t mess)
+                              :pants-down pull-pants-down
+                              :user selected-user)))))
 (defunassert (yadfa-world:tickle (ally)
                                  "Tickle an ally. @var{ALLY} is an integer that is the index of you allies")
     (ally unsigned-byte)
@@ -868,7 +867,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
          (mess))
         (t
          (format t "~a ran away like a coward~%" (name-of (player-of *game*)))))
-  (setf *battle* nil)
+  (nix *battle*)
   (unuse-package :yadfa-battle :yadfa-user)
   (use-package :yadfa-world :yadfa-user))
 (defunassert (yadfa-world:use-item (item &rest keys &key user action &allow-other-keys)
@@ -877,13 +876,14 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (item (or unsigned-byte (and symbol (not keyword)) list)
           action (or null keyword)
           user (or null unsigned-byte))
-  (let* ((selected-item (cond ((typep item 'unsigned-byte)
-                               (nth item (inventory-of (player-of *game*))))
-                              ((typep item '(or symbol list))
-                               (find item (inventory-of (player-of *game*))
-                                     :test #'(lambda (type-specifier obj)
-                                               (typep obj type-specifier))))))
-         (ret nil)
+  (let* ((selected-item (typecase item
+                          (unsigned-byte
+                           (nth item (inventory-of (player-of *game*))))
+                          ((or symbol list)
+                           (find item (inventory-of (player-of *game*))
+                                 :test #'(lambda (type-specifier obj)
+                                           (typep obj type-specifier))))))
+         ret
          (allies-length (list-length (allies-of *game*))))
     (unless selected-item
       (format t "You don't have that item~%")
@@ -905,12 +905,13 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (item (or unsigned-byte (and symbol (not keyword)) list)
           target (or null unsigned-byte)
           enemy-target (or null unsigned-byte))
-  (let ((selected-item (cond ((typep item 'unsigned-byte)
-                              (nth item (inventory-of (player-of *game*))))
-                             ((typep item '(or symbol list))
-                              (find item (inventory-of (player-of *game*))
-                                    :test #'(lambda (type-specifier obj)
-                                              (typep obj type-specifier))))))
+  (let ((selected-item (typecase item
+                         (unsigned-byte
+                          (nth item (inventory-of (player-of *game*))))
+                         ((or symbol list)
+                          (find item (inventory-of (player-of *game*))
+                                :test #'(lambda (type-specifier obj)
+                                          (typep obj type-specifier))))))
         (team-length (list-length (team-of *game*)))
         (enemies-length (list-length (enemies-of *battle*))))
     (cond ((not item)
@@ -998,12 +999,13 @@ You can also specify multiple directions, for example @code{(move :south :south)
   (let* ((selected-user (if user
                             (nth user (allies-of *game*))
                             (player-of *game*)))
-         (item (cond ((typep inventory 'unsigned-byte)
-                      (nth inventory (inventory-of (player-of *game*))))
-                     ((typep inventory '(or list (and symbol (not keyword))))
-                      (find inventory (inventory-of (player-of *game*))
-                            :test #'(lambda (type-specifier obj)
-                                      (typep obj type-specifier)))))))
+         (item (typecase inventory
+                 (unsigned-byte
+                  (nth inventory (inventory-of (player-of *game*))))
+                 ((or list (and symbol (not keyword)))
+                  (find inventory (inventory-of (player-of *game*))
+                        :test #'(lambda (type-specifier obj)
+                                  (typep obj type-specifier)))))))
     (cond ((not item)
            (format t "INVENTORY isn't valid~%")
            (return-from yadfa-bin:wield)))
@@ -1029,7 +1031,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (if (wield-of selected-user)
         (progn (push (wield-of selected-user)
                      (inventory-of (player-of *game*)))
-               (setf (wield-of selected-user) nil))
+               (nix (wield-of selected-user)))
         (format t "~a hasn't equiped a weapon~%" (name-of selected-user)))))
 (defun yadfa-bin:pokedex (&optional enemy)
   "Browse enemies in your pokedex, @var{ENEMY} is a quoted symbol that is the same as the class name of the enemy you want to view. Leave it to @code{NIL} to list available entries"
@@ -1099,7 +1101,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
            (write-line "That doesn't go with that"))
           ((lockedp selected-wear)
            (format t "~a's ~a is now unlocked~%" (name-of selected-user) (name-of selected-wear))
-           (setf (lockedp selected-wear) nil))
+           (nix (lockedp selected-wear)))
           ((typep selected-wear 'closed-bottoms)
            (write-line "That can't be locked"))
           (t

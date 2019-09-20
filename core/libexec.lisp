@@ -2,7 +2,7 @@
 ;;;; files used internally by the game, don't call these unless you're developing/modding (or cheating)
 (in-package :yadfa)
 ;;; list-length-< and list-length-<= are based off of sequence-of-length-p from Alexandria
-(eval-when (:compile-toplevel :load-toplevel :execute)
+(eval-always
   (declaim (inline list-length-< list-length-<=))
   (defun list-length-<= (length list)
     (declare (type list list)
@@ -28,56 +28,40 @@
 (defmacro defunassert (name-args-declares asserts &body body)
   "Wrapper macro that brings the behavior of SBCL's type declaration to other implementations, @var{NAME-ARGS-DECLARES} is the function name, lambda list, and optionally the docstring and declarations (omitting the type declarations) @var{ASSERTS} is the type specifiers for the lambda list as a plist, @var{BODY} is the body of the function"
   (declare (inline list-length-<))
-  (labels ((get-var (_ var)
-             (cond ((eq _ '&key)
-                    (cond ((and (typep var 'list)
-                                (typep (car var) 'list)
-                                (typep (caar var) 'keyword))
-                           (cadar var))
-                          ((typep var 'list)
-                           (car var))
-                          (t var)))
-                   ((eq _ '&optional)
-                    (cond ((typep var 'list)
-                           (car var))
-                          (t var)))
-                   (t var)))
-           (check-type% (asserts check-type m j)
-             (if check-type
-                 `(check-type ,(get-var m j) ,(getf asserts (get-var m j) t))
-                 `(type ,(getf asserts (get-var m j) t) ,(get-var m j))))
-           (check (name-args-declares asserts check-type)
-             (iter
-               (with l = nil)
-               (with m = nil)
-               (for j in (second name-args-declares))
-               (setf l (iter (for k in '(&rest &key &optional &allow-other-keys))
-                         (when (eq j k)
-                           (setf m k)
-                           (leave k))))
-               (unless l
-                 (collect `,(check-type% asserts check-type m j))))))
-    (let* ((sbclp (uiop:featurep :sbcl))
-           (declarep (and sbclp
-                          (list-length-< 2 name-args-declares)
-                          (typep (car (last name-args-declares)) 'list)
-                          (eq (caar (last name-args-declares)) 'declare)))
-           (types (check name-args-declares asserts nil)))
-      `(defun
-           ,@(if declarep
-                 (butlast name-args-declares)
-                 name-args-declares)
-           ,@(if sbclp
-              `(,(append (if declarep
-                          (car (last name-args-declares))
-                          '(declare))
-                  types)
-                ,@body)
-              (append
-               (check name-args-declares asserts t)
-               `((locally (declare ,@types)
-                   ,@body))))))))
-(eval-when (:compile-toplevel :load-toplevel :execute)
+  (let* ((sbclp (uiop:featurep :sbcl))
+         (declarep (and sbclp
+                        (list-length-< 2 name-args-declares)
+                        (typep (car (last name-args-declares)) 'list)
+                        (eq (caar (last name-args-declares)) 'declare)))
+         (types (multiple-value-bind (req op rest key allow aux keyp)
+                    (parse-ordinary-lambda-list (second name-args-declares))
+                  (declare (ignore rest allow aux keyp))
+                  (iter (for i in (append req (mapcar 'car op) (mapcar 'cadar key)))
+                    (collect `(type ,(if (member i (plist-keys asserts))
+                                         (getf asserts i)
+                                         t)
+                                    ,i))))))
+    `(defun
+         ,@(if declarep
+               (butlast name-args-declares)
+               name-args-declares)
+         ,@(if sbclp
+            `(,(append (if declarep
+                        (car (last name-args-declares))
+                        '(declare))
+                types)
+              ,@body)
+            (append
+             (multiple-value-bind (req op rest key allow aux keyp)
+                 (parse-ordinary-lambda-list (second name-args-declares))
+               (declare (ignore rest allow aux keyp))
+               (iter (for i in (append req (mapcar 'car op) (mapcar 'cadar key)))
+                 (collect `(check-type ,i ,(if (member i (plist-keys asserts))
+                                               (getf asserts i)
+                                               t)))))
+             `((locally (declare ,@types)
+                 ,@body)))))))
+(eval-always
   (defun set-logical-pathnames ()
     (setf (logical-pathname-translations "YADFA")
           (list (list "yadfa:data;**;*.*.*" (uiop:merge-pathnames*
@@ -122,7 +106,7 @@
                        a)
                      '<))
           1)
-       (not (or (typep (get-move attack character) 'yadfa-moves:watersport) (typep (get-move attack character) 'yadfa-moves:mudsport)))))
+       (nor (typep (get-move attack character) 'yadfa-moves:watersport) (typep (get-move attack character) 'yadfa-moves:mudsport))))
 (defunassert (get-positions-of-type (type list))
     (type (or null (and symbol (not keyword)) list class)
           list list)
@@ -209,8 +193,8 @@
         (file-error ()
           (write-line "The configuration file containing the list of enabled mods seems missing, creating a new one")
           (with-output-to-file (stream file
-                                  :if-exists :supersede
-                                  :external-format :utf-8)
+                                       :if-exists :supersede
+                                       :external-format :utf-8)
             (write *mods* :stream stream)))
         (error ()
           (write-line "The configuration file containing the list of enabled mods seems broken, ignoring")))
@@ -302,7 +286,7 @@
   (let ((event-ids (ensure-list event-ids)))
     (dolist (event-id event-ids event-ids)
       (when (and
-             (not (and (major-event-of *game*) (event-major (get-event event-id))))
+             (nand (major-event-of *game*) (event-major (get-event event-id)))
              (funcall (coerce (event-predicate (get-event event-id)) 'function)
                       (get-event event-id))
              (or (event-repeatable (get-event event-id)) (not (finished-events (list event-id))))
@@ -501,10 +485,10 @@
           (clim:stream-set-cursor-position *standard-output* (first start-position) (+ (second start-position) (* 31 (clim:pattern-height pattern)))))))))
 (defunassert (get-zone-text (text))
     (text (or simple-string coerced-function))
-  (cond
-    ((typep text 'simple-string)
+  (typecase text
+    (simple-string
      text)
-    ((typep text 'coerced-function)
+    (coerced-function
      (funcall (coerce text 'function)))))
 (defun print-enter-text (position &optional old-position old-direction)
   (let ((old-direction (find old-direction (warp-points-of (get-zone old-position))
@@ -586,16 +570,15 @@
 (defun fast-thickness (list item)
   #+sbcl (declare (type list list)
                   (type clothing item))
-  (labels ((execute (list item count)
-             (cond ((eq (car list) item) count)
-                   ((and (typep (car list) 'closed-bottoms) (cdr list))
-                    (execute (cdr list) item (+ count (get-diaper-expansion (car list)))))
-                   ((cdr list)
-                    (execute (cdr list) item count))
-                   ((typep (car list) 'closed-bottoms)
-                    (+ count (get-diaper-expansion (car list))))
-                   (t count))))
-    (execute list item 0)))
+  (nlet execute (list item (count 0))
+    (cond ((eq (car list) item) count)
+          ((and (typep (car list) 'closed-bottoms) (cdr list))
+           (execute (cdr list) item (+ count (get-diaper-expansion (car list)))))
+          ((cdr list)
+           (execute (cdr list) item count))
+          ((typep (car list) 'closed-bottoms)
+           (+ count (get-diaper-expansion (car list))))
+          (t count))))
 (defunassert (pop-from-expansion (user &optional wet/mess))
     (user base-character)
   (macrolet ((pushclothing (i wet/mess return)
@@ -622,8 +605,8 @@
                    (thickness-capacity-of i)
                    (thickness-capacity-threshold-of i)
                    (> total-thickness (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
-            (cond
-              ((typep i 'onesie/closed)
+            (typecase i
+              (onesie/closed
                (toggle-onesie%% i)
                (if (lockedp i)
                    (progn (format t "~a's ~a pops open from the expansion destroying the lock in the process~%~%"
@@ -634,7 +617,7 @@
                            (name-of user)
                            (name-of i)))
                (pushclothing i wet/mess return))
-              ((typep i '(or incontinence-product snap-bottoms))
+              ((or incontinence-product snap-bottoms)
                (push i (inventory-of (if (typep user 'team-member)
                                          (player-of *game*)
                                          user)))
@@ -643,7 +626,7 @@
                        (name-of user)
                        (name-of i))
                (pushclothing i wet/mess return))
-              ((typep i '(and bottoms (not incontinence-product)))
+              ((and bottoms (not incontinence-product))
                (deletef list i :count 1)
                (format t "~a's ~a tears from the expansion and is destroyed~%~%"
                        (name-of user)
@@ -661,6 +644,15 @@
             (collect i)))
         '>
         :key 'get-diaper-expansion))
+(defunassert (thickest (clothing &optional n))
+    (clothing list)
+  (let ((a (bestn (or n 1) (iter (for i in clothing)
+                             (when (typep i 'closed-bottoms)
+                               (collect i)))
+                  '>
+                  :key 'get-diaper-expansion
+                  :memo t)))
+    (if n a (first a))))
 (defgeneric toggle-onesie%% (onesie))
 (defgeneric toggle-onesie% (onesie underclothes user))
 (defmethod toggle-onesie% (onesie underclothes user)
@@ -675,7 +667,7 @@
               (name-of onesie)
               (if (malep user) "him" "her")
               (if (malep user) "his" "her")
-              (name-of (first (thickest-sort underclothes))))
+              (name-of (thickest underclothes)))
       (toggle-onesie%% onesie)))
 (defmethod toggle-onesie% ((onesie onesie/closed) underclothes (user base-character))
   (if (lockedp onesie)
@@ -3071,7 +3063,7 @@
                              (unless (get-move (cdr j) k)
                                (pushnewmove (cdr j) k)
                                (format t "~a learned ~a~%" (name-of k) (name-of (get-move (cdr j) k))))))))))
-                 (setf *battle* nil)))
+                 (nix *battle*)))
              (iter (for i in (team-of *game*))
                (wet :force-fill-amount (bladder/maximum-limit-of i))
                (mess :force-fill-amount (bowels/maximum-limit-of i))))
@@ -3121,7 +3113,7 @@
                       (format t "~a loots ~d bitcoins from the enemy~%" (name-of (player-of *game*)) bitcoins-looted)))
                (incf (bitcoins-of (player-of *game*)) bitcoins-looted)
                (setf (inventory-of (player-of *game*)) (append (inventory-of (player-of *game*)) items-looted))
-               (setf *battle* nil)
+               (nix *battle*)
                (setf (continue-battle-of (get-zone (position-of (player-of *game*)))) nil)
                (iter (for i in win-events)
                  (when (or (not (member i (finished-events-of *game*)))
