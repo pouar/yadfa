@@ -175,7 +175,7 @@
                           (push (list x y) visited)
                           (iter (for (u v w) in (alexandria:shuffle (neighbors x y width height)))
                             (unless (member (list u v) visited :test #'equal)
-                              (setf (getf-direction `(,x ,y 0 rpgmakersnix-dungeon) w :hidden) nil
+                              (setf (getf-direction `(,x ,y 0 rpgmaker-dungeon) w :hidden) nil
                                     (getf-direction `(,u ,v 0 rpgmaker-dungeon)
                                                     (getf '(:south :north
                                                             :north :south
