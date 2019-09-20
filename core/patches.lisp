@@ -279,7 +279,7 @@
                                   :provide-output-destination-keyword nil)
     ()
   (window-clear *standard-output*)
-  (serapeum:nix yadfa-clim::*records*))
+  (setf yadfa-clim::*records* nil))
 
 ;;; The CLIM Listener has the fonts hardcoded, the following 8 forms change them
 (defmethod read-frame-command ((frame listener) &key (stream *standard-input*))

@@ -175,12 +175,12 @@
                           (push (list x y) visited)
                           (iter (for (u v w) in (alexandria:shuffle (neighbors x y width height)))
                             (unless (member (list u v) visited :test #'equal)
-                              (serapeum:nix (getf-direction `(,x ,y 0 rpgmaker-dungeon) w :hidden))
-                              (serapeum:nix (getf-direction `(,u ,v 0 rpgmaker-dungeon)
-                                                   (getf '(:south :north
-                                                           :north :south
-                                                           :east :west
-                                                           :west :east) w) :hidden))
+                              (setf (getf-direction `(,x ,y 0 rpgmakersnix-dungeon) w :hidden) nil
+                                    (getf-direction `(,u ,v 0 rpgmaker-dungeon)
+                                                    (getf '(:south :north
+                                                            :north :south
+                                                            :east :west
+                                                            :west :east) w) :hidden) nil)
                               (walk u v width height)))))
                  (walk (random width) (random height) width height))))
       (iter (for x from 0 to (1- width))
