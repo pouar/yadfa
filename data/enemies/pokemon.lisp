@@ -3,7 +3,7 @@
 (defclass magikarp (enemy) ()
   (:default-initargs
    :name "Magikarp"
-   :description "The world's weakest pokemon until it evolves, but when it does evolve, HOLY SHIT!!!!!!"
+   :description "The world's weakest Pokémon until it evolves, but when it does evolve, HOLY SHIT!!!!!!"
    :species "Magikarp"
    :male (random-elt '(t nil))
    :default-attack (lambda (target user)

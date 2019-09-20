@@ -146,7 +146,7 @@
   :locked nil)
 (ensure-zone (-5 22 0 bandits-domain)
   :name "Bandit's Kennel"
-  :description "A grungy looking kennel where the Raccoon Bandits keep their `pets'. Neglected so much that they literally forgot about their existence"
+  :description "A grungy looking kennel where the Raccoon Bandits keep their 'pets'. Neglected so much that they literally forgot about their existence"
   :enter-text "You enter the kennel"
   :events (list 'yadfa-events:enter-bandits-kennel-1))
 (ensure-zone (0 21 0 bandits-domain)
