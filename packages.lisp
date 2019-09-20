@@ -490,6 +490,7 @@
    #:secret-underground
    #:pirates-cove
    #:your-ship
+   #:rpgmaker-dungeon
    #:create-rpgmaker-dungeon)
   (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package :yadfa-events
