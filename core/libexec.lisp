@@ -1,88 +1,67 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 ;;;; files used internally by the game, don't call these unless you're developing/modding (or cheating)
 (in-package :yadfa)
-(declaim (inline list-length-> list-length->=))
-(defun list-length-> (list length)
+;;; list-length-< and list-length-<= are based off of sequence-of-length-p from Alexandria
+(eval-always
+  (declaim (inline list-length-< list-length-<=))
+  (defun list-length-<= (length list)
+    (declare (type list list)
+             (type integer length))
+    (let ((n (1- length)))
+      (or (minusp n) (nthcdr n list))))
+  (defun list-length-< (length list)
+    (declare (type list list)
+             (type integer length))
+    (list-length-<= (1+ length) list))
+  (declaim (notinline list-length-< list-length-<=)))
+(defun list-length-> (length list)
   (declare (type list list)
            (type integer length)
-           (notinline list-length->))
-  (cond ((<= length 0) t)
-        ((cdr list) (list-length-> (cdr list) (1- length)))))
-(defun list-length-<= (list length)
+           (inline list-length-<=))
+  (not (list-length-<= length list)))
+(defun list-length->= (length list)
   (declare (type list list)
            (type integer length)
-           (inline list-length->))
-  (not (list-length-> list length)))
-(defun list-length->= (list length)
-  (declare (type list list)
-           (type integer length)
-           (notinline list-length->=))
-  (cond ((<= length 1) t)
-        ((cdr list) (list-length->= (cdr list) (1- length)))))
-(defun list-length-< (list length)
-  (declare (type list list)
-           (type integer length)
-           (inline list-length->=))
-  (not (list-length->= list length)))
-(declaim (notinline list-length-> list-length->=))
+           (inline list-length-<))
+  (not (list-length-< length list)))
 
 (defmacro defunassert (name-args-declares asserts &body body)
   "Wrapper macro that brings the behavior of SBCL's type declaration to other implementations, @var{NAME-ARGS-DECLARES} is the function name, lambda list, and optionally the docstring and declarations (omitting the type declarations) @var{ASSERTS} is the type specifiers for the lambda list as a plist, @var{BODY} is the body of the function"
-  (labels ((get-var (_ var)
-             (cond ((eq _ '&key)
-                    (cond ((and (typep var 'list)
-                                (typep (car var) 'list)
-                                (typep (caar var) 'keyword))
-                           (cadar var))
-                          ((typep var 'list)
-                           (car var))
-                          (t var)))
-                   ((eq _ '&optional)
-                    (cond ((typep var 'list)
-                           (car var))
-                          (t var)))
-                   (t var)))
-           (list-length-> (list length)
-             (declare (type list list)
-                      (type integer length))
-             (cond ((<= length 0) t)
-                   ((cdr list) (list-length-> (cdr list) (1- length)))))
-           (check-type% (asserts check-type m j)
-             (if check-type
-                 `(check-type ,(get-var m j) ,(getf asserts (get-var m j) t))
-                 `(type ,(getf asserts (get-var m j) t) ,(get-var m j))))
-           (check (name-args-declares asserts check-type)
-             (iter
-               (with l = nil)
-               (with m = nil)
-               (for j in (second name-args-declares))
-               (setf l (iter (for k in '(&rest &key &optional &allow-other-keys))
-                         (when (eq j k)
-                           (setf m k)
-                           (leave k))))
-               (unless l
-                 (collect `,(check-type% asserts check-type m j))))))
-    (let* ((sbclp (uiop:featurep :sbcl))
-           (declarep (and sbclp
-                          (list-length-> name-args-declares 2)
-                          (typep (car (last name-args-declares)) 'list)
-                          (eq (caar (last name-args-declares)) 'declare)))
-           (types (check name-args-declares asserts nil)))
-      `(defun
-           ,@(if declarep
-                 (butlast name-args-declares)
-                 name-args-declares)
-           ,@(if sbclp
-              `(,(append (if declarep
-                          (car (last name-args-declares))
-                          '(declare))
-                  types)
-                ,@body)
-              (append
-               (check name-args-declares asserts t)
-               `((locally (declare ,@types)
-                   ,@body))))))))
-(eval-when (:compile-toplevel :load-toplevel :execute)
+  (declare (inline list-length-<))
+  (let* ((sbclp (uiop:featurep :sbcl))
+         (declarep (and sbclp
+                        (list-length-< 2 name-args-declares)
+                        (typep (car (last name-args-declares)) 'list)
+                        (eq (caar (last name-args-declares)) 'declare)))
+         (types (multiple-value-bind (req op rest key allow aux keyp)
+                    (parse-ordinary-lambda-list (second name-args-declares))
+                  (declare (ignore rest allow aux keyp))
+                  (iter (for i in (append req (mapcar 'car op) (mapcar 'cadar key)))
+                    (collect `(type ,(if (member i (plist-keys asserts))
+                                         (getf asserts i)
+                                         t)
+                                    ,i))))))
+    `(defun
+         ,@(if declarep
+               (butlast name-args-declares)
+               name-args-declares)
+         ,@(if sbclp
+            `(,(append (if declarep
+                        (car (last name-args-declares))
+                        '(declare))
+                types)
+              ,@body)
+            (append
+             (multiple-value-bind (req op rest key allow aux keyp)
+                 (parse-ordinary-lambda-list (second name-args-declares))
+               (declare (ignore rest allow aux keyp))
+               (iter (for i in (append req (mapcar 'car op) (mapcar 'cadar key)))
+                 (collect `(check-type ,i ,(if (member i (plist-keys asserts))
+                                               (getf asserts i)
+                                               t)))))
+             `((locally (declare ,@types)
+                 ,@body)))))))
+(eval-always
   (defun set-logical-pathnames ()
     (setf (logical-pathname-translations "YADFA")
           (list (list "yadfa:data;**;*.*.*" (uiop:merge-pathnames*
@@ -127,7 +106,7 @@
                        a)
                      '<))
           1)
-       (not (or (typep (get-move attack character) 'yadfa-moves:watersport) (typep (get-move attack character) 'yadfa-moves:mudsport)))))
+       (nor (typep (get-move attack character) 'yadfa-moves:watersport) (typep (get-move attack character) 'yadfa-moves:mudsport))))
 (defunassert (get-positions-of-type (type list))
     (type (or null (and symbol (not keyword)) list class)
           list list)
@@ -137,11 +116,11 @@
       (collect j))))
 
 (defun finished-events (events)
-  (=
-   (list-length events)
-   (list-length (intersection
-                 events
-                 (finished-events-of *game*)))))
+  (length=
+   events
+   (intersection
+    events
+    (finished-events-of *game*))))
 (defunassert (get-diaper-expansion (item))
     (item closed-bottoms)
   (+
@@ -169,12 +148,12 @@
   (labels ((preferred-mod (old new)
              (cond ((not old)
                     new)
-                   ((list-length-< (pathname-directory new)
-                                   (list-length (pathname-directory old)))
+                   ((list-length-> (list-length (pathname-directory old))
+                                   (pathname-directory new))
                     new)
-                   ((list-length-<
-                     (pathname-directory old)
-                     (list-length (pathname-directory new)))
+                   ((list-length->
+                     (list-length (pathname-directory new))
+                     (pathname-directory old))
                     old)
                    ((string< (namestring old) (namestring new))
                     old)
@@ -209,15 +188,13 @@
     (let* ((file #P"yadfa:config;mods.conf")
            (mods '()))
       (ensure-directories-exist #P"yadfa:config;")
-      (handler-case (with-open-file (stream file :if-does-not-exist :error)
+      (handler-case (with-input-from-file (stream file)
                       (setf mods (read stream)))
         (file-error ()
           (write-line "The configuration file containing the list of enabled mods seems missing, creating a new one")
-          (with-open-file (stream file
-                                  :if-does-not-exist :create
-                                  :direction :output
-                                  :if-exists :supersede
-                                  :external-format :utf-8)
+          (with-output-to-file (stream file
+                                       :if-exists :supersede
+                                       :external-format :utf-8)
             (write *mods* :stream stream)))
         (error ()
           (write-line "The configuration file containing the list of enabled mods seems broken, ignoring")))
@@ -247,7 +224,7 @@
                               (when (eq (type-of i) status-condition)
                                 (collect i))))
          (i (if (or (eq (accumulative-of (make-instance status-condition)) t)
-                    (list-length-< status-conditions (accumulative-of (make-instance status-condition))))
+                    (list-length-> (accumulative-of (make-instance status-condition)) status-conditions))
                 (make-instance status-condition)
                 (car (sort status-conditions (lambda (a b)
                                                (cond ((eq b t)
@@ -304,24 +281,28 @@
                                                                                                               (let ((*query-io* (clim:frame-query-io frame)))
                                                                                                                 ,@body
                                                                                                                 (read-char *query-io*))))))))
-(defunassert (trigger-event (event-id))
-    (event-id symbol)
-  (when (and
-         (not (and (major-event-of *game*) (event-major (get-event event-id))))
-         (funcall (coerce (event-predicate (get-event event-id)) 'function)
-                  (get-event event-id))
-         (or (event-repeatable (get-event event-id)) (not (finished-events (list event-id))))
-         (finished-events (event-finished-depends (get-event event-id)))
-         (or (not (event-optional (get-event event-id)))
-             (progn
-               (finish-output)
-               (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
-                                             (clim:accept 'boolean :prompt "accept quest" :default t :view clim:+toggle-button-view+ :stream *query-io*))))))
-    (setf (major-event-of *game*) event-id)
-    (funcall (coerce (event-lambda (get-event event-id)) 'function) (get-event event-id))
-    (unless (event-major (get-event event-id))
-      (pushnew event-id (finished-events-of *game*)))
-    event-id))
+(defunassert (trigger-event (event-ids))
+    (event-ids (or symbol list))
+  (let ((event-ids (ensure-list event-ids)))
+    (dolist (event-id event-ids event-ids)
+      (when (and
+             (nand (major-event-of *game*) (event-major (get-event event-id)))
+             (funcall (coerce (event-predicate (get-event event-id)) 'function)
+                      (get-event event-id))
+             (or (event-repeatable (get-event event-id)) (not (finished-events (list event-id))))
+             (finished-events (event-finished-depends (get-event event-id)))
+             (or (not (event-optional (get-event event-id)))
+                 (progn
+                   (finish-output)
+                   (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+                                                 (clim:accept 'boolean :prompt "accept quest" :default t
+                                                                       :view clim:+toggle-button-view+ :stream *query-io*))))))
+        (setf (major-event-of *game*) event-id)
+        (funcall (coerce (event-lambda (get-event event-id)) 'function) (get-event event-id))
+        (unless (event-major (get-event event-id))
+          (pushnew event-id (finished-events-of *game*)))
+        event-id)))
+  event-ids)
 (defun set-new-battle (enemies &rest keys &key win-events enter-battle-text continuable)
   (when continuable
     (setf
@@ -504,10 +485,10 @@
           (clim:stream-set-cursor-position *standard-output* (first start-position) (+ (second start-position) (* 31 (clim:pattern-height pattern)))))))))
 (defunassert (get-zone-text (text))
     (text (or simple-string coerced-function))
-  (cond
-    ((typep text 'simple-string)
+  (typecase text
+    (simple-string
      text)
-    ((typep text 'coerced-function)
+    (coerced-function
      (funcall (coerce text 'function)))))
 (defun print-enter-text (position &optional old-position old-direction)
   (let ((old-direction (find old-direction (warp-points-of (get-zone old-position))
@@ -589,16 +570,15 @@
 (defun fast-thickness (list item)
   #+sbcl (declare (type list list)
                   (type clothing item))
-  (labels ((execute (list item count)
-             (cond ((eq (car list) item) count)
-                   ((and (typep (car list) 'closed-bottoms) (cdr list))
-                    (execute (cdr list) item (+ count (get-diaper-expansion (car list)))))
-                   ((cdr list)
-                    (execute (cdr list) item count))
-                   ((typep (car list) 'closed-bottoms)
-                    (+ count (get-diaper-expansion (car list))))
-                   (t count))))
-    (execute list item 0)))
+  (nlet execute (list item (count 0))
+    (cond ((eq (car list) item) count)
+          ((and (typep (car list) 'closed-bottoms) (cdr list))
+           (execute (cdr list) item (+ count (get-diaper-expansion (car list)))))
+          ((cdr list)
+           (execute (cdr list) item count))
+          ((typep (car list) 'closed-bottoms)
+           (+ count (get-diaper-expansion (car list))))
+          (t count))))
 (defunassert (pop-from-expansion (user &optional wet/mess))
     (user base-character)
   (macrolet ((pushclothing (i wet/mess return)
@@ -625,8 +605,8 @@
                    (thickness-capacity-of i)
                    (thickness-capacity-threshold-of i)
                    (> total-thickness (+ (thickness-capacity-of i) (thickness-capacity-threshold-of i))))
-            (cond
-              ((typep i 'onesie/closed)
+            (typecase i
+              (onesie/closed
                (toggle-onesie%% i)
                (if (lockedp i)
                    (progn (format t "~a's ~a pops open from the expansion destroying the lock in the process~%~%"
@@ -637,7 +617,7 @@
                            (name-of user)
                            (name-of i)))
                (pushclothing i wet/mess return))
-              ((typep i '(or incontinence-product snap-bottoms))
+              ((or incontinence-product snap-bottoms)
                (push i (inventory-of (if (typep user 'team-member)
                                          (player-of *game*)
                                          user)))
@@ -646,7 +626,7 @@
                        (name-of user)
                        (name-of i))
                (pushclothing i wet/mess return))
-              ((typep i '(and bottoms (not incontinence-product)))
+              ((and bottoms (not incontinence-product))
                (deletef list i :count 1)
                (format t "~a's ~a tears from the expansion and is destroyed~%~%"
                        (name-of user)
@@ -664,6 +644,15 @@
             (collect i)))
         '>
         :key 'get-diaper-expansion))
+(defunassert (thickest (clothing &optional n))
+    (clothing list)
+  (let ((a (bestn (or n 1) (iter (for i in clothing)
+                             (when (typep i 'closed-bottoms)
+                               (collect i)))
+                  '>
+                  :key 'get-diaper-expansion
+                  :memo t)))
+    (if n a (first a))))
 (defgeneric toggle-onesie%% (onesie))
 (defgeneric toggle-onesie% (onesie underclothes user))
 (defmethod toggle-onesie% (onesie underclothes user)
@@ -678,7 +667,7 @@
               (name-of onesie)
               (if (malep user) "him" "her")
               (if (malep user) "his" "her")
-              (name-of (first (thickest-sort underclothes))))
+              (name-of (thickest underclothes)))
       (toggle-onesie%% onesie)))
 (defmethod toggle-onesie% ((onesie onesie/closed) underclothes (user base-character))
   (if (lockedp onesie)
@@ -727,10 +716,10 @@
           (export ',(fourth position) ',(symbol-package (fourth position)))
           (get-zone ',position)))
 (defmacro defzone (position &body body)
-  #.(format nil "defines the classes of the zones and adds an instance of them to the game's map hash table. Intended to be used to replace existing zones in more intrusive mods. Best to wrap this in an event and run trigger-event so it doesn't overwrite the zone every time this piece of code is loaded
+  #.(format nil "defines the classes of the zones and adds an instance of them to the game's map hash table. Intended to be used to replace existing zones in more intrusive mods. Best to wrap this in an event and run @code{TRIGGER-EVENT} so it doesn't overwrite the zone every time this piece of code is loaded
 
-~a, ~a, ~a."
-            (xref defzone* :macro) (xref ensure-zone :macro) (xref ensure-zone* :macro))
+~a, ~a, ~a, ~a."
+            (xref defzone* :macro) (xref ensure-zone :macro) (xref ensure-zone* :macro) (xref trigger-event :function))
   #+sbcl (declare (type list position))
   (check-type position list)
   `(progn
@@ -779,15 +768,15 @@
     (return-from move-to-secret-underground))
   (when
       (iter (for i in (cons (player-of *game*) (allies-of *game*)))
-        (when (or (and (list-length-< (filter-items (wear-of i)
-                                                    (car (must-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground)))))
-                                      1)
+        (when (or (and (list-length-> 1
+                                      (filter-items (wear-of i)
+                                                    (car (must-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground))))))
                        (not (funcall (coerce (cdr (must-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground)))) 'function)
                                      i)))
                   (and
-                   (list-length-> (filter-items (wear-of i)
-                                                (car (must-not-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground)))))
-                                  0)
+                   (list-length-< 0
+                                  (filter-items (wear-of i)
+                                                (car (must-not-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground))))))
                    (not (funcall (coerce (cdr (must-not-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground)))) 'function)
                                  i))))
           (leave t)))
@@ -804,6 +793,7 @@
   (iter (for i in (allies-of *game*))
     (process-potty i)
     (run-equip-effects i))
+  (run-hooks '*move-hooks*)
   (print-enter-text (position-of (player-of *game*)))
   (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
          (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
@@ -844,13 +834,13 @@
       (return-from move-to-pocket-map))
     (when
         (iter (for i in (cons (player-of *game*) (allies-of *game*)))
-          (when (or (and (list-length-< (filter-items (wear-of i) (car (must-wear-of (get-zone new-position))))
-                                        1)
+          (when (or (and (list-length-> 1
+                                        (filter-items (wear-of i) (car (must-wear-of (get-zone new-position)))))
                          (not (funcall (coerce (cdr (must-wear-of (get-zone new-position)))
                                                'function)
                                        i)))
-                    (and (list-length-> (filter-items (wear-of i) (car (must-not-wear-of (get-zone new-position))))
-                                        0)
+                    (and (list-length-< 0
+                                        (filter-items (wear-of i) (car (must-not-wear-of (get-zone new-position)))))
                          (not (funcall (coerce (cdr (must-not-wear-of (get-zone new-position))) 'function)
                                        i))))
             (leave t)))
@@ -869,6 +859,7 @@
     (iter (for i in (allies-of *game*))
       (process-potty i)
       (run-equip-effects i))
+    (run-hooks '*move-hooks*)
     (print-enter-text (position-of (player-of *game*)))
     (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
            (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
@@ -2763,6 +2754,7 @@
     (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*))))
                      'function)
              had-accident user)
+    (run-hook-with-args '*process-potty-hooks* user had-accident)
     had-accident))
 (defun get-props-from-zone (position)
   (props-of (eval (get-zone position))))
@@ -3330,7 +3322,7 @@
           items-for-sale list)
   (when items-to-buy
     (iter (for i in items-to-buy)
-      (let ((item (when (list-length->= items-for-sale (car i))
+      (let ((item (when (list-length-<= (car i) items-for-sale)
                     (apply #'make-instance
                            (car (nth (car i) items-for-sale))
                            (eval (cdr (nth (car i) items-for-sale)))))))
@@ -3429,7 +3421,7 @@
         ((process-potty-dance-of character) t)
         ((and (wield-of character)
               (ammo-type-of (wield-of character))
-              (list-length-<= (ammo-of (wield-of character)) 0)
+              (list-length->= 0 (ammo-of (wield-of character)))
               (> (ammo-capacity-of (wield-of character)) 0)
               (ammo-type-of (wield-of character))
               (iter (for i in (inventory-of character))
@@ -3443,7 +3435,7 @@
                  (name-of (wield-of character)))
          (iter (with count = 0)
            (for item in (inventory-of character))
-           (when (or (list-length->= (ammo-of (wield-of character)) (ammo-capacity-of (wield-of character)))
+           (when (or (list-length-<= (ammo-capacity-of (wield-of character)) (ammo-of (wield-of character)))
                      (and (reload-count-of (wield-of character)) (>= count (reload-count-of (wield-of character)))))
              (leave t))
            (when (typep item (ammo-type-of (wield-of character)))
@@ -3500,9 +3492,8 @@
                 (iter (with count = 0)
                   (for item in (inventory-of (player-of *game*)))
                   (when (or
-                         (list-length->=
-                          (ammo-of (wield-of character))
-                          (ammo-capacity-of (wield-of character)))
+                         (list-length-<= (ammo-capacity-of (wield-of character))
+                                         (ammo-of (wield-of character)))
                          (and
                           (reload-count-of (wield-of character))
                           (>=
@@ -3520,7 +3511,8 @@
                       (pop (ammo-of (wield-of character)))))
              (funcall (coerce (default-attack-of character) 'function) selected-target character)))
         (attack
-         (funcall (coerce (attack-of (get-move attack character)) 'function) selected-target character (get-move attack character)))))
+         (funcall (coerce (attack-of (get-move attack character)) 'function) selected-target character (get-move attack character))
+         (decf (energy-of character) (energy-cost-of attack)))))
 (defunassert (process-battle (&key attack item reload target friendly-target no-team-attack selected-target))
     (target (or null integer)
             attack (or symbol boolean)
@@ -3529,10 +3521,10 @@
     (write-line "You need to either specify an attack or an item to use")
     (return-from process-battle))
   (let* ((selected-target (cond (selected-target selected-target)
-                                ((and target (list-length-< (enemies-of *battle*) target))
+                                ((and target (list-length-> target (enemies-of *battle*)))
                                  (write-line "That target doesn't exist")
                                  (return-from process-battle))
-                                ((and friendly-target (list-length-< (team-of *game*) friendly-target))
+                                ((and friendly-target (list-length-> friendly-target (team-of *game*)))
                                  (write-line "That target doesn't exist")
                                  (return-from process-battle))
                                 (target (nth target (enemies-of *battle*)))
@@ -3543,6 +3535,7 @@
          (ret nil)
          (team-attacked no-team-attack))
     (flet ((check-if-done ()
+             (run-hooks '*cheat-hooks*)
              (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
                (if (<= (health-of i) 0)
                    (progn (setf (health-of i) 0)
@@ -3564,6 +3557,10 @@
       (check-if-done)
       (unless (or (eq attack t) (get-move attack (first (turn-queue-of *battle*))))
         (format t "~a doesn't know ~a~%" (name-of (first (turn-queue-of *battle*))) attack)
+        (return-from process-battle))
+      (unless (and (not (eq attack t)) (< (energy-of (first (turn-queue-of *battle*))) (energy-cost-of (get-move attack (first (turn-queue-of *battle*))))))
+        (format t "~a doesn't have enough energy to use ~a~%"
+                (name-of (first (turn-queue-of *battle*))) (name-of (get-move attack (first (turn-queue-of *battle*)))))
         (return-from process-battle))
       (iter (until (and team-attacked (typep (first (turn-queue-of *battle*)) 'team-member)))
         (check-if-done)

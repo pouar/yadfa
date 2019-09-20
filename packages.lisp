@@ -17,12 +17,20 @@
    #:removef-if)
   (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package :yadfa
-  (:use #:cl :yadfa-util :iterate :ugly-tiny-infix-macro :alexandria)
+  (:use #:cl :yadfa-util :ugly-tiny-infix-macro :alexandria :global-vars)
+  (:mix :iterate :serapeum)
   (:import-from :macro-level #:macro-level)
+  (:shadow )
   (:export
    ;;variables
    #:*battle*
    #:*game*
+   #:*read-frame-command-hooks*
+   #:*execute-frame-command-hooks*
+   #:*redisplay-frame-panes-hooks*
+   #:*cheat-hooks*
+   #:*move-hooks*
+   #:*process-potty-hooks*
    ;;macros
    #:defevent
    #:ensure-zone
@@ -53,6 +61,7 @@
    #:filter-items
    #:total-thickness
    #:thickest-sort
+   #:thickest
    #:wet
    #:mess
    #:get-event
@@ -270,7 +279,7 @@
    #:persistentp)
   (:documentation "Yet Another Diaperfur Adventure"))
 (uiop:define-package :yadfa-bin
-  (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mod #:disable-mod #:reload-files #:get-inventory-of-type)
+  (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mods #:disable-mods #:reload-files #:get-inventory-of-type)
   (:documentation "Commands that the player can run anytime"))
 (uiop:define-package :yadfa-world
   (:export #:move #:interact #:save-game #:load-game #:go-potty #:tickle #:wash-all-in #:use-item #:add-ally-to-team #:remove-ally-from-team #:swap-team-member #:stats #:place #:reload)
@@ -292,7 +301,9 @@
    #:mush
    #:mudbomb
    #:spray
-   #:pants)
+   #:pants
+   #:fire-breath
+   #:roar)
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package :yadfa-items
   (:import-from :macro-level :macro-level)
@@ -431,7 +442,10 @@
    #:diapered-kobold
    #:diapered-skunk
    #:thickly-diaper-pirate
-   #:padded-fursuiter-servant)
+   #:padded-fursuiter-servant
+   #:fursuiter-servant
+   #:diapered-dragon*
+   #:diapered-dragon)
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package :yadfa-props
   (:import-from :macro-level :macro-level)
@@ -480,7 +494,9 @@
    #:bandits-entrance
    #:secret-underground
    #:pirates-cove
-   #:your-ship)
+   #:your-ship
+   #:rpgmaker-dungeon
+   #:create-rpgmaker-dungeon)
   (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package :yadfa-events
   (:use :yadfa :yadfa-util :cl :iterate)
@@ -496,7 +512,8 @@
    #:furry)
   (:documentation "Contains all the allies in the game"))
 (uiop:define-package :yadfa-user
-  (:use :cl :yadfa :yadfa-util :yadfa-bin :iterate :ugly-tiny-infix-macro :alexandria)
+  (:use :cl :yadfa :yadfa-util :yadfa-bin :ugly-tiny-infix-macro :alexandria)
+  (:mix :iterate :serapeum)
   (:documentation "The package that the player typically executes commands from"))
 (uiop:define-package :yadfa-clim
   (:use :yadfa :iterate :clim :clim-lisp :clim-extensions)

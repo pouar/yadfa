@@ -279,7 +279,7 @@
                                   :provide-output-destination-keyword nil)
     ()
   (window-clear *standard-output*)
-  (setf yadfa-clim::*records* ()))
+  (setf yadfa-clim::*records* nil))
 
 ;;; The CLIM Listener has the fonts hardcoded, the following 8 forms change them
 (defmethod read-frame-command ((frame listener) &key (stream *standard-input*))
@@ -390,9 +390,11 @@
             (flet ((execute-command ()
                      (alexandria:when-let ((command (read-frame-command frame :stream frame-query-io)))
                        (setq needs-redisplay t)
-                       (execute-frame-command frame command))))
+                       (apply 'serapeum:run-hooks '(yadfa:*read-frame-command-hooks* yadfa:*cheat-hooks*))
+                       (execute-frame-command frame command)
+                       (serapeum:run-hooks 'yadfa:*execute-frame-command-hooks*))))
               (when needs-redisplay
-                (loop for i in yadfa-clim::*records* do (redisplay i *standard-output*))
+                (dolist (i yadfa-clim::*records*) do (redisplay i *standard-output*))
                 (redisplay-frame-panes frame :force-p first-time)
                 (when first-time
                   (yadfa:intro-function frame-query-io))

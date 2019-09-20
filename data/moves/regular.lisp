@@ -49,3 +49,14 @@
                           (name-of user)))))
              (format t "~a is grossed out by the smell~%" (name-of target))
              (set-status-condition 'yadfa-status-conditions:skunked target))))
+(defclass fire-breath (stat/move) ()
+  (:default-initargs
+   :name "Fire Breath"
+   :energy-cost 5
+   :power 60
+   :description "Breathes fire at the enemy"
+   :attack '(lambda (target user self)
+             (let ((a (calculate-damage target user (power-of self))))
+               (format t "~a used ~a~%" (name-of user) (name-of self))
+               (decf (health-of target) a)
+               a))))

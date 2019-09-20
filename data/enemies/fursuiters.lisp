@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-enemies"; coding: utf-8-unix; -*-
 (in-package :yadfa-enemies)
-(defclass padded-fursuiter-servant (potty-enemy pantsable-character) ()
+(defclass padded-fursuiter-servant (potty-enemy) ()
   (:default-initargs
    :name "Padded Fursuiter Servant"
    :description "These are basically generic \"servants\" that you can also use as a plushie. Since they're not allowed to take bathroom breaks, they're thickly padded and have special fursuits that keep all the fluids and smells in. Some are too embarrassed to use their diapers for their intended purposes and try so hard to hold it in only to uncontrollably flood and mess themselves. Other's have given up and just use their diapers whenever they have to go."
@@ -8,7 +8,7 @@
    :species "Fox"
    :bladder/contents (random 500)
    :bowels/contents (random 7000)
-   :wear (list (make-instance 'yadfa-items:watertight-fursuit)
+   :wear (list (make-instance 'yadfa-items:fursuit)
                (make-instance 'yadfa-items:kurikia-thick-diaper))))
 (defmethod initialize-instance :after
     ((c padded-fursuiter-servant) &rest args &key &allow-other-keys)
@@ -24,3 +24,15 @@
            (setf (mudsport-limit-of c) (random-elt (list (bowels/need-to-potty-limit-of c) nil))))
           ((member :mudsport-limit potty-keys)
            (setf (watersport-limit-of c) (random-elt (list (bladder/need-to-potty-limit-of c) nil)))))))
+(defclass fursuiter-servant (potty-enemy) ()
+  (:default-initargs
+   :name "Fursuiter Servant"
+   :description "Claims that he \"doesn't want to be associated with diapers\" and that he will \"sweat all the fluids out\", so he's kept in one of those watertight fursuits to keep him from making puddles until he changes his mind."
+   :male (random-elt '(t nil))
+   :species "Fox"
+   :bladder/contents (random 500)
+   :bowels/contents (random 7000)
+   :wear (list (make-instance 'yadfa-items:watertight-fursuit)
+               (make-instance 'yadfa-items:tshirt)
+               (make-instance 'yadfa-items:jeans)
+               (make-instance 'yadfa-items:boxers))))

@@ -43,7 +43,8 @@
                                     (let ((move-to-use (make-instance 'yadfa-moves:mush)))
                                       (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use)))
                                    ((and move-to-use (= (random 4) 0))
-                                    (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use))
+                                    (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use)
+                                    (decf (energy-of self) (energy-cost-of move-to-use)))
                                    ((wield-of self)
                                     (funcall (coerce (attack-script-of (wield-of self)) 'function) target self (wield-of self)))
                                    (t
