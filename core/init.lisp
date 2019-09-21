@@ -34,5 +34,7 @@
 (define-global-var *mod-registry* (make-hash-table :test #'equal))
 (define-global-var *pattern-cache* (make-hash-table :test #'equal))
 (define-global-var *mods* '())
+(define-global-var *cheat-hooks* '()
+  "Put functions that sets crap to fixed values here. Intended to be used similar to the feature in Cheat Engine used to set variables to a constant value, although will probably run less frequently and is generally easier to use since it doesn't involve working with memory addresses")
 (define-global-var *game* nil
   "contains the information to be serialized when saving and loading a game")

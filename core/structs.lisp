@@ -22,22 +22,3 @@
   (attributes ())
   (lambda '(lambda (prop))
     :type (or list symbol function)))
-(defstruct (yadfa-hook (:constructor make-yadfa-hook%))
-  "wrapper for hooks which also contains the docs"
-  (documentation nil :type (or null simple-string))
-  (value nil :type list)
-  (name nil :type symbol))
-(defun make-yadfa-hook (name &optional (value nil value-supplied-p) (documentation nil documentation-supplied-p))
-  (apply #'make-yadfa-hook% :name name (serapeum:collecting
-                                   (when value-supplied-p
-                                     (collect :value)
-                                     (collect value))
-                                   (when documentation-supplied-p
-                                     (collect :documentation)
-                                     (collect documentation)))))
-(define-compiler-macro make-yadfa-hook (name &optional (value nil value-supplied-p) (documentation nil documentation-supplied-p))
-  `(make-yadfa-hook% :name ,name
-               ,@(when value-supplied-p
-                   `(:value ,value))
-               ,@(when documentation-supplied-p
-                   `(:documentation ,documentation))))

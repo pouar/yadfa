@@ -90,61 +90,6 @@
                                                   :directory (pathname-directory (truename (uiop:argv0))))
                                                  (asdf:component-pathname (asdf:find-system "yadfa"))))))))
   (set-logical-pathnames))
-
-(defvar *yadfa-hook* nil
-  "The hook currently being run.")
-(declaim (type symbol *yadfa-hook*))
-
-(declaim (ftype (function (symbol symbol &key (:append t))
-                          t)
-                add-yadfa-hook))
-(defmacro defyadfahook (name &optional (value nil value-supplied-p) (documentation nil documentation-supplied-p))
-  (if documentation-supplied-p
-      `(if (yadfa-hook-p (gethash ',name (hooks-of *game*)))
-           (setf (yadfa-hook-documentation (gethash ',name (hooks-of *game*))) ,documentation)
-           (setf (gethash ',name (hooks-of *game*)) (make-yadfa-hook ',name ,value ,documentation)))
-      `(unless (yadfa-hook-p (gethash ',name (hooks-of *game*)))
-         (setf (gethash ',name (hooks-of *game*)) (make-hook ',name ,@(when value-supplied-p value))))))
-(defun add-yadfa-hook (name fn &key append)
-  "Add @var{FN} to the hooks @var{NAME}, a hook."
-  (declare (type symbol fn))
-  (if (not append)
-      (pushnew fn (yadfa-hook-value (gethash name (hooks-of *game*))) :test #'eq)
-      (unless (member fn (yadfa-hook-value (gethash name (hooks-of *game*))))
-        (appendf (yadfa-hook-value (gethash name (hooks-of *game*))) (list fn)))))
-
-(declaim (ftype (function (symbol symbol)
-                          t)
-                remove-yadfa-hook))
-(defun remove-yadfa-hook (name fn)
-  "Remove fn from the symbol value of NAME."
-  (removef (yadfa-hook-value (gethash name (hooks-of *game*))) fn :test #'eq))
-
-(defmacro with-hook-restart (&body body)
-  `(with-simple-restart (continue "Call next function in hook ~s" *yadfa-hook*)
-     ,@body))
-
-(declaim (ftype (function (&rest symbol)
-                          null)
-                run-yadfa-hooks))
-(defun run-yadfa-hooks (&rest hookvars)
-  "Run all the hooks in all the HOOKVARS.
-The variable `*yadfa-hook*' is bound to the name of each hook as it is being
-run."
-  (dolist (*yadfa-hook* hookvars)
-    (dolist (fn (yadfa-hook-value (gethash *yadfa-hook* (hooks-of *game*))))
-      (with-hook-restart
-        (funcall fn)))))
-
-(declaim (ftype (function (symbol &rest t)
-                          null)
-                run-yadfa-hook-with-args))
-(defun run-yadfa-hook-with-args (*yadfa-hook* &rest args)
-  "Apply each function in the symbol value of HOOK to ARGS."
-  (dolist (fn (yadfa-hook-value (gethash *yadfa-hook* (hooks-of *game*))))
-    (with-hook-restart
-      (apply fn args))))
-
 (defun process-potty-dance-check (character attack)
   (and (or
         (>= (bladder/contents-of character) (bladder/potty-dance-limit-of character))
@@ -848,7 +793,6 @@ run."
   (iter (for i in (allies-of *game*))
     (process-potty i)
     (run-equip-effects i))
-  (run-yadfa-hooks 'move-hooks)
   (print-enter-text (position-of (player-of *game*)))
   (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
          (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
@@ -914,7 +858,6 @@ run."
     (iter (for i in (allies-of *game*))
       (process-potty i)
       (run-equip-effects i))
-    (run-yadfa-hooks 'move-hooks)
     (print-enter-text (position-of (player-of *game*)))
     (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
            (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
@@ -2809,7 +2752,6 @@ run."
     (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*))))
                      'function)
              had-accident user)
-    (run-yadfa-hook-with-args 'process-potty-hooks user had-accident)
     had-accident))
 (defun get-props-from-zone (position)
   (props-of (eval (get-zone position))))
@@ -3590,7 +3532,7 @@ run."
          (ret nil)
          (team-attacked no-team-attack))
     (flet ((check-if-done ()
-             (run-yadfa-hooks 'cheat-hooks)
+             (run-hooks '*cheat-hooks*)
              (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
                (if (<= (health-of i) 0)
                    (progn (setf (health-of i) 0)

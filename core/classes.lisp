@@ -1117,10 +1117,5 @@
    (seen-enemies
     :initarg :seen-enemies
     :initform '()
-    :accessor seen-enemies-of)
-   (hooks
-    :initarg :hooks
-    :initform (make-hash-table :test #'eq)
-    :accessor hooks-of
-    :documentation "Contains the hooks for the game which is a bunch of structs of type @code{HOOK}"))
+    :accessor seen-enemies-of))
   (:documentation "List of all the information in the game"))

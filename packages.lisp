@@ -25,17 +25,9 @@
    ;;variables
    #:*battle*
    #:*game*
-   #:*yadfa-hook*
-   ;;hooks
-   #:read-frame-command-hooks
-   #:execute-frame-command-hooks
-   #:redisplay-frame-panes-hooks
-   #:cheat-hooks
-   #:move-hooks
-   #:process-potty-hooks
+   #:*cheat-hooks*
    ;;macros
    #:defevent
-   #:defyadfahook
    #:ensure-zone
    #:defzone
    #:ensure-zone*
@@ -47,10 +39,6 @@
    #:updating-present-frame-resolved
    ;;functions
    #:get-positions-of-type
-   #:add-yadfa-hook
-   #:remove-yadfa-hook
-   #:run-yadfa-hooks
-   #:run-yadfa-hook-with-args
    #:trigger-event
    #:intro-function
    #:set-player
