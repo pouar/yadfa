@@ -18,7 +18,7 @@
   (attributes ()))
 (defstruct action
   "An action for a prop or item"
-  (documentation nil :type simple-string)
+  (documentation nil :type (or null simple-string))
   (attributes ())
   (lambda '(lambda (prop))
     :type (or list symbol function)))
