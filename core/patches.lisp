@@ -85,6 +85,15 @@
     outlist))
 
 (in-package :climi)
+
+;;; https://github.com/McCLIM/McCLIM/issues/846
+(defmethod climb:font-character-width (font character)
+  (let* ((codes (climb:font-string-glyph-codes font (string character)))
+         (code (alexandria:first-elt codes)))
+    (assert (alexandria:length= 1 codes))
+    (+ (climb:font-glyph-left font code)
+       (climb:font-glyph-width font code))))
+
 (define-application-frame accept-values ()
   ((stream :initform *query-io* :initarg :stream)
    (body :initform nil :initarg :body)
