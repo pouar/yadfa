@@ -225,7 +225,7 @@
                   (b nil))
               (format t "*You enter the kennel and in 2 of the cages you see 2 orange foxes in heavily used diapers.*~%~%")
               (format t "Vixen: Hey! someone has entered the kennel for once!!!~%~%")
-              (format t "Fox: Could you let us out? We're the town's `pets' but they seemed to have forgotten about us.~%~%")
+              (format t "Fox: Could you let us out? We're the town's 'pets' but they seemed to have forgotten about us.~%~%")
               (format t "Fox: and while you're at it, could you give us... umm... you know.... *blushes heavily*~%~%")
               (format t "~a: A diaper change?~%~%" (name-of (player-of *game*)))
               (format t "*the fox nods with a blush on his face*~%~%")
