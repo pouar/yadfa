@@ -94,6 +94,8 @@
     (+ (climb:font-glyph-left font code)
        (climb:font-glyph-width font code))))
 
+;;; McCLIM is missing the accept-values application class which display-exit-boxes expects as an argument if you want to change what the function displays via :exit-boxes
+;;; https://github.com/McCLIM/McCLIM/issues/582
 (define-application-frame accept-values ()
   ((stream :initform *query-io* :initarg :stream)
    (body :initform nil :initarg :body)
