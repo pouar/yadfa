@@ -14,7 +14,7 @@ install:
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/releases/download/v1.11.5/ccl-1.11.5-windowsx86.zip" -OutFile $env:CACHE\ccl.zip
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/archive/v1.11.6.zip" -OutFile $env:CACHE\ccl-1.11.6.zip
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3.3/asdf-3.3.3.3.zip"  -OutFile $env:CACHE\asdf.zip
-- ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.14/sbcl-1.4.14-x86-64-windows-binary.msi" -OutFile $env:CACHE\sbcl.msi
+#- ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.14/sbcl-1.4.14-x86-64-windows-binary.msi" -OutFile $env:CACHE\sbcl.msi
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/joaotavora/sly/archive/master.zip" -OutFile "$env:CACHE\sly.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/didierverna/declt/archive/master.zip" -OutFile "$env:CACHE\declt.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/McCLIM/McCLIM/archive/master.zip" -OutFile "$env:CACHE\mcclim.zip"
