@@ -298,7 +298,8 @@
    #:spray
    #:pants
    #:fire-breath
-   #:roar)
+   #:roar
+   #:face-sit)
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package :yadfa-items
   (:import-from :macro-level :macro-level)

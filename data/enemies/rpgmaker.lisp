@@ -38,7 +38,7 @@
    :bitcoins-per-level 100
    :inventory (iter (for i from 0 to (random 10))
                 (collect (make-instance 'yadfa-items:high-capacity-diaper)))
-   :moves (list (make-instance 'yadfa-moves:spray))))
+   :moves (list (make-instance 'yadfa-moves:spray) (make-instance 'yadfa-moves:face-sit))))
 (defmethod initialize-instance :after
     ((c diapered-skunk) &rest args &key &allow-other-keys)
   (unless (iter (for (a b) on args)

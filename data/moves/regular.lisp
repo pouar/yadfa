@@ -60,3 +60,23 @@
                (format t "~a used ~a~%" (name-of user) (name-of self))
                (decf (health-of target) a)
                a))))
+(defclass face-sit (stat/move) ()
+  (:default-initargs
+   :name "Face Sit"
+   :energy-cost 3
+   :power 40
+   :description "Sits on the enemy's face and messes"
+   :attack '(lambda (target user self)
+             (format t "~a used ~a~%" (name-of user) (name-of self))
+             (let* ((m (mess :messer user))
+                    (c (calculate-diaper-usage user))
+                    (a (calculate-damage target user (power-of self))))
+               (if (> (getf m :mess-amount) 0)
+                 (format t "~a sits on ~a's face and messes~%" (name-of user) (name-of target))
+                 (format t "~a sits on ~a's face~%" (name-of user) (name-of target)))
+               (when (>= (getf c :messiness) 2000)
+                 (format t "~a is grossed out by the smell~%" (name-of target))
+                 (set-status-condition 'yadfa-status-conditions:skunked target))
+               (format t "~a is damaged by the impact~%" (name-of target))
+               (decf (health-of target) a)
+               a))))
