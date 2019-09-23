@@ -243,16 +243,16 @@
   :warp-points (list 'back-to-castle '(2 -2 0 peachs-castle-wannabe))
   :events (list 'yadfa-events:win-thwomp-area-1))
 (ensure-zone (0 0 0 peachs-castle-wannabe:pokemon-area)
-  :name "Pokémon Area"
-  :description "Pokémon Area"
+  :name "Pokemon Area"
+  :description "Pokemon Area"
   :enter-text "You're wondering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :events (list 'yadfa-events:enter-pokemon-area-1)
   :warp-points (list 'back-to-castle '(-1 -4 1 peachs-castle-wannabe)))
 (ensure-zone (0 0 0 peachs-castle-wannabe:blank-area)
-  :name "Pokémon Area"
-  :description "Pokémon Area"
+  :name "Pokemon Area"
+  :description "Pokemon Area"
   :enter-text "You're wondering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
