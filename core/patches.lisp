@@ -87,12 +87,10 @@
 (in-package :climi)
 
 ;;; https://github.com/McCLIM/McCLIM/issues/846
-(defmethod climb:font-character-width (font character)
-  (let* ((codes (climb:font-string-glyph-codes font (string character)))
-         (code (alexandria:first-elt codes)))
-    (assert (alexandria:length= 1 codes))
+#+mcclim-ffi-freetype
+(defmethod climb:font-glyph-dx ((font clim-freetype::freetype-font) code)
     (+ (climb:font-glyph-left font code)
-       (climb:font-glyph-width font code))))
+       (climb:font-glyph-width font code)))
 
 ;;; McCLIM is missing the accept-values application class which display-exit-boxes expects as an argument if you want to change what the function displays via :exit-boxes
 ;;; https://github.com/McCLIM/McCLIM/issues/582
