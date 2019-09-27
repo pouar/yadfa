@@ -646,13 +646,13 @@
         :key 'get-diaper-expansion))
 (defunassert (thickest (clothing &optional n))
     (clothing list)
-  (let ((a (bestn (or n 1) (iter (for i in clothing)
-                             (when (typep i 'closed-bottoms)
-                               (collect i)))
-                  '>
-                  :key 'get-diaper-expansion
-                  :memo t)))
-    (if n a (first a))))
+  (let ((a (iter (for i in clothing)
+             (when (typep i 'closed-bottoms)
+               (collect i)))))
+    (if n
+        (bestn n a '> :key 'get-diaper-expansion :memo t)
+        (iter (for i in a)
+          (finding i maximizing (get-diaper-expansion i))))))
 (defgeneric toggle-onesie%% (onesie))
 (defgeneric toggle-onesie% (onesie underclothes user))
 (defmethod toggle-onesie% (onesie underclothes user)
