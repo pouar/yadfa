@@ -645,7 +645,7 @@
         '>
         :key 'get-diaper-expansion))
 (defunassert (thickest (clothing &optional n))
-    (clothing list)
+    (clothing list n (or null unsigned-byte))
   (let ((a (iter (for i in clothing)
              (when (typep i 'closed-bottoms)
                (collect i)))))
