@@ -1062,7 +1062,7 @@
   (setf (turn-queue-of c) (sort (append (enemies-of c) (team-of *game*)) '>
                                 :key (lambda (a)
                                        (calculate-stat a :speed))))
-  (incf (time-of *game*) 5))
+  (incf (time-of *game*)))
 (defclass game (yadfa-class)
   ((zones
     :initarg :zones
