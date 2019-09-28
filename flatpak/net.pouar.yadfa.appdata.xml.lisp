@@ -24,7 +24,7 @@
     (project_license "GPL-3.0+")
     (developer_name "Pouar")
     (requires
-      (memory 192))
+      (memory 1024))
     ((launchable :type "desktop-id") "net.pouar.yadfa.desktop")
     (description "An experimental text based adventure you play by typing in Lisp code in a REPL")
     ((url :type "homepage") "https://cgit.pouar.net/yadfa.git/about")))
