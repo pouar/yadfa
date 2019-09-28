@@ -9,15 +9,15 @@
                                        :name "Dresser"
                                        :description "A dresser"
                                        :placeable t
-                                       :items (append (iter (for i from 1 to 20)
-                                                        (collect (make-instance 'yadfa-items:diaper)))
-                                                      (iter (for i from 1 to 20)
-                                                        (collect (make-instance 'yadfa-items:pullups)))
-                                                      (iter (for i from 1 to 5)
-                                                        (collect (make-instance 'yadfa-items:thick-rubber-diaper)))
-                                                      (list (make-instance 'yadfa-items:sundress)
-                                                            (make-instance 'yadfa-items:toddler-dress)
-                                                            (make-instance 'yadfa-items:rubber-onesie))))
+                                       :items (nconc (iter (for i from 1 to 20)
+                                                       (collect (make-instance 'yadfa-items:diaper)))
+                                                     (iter (for i from 1 to 20)
+                                                       (collect (make-instance 'yadfa-items:pullups)))
+                                                     (iter (for i from 1 to 5)
+                                                       (collect (make-instance 'yadfa-items:thick-rubber-diaper)))
+                                                     (list (make-instance 'yadfa-items:sundress)
+                                                           (make-instance 'yadfa-items:toddler-dress)
+                                                           (make-instance 'yadfa-items:rubber-onesie))))
                :toilet (make-instance 'yadfa-props:toilet)
                :bed (make-instance 'yadfa-props:bed)
                :shop (make-instance 'yadfa-props:debug-shop

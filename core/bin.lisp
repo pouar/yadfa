@@ -433,7 +433,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
         (finally (write-char #\Newline)))))
   (when take
     (cond ((eq take :all)
-           (setf (inventory-of (player-of *game*)) (append (get-items-from-prop prop (position-of (player-of *game*))) (inventory-of (player-of *game*))))
+           (setf (inventory-of (player-of *game*)) (append* (get-items-from-prop prop (position-of (player-of *game*))) (inventory-of (player-of *game*))))
            (setf (get-items-from-prop prop (position-of (player-of *game*))) '())
            (incf (bitcoins-of (player-of *game*)) (get-bitcoins-from-prop prop (position-of (player-of *game*))))
            (setf (get-bitcoins-from-prop prop (position-of (player-of *game*))) 0))

@@ -59,3 +59,9 @@ the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYW
     type-specifier-p))
 (deftype coerced-function ()
   '(satisfies coerced-function-p))
+(defmacro append* (&rest args)
+  "Variant of @code{APPEND} that also makes a copy of its last argument"
+  `(append ,@args nil))
+(define-modify-macro appendf* (&rest lists) append*
+  "Modify-macro for APPEND*. Appends LISTS to the place designated by the first
+argument.")
