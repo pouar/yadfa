@@ -75,88 +75,85 @@
              (enemy-spawn-list-of *game*)
              'bandits-way '((:max-random 8
                              :enemies ((yadfa-enemies:female-diapered-raccoon-bandit .
-                                        (list
-                                         :level (random-from-range 2 5)))))
+                                        `(:level ,(random-from-range 2 5)))))
                             (:max-random 8
                              :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
-                                        (list
-                                         :level (random-from-range 2 5))))))
+                                        `(:level ,(random-from-range 2 5))))))
              'bandits-cove '((:max-random 10
                               :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
-                                         (list
-                                          :level (random-from-range 2 5)
-                                          :wear (list
-                                                 (make-instance 'yadfa-items:lower-bandit-swim-diaper-cover)
-                                                 (make-instance 'yadfa-items:bandit-diaper
-                                                                :sogginess (random 1000)
-                                                                :messiness (random 6000)))))))
+                                         `(:level ,(random-from-range 2 5)
+                                           :wear ,(list
+                                                   (make-instance 'yadfa-items:lower-bandit-swim-diaper-cover)
+                                                   (make-instance 'yadfa-items:bandit-diaper
+                                                                  :sogginess (random 1000)
+                                                                  :messiness (random 6000)))))))
                              (:max-random 10
                               :enemies ((yadfa-enemies:diapered-raccoon-bandit .
-                                         (list
-                                          :level (random-from-range 2 5)
-                                          :wear (list (make-instance 'yadfa-items:bandit-swimsuit/closed)
-                                                 (make-instance 'bandit-swim-diaper-cover)
-                                                 (make-instance 'yadfa-items:bandit-diaper))))))
+                                         `(:level ,(random-from-range 2 5)
+                                           :wear ,(list (make-instance 'yadfa-items:bandit-swimsuit/closed)
+                                                   (make-instance 'bandit-swim-diaper-cover)
+                                                   (make-instance 'yadfa-items:bandit-diaper))))))
                              (:max-random 10
                               :enemies ((yadfa-enemies:female-diapered-raccoon-bandit .
-                                         (list
-                                          :level (random-from-range 2 5)
-                                          :wear (list
-                                                 (make-instance 'yadfa-items:bandit-uniform-sports-bikini-top)
-                                                 (make-instance 'yadfa-items:female-bandit-swim-diaper-cover)
-                                                 (make-instance 'yadfa-items:bandit-female-diaper
-                                                                :sogginess (random 1000)
-                                                                :messiness (random 6000)))
-                                          :level (random-from-range 2 5))))))
+                                         `(:level ,(random-from-range 2 5)
+                                           :wear ,(list
+                                                   (make-instance 'yadfa-items:bandit-uniform-sports-bikini-top)
+                                                   (make-instance 'yadfa-items:female-bandit-swim-diaper-cover)
+                                                   (make-instance 'yadfa-items:bandit-female-diaper
+                                                                  :sogginess (random 1000)
+                                                                  :messiness (random 6000))))))))
              'rpgmaker-dungeon '((:max-random 20
                                   :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
-                                             (list :level (random-from-range 2 5)))))
+                                             `(:level ,(random-from-range 2 5)))))
                                  (:max-random 20
                                   :enemies ((yadfa-enemies:padded-fursuiter-servant .
-                                             (list :level (random-from-range 2 5)))))
+                                             `(:level ,(random-from-range 2 5)))))
                                  (:max-random 20
                                   :enemies ((yadfa-enemies:fursuiter-servant .
-                                             (list :level (random-from-range 2 5)))))
+                                             `(:level ,(random-from-range 2 5)))))
                                  (:max-random 20
                                   :enemies ((yadfa-enemies:navy-officer .
-                                             (list :level (random-from-range 2 5)))
+                                             `(:level ,(random-from-range 2 5)))
                                             (yadfa-enemies:navy-officer* .
-                                             (list :level (random-from-range 2 5)))))
+                                             `(:level ,(random-from-range 2 5)))))
                                  (:max-random 20
                                   :enemies ((yadfa-enemies:diaper-pirate .
-                                             (list :level (random-from-range 2 5)))
+                                             `(:level ,(random-from-range 2 5)))
                                             (yadfa-enemies:thickly-diaper-pirate .
-                                             (list :level (random-from-range 2 5)))))
+                                             `(:level ,(random-from-range 2 5)))))
                                  (:max-random 20
                                   :enemies ((yadfa-enemies:diapered-raccoon-bandit .
-                                             (list :level (random-from-range 2 5)))
+                                             `(:level ,(random-from-range 2 5)))
                                             (yadfa-enemies:rookie-diapered-raccoon-bandit .
-                                             (list :level (random-from-range 2 5)))))
+                                             `(:level ,(random-from-range 2 5)))))
                                  (:max-random 20
                                   :enemies ((yadfa-enemies:diapered-raccoon-bandit .
-                                             (list :level (random-from-range 2 5)))
+                                             `(:level ,(random-from-range 2 5)))
                                             (yadfa-enemies:female-diapered-raccoon-bandit .
-                                             (list :level (random-from-range 2 5)))))
+                                             `(:level ,(random-from-range 2 5)))))
                                  (:max-random 20
                                   :enemies ((yadfa-enemies:diapered-kobold .
-                                             (list :level (random-from-range 2 5)))
+                                             `(:level ,(random-from-range 2 5)))
                                             (yadfa-enemies:diapered-kobold .
-                                             (list :level (random-from-range 2 5)))))
+                                             `(:level ,(random-from-range 2 5)))))
                                  (:max-random 25
                                   :enemies ((yadfa-enemies:diapered-dragon .
-                                             (list :level (random-from-range 4 10)))
+                                             `(:level ,(random-from-range 4 10)))
                                             (yadfa-enemies:diapered-kobold .
-                                             (list :level (random-from-range 2 5)
-                                                   :wear (list (make-instance 'yadfa-items:kurikia-thick-diaper))))))
+                                             `(:level ,(random-from-range 2 5)
+                                               :wear ,(list (make-instance 'yadfa-items:kurikia-thick-diaper))))))
                                  (:max-random 25
                                   :enemies ((yadfa-enemies:diapered-dragon* .
-                                             (list :level (random-from-range 4 10)))
+                                             `(:level ,(random-from-range 4 10)))
                                             (yadfa-enemies:diapered-kobold .
-                                             (list :level (random-from-range 2 5)
-                                                   :wear (list (make-instance 'yadfa-items:kurikia-thick-diaper))))))
+                                             `(:level ,(random-from-range 2 5)
+                                               :wear ,(list (make-instance 'yadfa-items:kurikia-thick-diaper))))))
                                  (:max-random 20
                                   :enemies ((yadfa-enemies:diapered-skunk .
-                                             (list :level (random-from-range 2 5)))))))))
+                                             `(:level ,(random-from-range 2 5)))))
+                                 (:max-random 20
+                                  :enemies ((yadfa-enemies:dergy .
+                                             `(:level ,(random-from-range 2 5)))))))))
 (trigger-event 'initialize-enemy-spawn-list)
 (defun create-rpgmaker-dungeon% (self)
   (declare (ignore self))

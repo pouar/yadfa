@@ -8,8 +8,6 @@
    :male t
    :bladder/contents (random 500)
    :bowels/contents (random 7000)
-   :bladder/fill-rate (* (/ 2000 24 60) 2)
-   :bowels/fill-rate (* (/ 12000 24 60) 2)
    :wear (list (make-instance 'yadfa-items:bandit-uniform-tunic)
                (make-instance 'yadfa-items:bandit-adjustable-diaper))
    :inventory (let ((a ()))
@@ -71,8 +69,6 @@
    :male t
    :bladder/contents (random 500)
    :bowels/contents (random 7000)
-   :bladder/fill-rate (* (/ 2000 24 60) 2)
-   :bowels/fill-rate (* (/ 12000 24 60) 2)
    :wear (list (make-instance 'yadfa-items:bandit-uniform-shirt)
                (make-instance 'yadfa-items:bandit-diaper
                               :sogginess (let ((a (random 3)))
@@ -91,8 +87,6 @@
    :male nil
    :bladder/contents (random 500)
    :bowels/contents (random 7000)
-   :bladder/fill-rate (* (/ 2000 24 60) 2)
-   :bowels/fill-rate (* (/ 12000 24 60) 2)
    :wear (list (make-instance 'yadfa-items:bandit-uniform-sports-bikini-top)
                (make-instance 'yadfa-items:bandit-female-diaper
                               :sogginess (let ((a (random 3)))

@@ -10,8 +10,6 @@
    :mudsport-chance 3
    :bladder/contents (random 500)
    :bowels/contents (random 7000)
-   :bladder/fill-rate (* (/ 2000 24 60) 2)
-   :bowels/fill-rate (* (/ 12000 24 60) 2)
    :inventory (iter (for i from 0 to (random 5)) (collect (make-instance 'yadfa-items:navy-pullups)))
    :bitcoins-per-level 60))
 (defmethod initialize-instance :after

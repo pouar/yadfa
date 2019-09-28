@@ -441,7 +441,8 @@
    #:padded-fursuiter-servant
    #:fursuiter-servant
    #:diapered-dragon*
-   #:diapered-dragon)
+   #:diapered-dragon
+   #:dergy)
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package :yadfa-props
   (:import-from :macro-level :macro-level)
