@@ -54,7 +54,7 @@
                           (getf (status-conditions-of *battle*) character)))
         (teammember (find-if (lambda (o)
                                (and (typep o 'diapered-raccoon-bandit) (not (eq o character))))
-                             (enemies-of *game*))))
+                             (enemies-of *battle*))))
     (cond ((and wetting teammember (= (random 5) 0))
            (write-line "Other Raccoon: Now's not the time to go potty")
            (write-line "Flooding Raccoon Bandit: *whines*"))

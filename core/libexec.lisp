@@ -3415,7 +3415,7 @@
         ((iter (for j in (getf (status-conditions-of *battle*) character))
            (when (blocks-turn-of j)
              (leave t))))
-        ((process-potty-dance-of character) t)
+        ((funcall (coerce (process-potty-dance-of character) 'function) character attack item reload selected-target) t)
         ((and (wield-of character)
               (ammo-type-of (wield-of character))
               (list-length->= 0 (ammo-of (wield-of character)))
@@ -3471,7 +3471,7 @@
         ((iter (for j in (getf (status-conditions-of *battle*) character))
            (when (blocks-turn-of j)
              (leave t))))
-        ((process-potty-dance-of character) t)
+        ((funcall (coerce (process-potty-dance-of character) 'function) character attack item reload selected-target) t)
         (item
          (format t "~a used ~a ~a on ~a~%"
                  (name-of character)
@@ -3555,7 +3555,7 @@
       (unless (or (eq attack t) (get-move attack (first (turn-queue-of *battle*))))
         (format t "~a doesn't know ~a~%" (name-of (first (turn-queue-of *battle*))) attack)
         (return-from process-battle))
-      (unless (and (not (eq attack t)) (< (energy-of (first (turn-queue-of *battle*))) (energy-cost-of (get-move attack (first (turn-queue-of *battle*))))))
+      (when (and (not (eq attack t)) (< (energy-of (first (turn-queue-of *battle*))) (energy-cost-of (get-move attack (first (turn-queue-of *battle*))))))
         (format t "~a doesn't have enough energy to use ~a~%"
                 (name-of (first (turn-queue-of *battle*))) (name-of (get-move attack (first (turn-queue-of *battle*)))))
         (return-from process-battle))
