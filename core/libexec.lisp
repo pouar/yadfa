@@ -3619,7 +3619,7 @@
   (let* ((default (make-instance 'player))
          (wear '(yadfa-items:short-dress yadfa-items:tshirt yadfa-items:bra yadfa-items:jeans
                  yadfa-items:boxers yadfa-items:panties yadfa-items:pullups yadfa-items:diaper))
-         name male species clothes bladder)
+         name male species clothes bladder dergy)
     (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
       (fresh-line *query-io*)
       (setf name (clim:accept 'string :prompt "Name" :default (name-of default) :view clim:+text-field-view+ :stream *query-io*))
@@ -3635,7 +3635,10 @@
                                  :stream *query-io*))
       (fresh-line *query-io*)
       (setf bladder (clim:accept '(clim:completion (:normal :low :overactive))
-                                 :prompt "Bladder capacity" :default :normal :view clim:+option-pane-view+ :stream *query-io*)))
+                                 :prompt "Bladder capacity" :default :normal :view clim:+option-pane-view+ :stream *query-io*))
+      (fresh-line *query-io*)
+      (setf dergy (clim:accept '(clim:completion (:normal :dergy))
+                               :prompt "Metabolism type" :default :normal :view clim:+option-pane-view+ :stream *query-io*)))
     (setf (player-of *game*) (make-instance 'player
                                             :position '(0 0 0 yadfa-zones:home)
                                             :name name
@@ -3646,6 +3649,30 @@
                                             :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) bladder)
                                             :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) bladder)
                                             :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) bladder)
+                                            :bowels/fill-rate (getf (list
+                                                                     :normal (bowels/fill-rate-of default)
+                                                                     :dergy 0)
+                                                                    dergy)
+                                            :bladder/fill-rate (getf (list
+                                                                      :normal (bladder/fill-rate-of default)
+                                                                      :dergy (+ (bowels/fill-rate-of default) (bladder/fill-rate-of default)))
+                                                                     dergy)
+                                            :bowels/maximum-limit (getf (list
+                                                                         :normal (bowels/maximum-limit-of default)
+                                                                         :dergy 1)
+                                                                        dergy)
+                                            :bowels/potty-dance-limit (getf (list
+                                                                             :normal (bowels/potty-dance-limit-of default)
+                                                                             :dergy 1)
+                                                                            dergy)
+                                            :bowels/potty-desperate-limit (getf (list
+                                                                                 :normal (bowels/potty-desperate-limit-of default)
+                                                                                 :dergy 1)
+                                                                                dergy)
+                                            :bowels/need-to-potty-limit (getf (list
+                                                                               :normal (bowels/need-to-potty-limit-of default)
+                                                                               :dergy 1)
+                                                                              dergy)
                                             :wear (iter (for i in wear)
                                                     (when (member i clothes :test #'eq)
                                                       (collect (make-instance i))))))
@@ -3655,5 +3682,8 @@
                         (collect i))))
       (iter (for j from 1 to (random 20))
         (push (make-instance i)
-              (get-items-from-prop :dresser (position-of (player-of *game*)))))))
-  (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io))
+              (get-items-from-prop :dresser (position-of (player-of *game*))))))
+    (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io)
+    (when (eq dergy :dergy)
+      (write-line "Since you decided to have the dergy metabolism, Pouar decided to have mercy on you and give you a thicker diaper. It's in your inventory." query-io)
+      (push (make-instance 'yadfa-items:kurikia-thick-rubber-diaper) (inventory-of (player-of *game*))))))
