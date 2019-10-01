@@ -65,3 +65,9 @@ the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYW
 (define-modify-macro appendf* (&rest lists) append*
   "Modify-macro for APPEND*. Appends LISTS to the place designated by the first
 argument.")
+
+;;; create aliases for functions and macros in serapeum so that they don't conflict with iterate
+(setf (macro-function 'summing*) (macro-function 'serapeum:summing))
+(setf (macro-function 'collecting*) (macro-function 'serapeum:collecting))
+(setf (fdefinition 'sum*) #'serapeum:sum)
+(setf (fdefinition 'in*) #'serapeum:in)

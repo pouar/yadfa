@@ -16,7 +16,11 @@
    #:coerced-function
    #:removef-if
    #:append*
-   #:appendf*)
+   #:appendf*
+   #:collecting*
+   #:summing*
+   #:in*
+   #:sum*)
   (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package :yadfa
   (:use #:cl :yadfa-util :ugly-tiny-infix-macro :alexandria :global-vars)
