@@ -274,8 +274,6 @@
    #:action-documentation
    #:action-attributes
    #:event-attributes
-   #:event-lambda
-   #:event-repeatable
    #:fainted-of
    #:persistentp)
   (:documentation "Yet Another Diaperfur Adventure"))
