@@ -3,7 +3,7 @@
 (in-package :yadfa)
 ;;; list-length-< and list-length-<= are based off of sequence-of-length-p from Alexandria
 (eval-always
-  (declaim (inline list-length-< list-length-<=))
+  (declaim (inline list-length-< list-length-<= list-length-> list-length->=))
   (defun list-length-<= (length list)
     (declare (type list list)
              (type integer length))
@@ -12,8 +12,7 @@
   (defun list-length-< (length list)
     (declare (type list list)
              (type integer length))
-    (list-length-<= (1+ length) list))
-  (declaim (notinline list-length-< list-length-<=)))
+    (list-length-<= (1+ length) list)))
 (defun list-length-> (length list)
   (declare (type list list)
            (type integer length)
@@ -114,7 +113,7 @@
     (for j upfrom 0)
     (when (typep i type)
       (collect j))))
-
+(declaim (inline finished-events))
 (defun finished-events (events)
   (length=
    events
@@ -396,6 +395,7 @@
               #P"yadfa:home;pixmaps;map-patterns;")
              :format :xpm
              :designs designs))))
+(declaim (inline travelablep))
 (defun travelablep (position direction)
   (and (get-zone (get-destination direction position))
        (get-zone position)
@@ -565,6 +565,7 @@
     (with j = 0)
     (incf j (get-diaper-expansion i))
     (finally (return j))))
+(declaim (inline fast-thickness))
 (defun fast-thickness (list item)
   #+sbcl (declare (type list list)
                   (type clothing item))
