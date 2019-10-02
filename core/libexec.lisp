@@ -134,7 +134,7 @@
          (/
           (* 72 5/7)
           2)
-         (/ 18 2)
+         18/2
          pi))))
    (thickness-of item)))
 (defgeneric resolve-enemy-spawn-list (element)
@@ -283,26 +283,24 @@
                                                                                                                 (read-char *query-io*))))))))
 (defunassert (trigger-event (event-ids))
     (event-ids (or symbol list))
-  (let ((event-ids (ensure-list event-ids)))
-    (dolist (event-id event-ids event-ids)
-      (when (and
-             (nand (major-event-of *game*) (event-major (get-event event-id)))
-             (funcall (coerce (event-predicate (get-event event-id)) 'function)
-                      (get-event event-id))
-             (or (event-repeatable (get-event event-id)) (not (finished-events (list event-id))))
-             (finished-events (event-finished-depends (get-event event-id)))
-             (or (not (event-optional (get-event event-id)))
-                 (progn
-                   (finish-output)
-                   (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
-                                                 (clim:accept 'boolean :prompt "accept quest" :default t
-                                                                       :view clim:+toggle-button-view+ :stream *query-io*))))))
-        (setf (major-event-of *game*) event-id)
-        (funcall (coerce (event-lambda (get-event event-id)) 'function) (get-event event-id))
-        (unless (event-major (get-event event-id))
-          (pushnew event-id (finished-events-of *game*)))
-        event-id)))
-  event-ids)
+  (iter (for event-id in (ensure-list event-ids))
+    (when (and
+           (nand (major-event-of *game*) (event-major (get-event event-id)))
+           (funcall (coerce (event-predicate (get-event event-id)) 'function)
+                    (get-event event-id))
+           (or (event-repeatable (get-event event-id)) (not (finished-events (list event-id))))
+           (finished-events (event-finished-depends (get-event event-id)))
+           (or (not (event-optional (get-event event-id)))
+               (progn
+                 (finish-output)
+                 (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+                                               (clim:accept 'boolean :prompt "accept quest" :default t
+                                                                     :view clim:+toggle-button-view+ :stream *query-io*))))))
+      (setf (major-event-of *game*) event-id)
+      (funcall (coerce (event-lambda (get-event event-id)) 'function) (get-event event-id))
+      (unless (event-major (get-event event-id))
+        (pushnew event-id (finished-events-of *game*)))
+      (collect event-id))))
 (defun set-new-battle (enemies &rest keys &key win-events enter-battle-text continuable)
   (when continuable
     (setf
@@ -800,9 +798,7 @@
                          :continuable t
                          :enter-battle-text (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enter-battle-text))
          (return-from move-to-secret-underground))
-        ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-           (when (trigger-event i)
-             (collect i)))
+        ((trigger-event (events-of (get-zone (position-of (player-of *game*)))))
          (return-from move-to-secret-underground))
         ((resolve-enemy-spawn-list (get-zone (position-of (player-of *game*))))
          (iter (for i in (resolve-enemy-spawn-list (get-zone (position-of (player-of *game*)))))
@@ -865,9 +861,7 @@
                            :continuable t
                            :enter-battle-text (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enter-battle-text))
            (return-from move-to-pocket-map))
-          ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-             (when (trigger-event i)
-               (collect i)))
+          ((trigger-event (events-of (get-zone (position-of (player-of *game*)))))
            (return-from move-to-pocket-map))
           ((resolve-enemy-spawn-list (get-zone (position-of (player-of *game*))))
            (iter (for i in (resolve-enemy-spawn-list (get-zone (position-of (player-of *game*)))))
