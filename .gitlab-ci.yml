@@ -7,7 +7,7 @@ pages:
     - tar -xf cache.tar || true
   script:
     - dnf -y upgrade
-    - dnf -y install flatpak flatpak-builder gnupg git xz lzip bzip2 librsvg2
+    - dnf -y install flatpak flatpak-builder gnupg git xz bzip2 librsvg2
     - gdk-pixbuf-query-loaders-64 > /usr/lib64/gdk-pixbuf-2.0/2.10.0/loaders.cache
     - printf '%s' "$GPGKEY"|base64 -d|gpg --import
     - flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
@@ -33,7 +33,7 @@ test:
     - master
   script:
     - dnf -y upgrade
-    - dnf -y install flatpak flatpak-builder gnupg git xz lzip bzip2 librsvg2
+    - dnf -y install flatpak flatpak-builder gnupg git xz bzip2 librsvg2
     - gdk-pixbuf-query-loaders-64 > /usr/lib64/gdk-pixbuf-2.0/2.10.0/loaders.cache
     - flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     - flatpak-builder --install-deps-from=flathub --force-clean build flatpak/net.pouar.yadfa.yml
