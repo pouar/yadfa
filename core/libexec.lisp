@@ -2,8 +2,8 @@
 ;;;; files used internally by the game, don't call these unless you're developing/modding (or cheating)
 (in-package :yadfa)
 ;;; list-length-< and list-length-<= are based off of sequence-of-length-p from Alexandria
+(declaim (inline list-length-< list-length-<= list-length-> list-length->=))
 (eval-always
-  (declaim (inline list-length-< list-length-<= list-length-> list-length->=))
   (defun list-length-<= (length list)
     (declare (type list list)
              (type integer length))
@@ -60,6 +60,23 @@
                                                t)))))
              `((locally (declare ,@types)
                  ,@body)))))))
+
+(declaim (inline get-event get-zone))
+(defunassert (get-event (event-id))
+    (event-id symbol)
+  (gethash event-id (events-of *game*)))
+(defunassert ((setf get-event) (new-value event-id))
+    (event-id symbol)
+  (setf (gethash event-id (events-of *game*)) new-value))
+(defunassert (get-zone (position))
+    (position list)
+  (gethash position (zones-of *game*)))
+(defunassert ((setf get-zone) (new-value position))
+    (position list
+              new-value zone)
+  (setf (position-of new-value) position)
+  (setf (gethash position (zones-of *game*)) new-value))
+(declaim (notinline get-event get-zone))
 (eval-always
   (defun set-logical-pathnames ()
     (setf (logical-pathname-translations "YADFA")
@@ -120,6 +137,7 @@
    (intersection
     events
     (finished-events-of *game*))))
+(declaim (notinline finished-events))
 (defunassert (get-diaper-expansion (item))
     (item closed-bottoms)
   (+
@@ -280,7 +298,8 @@
                                                                                                               (let ((*query-io* (clim:frame-query-io frame)))
                                                                                                                 ,@body
                                                                                                                 (read-char *query-io*))))))))
-(defunassert (trigger-event (event-ids))
+(defunassert (trigger-event (event-ids)
+                            (declare (inline get-event finished-events)))
     (event-ids (or symbol list))
   (iter (for event-id in (ensure-list event-ids))
     (when (and
@@ -401,7 +420,9 @@
        (get-zone position)
        (not (getf-direction position direction :hidden))
        (not (hiddenp (get-zone (get-destination direction position))))))
+(declaim (notinline travelablep))
 (defun print-map (position)
+  (declare (inline travelablep))
   (labels ((a (position)
              (let ((b 0)
                    (array
@@ -437,6 +458,7 @@
                                               (list clim:+background-ink+ clim:+foreground-ink+)))
             (start-position (when clim-listener::*application-frame*
                               (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
+        (declare (inline get-zone))
         (clim:updating-output (t)
           ;; position needs to be bound inside of clim:updating-output and not outside
           ;; for the presentation to notice when the floor the player is on changes
@@ -518,19 +540,6 @@
      (setf (gethash ',event-id (events-of *game*)) (make-event :id ',event-id ,@args))
      (export ',event-id ',(symbol-package event-id))
      ',event-id))
-(defunassert (get-event (event-id))
-    (event-id symbol)
-  (gethash event-id (events-of *game*)))
-(defun (setf get-event) (new-value event-id)
-  (setf (gethash event-id (events-of *game*)) new-value))
-(defunassert (get-zone (position))
-    (position list)
-  (gethash position (zones-of *game*)))
-(defunassert ((setf get-zone) (new-value position))
-    (position list
-              new-value zone)
-  (setf (position-of new-value) position)
-  (setf (gethash position (zones-of *game*)) new-value))
 (defunassert (filter-items (items type)
                            "This function will return all items in the list @var{ITEMS} that is of type @var{TYPE}")
     (items list)
@@ -578,7 +587,9 @@
           ((typep (car list) 'closed-bottoms)
            (+ count (get-diaper-expansion (car list))))
           (t count))))
-(defunassert (pop-from-expansion (user &optional wet/mess))
+(declaim (notinline fast-thickness))
+(defunassert (pop-from-expansion (user &optional wet/mess)
+                                 (declare (inline fast-thickness)))
     (user base-character)
   (macrolet ((pushclothing (i wet/mess return)
                `(progn
