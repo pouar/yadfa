@@ -649,7 +649,7 @@
             (t (values nil nil))))))
 (defunassert (thickest-sort (clothing))
     (clothing list)
-  (sort (iter (for i in clothing)
+  (dsu-sort (iter (for i in clothing)
           (when (typep i 'closed-bottoms)
             (collect i)))
         '>
