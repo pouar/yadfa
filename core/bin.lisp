@@ -152,7 +152,6 @@ You can also specify multiple directions, for example @code{(move :south :south)
       (iter (for i in (allies-of *game*))
         (process-potty i)
         (run-equip-effects i))
-      (run-hooks '*move-hooks*)
       (print-enter-text (position-of (player-of *game*)) old-position direction)
       (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
              (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
@@ -160,9 +159,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
                              :continuable t
                              :enter-battle-text (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enter-battle-text))
              (return-from yadfa-world:move))
-            ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-               (when (trigger-event i)
-                 (collect i)))
+            ((trigger-event (events-of (get-zone (position-of (player-of *game*)))))
              (return-from yadfa-world:move))
             ((resolve-enemy-spawn-list (get-zone (position-of (player-of *game*))))
              (iter (for i in (resolve-enemy-spawn-list (get-zone (position-of (player-of *game*)))))
@@ -434,7 +431,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
         (finally (write-char #\Newline)))))
   (when take
     (cond ((eq take :all)
-           (setf (inventory-of (player-of *game*)) (append (get-items-from-prop prop (position-of (player-of *game*))) (inventory-of (player-of *game*))))
+           (setf (inventory-of (player-of *game*)) (append* (get-items-from-prop prop (position-of (player-of *game*))) (inventory-of (player-of *game*))))
            (setf (get-items-from-prop prop (position-of (player-of *game*))) '())
            (incf (bitcoins-of (player-of *game*)) (get-bitcoins-from-prop prop (position-of (player-of *game*))))
            (setf (get-bitcoins-from-prop prop (position-of (player-of *game*))) 0))
@@ -461,7 +458,8 @@ You can also specify multiple directions, for example @code{(move :south :south)
                              #.(format nil "Wear an item in your inventory. @var{WEAR} is the index you want to place this item. Smaller index refers to outer clothing. @var{INVENTORY} is an index in your inventory of the item you want to wear. You can also give it a type specifier which will pick the first item in your inventory of that type. @var{USER} is an index of an ally. Leave this at @code{NIL} to refer to yourself.
 
 ~a, ~a, and ~a."
-                                       (xref yadfa-bin:unwear :function) (xref yadfa-bin:change :function) (xref yadfa-bin:lst :function)))
+                                       (xref yadfa-bin:unwear :function) (xref yadfa-bin:change :function) (xref yadfa-bin:lst :function))
+                             (declare (inline fast-thickness)))
     (user (or null unsigned-byte)
           wear unsigned-byte
           inventory (or type-specifier unsigned-byte))
@@ -581,7 +579,8 @@ You can also specify multiple directions, for example @code{(move :south :south)
                                #.(format nil "Change one of the clothes you're wearing with one in your inventory. @var{WEAR} is the index of the clothing you want to replace. Smaller index refers to outer clothing. @var{INVENTORY} is an index in your inventory of the item you want to replace it with. You can also give @var{INVENTORY} and @var{WEAR} a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. @var{USER} is an index of an ally. Leave this at @code{NIL} to refer to yourself.
 
 ~a, ~a, and ~a."
-                                         (xref yadfa-bin:unwear :function) (xref yadfa-bin:wear :function) (xref yadfa-bin:lst :function)))
+                                         (xref yadfa-bin:unwear :function) (xref yadfa-bin:wear :function) (xref yadfa-bin:lst :function))
+                               (declare (inline fast-thickness)))
     (user (or null unsigned-byte)
           inventory (or type-specifier unsigned-byte)
           wear (or type-specifier unsigned-byte))

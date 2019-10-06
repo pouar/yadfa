@@ -10,8 +10,6 @@
    :mudsport-chance 3
    :bladder/contents (random 500)
    :bowels/contents (random 7000)
-   :bladder/fill-rate (* (/ 2000 24 60) 2)
-   :bowels/fill-rate (* (/ 12000 24 60) 2)
    :inventory (iter (for i from 0 to (random 5)) (collect (make-instance 'yadfa-items:navy-pullups)))
    :bitcoins-per-level 60))
 (defmethod initialize-instance :after
@@ -37,10 +35,10 @@
    :description "A variant of the Navy Officer. This variant still wears the standard pullups, but supplements them with stuffers to avoid changing the pullups out and is a bit less likely to try and hold it"
    :watersport-chance (random-from-range 1 3)
    :mudsport-chance (random-from-range 1 3)
-   :inventory (append (iter (for i from 0 to (random 5))
-                        (collect (make-instance 'yadfa-items:navy-pullups)))
-                      (iter (for i from 0 to (random 15))
-                        (collect (make-instance 'yadfa-items:cloth-incontinence-pad))))))
+   :inventory (nconc (iter (for i from 0 to (random 5))
+                       (collect (make-instance 'yadfa-items:navy-pullups)))
+                     (iter (for i from 0 to (random 15))
+                       (collect (make-instance 'yadfa-items:cloth-incontinence-pad))))))
 (defmethod initialize-instance :after
     ((c navy-officer*) &rest args &key &allow-other-keys)
   (unless (iter (for (a b) on args)

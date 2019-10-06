@@ -2,8 +2,8 @@
 ;;;; files used internally by the game, don't call these unless you're developing/modding (or cheating)
 (in-package :yadfa)
 ;;; list-length-< and list-length-<= are based off of sequence-of-length-p from Alexandria
+(declaim (inline list-length-< list-length-<= list-length-> list-length->=))
 (eval-always
-  (declaim (inline list-length-< list-length-<=))
   (defun list-length-<= (length list)
     (declare (type list list)
              (type integer length))
@@ -12,8 +12,7 @@
   (defun list-length-< (length list)
     (declare (type list list)
              (type integer length))
-    (list-length-<= (1+ length) list))
-  (declaim (notinline list-length-< list-length-<=)))
+    (list-length-<= (1+ length) list)))
 (defun list-length-> (length list)
   (declare (type list list)
            (type integer length)
@@ -61,6 +60,23 @@
                                                t)))))
              `((locally (declare ,@types)
                  ,@body)))))))
+
+(declaim (inline get-event get-zone))
+(defunassert (get-event (event-id))
+    (event-id symbol)
+  (gethash event-id (events-of *game*)))
+(defunassert ((setf get-event) (new-value event-id))
+    (event-id symbol)
+  (setf (gethash event-id (events-of *game*)) new-value))
+(defunassert (get-zone (position))
+    (position list)
+  (gethash position (zones-of *game*)))
+(defunassert ((setf get-zone) (new-value position))
+    (position list
+              new-value zone)
+  (setf (position-of new-value) position)
+  (setf (gethash position (zones-of *game*)) new-value))
+(declaim (notinline get-event get-zone))
 (eval-always
   (defun set-logical-pathnames ()
     (setf (logical-pathname-translations "YADFA")
@@ -114,13 +130,14 @@
     (for j upfrom 0)
     (when (typep i type)
       (collect j))))
-
+(declaim (inline finished-events))
 (defun finished-events (events)
   (length=
    events
    (intersection
     events
     (finished-events-of *game*))))
+(declaim (notinline finished-events))
 (defunassert (get-diaper-expansion (item))
     (item closed-bottoms)
   (+
@@ -134,7 +151,7 @@
          (/
           (* 72 5/7)
           2)
-         (/ 18 2)
+         18/2
          pi))))
    (thickness-of item)))
 (defgeneric resolve-enemy-spawn-list (element)
@@ -281,28 +298,27 @@
                                                                                                               (let ((*query-io* (clim:frame-query-io frame)))
                                                                                                                 ,@body
                                                                                                                 (read-char *query-io*))))))))
-(defunassert (trigger-event (event-ids))
+(defunassert (trigger-event (event-ids)
+                            (declare (inline get-event finished-events)))
     (event-ids (or symbol list))
-  (let ((event-ids (ensure-list event-ids)))
-    (dolist (event-id event-ids event-ids)
-      (when (and
-             (nand (major-event-of *game*) (event-major (get-event event-id)))
-             (funcall (coerce (event-predicate (get-event event-id)) 'function)
-                      (get-event event-id))
-             (or (event-repeatable (get-event event-id)) (not (finished-events (list event-id))))
-             (finished-events (event-finished-depends (get-event event-id)))
-             (or (not (event-optional (get-event event-id)))
-                 (progn
-                   (finish-output)
-                   (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
-                                                 (clim:accept 'boolean :prompt "accept quest" :default t
-                                                                       :view clim:+toggle-button-view+ :stream *query-io*))))))
-        (setf (major-event-of *game*) event-id)
-        (funcall (coerce (event-lambda (get-event event-id)) 'function) (get-event event-id))
-        (unless (event-major (get-event event-id))
-          (pushnew event-id (finished-events-of *game*)))
-        event-id)))
-  event-ids)
+  (iter (for event-id in (ensure-list event-ids))
+    (when (and
+           (nand (major-event-of *game*) (event-major (get-event event-id)))
+           (funcall (coerce (event-predicate (get-event event-id)) 'function)
+                    (get-event event-id))
+           (or (event-repeatable (get-event event-id)) (not (finished-events (list event-id))))
+           (finished-events (event-finished-depends (get-event event-id)))
+           (or (not (event-optional (get-event event-id)))
+               (progn
+                 (finish-output)
+                 (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+                                               (clim:accept 'boolean :prompt "accept quest" :default t
+                                                                     :view clim:+toggle-button-view+ :stream *query-io*))))))
+      (setf (major-event-of *game*) event-id)
+      (funcall (coerce (event-lambda (get-event event-id)) 'function) (get-event event-id))
+      (unless (event-major (get-event event-id))
+        (pushnew event-id (finished-events-of *game*)))
+      (collect event-id))))
 (defun set-new-battle (enemies &rest keys &key win-events enter-battle-text continuable)
   (when continuable
     (setf
@@ -398,12 +414,15 @@
               #P"yadfa:home;pixmaps;map-patterns;")
              :format :xpm
              :designs designs))))
+(declaim (inline travelablep))
 (defun travelablep (position direction)
   (and (get-zone (get-destination direction position))
        (get-zone position)
        (not (getf-direction position direction :hidden))
        (not (hiddenp (get-zone (get-destination direction position))))))
+(declaim (notinline travelablep))
 (defun print-map (position)
+  (declare (inline travelablep))
   (labels ((a (position)
              (let ((b 0)
                    (array
@@ -439,6 +458,7 @@
                                               (list clim:+background-ink+ clim:+foreground-ink+)))
             (start-position (when clim-listener::*application-frame*
                               (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
+        (declare (inline get-zone))
         (clim:updating-output (t)
           ;; position needs to be bound inside of clim:updating-output and not outside
           ;; for the presentation to notice when the floor the player is on changes
@@ -518,21 +538,7 @@
 (defmacro defevent (event-id &rest args)
   `(progn
      (setf (gethash ',event-id (events-of *game*)) (make-event :id ',event-id ,@args))
-     (export ',event-id ',(symbol-package event-id))
      ',event-id))
-(defunassert (get-event (event-id))
-    (event-id symbol)
-  (gethash event-id (events-of *game*)))
-(defun (setf get-event) (new-value event-id)
-  (setf (gethash event-id (events-of *game*)) new-value))
-(defunassert (get-zone (position))
-    (position list)
-  (gethash position (zones-of *game*)))
-(defunassert ((setf get-zone) (new-value position))
-    (position list
-              new-value zone)
-  (setf (position-of new-value) position)
-  (setf (gethash position (zones-of *game*)) new-value))
 (defunassert (filter-items (items type)
                            "This function will return all items in the list @var{ITEMS} that is of type @var{TYPE}")
     (items list)
@@ -567,6 +573,7 @@
     (with j = 0)
     (incf j (get-diaper-expansion i))
     (finally (return j))))
+(declaim (inline fast-thickness))
 (defun fast-thickness (list item)
   #+sbcl (declare (type list list)
                   (type clothing item))
@@ -579,7 +586,9 @@
           ((typep (car list) 'closed-bottoms)
            (+ count (get-diaper-expansion (car list))))
           (t count))))
-(defunassert (pop-from-expansion (user &optional wet/mess))
+(declaim (notinline fast-thickness))
+(defunassert (pop-from-expansion (user &optional wet/mess)
+                                 (declare (inline fast-thickness)))
     (user base-character)
   (macrolet ((pushclothing (i wet/mess return)
                `(progn
@@ -639,20 +648,20 @@
             (t (values nil nil))))))
 (defunassert (thickest-sort (clothing))
     (clothing list)
-  (sort (iter (for i in clothing)
+  (dsu-sort (iter (for i in clothing)
           (when (typep i 'closed-bottoms)
             (collect i)))
         '>
         :key 'get-diaper-expansion))
 (defunassert (thickest (clothing &optional n))
-    (clothing list)
-  (let ((a (bestn (or n 1) (iter (for i in clothing)
-                             (when (typep i 'closed-bottoms)
-                               (collect i)))
-                  '>
-                  :key 'get-diaper-expansion
-                  :memo t)))
-    (if n a (first a))))
+    (clothing list n (or null unsigned-byte))
+  (let ((a (iter (for i in clothing)
+             (when (typep i 'closed-bottoms)
+               (collect i)))))
+    (if n
+        (bestn n a '> :key 'get-diaper-expansion :memo t)
+        (iter (for i in a)
+          (finding i maximizing (get-diaper-expansion i))))))
 (defgeneric toggle-onesie%% (onesie))
 (defgeneric toggle-onesie% (onesie underclothes user))
 (defmethod toggle-onesie% (onesie underclothes user)
@@ -793,7 +802,6 @@
   (iter (for i in (allies-of *game*))
     (process-potty i)
     (run-equip-effects i))
-  (run-hooks '*move-hooks*)
   (print-enter-text (position-of (player-of *game*)))
   (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
          (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
@@ -801,9 +809,7 @@
                          :continuable t
                          :enter-battle-text (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enter-battle-text))
          (return-from move-to-secret-underground))
-        ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-           (when (trigger-event i)
-             (collect i)))
+        ((trigger-event (events-of (get-zone (position-of (player-of *game*)))))
          (return-from move-to-secret-underground))
         ((resolve-enemy-spawn-list (get-zone (position-of (player-of *game*))))
          (iter (for i in (resolve-enemy-spawn-list (get-zone (position-of (player-of *game*)))))
@@ -822,7 +828,7 @@
   (unless (get-zone '(0 0 0 pocket-map))
     (make-pocket-zone (0 0 0)
       :name "Pocket Map Entrance"
-      :description "Welcome to the Pocket Map. It's like the secret bases in Pokémon, except you customize it by scripting, and you can take it with you."
+      :description "Welcome to the Pocket Map. It's like the secret bases in Pokemon, except you customize it by scripting, and you can take it with you."
       :enter-text "You're at the start of the Pocket Map. Use the Pocket Map machine again at anytime to exit."))
   (let ((new-position
           (if (eq (fourth (position-of (player-of *game*))) :pocket-map)
@@ -859,7 +865,6 @@
     (iter (for i in (allies-of *game*))
       (process-potty i)
       (run-equip-effects i))
-    (run-hooks '*move-hooks*)
     (print-enter-text (position-of (player-of *game*)))
     (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
            (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
@@ -867,9 +872,7 @@
                            :continuable t
                            :enter-battle-text (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enter-battle-text))
            (return-from move-to-pocket-map))
-          ((iter (for i in (events-of (get-zone (position-of (player-of *game*)))))
-             (when (trigger-event i)
-               (collect i)))
+          ((trigger-event (events-of (get-zone (position-of (player-of *game*)))))
            (return-from move-to-pocket-map))
           ((resolve-enemy-spawn-list (get-zone (position-of (player-of *game*))))
            (iter (for i in (resolve-enemy-spawn-list (get-zone (position-of (player-of *game*)))))
@@ -911,16 +914,22 @@
                                   :wet-amount 0)))
           (accident
            (setf amount
-                 (cond
-                   ((< random 2) (bladder/contents-of wetter))
-                   ((< random 3) 300)
-                   ((< random 4) 10))))
+                 (switch (random :test '=)
+                   (3 (* 4 (bladder/fill-rate-of wetter)))
+                   (2 (bladder/need-to-potty-limit-of wetter))
+                   (t (bladder/contents-of wetter)))))
           (t (setf amount (cond ((eq wet-amount t)
                                  (bladder/contents-of wetter))
                                 ((> wet-amount (bladder/contents-of wetter))
                                  (bladder/contents-of wetter))
                                 (t
                                  wet-amount)))))
+    (setf (getf return-value :accident)
+          (if accident
+              (switch (random :test '=)
+                (3 :dribble)
+                (2 :some)
+                (t :all))))
     (setf (getf return-value :old-bladder-contents) (bladder/contents-of wetter))
     (let* ((amount-left amount))
       (cond ((or pants-down (not (filter-items (wear-of wetter) 'closed-bottoms)))
@@ -1527,32 +1536,31 @@
   (format t "You need to pee~%"))
 (defmethod output-process-potty-text ((user player) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
-          (let ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
-                          (list "You gasp in horror as a little leaks out"
-                                "You think you just leaked a little"
-                                (format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                        (random-elt '("groan" "whine")))))
-                         ((and (<= (getf (car had-accident) :wet-amount) 300) (> (getf (car had-accident) :wet-amount) 10))
-                          (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                         ((> (getf (car had-accident) :wet-amount) 300)
-                          (let ((a (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                                         "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                                         "You cross your legs in a vain attempt to hold it in but fail miserably"
-                                         "You gasp in embarrassment as you flood yourself like a toddler"
-                                         "You let out a groan as your bladder empties itself"
-                                         "You fall to your knees clutching the front of your diapers struggling to keep your diapers dry and flood yourself"
-                                         (format nil "LOOK EVERYBODY!!!! ~A IS WETTING ~A DIAPERS!!!!~%~%*~a eeps and hides ~a soggy padding in embarrassment*"
-                                                 (string-upcase (name-of user))
-                                                 (if (malep user)
-                                                     "HIS"
-                                                     "HER")
-                                                 (name-of user)
-                                                 (if (malep user)
-                                                     "his"
-                                                     "her")))))
-                            (unless (malep user)
-                              (push "You press your legs together while fidgeting and squirming until your flood your pamps like the baby girl you are" a))
-                            a)))))
+          (let ((j (switch ((getf (car had-accident) :accident) :test 'eq)
+                     (:dribble (list "You gasp in horror as a little leaks out"
+                                     "You think you just leaked a little"
+                                     (format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                             (random-elt '("groan" "whine")))))
+                     (:some (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                     (:all (let ((a (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                          "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                          "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                          "You gasp in embarrassment as you flood yourself like a toddler"
+                                          "You let out a groan as your bladder empties itself"
+                                          "You fall to your knees clutching the front of your diapers struggling to keep your diapers dry and flood yourself"
+                                          (format nil
+                                                  "LOOK EVERYBODY!!!! ~A IS WETTING ~A DIAPERS!!!!~%~%*~a eeps and hides ~a soggy padding in embarrassment*"
+                                                  (string-upcase (name-of user))
+                                                  (if (malep user)
+                                                      "HIS"
+                                                      "HER")
+                                                  (name-of user)
+                                                  (if (malep user)
+                                                      "his"
+                                                      "her")))))
+                             (unless (malep user)
+                               (push "You press your legs together while fidgeting and squirming until your flood your pamps like the baby girl you are" a))
+                             a)))))
             (when (>= (getf (car had-accident) :wet-amount) 300)
               (push (format nil "Aww, the baby is using ~a diapers?" (if (malep user) "his" "her")) j))
             (random-elt j)))
@@ -1566,28 +1574,26 @@
                               "Your diapers sprung a leak")))))
 (defmethod output-process-potty-text ((user player) (padding (eql 'pullon)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
-          (random-elt (cond ((<= (getf (car had-accident) :wet-amount) 10)
-                             (list "You gasp in horror as a little leaks out"
-                                   "You think you just leaked a little"
-                                   (format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                           (random-elt '("groan" "whine")))))
-                            ((and (<= (getf (car had-accident) :wet-amount) 300) (> (getf (car had-accident) :wet-amount) 10))
-                             (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                            ((> (getf (car had-accident) :wet-amount) 300)
-                             (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                                   "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                                   "You cross your legs in a vain attempt to hold it in but fail miserably"
-                                   "You gasp in embarrassment as you flood yourself like a toddler"
-                                   "You let out a groan as your bladder empties itself"
-                                   "You fall to your knees clutching the front of your pullups struggling to keep them dry and flood yourself"
-                                   "The little pictures on the front of your pullups fade showing everyone what you did"
-                                   (format nil "Naughty ~a wetting your pullups. You know you're supposed to use the toilet like a big kid."
-                                           (if (malep user) "boy" "girl"))
-                                   (format nil "LOOK EVERYBODY!!!! ~a IS WETTING ~A PULLUPS!!!!!!~%~%*~a eeps and hides ~a soggy pullups in embarrassment*"
-                                           (string-upcase (name-of user))
-                                           (if (malep user) "HIS" "HER")
-                                           (name-of user)
-                                           (if (malep user) "his" "her")))))))
+          (random-elt (switch ((getf (car had-accident) :accident) :test 'eq)
+                        (:dribbe (list "You gasp in horror as a little leaks out"
+                                       "You think you just leaked a little"
+                                       (format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                               (random-elt '("groan" "whine")))))
+                        (:some (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                        (:all (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                    "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                    "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                    "You gasp in embarrassment as you flood yourself like a toddler"
+                                    "You let out a groan as your bladder empties itself"
+                                    "You fall to your knees clutching the front of your pullups struggling to keep them dry and flood yourself"
+                                    "The little pictures on the front of your pullups fade showing everyone what you did"
+                                    (format nil "Naughty ~a wetting your pullups. You know you're supposed to use the toilet like a big kid."
+                                            (if (malep user) "boy" "girl"))
+                                    (format nil "LOOK EVERYBODY!!!! ~a IS WETTING ~A PULLUPS!!!!!!~%~%*~a eeps and hides ~a soggy pullups in embarrassment*"
+                                            (string-upcase (name-of user))
+                                            (if (malep user) "HIS" "HER")
+                                            (name-of user)
+                                            (if (malep user) "his" "her")))))))
   (format t "~a~%"
           (let ((out (list "Your face turns red as you leak everywhere"
                            "Your pullups leak. There goes the carpet."
@@ -1598,21 +1604,19 @@
             (random-elt out))))
 (defmethod output-process-potty-text ((user player) (padding (eql 'closed-bottoms)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
-          (random-elt (cond ((<= (getf (car had-accident) :wet-amount) 10)
-                             (list "You gasp in horror as a little leaks out"
-                                   "You think you just leaked a little"
-                                   (format nil
-                                           "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                           (random-elt '("groan" "whine")))))
-                            ((and (<= (getf (car had-accident) :wet-amount) 300) (> (getf (car had-accident) :wet-amount) 10))
-                             (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                            ((> (getf (car had-accident) :wet-amount) 300)
-                             (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                                   "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                                   "You cross your legs in a vain attempt to hold it in but fail miserably"
-                                   "You gasp in embarrassment as you flood yourself like a toddler"
-                                   "You let out a groan as your bladder empties itself"
-                                   "You fall to your knees holding your crotch struggling to keep your pants dry and flood yourself")))))
+          (random-elt (switch ((getf (car had-accident) :accident) :test 'eq)
+                        (:dribble (list "You gasp in horror as a little leaks out"
+                                        "You think you just leaked a little"
+                                        (format nil
+                                                "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                                (random-elt '("groan" "whine")))))
+                        (:some (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                        (:all (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                    "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                    "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                    "You gasp in embarrassment as you flood yourself like a toddler"
+                                    "You let out a groan as your bladder empties itself"
+                                    "You fall to your knees holding your crotch struggling to keep your pants dry and flood yourself")))))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
     (format t "~a~%"
             (random-elt (list "Maybe you should start wearing diapers"
@@ -1627,19 +1631,17 @@
 (defmethod output-process-potty-text ((user player) (padding (eql nil)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
           (let
-              ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
-                         (list "You gasp in horror as a little leaks out"
-                               "You think you just leaked a little"
-                               (format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                       (random-elt '("groan" "whine")))))
-                        ((and (<= (getf (car had-accident) :wet-amount) 300) (> (getf (car had-accident) :wet-amount) 10))
-                         (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                        ((> (getf (car had-accident) :wet-amount) 300)
-                         (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                               "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                               "You cross your legs in a vain attempt to hold it in but fail miserably"
-                               "You gasp in embarrassment as you flood yourself like a toddler"
-                               "You let out a groan as your bladder empties itself")))))
+              ((j (switch ((getf (car had-accident) :accident) :test 'eq)
+                    (:dribble (list "You gasp in horror as a little leaks out"
+                                    "You think you just leaked a little"
+                                    (format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                            (random-elt '("groan" "whine")))))
+                    (:some (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                    (:all (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                "You gasp in embarrassment as you flood yourself like a toddler"
+                                "You let out a groan as your bladder empties itself")))))
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
     (format t "~a~%"
@@ -2754,7 +2756,6 @@
     (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*))))
                      'function)
              had-accident user)
-    (run-hook-with-args '*process-potty-hooks* user had-accident)
     had-accident))
 (defun get-props-from-zone (position)
   (props-of (eval (get-zone position))))
@@ -3073,7 +3074,7 @@
       (progn (format t "~a won the battle~%~%" (name-of (player-of *game*)))
              (let ((items-looted (iter (for i in (enemies-of *battle*))
                                    (with j = ())
-                                   (setf j (append j (inventory-of i) (wear-of i)))
+                                   (setf j (append* j (inventory-of i) (wear-of i)))
                                    (finally (return j))))
                    (bitcoins-looted (iter (for i in (enemies-of *battle*))
                                       (with j = 0)
@@ -3115,14 +3116,10 @@
                      ((> bitcoins-looted 0)
                       (format t "~a loots ~d bitcoins from the enemy~%" (name-of (player-of *game*)) bitcoins-looted)))
                (incf (bitcoins-of (player-of *game*)) bitcoins-looted)
-               (setf (inventory-of (player-of *game*)) (append (inventory-of (player-of *game*)) items-looted))
+               (nconcf (inventory-of (player-of *game*)) items-looted)
                (setf *battle* nil)
                (setf (continue-battle-of (get-zone (position-of (player-of *game*)))) nil)
-               (iter (for i in win-events)
-                 (when (or (not (member i (finished-events-of *game*)))
-                           (event-repeatable (get-event i)))
-                   (funcall (coerce (event-lambda (get-event i)) 'function) i)
-                   (pushnew i (finished-events-of *game*))))
+               (trigger-event win-events)
                (when *battle* (return-from finish-battle)))))
   (unuse-package :yadfa-battle :yadfa-user)
   (use-package :yadfa-world :yadfa-user))
@@ -3418,7 +3415,7 @@
         ((iter (for j in (getf (status-conditions-of *battle*) character))
            (when (blocks-turn-of j)
              (leave t))))
-        ((process-potty-dance-of character) t)
+        ((funcall (coerce (process-potty-dance-of character) 'function) character attack item reload selected-target) t)
         ((and (wield-of character)
               (ammo-type-of (wield-of character))
               (list-length->= 0 (ammo-of (wield-of character)))
@@ -3474,7 +3471,7 @@
         ((iter (for j in (getf (status-conditions-of *battle*) character))
            (when (blocks-turn-of j)
              (leave t))))
-        ((process-potty-dance-of character) t)
+        ((funcall (coerce (process-potty-dance-of character) 'function) character attack item reload selected-target) t)
         (item
          (format t "~a used ~a ~a on ~a~%"
                  (name-of character)
@@ -3558,7 +3555,7 @@
       (unless (or (eq attack t) (get-move attack (first (turn-queue-of *battle*))))
         (format t "~a doesn't know ~a~%" (name-of (first (turn-queue-of *battle*))) attack)
         (return-from process-battle))
-      (unless (and (not (eq attack t)) (< (energy-of (first (turn-queue-of *battle*))) (energy-cost-of (get-move attack (first (turn-queue-of *battle*))))))
+      (when (and (not (eq attack t)) (< (energy-of (first (turn-queue-of *battle*))) (energy-cost-of (get-move attack (first (turn-queue-of *battle*))))))
         (format t "~a doesn't have enough energy to use ~a~%"
                 (name-of (first (turn-queue-of *battle*))) (name-of (get-move attack (first (turn-queue-of *battle*)))))
         (return-from process-battle))
@@ -3572,7 +3569,7 @@
                   ret new-ret)))
         (check-if-done)
         (unless (turn-queue-of *battle*)
-          (incf (time-of *game*) 5)
+          (incf (time-of *game*))
           (setf (turn-queue-of *battle*)
                 (sort (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
                         (when (> (health-of i) 0)
@@ -3589,8 +3586,8 @@
     (format t "~a gets some loot from ~a~%" (name-of (player-of *game*)) (name-of ally))
     (pushnew ally (allies-of *game*)))
   (incf (bitcoins-of (player-of *game*)) (bitcoins-of ally))
-  (setf (inventory-of (player-of *game*)) (append (inventory-of (player-of *game*)) (inventory-of ally))
-        (inventory-of ally) ()
+  (appendf* (inventory-of (player-of *game*)) (inventory-of ally))
+  (setf (inventory-of ally) ()
         (bitcoins-of ally) 0))
 (defun use-item% (item user &rest keys &key target action &allow-other-keys)
   (let ((script (if action (action-lambda (getf (special-actions-of item) action)) (use-script-of item)))
@@ -3622,7 +3619,7 @@
   (let* ((default (make-instance 'player))
          (wear '(yadfa-items:short-dress yadfa-items:tshirt yadfa-items:bra yadfa-items:jeans
                  yadfa-items:boxers yadfa-items:panties yadfa-items:pullups yadfa-items:diaper))
-         name male species clothes bladder)
+         name male species clothes bladder dergy)
     (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
       (fresh-line *query-io*)
       (setf name (clim:accept 'string :prompt "Name" :default (name-of default) :view clim:+text-field-view+ :stream *query-io*))
@@ -3638,7 +3635,10 @@
                                  :stream *query-io*))
       (fresh-line *query-io*)
       (setf bladder (clim:accept '(clim:completion (:normal :low :overactive))
-                                 :prompt "Bladder capacity" :default :normal :view clim:+option-pane-view+ :stream *query-io*)))
+                                 :prompt "Bladder capacity" :default :normal :view clim:+option-pane-view+ :stream *query-io*))
+      (fresh-line *query-io*)
+      (setf dergy (clim:accept '(clim:completion (:normal :dergy))
+                               :prompt "Metabolism type" :default :normal :view clim:+option-pane-view+ :stream *query-io*)))
     (setf (player-of *game*) (make-instance 'player
                                             :position '(0 0 0 yadfa-zones:home)
                                             :name name
@@ -3649,6 +3649,30 @@
                                             :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) bladder)
                                             :bladder/maximum-limit (getf '(:normal 600 :low 400 :overactive 200) bladder)
                                             :bladder/contents (getf '(:normal 450 :low 300 :overactive 150) bladder)
+                                            :bowels/fill-rate (getf (list
+                                                                     :normal (bowels/fill-rate-of default)
+                                                                     :dergy 0)
+                                                                    dergy)
+                                            :bladder/fill-rate (getf (list
+                                                                      :normal (bladder/fill-rate-of default)
+                                                                      :dergy (+ (bowels/fill-rate-of default) (bladder/fill-rate-of default)))
+                                                                     dergy)
+                                            :bowels/maximum-limit (getf (list
+                                                                         :normal (bowels/maximum-limit-of default)
+                                                                         :dergy 1)
+                                                                        dergy)
+                                            :bowels/potty-dance-limit (getf (list
+                                                                             :normal (bowels/potty-dance-limit-of default)
+                                                                             :dergy 1)
+                                                                            dergy)
+                                            :bowels/potty-desperate-limit (getf (list
+                                                                                 :normal (bowels/potty-desperate-limit-of default)
+                                                                                 :dergy 1)
+                                                                                dergy)
+                                            :bowels/need-to-potty-limit (getf (list
+                                                                               :normal (bowels/need-to-potty-limit-of default)
+                                                                               :dergy 1)
+                                                                              dergy)
                                             :wear (iter (for i in wear)
                                                     (when (member i clothes :test #'eq)
                                                       (collect (make-instance i))))))
@@ -3658,5 +3682,8 @@
                         (collect i))))
       (iter (for j from 1 to (random 20))
         (push (make-instance i)
-              (get-items-from-prop :dresser (position-of (player-of *game*)))))))
-  (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io))
+              (get-items-from-prop :dresser (position-of (player-of *game*))))))
+    (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io)
+    (when (eq dergy :dergy)
+      (write-line "Since you decided to have the dergy metabolism, Pouar decided to have mercy on you and give you a thicker diaper. It's in your inventory." query-io)
+      (push (make-instance 'yadfa-items:kurikia-thick-rubber-diaper) (inventory-of (player-of *game*))))))

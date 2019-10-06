@@ -1059,10 +1059,10 @@
      (with-output-to-string (s)
        (iter (for i in (enemies-of c))
          (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
-  (setf (turn-queue-of c) (sort (append (enemies-of c) (team-of *game*)) '>
+  (setf (turn-queue-of c) (sort (append* (enemies-of c) (team-of *game*)) '>
                                 :key (lambda (a)
                                        (calculate-stat a :speed))))
-  (incf (time-of *game*) 5))
+  (incf (time-of *game*)))
 (defclass game (yadfa-class)
   ((zones
     :initarg :zones

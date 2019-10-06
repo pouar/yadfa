@@ -18,5 +18,6 @@
   (ql-dist:install-dist "http://dist.ultralisp.org/"
                         :prompt nil))
 |#
+(ql:quickload :yadfa)
 (asdf:make :yadfa)
 (#__exit 0)

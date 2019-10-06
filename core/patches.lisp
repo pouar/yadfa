@@ -85,6 +85,9 @@
     outlist))
 
 (in-package :climi)
+
+;;; McCLIM is missing the accept-values application class which display-exit-boxes expects as an argument if you want to change what the function displays via :exit-boxes
+;;; https://github.com/McCLIM/McCLIM/issues/582
 (define-application-frame accept-values ()
   ((stream :initform *query-io* :initarg :stream)
    (body :initform nil :initarg :body)
@@ -390,9 +393,8 @@
             (flet ((execute-command ()
                      (alexandria:when-let ((command (read-frame-command frame :stream frame-query-io)))
                        (setq needs-redisplay t)
-                       (apply 'serapeum:run-hooks '(yadfa:*read-frame-command-hooks* yadfa:*cheat-hooks*))
-                       (execute-frame-command frame command)
-                       (serapeum:run-hooks 'yadfa:*execute-frame-command-hooks*))))
+                       (serapeum:run-hooks 'yadfa:*cheat-hooks*)
+                       (execute-frame-command frame command))))
               (when needs-redisplay
                 (dolist (i yadfa-clim::*records*) do (redisplay i *standard-output*))
                 (redisplay-frame-panes frame :force-p first-time)

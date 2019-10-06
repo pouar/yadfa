@@ -8,11 +8,11 @@
                 :name "Silver Cape Street"
                 :description "A busy street with various furries moving back and forth"
                 :enter-text "You enter the street"
-                :warp-points ,(when (= i 0) '(list 'bandits-domain '(0 30 0 bandits-domain)))
+                :warp-points ,(when (= i 0) '(list 'rpgmaker-dungeon '(0 5 0 rpgmaker-dungeon)))
                 :hidden ,(when (= i 0) t)
                 ,@(cond ((= i 7)
                          '(:direction-attributes (list :east (list :hidden t)))))
-                ,@(when (= i 0) '(:events (list 'yadfa-events:enter-silver-cape-1))))))))
+                ,@(when (= i 0) '(:events (list 'yadfa-events:enter-silver-cape-1 'yadfa-events:rpgmaker-dungeon-3))))))))
 (macro-level
   `(progn
      ,@(iter (for i from -10 to 10)
@@ -104,16 +104,16 @@
                                                                                    (getf (get-props-from-zone (position-of (player-of *game*))) :guard))
                                                                                   "A dolphin wearing pullups"))))))))))))
 (ensure-zone (1 5 0 silver-cape)
-  :name "Silver Cape Pokémon Center"
-  :description "A place to heal your Pokémon"
+  :name "Silver Cape Pokemon Center"
+  :description "A place to heal your Pokemon"
   :enter-text "You enter the street"
   :direction-attributes (list :south (list :hidden t))
   :props (list :magic-healing-machine (make-instance 'prop
                                                      :name "Magic Healing Machine"
-                                                     :description "Heal your Pokémon here"
+                                                     :description "Heal your Pokemon here"
                                                      :actions (list
                                                                :use (make-action
-                                                                     :documentation "Heal your Pokémon"
+                                                                     :documentation "Heal your Pokemon"
                                                                      :lambda '(lambda
                                                                                (prop &rest keys &key &allow-other-keys)
                                                                                (declare (type prop prop) (ignore prop))

@@ -1,4 +1,4 @@
-image: fedora:latest
+image: centos:latest
 
 pages:
   only:
@@ -7,15 +7,18 @@ pages:
     - tar -xf cache.tar || true
   script:
     - dnf -y upgrade
-    - dnf -y install flatpak flatpak-builder gnupg git xz lzip bzip2 librsvg2
+    - dnf -y install flatpak flatpak-builder gnupg git xz bzip2 librsvg2
     - gdk-pixbuf-query-loaders-64 > /usr/lib64/gdk-pixbuf-2.0/2.10.0/loaders.cache
     - printf '%s' "$GPGKEY"|base64 -d|gpg --import
     - flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     - flatpak-builder --install-deps-from=flathub --force-clean build flatpak/net.pouar.yadfa.yml
     - flatpak build-export --gpg-sign='3874C167F45C00289B3CB2C84756E5342FDE60F3!' public build
     - flatpak build-update-repo --gpg-sign='3874C167F45C00289B3CB2C84756E5342FDE60F3!' --prune-depth=10 --prune --generate-static-deltas public
-  after_script:
     - tar -cf cache.tar .flatpak-builder public
+    - mkdir yadfa-docs
+    - cp build/files/share/doc/yadfa/* build/files/lib/yadfa/docs/reference/* yadfa-docs
+    - gzip -dc build/files/share/info/yadfa-reference.info.gz > yadfa-docs/yadfa-reference.info
+    - tar -cf - yadfa-docs|xz -9ec --lzma2=preset=9e,dict=100MB,pb=0,nice=273 - > public/yadfa-docs.tar.xz
   environment:
     name: production
   artifacts:
@@ -30,7 +33,7 @@ test:
     - master
   script:
     - dnf -y upgrade
-    - dnf -y install flatpak flatpak-builder gnupg git xz lzip bzip2 librsvg2
+    - dnf -y install flatpak flatpak-builder gnupg git xz bzip2 librsvg2
     - gdk-pixbuf-query-loaders-64 > /usr/lib64/gdk-pixbuf-2.0/2.10.0/loaders.cache
     - flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     - flatpak-builder --install-deps-from=flathub --force-clean build flatpak/net.pouar.yadfa.yml

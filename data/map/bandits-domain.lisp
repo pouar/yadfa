@@ -146,7 +146,7 @@
   :locked nil)
 (ensure-zone (-5 22 0 bandits-domain)
   :name "Bandit's Kennel"
-  :description "A grungy looking kennel where the Raccoon Bandits keep their 'pets'. Neglected so much that they literally forgot about their existence"
+  :description "A grungy looking kennel where the Raccoon Bandits keep their `pets'. Neglected so much that they literally forgot about their existence"
   :enter-text "You enter the kennel"
   :events (list 'yadfa-events:enter-bandits-kennel-1))
 (ensure-zone (0 21 0 bandits-domain)
@@ -162,8 +162,13 @@
              `(ensure-zone (0 ,i 0 bandits-domain)
                 :name "Bandit's Town"
                 :description "A town run by the Raccoon Bandits"
-                :enter-text "You're wander around Bandit's Town"
-                :warp-points ',(when (= i 30) '(silver-cape (0 0 0 silver-cape))))))))
+                :enter-text "You're wander around Bandit's Town")))))
+(ensure-zone (0 31 0 bandits-domain)
+  :name "Bandit's Town"
+  :description "A town run by the Raccoon Bandits"
+  :enter-text "You see a sign that says \"To the south lies your generic RPG Maker Dungeon. Get ready for a mediocre adventure!!!! OOOOOOOOO!!!!"
+  :warp-points (list 'rpgmaker-dungeon '(5 9 0 rpgmaker-dungeon))
+  :events (list 'yadfa-events:rpgmaker-dungeon-1))
 (ensure-zone (1 21 0 bandits-domain)
   :name "Bandit's Cove Dock"
   :description "The dock of Bandit's Cove"

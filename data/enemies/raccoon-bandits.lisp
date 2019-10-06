@@ -8,8 +8,6 @@
    :male t
    :bladder/contents (random 500)
    :bowels/contents (random 7000)
-   :bladder/fill-rate (* (/ 2000 24 60) 2)
-   :bowels/fill-rate (* (/ 12000 24 60) 2)
    :wear (list (make-instance 'yadfa-items:bandit-uniform-tunic)
                (make-instance 'yadfa-items:bandit-adjustable-diaper))
    :inventory (let ((a ()))
@@ -56,7 +54,7 @@
                           (getf (status-conditions-of *battle*) character)))
         (teammember (find-if (lambda (o)
                                (and (typep o 'diapered-raccoon-bandit) (not (eq o character))))
-                             (enemies-of *game*))))
+                             (enemies-of *battle*))))
     (cond ((and wetting teammember (= (random 5) 0))
            (write-line "Other Raccoon: Now's not the time to go potty")
            (write-line "Flooding Raccoon Bandit: *whines*"))
@@ -66,13 +64,11 @@
 (defclass rookie-diapered-raccoon-bandit (potty-enemy pantsable-character) ()
   (:default-initargs
    :name "Rookie Diapered Raccoon Bandit"
-   :description "The Diapered Raccoon Bandits are a local AB/DL gang here in this world. Despite how embarrassing diapers are for them, the use of toilets and pants in the gang are a privilege and not a right. The ones without these privileges have 'babysitters' to keep track of them, as they're not allowed to change themselves. Despite this, they try their best to not wet and/or mess their diapers in a desperate attempt to make their situation less embarrassing."
+   :description "The Diapered Raccoon Bandits are a local AB/DL gang here in this world. Despite how embarrassing diapers are for them, the use of toilets and pants in the gang are a privilege and not a right. The ones without these privileges have `babysitters' to keep track of them, as they're not allowed to change themselves. Despite this, they try their best to not wet and/or mess their diapers in a desperate attempt to make their situation less embarrassing."
    :species "Raccoon"
    :male t
    :bladder/contents (random 500)
    :bowels/contents (random 7000)
-   :bladder/fill-rate (* (/ 2000 24 60) 2)
-   :bowels/fill-rate (* (/ 12000 24 60) 2)
    :wear (list (make-instance 'yadfa-items:bandit-uniform-shirt)
                (make-instance 'yadfa-items:bandit-diaper
                               :sogginess (let ((a (random 3)))
@@ -91,8 +87,6 @@
    :male nil
    :bladder/contents (random 500)
    :bowels/contents (random 7000)
-   :bladder/fill-rate (* (/ 2000 24 60) 2)
-   :bowels/fill-rate (* (/ 12000 24 60) 2)
    :wear (list (make-instance 'yadfa-items:bandit-uniform-sports-bikini-top)
                (make-instance 'yadfa-items:bandit-female-diaper
                               :sogginess (let ((a (random 3)))
