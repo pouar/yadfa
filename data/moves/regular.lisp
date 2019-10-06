@@ -19,7 +19,7 @@
 (defclass spray (stat/move) ()
   (:default-initargs
    :name "Spray"
-   :description "Spray the target with skunk spray. Also fills your pamps with skunk spray while your at it."
+   :description "Spray the target with skunk spray. Also fills your pamps with skunk spray while you're at it."
    :energy-cost 5
    :attack '(lambda (target user self)
              (format t "~a used ~a~%" (name-of user) (name-of self))

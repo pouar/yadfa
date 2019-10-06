@@ -109,7 +109,7 @@
                                                                                                          (format t "Shop Owner: Yeah?~%~%")
                                                                                                          (format t "~a: Well how come they're letting me shop here without attacking me?~%~%"
                                                                                                           (name-of (player-of *game*)))
-                                                                                                         (format t "Shop Owner: Because money stupid.")))
+                                                                                                         (format t "Shop Owner: Because money, stupid.")))
                                                    :ask-what-they-do-with-sold-items (make-action :documentation "Ask the raccoons what they do with the random crap you sell them"
                                                                                                   :lambda '(lambda (prop &rest keys &key &allow-other-keys)
                                                                                                             (declare (ignore prop keys))
@@ -182,11 +182,11 @@
 (ensure-zone (6 24 0 bandits-domain)
   :name "Bandit's Cave Entrance"
   :description "A mysterious cave"
-  :enter-text "You Enter the cave")
+  :enter-text "You enter the cave")
 (ensure-zone (6 24 -2 bandits-domain)
   :name "Bandit's Cave"
   :description "A mysterious cave"
-  :enter-text "You Enter the cave"
+  :enter-text "You enter the cave"
   :warp-points (list 'cave-entrance '(6 24 0 bandits-domain)
                      'descend '(6 24 2 bandits-domain))
   :events (list 'yadfa-events:decend-bandits-cave-1))

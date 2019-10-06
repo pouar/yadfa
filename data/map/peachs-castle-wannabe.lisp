@@ -43,7 +43,7 @@
 (ensure-zone (0 -2 0 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -52,14 +52,14 @@
 (ensure-zone (0 -2 1 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :up (list :hidden t)))
 (ensure-zone (0 -3 1 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -67,7 +67,7 @@
 (ensure-zone (-1 -3 1 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -75,7 +75,7 @@
 (ensure-zone (1 -3 1 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -83,7 +83,7 @@
 (ensure-zone (-1 -4 1 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -94,7 +94,7 @@
 (ensure-zone (1 -4 1 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -105,7 +105,7 @@
 (ensure-zone (-1 -1 0 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -113,7 +113,7 @@
 (ensure-zone (1 -1 0 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -121,7 +121,7 @@
 (ensure-zone (-1 -2 0 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :up (list :hidden t)
@@ -130,7 +130,7 @@
 (ensure-zone (1 -2 0 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :up (list :hidden t)
@@ -139,21 +139,21 @@
 (ensure-zone (-1 -2 -1 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)))
 (ensure-zone (1 -2 -1 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)))
 (ensure-zone (-2 -1 0 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -161,7 +161,7 @@
 (ensure-zone (2 -1 0 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -169,7 +169,7 @@
 (ensure-zone (-2 -2 0 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -180,7 +180,7 @@
 (ensure-zone (2 -2 0 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :down (list :hidden t)
@@ -191,14 +191,14 @@
 (ensure-zone (0 -2 -1 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :up (list :hidden t)))
 (ensure-zone (0 -1 -1 peachs-castle-wannabe)
   :name "Castle Hallway"
   :description "Some crappy version of Peach's Castle"
-  :enter-text "You're wondering around the castle"
+  :enter-text "You're wandering around the castle"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :direction-attributes (list :up (list :hidden t)
@@ -207,7 +207,7 @@
 (ensure-zone (0 0 0 peachs-castle-wannabe:race-area)
   :name "Race Area Map"
   :description "Race Area Map"
-  :enter-text "You're wondering around the level"
+  :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :events (list 'yadfa-events:enter-race-area-1)
@@ -218,7 +218,7 @@
 (ensure-zone (0 -1 0 peachs-castle-wannabe:race-area)
   :name "Race Area"
   :description "Race Area"
-  :enter-text "You're wondering around the level"
+  :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :events (list 'yadfa-events:win-race-area-1)
@@ -230,7 +230,7 @@
 (ensure-zone (0 0 0 peachs-castle-wannabe:thwomp-area)
   :name "Thwomp Area"
   :description "Thwomp Area"
-  :enter-text "You're wondering around the level"
+  :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :events (list 'yadfa-events:enter-thwomp-area-1))
@@ -245,7 +245,7 @@
 (ensure-zone (0 0 0 peachs-castle-wannabe:pokemon-area)
   :name "Pokémon Area"
   :description "Pokémon Area"
-  :enter-text "You're wondering around the level"
+  :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :events (list 'yadfa-events:enter-pokemon-area-1)
@@ -253,7 +253,7 @@
 (ensure-zone (0 0 0 peachs-castle-wannabe:blank-area)
   :name "Pokémon Area"
   :description "Pokémon Area"
-  :enter-text "You're wondering around the level"
+  :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :events (list 'yadfa-events:enter-blank-area-1)
@@ -261,7 +261,7 @@
 (ensure-zone (0 0 0 peachs-castle-wannabe:eggman-area)
   :name "Eggman Area"
   :description "Eggman Area"
-  :enter-text "You're wondering around the level"
+  :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :events (list 'yadfa-events:enter-eggman-area-1)

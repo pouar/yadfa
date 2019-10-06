@@ -29,6 +29,7 @@
                  (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol))))
          (let ((*package* (find-package :cl)))
            (format nil "See ~s" ',symbol)))))
+		   gghjghj
 (define-global-var yadfa-clim::*records* ())
 (define-global-var *battle* nil)
 (define-global-var *mod-registry* (make-hash-table :test #'equal))
