@@ -11,7 +11,7 @@
              `(progn
                 ,(when (position "debug" (uiop:command-line-arguments) :test #'string=)
                    '(declaim (optimize (debug 3))))
-                #+sbcl
+                #+(and sbcl (not sb-gmp))
                 ,(when (some #'(lambda (pathname)
                                  (handler-case
                                      (sb-alien:load-shared-object pathname :dont-save t)
@@ -21,7 +21,8 @@
                              #+win32 '("libgmp.dll" "libgmp-10.dll" "libgmp-3.dll"))
                    '(asdf:load-system :sb-gmp)))))
   (a))
-#+sb-gmp (sb-gmp:install-gmp-funs)
+#+sb-gmp (unless (eq (fdefinition 'sb-bignum:multiply-bignums) (fdefinition 'sb-gmp::gmp-mul))
+           (sb-gmp:install-gmp-funs))
 (when (position "slynk" (uiop:command-line-arguments) :test #'string=)
   (ql:quickload "slynk"))
 (when (position "swank" (uiop:command-line-arguments) :test #'string=)

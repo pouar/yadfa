@@ -10,7 +10,7 @@
              `(progn
                 ,(when (position "debug" (uiop:command-line-arguments) :test #'string=)
                    '(declaim (optimize (debug 3))))
-                #+sbcl
+                #+(and sbcl (not sb-gmp))
                 ,(when (some #'(lambda (pathname)
                                  (handler-case
                                      (sb-alien:load-shared-object pathname :dont-save t)
