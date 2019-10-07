@@ -41,5 +41,7 @@
             (getf (warp-points-of (get-zone '(9 5 0 rpgmaker-dungeon))) 'lukurbo)
             '(0 0 0 lukurbo)
             (getf (warp-points-of (get-zone '(0 5 0 rpgmaker-dungeon))) 'silver-cape)
-            '(0 0 0 silver-cape)))))
+            '(0 0 0 silver-cape)
+            (getf (warp-points-of (get-zone '(5 0 0 rpgmaker-dungeon))) 'haunted-forest)
+            '(0 0 0 haunted-forest)))))
 (defevent create-rpgmaker-dungeon :lambda 'create-rpgmaker-dungeon)

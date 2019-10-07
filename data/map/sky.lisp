@@ -2,7 +2,8 @@
 (ensure-zone (0 0 0 candle-carnival)
   :name "Candle Carnival Entrance"
   :description "Welcome to Candle Carnival. An awesome theme park in the sky"
-  :enter-text "Welcome to Candle Carnival. An awesome theme park in the sky")
+  :enter-text "Welcome to Candle Carnival. An awesome theme park in the sky"
+  :events '(yadfa-events:secret-underground-pipe-candle-carnival))
 (ensure-zone (0 -1 0 candle-carnival)
   :name "Candle Carnival Pool"
   :description "The entrance to the pool"
@@ -76,13 +77,14 @@
                                                                          :lambda '(lambda (prop &rest keys &key &allow-other-keys)
                                                                                    (declare (ignore prop))
                                                                                    (write-line "You fly over to Sky Base then drop off the rocket. The base's antigravity slingshot device emits a force that pulls you back up and lands you on a platform like an invisible bungee cord, but one that pulls you to different platforms instead of just one. It seems this is the primary mode of transportation here.")
-                                                                                   (setf (position-of (player-of *game*)) '(0 0 0 sky-base-landing-pad))))))))
+                                                                                   (setf (position-of (player-of *game*)) '(0 0 0 sky-base-landing-pad))
+                                                                                   (trigger-event (events-of (get-zone (position-of (player-of *game*)))))))))))
 (ensure-zone (4 -18 0 candle-carnival)
   :name "Changing room"
   :description "Apparetnly this place is poweredby monkeys in hamster wheels"
   :enter-text "You're inside the power room"
   :props (list
-          :vending-machine (make-instance 'shop
+          :vending-machine (make-instance 'yadfa-props:shop
                                           :items-for-sale '((yadfa-items:disposable-swim-diaper . (list :value 10))
                                                             (yadfa-items:diaper . (list :value 10))))))
 (ensure-zone (4 -18 0 candle-carnival)
@@ -90,7 +92,7 @@
   :description "A place where you can change your clothes for swimming. There's a vending machine for people to buy diapers from while they're here"
   :enter-text "You enter the changing room"
   :props (list
-          :vending-machine (make-instance 'vending-machine
+          :vending-machine (make-instance 'yadfa-props:vending-machine
                                           :items-for-sale '((yadfa-items:disposable-swim-diaper . (list :value 11))
                                                             (yadfa-items:diaper . (list :value 10))
                                                             (yadfa-items:pullups . (list :value 5))))))
@@ -99,7 +101,7 @@
   :description "Here you can buy stuff"
   :enter-text "You enter the shop"
   :props (list
-          :shop (make-instance 'shop
+          :shop (make-instance 'yadfa-props:shop
                                :items-for-sale '((yadfa-items:disposable-swim-diaper-package)
                                                  (yadfa-items:swim-diaper-cover)
                                                  (yadfa-items:blanket)
@@ -154,11 +156,14 @@
                        :warp-points ',(iter (for i in syms)
                                         (unless (eq i sym)
                                           (collect i)
-                                          (collect `(0 0 0 ,i))))))))))
+                                          (collect `(0 0 0 ,i))))
+                       ,@(when (eq sym 'sky-base:landing-pad)
+                           '(:events '(yadfa-events:secret-underground-pipe-sky-base)))))))))
 (ensure-zone (0 0 0 star-city)
   :name "Star City"
   :description "A city orbiting the planet on a giant platform"
-  :enter-text "You're on the part of the pathway that acts as the city's gangway")
+  :enter-text "You're on the part of the pathway that acts as the city's gangway"
+  :events '(yadfa-events:secret-underground-pipe-star-city))
 (macro-level
   `(progn
      ,@(iter

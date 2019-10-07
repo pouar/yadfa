@@ -20,7 +20,7 @@
                 :description "A town run by the Raccoon Bandits"
                 :enter-text "You're wander around Bandit's Town"
                 ,@(when (= i -3)
-                    '(:events (list 'yadfa-events:enter-bandits-shop-2))))))))
+                    '(:events '(yadfa-events:enter-bandits-shop-2))))))))
 (ensure-zone (-3 22 0 bandits-domain)
   :name "Bandit's Shop"
   :description "A local shop"
@@ -139,7 +139,7 @@
                :changing-table (make-instance 'yadfa-props:automatic-changing-table)
                :bed (make-instance 'yadfa-props:bed)
                :checkpoint (make-instance 'yadfa-props:checkpoint))
-  :events (list 'yadfa-events:enter-bandits-shop-1 'yadfa-events:obtain-diaper-lock-1 'yadfa-events:enter-bandits-shop-3))
+  :events '(yadfa-events:enter-bandits-shop-1 yadfa-events:obtain-diaper-lock-1 yadfa-events:enter-bandits-shop-3 yadfa-events:get-warp-pipe-summoner-1))
 (ensure-zone (-3 23 0 bandits-domain)
   :name "Bandit's Shop Bathroom"
   :description "CLOSED FOREVER!!!!! MUAHAHAHAHA!!!!"
@@ -148,13 +148,13 @@
   :name "Bandit's Kennel"
   :description "A grungy looking kennel where the Raccoon Bandits keep their `pets'. Neglected so much that they literally forgot about their existence"
   :enter-text "You enter the kennel"
-  :events (list 'yadfa-events:enter-bandits-kennel-1))
+  :events '(yadfa-events:enter-bandits-kennel-1))
 (ensure-zone (0 21 0 bandits-domain)
   :name "Bandit's Town Entrance"
   :description "The entrance to Bandit Town"
   :enter-text "You're at the entrance of Bandit Town"
   :warp-points (list 'home '(0 1 0 home))
-  :events (list 'yadfa-events:enter-bandits-village-1))
+  :events '(yadfa-events:enter-bandits-village-1))
 (macro-level
   `(progn
      ,@(iter (for i from 22 to 30)
@@ -168,7 +168,8 @@
   :description "A town run by the Raccoon Bandits"
   :enter-text "You see a sign that says \"To the south lies your generic RPG Maker Dungeon. Get ready for a mediocre adventure!!!! OOOOOOOOO!!!!"
   :warp-points (list 'rpgmaker-dungeon '(5 9 0 rpgmaker-dungeon))
-  :events (list 'yadfa-events:rpgmaker-dungeon-1))
+  :hidden t
+  :events '(yadfa-events:secret-underground-pipe-rpgmaker-dungeon))
 (ensure-zone (1 21 0 bandits-domain)
   :name "Bandit's Cove Dock"
   :description "The dock of Bandit's Cove"
@@ -194,4 +195,4 @@
   :enter-text "You enter the cave"
   :warp-points (list 'cave-entrance '(6 24 0 bandits-domain)
                      'descend '(6 24 2 bandits-domain))
-  :events (list 'yadfa-events:decend-bandits-cave-1))
+  :events '(yadfa-events:decend-bandits-cave-1))

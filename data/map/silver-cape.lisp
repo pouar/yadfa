@@ -9,10 +9,9 @@
                 :description "A busy street with various furries moving back and forth"
                 :enter-text "You enter the street"
                 :warp-points ,(when (= i 0) '(list 'rpgmaker-dungeon '(0 5 0 rpgmaker-dungeon)))
-                :hidden ,(when (= i 0) t)
                 ,@(cond ((= i 7)
                          '(:direction-attributes (list :east (list :hidden t)))))
-                ,@(when (= i 0) '(:events (list 'yadfa-events:enter-silver-cape-1 'yadfa-events:rpgmaker-dungeon-3))))))))
+                ,@(when (= i 0) '(:events '(yadfa-events:enter-silver-cape-1 yadfa-events:secret-underground-pipe-silver-cape))))))))
 (macro-level
   `(progn
      ,@(iter (for i from -10 to 10)
@@ -31,7 +30,7 @@
   :description "The jail beneath Navy HQ"
   :enter-text "You're inside Navy HQ"
   :locked nil
-  :events (list 'yadfa-events:get-location-to-pirate-cove-1))
+  :events '(yadfa-events:get-location-to-pirate-cove-1))
 (ensure-zone (-2 6 0 silver-cape)
   :name "Silver Cape Navy HQ Lobby"
   :description "The lobby of Navy HQ"
@@ -218,3 +217,16 @@
   :description "Path to a crappy version of Peach's Castle"
   :enter-text "You're at the entrance to some castle"
   :warp-points (list 'peachs-castle-wannabe '(0 0 0 peachs-castle-wannabe)))
+(ensure-zone (-1 14 0 silver-cape)
+  :name "Silver Cape Launch Pad"
+  :description "You're at the launch pad"
+  :enter-text "Come one coma all to a trip to the Candle Carnival. An amusement park in the sky based on a dream Pouar had. For some reason, it looked a lot better in the dream. Use the rocket over there to fly there."
+  :props (list
+          :rocket (make-instance 'prop
+                                 :actions (list
+                                           :launch-and-ride (make-action :documentation "Launch the rocket and travel to Candle Carnival"
+                                                                         :lambda '(lambda (prop &rest keys &key &allow-other-keys)
+                                                                                   (declare (ignore prop))
+                                                                                   (write-line "You fly over to Candle Carnival.")
+                                                                                   (setf (position-of (player-of *game*)) '(0 0 0 candle-carnival))
+                                                                                   (trigger-event (events-of (get-zone (position-of (player-of *game*)))))))))))

@@ -501,7 +501,9 @@
    #:star-city
    #:flying-mansion
    #:your-ship
-   #:rpgmaker-dungeon)
+   #:rpgmaker-dungeon
+   #:haunted-house
+   #:haunted-forest)
   (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package :yadfa-events
   (:use :yadfa :yadfa-util :cl :iterate)
@@ -530,9 +532,14 @@
    #:win-eggman-area-1
    #:pirates-cove-1
    #:pirates-cove-2
-   #:rpgmaker-dungeon-1
-   #:rpgmaker-dungeon-2
-   #:rpgmaker-dungeon-3
+   #:secret-underground-pipe-rpgmaker-dungeon
+   #:secret-underground-pipe-lukurbo
+   #:secret-underground-pipe-silver-cape
+   #:secret-underground-pipe-haunted-forest
+   #:secret-underground-pipe-haunted-house
+   #:secret-underground-pipe-candle-carnival
+   #:secret-underground-pipe-sky-base
+   #:secret-underground-pipe-star-city
    #:enter-silver-cape-1
    #:obtain-pirate-ship-1
    #:get-location-to-pirate-cove-1

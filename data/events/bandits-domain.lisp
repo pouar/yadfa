@@ -288,5 +288,5 @@
             (format t "Shop Owner: Easy way to get back to this shop, so you can buy more crap from us.~%~%")
             (format t "~a: Ok *grabs the device and puts it in ~a inventory*~%~%" (name-of (player-of *game*)) (if (malep (player-of *game*)) "his" "her"))
             (push (make-instance 'yadfa-items:warp-device) (inventory-of (player-of *game*)))
-            (setf (hiddenp (get-zone '(0 0 0 yadfa-zones:silver-cape))) nil)))
+            (setf (hiddenp (get-zone '(0 31 0 yadfa-zones:bandits-domain))) nil)))
 (defevent shopkeeper-floods-himself-1)

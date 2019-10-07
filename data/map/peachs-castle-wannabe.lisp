@@ -210,7 +210,7 @@
   :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
-  :events (list 'yadfa-events:enter-race-area-1)
+  :events '(yadfa-events:enter-race-area-1)
   :props (list
           :truck (make-instance 'prop
                                 :name "Truck"
@@ -221,7 +221,7 @@
   :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
-  :events (list 'yadfa-events:win-race-area-1)
+  :events '(yadfa-events:win-race-area-1)
   :warp-points (list 'back-to-castle '(-2 -2 0 peachs-castle-wannabe))
   :props (list
           :truck (make-instance 'prop
@@ -233,7 +233,7 @@
   :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
-  :events (list 'yadfa-events:enter-thwomp-area-1))
+  :events '(yadfa-events:enter-thwomp-area-1))
 (ensure-zone (0 -1 0 peachs-castle-wannabe:thwomp-area)
   :name "Thwomp Area"
   :description "Thwomp Area"
@@ -241,14 +241,14 @@
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
   :warp-points (list 'back-to-castle '(2 -2 0 peachs-castle-wannabe))
-  :events (list 'yadfa-events:win-thwomp-area-1))
+  :events '(yadfa-events:win-thwomp-area-1))
 (ensure-zone (0 0 0 peachs-castle-wannabe:pokemon-area)
   :name "Pokémon Area"
   :description "Pokémon Area"
   :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
-  :events (list 'yadfa-events:enter-pokemon-area-1)
+  :events '(yadfa-events:enter-pokemon-area-1)
   :warp-points (list 'back-to-castle '(-1 -4 1 peachs-castle-wannabe)))
 (ensure-zone (0 0 0 peachs-castle-wannabe:blank-area)
   :name "Pokémon Area"
@@ -256,7 +256,7 @@
   :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
-  :events (list 'yadfa-events:enter-blank-area-1)
+  :events '(yadfa-events:enter-blank-area-1)
   :warp-points (list 'back-to-castle '(1 -4 1 peachs-castle-wannabe)))
 (ensure-zone (0 0 0 peachs-castle-wannabe:eggman-area)
   :name "Eggman Area"
@@ -264,5 +264,5 @@
   :enter-text "You're wandering around the level"
   :can-potty 'can-potty-peachs-castle-wannabe
   :potty-trigger 'potty-trigger-peachs-castle-wannabe
-  :events (list 'yadfa-events:enter-eggman-area-1)
+  :events '(yadfa-events:enter-eggman-area-1)
   :warp-points (list 'back-to-castle '(0 -1 -1 peachs-castle-wannabe)))
