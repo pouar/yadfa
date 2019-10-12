@@ -3037,7 +3037,7 @@
         (format t "Keyword: ~a~%Other Parameters: ~w~%Documentation: ~a~%~%Describe: ~a~%~%"
                 a
                 (cddr (lambda-list (action-lambda b)))
-                (action-documentation b)
+                (documentation b t)
                 (with-output-to-string (s)
                   (let ((*standard-output* s))
                     (describe (action-lambda b)))))))))

@@ -448,7 +448,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (format t "Keyword: ~a~%~%Other Parameters: ~w~%~%Documentation: ~a~%~%Describe: ~a~%~%"
             describe-action
             (rest (lambda-list (action-lambda (getf-action-from-prop (position-of (player-of *game*)) prop describe-action))))
-            (action-documentation (getf (actions-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)) describe-action))
+            (documentation (getf (actions-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)) describe-action) t)
             (with-output-to-string (s)
               (let ((*standard-output* s))
                 (describe (action-lambda (getf-action-from-prop (position-of (player-of *game*)) prop describe-action)))))))
