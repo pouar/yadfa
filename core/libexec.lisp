@@ -85,6 +85,8 @@
   (setf (get-zone% position) new-value))
 
 (declaim (notinline get-event get-zone))
+(defmethod documentation ((x symbol) (doc-type (eql 'event)))
+  (event-documentation (get-event x)))
 (eval-always
   (defun set-logical-pathnames ()
     (setf (logical-pathname-translations "YADFA")

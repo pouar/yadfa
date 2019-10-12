@@ -27,12 +27,13 @@
   (:use #:cl :yadfa-util :ugly-tiny-infix-macro :alexandria :global-vars)
   (:mix :iterate :serapeum)
   (:import-from :macro-level #:macro-level)
-  (:shadow )
   (:export
    ;;variables
    #:*battle*
    #:*game*
    #:*cheat-hooks*
+   ;;structures
+   #:event
    ;;macros
    #:defevent
    #:ensure-zone
@@ -558,5 +559,6 @@
   (:mix :iterate :serapeum)
   (:documentation "The package that the player typically executes commands from"))
 (uiop:define-package :yadfa-clim
-  (:use :yadfa :iterate :clim :clim-lisp :clim-extensions)
+  (:mix :clim :yadfa)
+  (:use :iterate :clim-lisp :clim-extensions)
   (:documentation "CLIM related stuff"))
