@@ -23,3 +23,14 @@
   (attributes ())
   (lambda '(lambda (prop))
     :type (or list symbol function)))
+(defmethod documentation ((x action) 't)
+  (action-documentation x))
+(defmethod describe-object ((object action) stream)
+  (call-next-method)
+  ;;; copied from SBCL
+  (let ((doc (handler-bind ((warning #'muffle-warning))
+               (documentation object t))))
+    (when doc
+      (format stream "~%~@:_Documentation:~@:_")
+      (pprint-logical-block (stream nil :per-line-prefix "  ")
+        (princ doc stream)))))
