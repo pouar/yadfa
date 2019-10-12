@@ -23,7 +23,7 @@
   (attributes ())
   (lambda '(lambda (prop))
     :type (or list symbol function)))
-(defmethod documentation ((x action) 't)
+(defmethod documentation ((x action) (doc-type (eql t)))
   (action-documentation x))
 (defmethod describe-object ((object action) stream)
   (call-next-method)
