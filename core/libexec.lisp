@@ -61,21 +61,29 @@
              `((locally (declare ,@types)
                  ,@body)))))))
 
-(declaim (inline get-event get-zone))
+(declaim (inline get-event get-zone get-zone%))
 (defunassert (get-event (event-id))
     (event-id symbol)
   (gethash event-id (events-of *game*)))
 (defunassert ((setf get-event) (new-value event-id))
     (event-id symbol)
   (setf (gethash event-id (events-of *game*)) new-value))
+(defun get-zone% (position)
+    (declare (type list position))
+  (gethash position (zones-of *game*)))
+(defun (setf get-zone%) (new-value position)
+  (declare (type list position)
+           (type zone new-value))
+  (setf (position-of new-value) position
+        (gethash position (zones-of *game*)) new-value))
 (defunassert (get-zone (position))
     (position list)
-  (gethash position (zones-of *game*)))
+  (get-zone% position))
 (defunassert ((setf get-zone) (new-value position))
     (position list
               new-value zone)
-  (setf (position-of new-value) position)
-  (setf (gethash position (zones-of *game*)) new-value))
+  (setf (get-zone% position) new-value))
+
 (declaim (notinline get-event get-zone))
 (eval-always
   (defun set-logical-pathnames ()
@@ -723,7 +731,7 @@
             (setf (get-zone ',position)
                   (make-instance 'zone ,@body)))
           (export ',(fourth position) ',(symbol-package (fourth position)))
-          (get-zone ',position)))
+          (get-zone% ',position)))
 (defmacro defzone (position &body body)
   #.(format nil "defines the classes of the zones and adds an instance of them to the game's map hash table. Intended to be used to replace existing zones in more intrusive mods. Best to wrap this in an event and run @code{TRIGGER-EVENT} so it doesn't overwrite the zone every time this piece of code is loaded
 
@@ -735,7 +743,7 @@
      (setf (get-zone ',position)
            (make-instance 'zone ,@body))
      (export ',(fourth position) ',(symbol-package (fourth position)))
-     (get-zone ',position)))
+     (get-zone% ',position)))
 (defmacro ensure-zone* (position &body body)
   #.(format nil "Like @code{ENSURE-ZONE}, but position is a quoted list
 
@@ -747,7 +755,7 @@
             (setf (get-zone ,position)
                   (make-instance 'zone ,@body)))
           (export ',(fourth position) ',(symbol-package (fourth position)))
-          (get-zone ,position)))
+          (get-zone% ,position)))
 (defmacro defzone* (position &body body)
   #.(format nil "Like @code{DEFZONE}, but position is a quoted list
 
@@ -759,12 +767,12 @@
      (setf (get-zone ,position)
            (make-instance 'zone ,@body))
      (export ',(fourth position) ',(symbol-package (fourth position)))
-     (get-zone ,position)))
+     (get-zone% ,position)))
 (defmacro make-pocket-zone (position &body body)
   "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
   #+sbcl (declare (type list position))
   (check-type position list)
-  `(setf (get-zone '(,@position :pocket-map))
+  `(setf (get-zone% '(,@position :pocket-map))
          (make-instance 'zone ,@body)))
 (defun move-to-secret-underground ()
   (when *battle*
