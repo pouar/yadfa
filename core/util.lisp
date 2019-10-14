@@ -74,4 +74,4 @@ argument.")
 (defmacro out (&rest strings)
   (check-type strings list)
   (substitutef strings #\Newline :% :test #'eq)
-  `(format t "~{~a~}" (list ,@strings)))
+  `(format t "~@{~a~}" ,@strings))
