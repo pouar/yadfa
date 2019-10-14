@@ -82,7 +82,8 @@
                                                 (if (malep j) "him" "her")
                                                 (name-of j)
                                                 (if (malep j) "him" "her"))
-                                        (trigger-event 'yadfa-events:get-diaper-locked-1))))))))
+                                        (when (trigger-event 'yadfa-events:get-diaper-locked-1)
+                                          (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%" (name-of j))))))))))
   (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 (defclass checkpoint (prop) ()
   (:default-initargs

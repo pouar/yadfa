@@ -33,6 +33,7 @@
          (type list yadfa-clim::*records* *mods* *cheat-hooks*)
          (type (or null game) *game*)
          (type hash-table *mod-registry* *pattern-cache*))
+(define-global-var *events* (make-hash-table :test #'equal))
 (define-global-var yadfa-clim::*records* ())
 (define-global-var *battle* nil)
 (define-global-var *mod-registry* (make-hash-table :test #'equal))

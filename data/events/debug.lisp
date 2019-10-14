@@ -1,21 +1,21 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-events"; coding: utf-8-unix; -*-
 (in-package :yadfa-events)
 (defevent test-battle-1
-  :lambda '(lambda (self)
+  :lambda (lambda (self)
             (declare (ignore self))
-            (format t "Time to battle~%")
+            (out "Time to battle" :%)
             (set-new-battle
              '((enemy))
              :continuable t
              :win-events '(test-battle-2))))
 (defevent test-battle-3
-  :lambda '(lambda (self)
+  :lambda (lambda (self)
             (declare (ignore self))
-            (format t "You won~%")))
+            (out "You won" :%)))
 (defevent test-battle-2
-  :lambda '(lambda (self)
+  :lambda (lambda (self)
             (declare (ignore self))
-            (format t "Time to battle 2~%")
+            (out "Time to battle 2" :%)
             (set-new-battle
              '((enemy) (enemy))
              :continuable t

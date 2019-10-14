@@ -1099,11 +1099,6 @@
     :initform 0
     :accessor time-of
     :documentation "Turns since start of game")
-   (events
-    :initarg :events
-    :initform (make-hash-table :test #'equal)
-    :accessor events-of
-    :documentation "hash table containing all the events in the game")
    (finished-events
     :initarg :finished-events
     :initform '()

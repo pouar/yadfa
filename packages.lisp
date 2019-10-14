@@ -273,8 +273,6 @@
    #:finished-events-of
    #:seen-enemies-of
    #:action-lambda
-   #:action-attributes
-   #:event-attributes
    #:event-p
    #:action-p
    #:fainted-of
