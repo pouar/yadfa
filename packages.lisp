@@ -98,6 +98,7 @@
    #:get-babyish-padding
    #:resolve-enemy-spawn-list
    #:process-battle-accident-method
+   #:event-attributes
    ;;constructors
    #:make-action
    ;;classes

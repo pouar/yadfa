@@ -1112,5 +1112,8 @@
    (seen-enemies
     :initarg :seen-enemies
     :initform '()
-    :accessor seen-enemies-of))
+    :accessor seen-enemies-of)
+   (event-attributes%
+    :initform (make-hash-table :test 'eq)
+    :documentation "Stores the event attributes of the game"))
   (:documentation "List of all the information in the game"))

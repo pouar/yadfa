@@ -325,10 +325,16 @@
                                                (clim:accept 'boolean :prompt "accept quest" :default t
                                                                      :view clim:+toggle-button-view+ :stream *query-io*))))))
       (setf (major-event-of *game*) event-id)
-      (funcall (coerce (event-lambda (get-event event-id)) 'function) (get-event event-id))
+      (funcall (coerce (event-lambda (get-event event-id)) 'function) event-id)
       (unless (event-major (get-event event-id))
         (pushnew event-id (finished-events-of *game*)))
       (collect event-id))))
+(defunassert (event-attributes (event-id))
+    (event-id symbol)
+  (gethash event-id (slot-value *game* 'event-attributes%)))
+(defunassert ((setf event-attributes) (instance event-id))
+    (event-id symbol)
+  (setf (gethash event-id (slot-value *game* 'event-attributes%)) instance))
 (defun set-new-battle (enemies &rest keys &key win-events enter-battle-text continuable)
   (when continuable
     (setf
