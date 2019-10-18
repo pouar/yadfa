@@ -266,7 +266,6 @@
    #:enemies-of
    #:win-events-of
    #:status-conditions-of
-   #:zones-of
    #:player-of
    #:allies-of
    #:team-of
