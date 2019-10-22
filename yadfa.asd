@@ -10,7 +10,7 @@
   :build-operation :program-op
   :build-pathname "yadfa"
   :entry-point "yadfa::main"
-  :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria" "serapeum" "global-vars" (:feature :sbcl "yadfa/docs")
+  :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria" "serapeum" "global-vars" (:feature :sbcl "yadfa/docs") "float-features"
                          "str" "listopia" "anaphora" "quasiquote-2.0" #|in case modders want them|#)
   :components ((:file "packages")
                (:file "main" :depends-on ("packages" "core"))
@@ -28,7 +28,7 @@
                (:module "data"
                 :depends-on ("core")
                 :components ((:module "moves"
-                              :depends-on ("init")
+                              :depends-on ("prolog")
                               :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                     (directory-files
                                                      (pathname-directory-pathname
@@ -38,7 +38,7 @@
                                                       :name :wild
                                                       :type "lisp"))))
                              (:module "items"
-                              :depends-on ("moves" "init")
+                              :depends-on ("moves" "prolog")
                               :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                     (directory-files
                                                      (pathname-directory-pathname
@@ -47,17 +47,17 @@
                                                       :directory '(:relative "data" "items")
                                                       :name :wild
                                                       :type "lisp"))))
-                             (:module "init"
+                             (:module "prolog"
                               :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                     (directory-files
                                                      (pathname-directory-pathname
                                                       (uiop/lisp-build:current-lisp-file-pathname))
                                                      (make-pathname
-                                                      :directory '(:relative "data" "init")
+                                                      :directory '(:relative "data" "prolog")
                                                       :name :wild
                                                       :type "lisp"))))
                              (:module "enemies"
-                              :depends-on ("moves" "items" "init")
+                              :depends-on ("moves" "items" "prolog")
                               :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                     (directory-files
                                                      (pathname-directory-pathname
@@ -67,7 +67,7 @@
                                                       :name :wild
                                                       :type "lisp"))))
                              (:module "team-members"
-                              :depends-on ("moves" "items" "init")
+                              :depends-on ("moves" "items" "prolog")
                               :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                     (directory-files
                                                      (pathname-directory-pathname
@@ -77,7 +77,7 @@
                                                       :name :wild
                                                       :type "lisp"))))
                              (:module "props"
-                              :depends-on ("items" "enemies" "team-members" "init")
+                              :depends-on ("items" "enemies" "team-members" "prolog")
                               :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                     (directory-files
                                                      (pathname-directory-pathname
@@ -87,7 +87,7 @@
                                                       :name :wild
                                                       :type "lisp"))))
                              (:module "events"
-                              :depends-on ("moves" "items" "enemies" "team-members" "props" "init")
+                              :depends-on ("moves" "items" "enemies" "team-members" "props" "prolog")
                               :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                     (directory-files
                                                      (pathname-directory-pathname
@@ -97,7 +97,7 @@
                                                       :name :wild
                                                       :type "lisp"))))
                              (:module "map"
-                              :depends-on ( "moves" "items" "enemies" "team-members" "props" "events" "init")
+                              :depends-on ( "moves" "items" "enemies" "team-members" "props" "events" "prolog")
                               :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                     (directory-files
                                                      (pathname-directory-pathname
@@ -107,13 +107,23 @@
                                                       :name :wild
                                                       :type "lisp"))))
                              (:module "status-conditions"
-                              :depends-on ("init")
+                              :depends-on ("prolog")
                               :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
                                                     (directory-files
                                                      (pathname-directory-pathname
                                                       (uiop/lisp-build:current-lisp-file-pathname))
                                                      (make-pathname
                                                       :directory '(:relative "data" "status-conditions")
+                                                      :name :wild
+                                                      :type "lisp"))))
+                             (:module "epilog"
+                              :depends-on ("prolog" "enemies" "events" "items" "map" "moves" "props" "status-conditions" "team-members")
+                              :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
+                                                    (directory-files
+                                                     (pathname-directory-pathname
+                                                      (uiop/lisp-build:current-lisp-file-pathname))
+                                                     (make-pathname
+                                                      :directory '(:relative "data" "epilog")
                                                       :name :wild
                                                       :type "lisp"))))))))
 (defsystem "yadfa/docs"

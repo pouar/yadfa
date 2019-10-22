@@ -1,7 +1,8 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "common-lisp-user"; coding: utf-8-unix; -*-
 (in-package :cl-user)
 (uiop:define-package #:yadfa-util
-  (:use #:cl #:iterate)
+  (:use #:cl :alexandria)
+  (:mix :iterate :serapeum)
   (:export
    #:shl
    #:shr
@@ -21,7 +22,8 @@
    #:summing*
    #:in*
    #:sum*
-   #:out)
+   #:out
+   #:defunassert)
   (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package :yadfa
   (:use #:cl :yadfa-util :ugly-tiny-infix-macro :alexandria :global-vars)
@@ -32,6 +34,9 @@
    #:*battle*
    #:*game*
    #:*cheat-hooks*
+   #:*battle-packages*
+   #:*world-packages*
+   #:*command-packages*
    ;;structures
    #:event
    ;;macros
@@ -304,7 +309,10 @@
    #:pants
    #:fire-breath
    #:roar
-   #:face-sit)
+   #:face-sit
+   #:ghost-tickle
+   #:ghost-squish
+   #:ghost-mush)
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package :yadfa-items
   (:import-from :macro-level :macro-level)
@@ -425,8 +433,27 @@
    #:pirate-dress
    #:pirate-shirt
    #:macguffin
-   #:itemfinder)
+   #:itemfinder
+   #:enemy-catcher
+   #:ghost-catcher
+   #:catch-method
+   #:contained-enemies-of
+   #:contained-enemies-max-length-of
+   #:catch-chance-multiplier-of
+   #:catch-chance-delta-of)
   (:documentation "Contains all the items in the game"))
+(uiop:define-package :yadfa-items-battle-commands
+  (:import-from :macro-level :macro-level)
+  (:use :yadfa :yadfa-util :cl :iterate)
+  (:export
+   #:catch-enemy)
+  (:documentation "convenience functions for battle"))
+(uiop:define-package :yadfa-items-world-commands
+  (:import-from :macro-level :macro-level)
+  (:use :yadfa :yadfa-util :cl :iterate)
+  (:export
+   #:loot-caught-enemies)
+  (:documentation "convenience functions for battle"))
 (uiop:define-package :yadfa-enemies
   (:import-from :macro-level :macro-level)
   (:use :cl :yadfa :yadfa-util :iterate :alexandria)
@@ -447,7 +474,10 @@
    #:fursuiter-servant
    #:diapered-dragon*
    #:diapered-dragon
-   #:dergy)
+   #:dergy
+   #:ghost
+   #:catchable-enemy
+   #:catch-chance-of)
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package :yadfa-props
   (:import-from :macro-level :macro-level)
@@ -553,7 +583,7 @@
    #:furry)
   (:documentation "Contains all the allies in the game"))
 (uiop:define-package :yadfa-user
-  (:use :cl :yadfa :yadfa-util :yadfa-bin :ugly-tiny-infix-macro :alexandria)
+  (:use :cl :yadfa :yadfa-util :ugly-tiny-infix-macro :alexandria)
   (:mix :iterate :serapeum)
   (:documentation "The package that the player typically executes commands from"))
 (uiop:define-package :yadfa-clim

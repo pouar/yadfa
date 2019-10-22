@@ -40,7 +40,7 @@
   :name "zone-0-1-0-debug-map"
   :description "zone-0-1-0-debug-map"
   :enter-text "zone-0-1-0-debug-map"
-  :enemy-spawn-list (list (list :max-random 1 :enemies '((enemy)))))
+  :enemy-spawn-list '((:chance 1 :enemies ((enemy)))))
 (ensure-zone (1 0 0 debug-map)
   :name "zone-1-0-0-debug-map"
   :description "zone-1-0-0-debug-map"

@@ -36,7 +36,7 @@
                         :texi-directory (translate-logical-pathname "yadfa:home;docs;reference;")
                         :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically"))
     (uiop:quit))
-  (use-package :yadfa-world :yadfa-user)
+  (switch-user-packages)
   (when (featurep :mcclim-ffi-freetype)
     (setf (symbol-value (uiop:find-symbol* '#:*library* '#:freetype2))
           (uiop:symbol-call '#:freetype2 '#:make-freetype)))

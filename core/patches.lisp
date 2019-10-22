@@ -400,7 +400,10 @@
                 (redisplay-frame-panes frame :force-p first-time)
                 (when first-time
                   (yadfa:intro-function frame-query-io))
-                (setq first-time nil needs-redisplay nil))
+                (setq first-time nil needs-redisplay nil)
+                (when (>= (yadfa:time-of yadfa:*game*) (+ yadfa::*last-rng-update* 20))
+                  (setf cl:*random-state* (make-random-state t)
+                        yadfa::*last-rng-update* (yadfa:time-of yadfa:*game*))))
               (when interactorp
                 (setf (cursor-visibility (stream-text-cursor frame-query-io)) nil)
                 (when prompt

@@ -47,8 +47,8 @@ modules:
       - chmod +x /app/tmp/sbcl-bin/bin/hostname
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.7/sbcl-1.5.7-x86-64-linux-binary.tar.bz2
-        sha256: 7f41c480076ce5917c604219ad0e6e28af477dc446b002b3c4d299644097af32
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.8/sbcl-1.5.8-x86-64-linux-binary.tar.bz2
+        sha256: 63fca9fb30aab7939d1bee0e9b1e995be4d97b0c480670ceeabe8e7363d394d9
   - name: sbcl
     buildsystem: simple
     build-commands:
@@ -57,8 +57,8 @@ modules:
       - INSTALL_ROOT="/app/tmp/sbcl" HOME="/app/tmp/home/" sh install.sh
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.7/sbcl-1.5.7-source.tar.bz2
-        sha256: 54742fb5e2f3f350fbafd72bc73662fca21382b5553ed6a146098950d2409485
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.8/sbcl-1.5.8-source.tar.bz2
+        sha256: 84572f9133d13c982db13d1768d38331421204bc0ca083dacc5364e46796ff4c
   - name: yadfa-deps
     buildsystem: simple
     build-commands:
@@ -90,7 +90,7 @@ modules:
   - name: yadfa-cache
     buildsystem: simple
     build-commands:
-      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --eval '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' --eval "(progn (ql:update-client :prompt nil) (ql:update-all-dists :prompt nil) (pushnew :mcclim-ffi-freetype *features*) (ql:quickload '(:swank :mcclim :marshal :iterate :ugly-tiny-infix-macro :closer-mop :trivial-features :clim-listener :trivial-garbage :macro-level :cl-ansi-text :alexandria :plump-sexp :net.didierverna.declt :sb-aclrepl :serapeum :global-vars :str :listopia :anaphora :quasiquote-2.0)))"
+      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --eval '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' --eval "(progn (ql:update-client :prompt nil) (ql:update-all-dists :prompt nil) (pushnew :mcclim-ffi-freetype *features*) (ql:quickload '(:swank :mcclim :marshal :iterate :ugly-tiny-infix-macro :closer-mop :trivial-features :clim-listener :trivial-garbage :macro-level :cl-ansi-text :alexandria :plump-sexp :net.didierverna.declt :sb-aclrepl :serapeum :global-vars :str :listopia :anaphora :quasiquote-2.0 :float-features)))"
   - name: yadfa
     buildsystem: simple
     build-commands:

@@ -495,7 +495,7 @@
     :initarg :enemy-spawn-list
     :initform ()
     :accessor enemy-spawn-list-of
-    :documentation "list containing what enemies might show up when you enter an area. Each entry looks like this @code{(:random random :max-random max-random :enemies enemies)} If @var{RANDOM} is specified, then the probability of the enemy being spawn is @var{RANDOM}/@var{MAX-RANDOM} otherwise it is 1/@var{MAX-RANDOM}"))
+    :documentation "list containing what enemies might show up when you enter an area. Each entry looks like this @code{(:chance chance :enemies enemies)} If @var{RANDOM} is specified, then the probability of the enemy being spawn is @var{CHANCE} out of 1 where @var{CHANCE} is a number between 0 and 1"))
   (:documentation "A zone on the map"))
 (defmethod print-object ((obj zone) stream)
   (print-unreadable-object (obj stream :type t :identity t)

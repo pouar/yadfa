@@ -62,3 +62,106 @@
    :sellable nil
    :tossable nil
    :description "Collect as many of these fuckers as you possibly can. Don't ask why, just do it."))
+(defclass enemy-catcher (item)
+  ((contained-enemies
+    :initarg :contained-enemies
+    :accessor contained-enemies-of
+    :initform nil
+    :documentation "list that contains the caught enemies")
+   (contained-enemies-max-length
+    :initarg :contained-enemies-max-length
+    :accessor contained-enemies-max-length-of
+    :initform 1
+    :documentation "Maximum amount of enemies this can hold")
+   (catch-chance-multiplier
+    :initarg :catch-chance-multiplier
+    :accessor catch-chance-multiplier-of
+    :initform 1
+    :documentation "Multiplier of the chance this item might catch an enemy")
+   (catch-chance-delta
+    :initarg :catch-chance-delta
+    :accessor catch-chance-delta-of
+    :initform 0
+    :documentation "How much of an increase this item might catch an enemy. if the multiplier is also specified, then this gets multiplied too"))
+  (:default-initargs
+   :name "Enemy Catcher"
+   :description "Use this to catch enemies"
+   :value 500
+   :power 0
+   :use-script 'catch-method
+   :cant-use-predicate '(lambda (user item)
+                         (unless (typep user 'yadfa-enemies:catchable-enemy)
+                           (out (name-of item) " can't be used on " (name-of user) :%)
+                           t))
+   :special-actions (list :take-items '(lambda (item user &key &allow-other-keys)
+                                        (declare (ignore user))
+                                        (setf (inventory-of (player-of *game*))
+                                         (append (iter (for enemy in (contained-enemies-of item))
+                                                   (dolist (item (inventory-of enemy))
+                                                     (collect item))
+                                                   (dolist (item (wear-of enemy))
+                                                     (collect item))
+                                                   (setf (inventory-of enemy) nil
+                                                         (wear-of enemy) nil))
+                                          (inventory-of (player-of *game*))))))))
+(defclass ghost-catcher (enemy-catcher) ()
+  (:default-initargs
+   :name "Ghost Catcher"
+   :description "Use this to catch ghosts"
+   :cant-use-predicate '(lambda (user item)
+                         (unless (typep user 'yadfa-enemies:ghost)
+                           (out (name-of item) " can't be used on " (name-of user) :%)
+                           t))))
+(defunassert (yadfa-items-battle-commands:catch-enemy (&optional (target 'yadfa-enemies:catchable-enemy) (item 'enemy-catcher))
+                                    "Catches an enemy using. @var{ITEM} which is a type specifier. @var{TARGET} is an index of an enemy in battle or a type specifier")
+    (item type-specifier
+          target (or unsigned-byte type-specifier))
+  (let ((selected-item (find item (inventory-of (player-of *game*))
+                             :test (lambda (type-specifier obj)
+                                     (and (typep obj `(and enemy-catcher ,type-specifier))
+                                          (< (list-length (contained-enemies-of item))
+                                             (contained-enemies-max-length-of item))))))
+        (selected-target (if (typep target 'unsigned-byte)
+                    target
+                    (position target (enemies-of *battle*)
+                              :test (lambda (type-specifier obj)
+                                      (typep obj `(and yadfa-enemies:catchable-enemy ,type-specifier))))))
+        (enemies-length (list-length (enemies-of *battle*))))
+    (cond ((not item)
+           (format t "You don't have an item with that type specifier that can catch that enemy~%")
+           (return-from yadfa-items-battle-commands:catch-enemy))
+          ((not selected-target)
+           (format t "That enemy can't be caught~%")
+           (return-from yadfa-items-battle-commands:catch-enemy))
+          ((< enemies-length (list-length (contained-enemies-of item)))
+           (format t "there are only ~d enemies~%" enemies-length)
+           (return-from yadfa-items-battle-commands:catch-enemy))
+          ((and (typep target 'unsigned-byte) (typep (nth selected-target (enemies-of *game*)) 'yadfa-enemies:catchable-enemy))
+           (format t "That enemy can't be caught~%")
+           (return-from yadfa-items-battle-commands:catch-enemy)))
+    (process-battle
+     :item selected-item
+     :target selected-target)))
+(defunassert (yadfa-items-world-commands:loot-caught-enemies (&optional item)
+                                                            "Loots the enemies you caught. @var{ITEM} is either a type specifier or an unsiged-byte of the item. Don't specify if you want to loot the enemies of all items")
+    (item (or null unsigned-byte type-specifier))
+  (cond ((null item)
+         (iter (for item in (inventory-of *game*))
+           (when (typep item 'enemy-catcher)
+             (funcall (coerce (action-lambda (getf (special-actions-of item) :take-items)) 'function)
+                      item (player-of *game*) :action :take-items))))
+        ((typep item 'unsigned-byte)
+         (let* ((inventory-length (list-length (inventory-of (player-of *game*))))
+                (selected-item (and (< item inventory-length) (nth item (inventory-of (player-of *game*))))))
+           (cond ((>= item inventory-length)
+                  (out "You only have " inventory-length " items" :%))
+                 ((not (typep selected-item 'enemy-catcher))
+                  (out "That item isn't an enemy catcher" :%))
+                 (t (funcall (coerce (action-lambda (getf (special-actions-of selected-item) :take-items)) 'function)
+                             selected-item (player-of *game*) :action :take-items)))))
+        (t (let ((selected-item (find item (inventory-of *game*) :test (lambda (specifier item)
+                                                                         (typep item `(and enemy-catcher ,specifier))))))
+             (if selected-item
+                 (funcall (coerce (action-lambda (getf (special-actions-of selected-item) :take-items)) 'function)
+                          selected-item (player-of *game*) :action :take-items)
+                 (out "Either you don't have that item or it isn't an enemy catcher" :%))))))
