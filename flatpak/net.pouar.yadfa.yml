@@ -47,7 +47,7 @@ modules:
       - chmod +x /app/tmp/sbcl-bin/bin/hostname
     sources:
       - type: archive
-        url: https://newcontinuum.dl.sourceforge.net/project/sbcl/sbcl/1.5.8/sbcl-1.5.8-x86-64-linux-binary.tar.bz2
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.8/sbcl-1.5.8-x86-64-linux-binary.tar.bz2
         sha256: 63fca9fb30aab7939d1bee0e9b1e995be4d97b0c480670ceeabe8e7363d394d9
   - name: sbcl
     buildsystem: simple
@@ -57,7 +57,7 @@ modules:
       - INSTALL_ROOT="/app/tmp/sbcl" HOME="/app/tmp/home/" sh install.sh
     sources:
       - type: archive
-        url: https://newcontinuum.dl.sourceforge.net/project/sbcl/sbcl/1.5.8/sbcl-1.5.8-source.tar.bz2
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.8/sbcl-1.5.8-source.tar.bz2
         sha256: 84572f9133d13c982db13d1768d38331421204bc0ca083dacc5364e46796ff4c
   - name: yadfa-deps
     buildsystem: simple
