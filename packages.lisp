@@ -51,6 +51,7 @@
    #:present-with-frame-resolved
    #:updating-present-frame-resolved
    ;;functions
+   #:process-battle
    #:get-positions-of-type
    #:trigger-event
    #:intro-function
