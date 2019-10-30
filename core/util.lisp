@@ -90,7 +90,7 @@ argument.")
 (defmacro defunassert (name-args-declares asserts &body body)
   "Wrapper macro that brings the behavior of SBCL's type declaration to other implementations, @var{NAME-ARGS-DECLARES} is the function name, lambda list, and optionally the docstring and declarations (omitting the type declarations) @var{ASSERTS} is the type specifiers for the lambda list as a plist, @var{BODY} is the body of the function"
   (declare (inline list-length-<))
-  (let* ((sbclp (uiop:featurep '(:or :sbcl :ccl)))
+  (let* ((sbclp #.(uiop:featurep '(:or :sbcl :ccl)))
          (declarep (and sbclp
                         (list-length-< 2 name-args-declares)
                         (typep (car (last name-args-declares)) 'list)
