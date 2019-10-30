@@ -7,6 +7,8 @@
                                        (user-homedir-pathname))))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
+#+ccl (ccl:set-current-compiler-policy (ccl:new-compiler-policy :trust-declarations (lambda (env)
+                                                                                      (declare (ignore env)) nil)))
 (macrolet ((a ()
              `(progn
                 ,(when (position "debug" (uiop:command-line-arguments) :test #'string=)
