@@ -129,4 +129,4 @@
    :bowels/maximum-limit 1
    :wear (list (make-instance 'yadfa-items:kurikia-thick-rubber-diaper))
    :inventory (iter (for i from 0 to (random 20))
-                       (collect (make-instance 'yadfa-items:kurikia-thick-rubber-diaper)))))
+                (collect (make-instance 'yadfa-items:kurikia-thick-rubber-diaper)))))

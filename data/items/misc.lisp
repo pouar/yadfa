@@ -82,14 +82,24 @@
     :initarg :catch-chance-delta
     :accessor catch-chance-delta-of
     :initform 0
-    :documentation "How much of an increase this item might catch an enemy. if the multiplier is also specified, then this gets multiplied too"))
+    :documentation "How much of an increase this item might catch an enemy. if the multiplier is also specified, then this gets multiplied too")
+   (device-health
+    :initarg :device-health
+    :accessor device-health-of
+    :initform 1
+    :documentation "How many times it can fail to catch the enemy before it gets destroyed. @code{T} means it never gets destroyed")
+   (max-device-health
+    :initarg :device-health
+    :accessor device-health-of
+    :initform 1
+    :documentation "The maximum amount of @var{DEVICE-HEALTH} this item has. @code{T} means it never gets destroyed"))
   (:default-initargs
    :name "Enemy Catcher"
    :description "Use this to catch enemies"
    :value 500
    :power 0
    :use-script 'catch-method
-   :cant-use-predicate '(lambda (user item)
+   :cant-use-predicate '(lambda (item user)
                          (unless (typep user 'yadfa-enemies:catchable-enemy)
                            (out (name-of item) " can't be used on " (name-of user) :%)
                            t))
@@ -113,7 +123,7 @@
                            (out (name-of item) " can't be used on " (name-of user) :%)
                            t))))
 (defunassert (yadfa-items-battle-commands:catch-enemy (&optional (target 'yadfa-enemies:catchable-enemy) (item 'enemy-catcher))
-                                    "Catches an enemy using. @var{ITEM} which is a type specifier. @var{TARGET} is an index of an enemy in battle or a type specifier")
+                                                      "Catches an enemy using. @var{ITEM} which is a type specifier. @var{TARGET} is an index of an enemy in battle or a type specifier")
     (item type-specifier
           target (or unsigned-byte type-specifier))
   (let ((selected-item (find item (inventory-of (player-of *game*))
@@ -122,10 +132,10 @@
                                           (< (list-length (contained-enemies-of item))
                                              (contained-enemies-max-length-of item))))))
         (selected-target (if (typep target 'unsigned-byte)
-                    target
-                    (position target (enemies-of *battle*)
-                              :test (lambda (type-specifier obj)
-                                      (typep obj `(and yadfa-enemies:catchable-enemy ,type-specifier))))))
+                             target
+                             (position target (enemies-of *battle*)
+                                       :test (lambda (type-specifier obj)
+                                               (typep obj `(and yadfa-enemies:catchable-enemy ,type-specifier))))))
         (enemies-length (list-length (enemies-of *battle*))))
     (cond ((not item)
            (format t "You don't have an item with that type specifier that can catch that enemy~%")
@@ -143,7 +153,7 @@
      :item selected-item
      :target selected-target)))
 (defunassert (yadfa-items-world-commands:loot-caught-enemies (&optional item)
-                                                            "Loots the enemies you caught. @var{ITEM} is either a type specifier or an unsiged-byte of the item. Don't specify if you want to loot the enemies of all items")
+                                                             "Loots the enemies you caught. @var{ITEM} is either a type specifier or an unsiged-byte of the item. Don't specify if you want to loot the enemies of all items")
     (item (or null unsigned-byte type-specifier))
   (cond ((null item)
          (iter (for item in (inventory-of *game*))

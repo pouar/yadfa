@@ -18,9 +18,9 @@
    :attack '(lambda (target user self)
              (format t "~a used ~a~%" (name-of user) (name-of self))
              (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
-                 (format t "But it failed~%")
-                 (progn (wet :wetter user)
-                        (format t "~a wet ~a~%" (name-of user) (if (malep user) "himself" "herself")))))))
+              (format t "But it failed~%")
+              (progn (wet :wetter user)
+                     (format t "~a wet ~a~%" (name-of user) (if (malep user) "himself" "herself")))))))
 (defclass mudsport (stat/move) ()
   (:default-initargs
    :name "Mudsport"
@@ -28,11 +28,11 @@
    :attack '(lambda (target user self)
              (format t "~a used ~a~%" (name-of user) (name-of self))
              (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
-                 (format t "But it failed~%")
-                 (progn (mess :messer user)
-                        (format t "~a messed ~a~%"
-                                (name-of user)
-                                (if (malep user) "himself" "herself")))))))
+              (format t "But it failed~%")
+              (progn (mess :messer user)
+                     (format t "~a messed ~a~%"
+                             (name-of user)
+                             (if (malep user) "himself" "herself")))))))
 (defclass mudbomb (stat/move) ()
   (:default-initargs
    :name "Mud Bomb"
@@ -41,8 +41,8 @@
    :attack '(lambda (target user self)
              (format t "~a used ~a~%" (name-of user) (name-of self))
              (mess :force-fill-amount (if (< (* 30 24 (bowels/fill-rate-of user)) (bowels/maximum-limit-of user))
-                                          (bowels/maximum-limit-of user)
-                                          (* 30 24 (bowels/fill-rate-of user))) :messer user)
+                                       (bowels/maximum-limit-of user)
+                                       (* 30 24 (bowels/fill-rate-of user))) :messer user)
              (format t "~a messed ~a massively~%"
               (name-of user)
               (if (malep user) "himself" "herself"))
@@ -58,9 +58,9 @@
    :attack '(lambda (target user self)
              (format t "~a used ~a~%" (name-of user) (name-of self))
              (if (getf (attributes-of target) :not-ticklish)
-                 (write-line "It has no effect")
-                 (progn (format t "~a starts laughing helplessly~%" (name-of target))
-                        (set-status-condition 'yadfa-status-conditions:laughing target))))))
+              (write-line "It has no effect")
+              (progn (format t "~a starts laughing helplessly~%" (name-of target))
+                     (set-status-condition 'yadfa-status-conditions:laughing target))))))
 (defclass tackle (stat/move) ()
   (:default-initargs
    :name "Tackle"
@@ -76,11 +76,11 @@
              (unless (iter (for i in (if (typep user 'team-member)
                                          (enemies-of *battle)
                                          (team-of *game*)))
-                           (with j = nil)
-                           (when (>= (bladder/contents-of i) (bladder/need-to-potty-limit-of i))
-                             (format t "~a jumps and wets ~aself~%" (name-of i) (if (malep i) "him" "her"))
-                             (wet :wetter i)
-                             (set-status-condition 'yadfa-status-conditions:wetting i)
-                             (setf j t))
-                           (finally (return j)))
+                       (with j = nil)
+                       (when (>= (bladder/contents-of i) (bladder/need-to-potty-limit-of i))
+                         (format t "~a jumps and wets ~aself~%" (name-of i) (if (malep i) "him" "her"))
+                         (wet :wetter i)
+                         (set-status-condition 'yadfa-status-conditions:wetting i)
+                         (setf j t))
+                       (finally (return j)))
                (write-line "it had no effect")))))

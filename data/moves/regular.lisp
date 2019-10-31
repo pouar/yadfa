@@ -7,13 +7,13 @@
    :attack '(lambda (target user self)
              (declare (ignore self))
              (if (filter-items (wear-of user) 'incontinence-product)
-                 (progn
-                   (format t "~a mushes the back of ~a's diaper!~%" (name-of user) (name-of target))
-                   (if (<= (getf (calculate-diaper-usage target) :messiness) 0)
-                       (format t "But it had no effect!~%")
-                       (progn (format t "~a's diaper has been mushed~%" (name-of target))
-                              (set-status-condition 'yadfa-status-conditions:mushed target))))
-                 (out "it has no effect on " (name-of target) :%)))))
+              (progn
+                (format t "~a mushes the back of ~a's diaper!~%" (name-of user) (name-of target))
+                (if (<= (getf (calculate-diaper-usage target) :messiness) 0)
+                    (format t "But it had no effect!~%")
+                    (progn (format t "~a's diaper has been mushed~%" (name-of target))
+                           (set-status-condition 'yadfa-status-conditions:mushed target))))
+              (out "it has no effect on " (name-of target) :%)))))
 (defclass pants (stat/move) ()
   (:default-initargs
    :name "Pants"
@@ -75,8 +75,8 @@
                     (c (calculate-diaper-usage user))
                     (a (calculate-damage target user (power-of self))))
                (if (> (getf m :mess-amount) 0)
-                 (format t "~a sits on ~a's face and messes~%" (name-of user) (name-of target))
-                 (format t "~a sits on ~a's face~%" (name-of user) (name-of target)))
+                   (format t "~a sits on ~a's face and messes~%" (name-of user) (name-of target))
+                   (format t "~a sits on ~a's face~%" (name-of user) (name-of target)))
                (when (>= (getf c :messiness) 2000)
                  (format t "~a is grossed out by the smell~%" (name-of target))
                  (set-status-condition 'yadfa-status-conditions:skunked target))

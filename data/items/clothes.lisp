@@ -135,19 +135,19 @@
                            0 "The flaps hang over covering your underwear like a dress"))
      :description "An awesome black rubber onesie")))
 (defonesie stretchable-rubber-onesie (rubber-onesie) ()
-    (:default-initargs
-     :onesie-thickness-capacity (cons nil nil)
-     :onesie-thickness-capacity-threshold (cons nil nil)
-     :onesie-bulge-text '((60 "The onesie has easily stretched to accommodate your padding"
-                           20 "The diaper bulge makes it clear what you're wearing under there"
-                           0 "It fits snuggly")
-                          .
-                          (#.(* 12 25) "Your padding is clearly visible under there"
-                           #.(* 11 25) "The flaps just barely cover the diapers"
-                           #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
-                           0 "The flaps hang over covering your underwear like a dress"))
-     :name "Black Rubber Onesie"
-     :description "An awesome black rubber onesie that stretches to fit your humongous diapers"))
+  (:default-initargs
+   :onesie-thickness-capacity (cons nil nil)
+   :onesie-thickness-capacity-threshold (cons nil nil)
+   :onesie-bulge-text '((60 "The onesie has easily stretched to accommodate your padding"
+                         20 "The diaper bulge makes it clear what you're wearing under there"
+                         0 "It fits snuggly")
+                        .
+                        (#.(* 12 25) "Your padding is clearly visible under there"
+                         #.(* 11 25) "The flaps just barely cover the diapers"
+                         #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
+                         0 "The flaps hang over covering your underwear like a dress"))
+   :name "Black Rubber Onesie"
+   :description "An awesome black rubber onesie that stretches to fit your humongous diapers"))
 (defclass orca-suit (closed-full-outfit) ()
   (:default-initargs
    :waterproof t

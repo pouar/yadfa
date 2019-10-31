@@ -41,7 +41,7 @@
   (setf (gethash event-id *events*) new-value))
 (declaim (ftype (function (list) (values (or zone null) t &optional)) get-zone get-zone%))
 (defun get-zone% (position)
-    (declare (type list position))
+  (declare (type list position))
   (gethash position (slot-value *game* 'zones)))
 (defun (setf get-zone%) (new-value position)
   (declare (type list position)
@@ -266,7 +266,7 @@
            (all-new nil all-new-supplied-p)
            (parent-cache nil parent-cache-supplied-p)
            (record-type nil record-type-supplied-p)
-      &allow-other-keys) &body body)
+           &allow-other-keys) &body body)
   `(cond
      (clim-listener::*application-frame*
       (push (clim:updating-output (,stream ,@(and unique-id-supplied-p `(:unique-id ,unique-id)) ,@(and id-test-supplied-p `(:id-test ,id-test))
@@ -697,8 +697,8 @@
          ,(if (iter (for i in direct-superclasses)
                 (when (subtypep i 'yadfa:onesie)
                   (leave t)))
-           direct-superclasses
-           `(yadfa:onesie ,@direct-superclasses))
+              direct-superclasses
+              `(yadfa:onesie ,@direct-superclasses))
        ,@body)
      (defclass ,(format-symbol (symbol-package base-class) "~a/OPENED" (symbol-name base-class))
          (,(format-symbol (symbol-package base-class) "~a" (symbol-name base-class))

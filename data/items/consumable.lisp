@@ -9,9 +9,9 @@
    :use-script '(lambda (item user)
                  (incf (bladder/contents-of user) 100)
                  (if (> (health-of user) 0)
-                     (progn (format t "~a regained health~%" (name-of user))
-                            (incf (health-of user) 20))
-                     (format t "You make the unconscious ~a suckle on the ~a like a sleeping infant~%" (name-of user) (name-of item))))))
+                  (progn (format t "~a regained health~%" (name-of user))
+                         (incf (health-of user) 20))
+                  (format t "You make the unconscious ~a suckle on the ~a like a sleeping infant~%" (name-of user) (name-of item))))))
 (defclass monster-energy-drink (consumable) ()
   (:default-initargs
    :name "Monster Energy Drink"
@@ -37,12 +37,12 @@
                    (format t "You make the unconscious ~a suckle on the ~a like a sleeping infant~%" (name-of user) (name-of item)))
                  (setf (bladder/contents-of user)
                   (if (< (bladder/contents-of user) (bladder/need-to-potty-limit-of user))
-                      (- (bladder/maximum-limit-of user) (* (bladder/fill-rate-of user) 5))
-                      (+ (bladder/contents-of user) (bladder/potty-dance-limit-of user))))
+                   (- (bladder/maximum-limit-of user) (* (bladder/fill-rate-of user) 5))
+                   (+ (bladder/contents-of user) (bladder/potty-dance-limit-of user))))
                  (setf (bowels/contents-of user)
                   (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
-                      (- (bowels/maximum-limit-of user) (* (bowels/fill-rate-of user) 5))
-                      (+ (bowels/contents-of user) (bowels/potty-dance-limit-of user)))))))
+                   (- (bowels/maximum-limit-of user) (* (bowels/fill-rate-of user) 5))
+                   (+ (bowels/contents-of user) (bowels/potty-dance-limit-of user)))))))
 (defclass potion (consumable) ()
   (:default-initargs
    :name "Potion"

@@ -150,7 +150,7 @@
            (list :list-items-for-sale (make-action :documentation "List items for sale"
                                                    :lambda '(lambda (prop &rest keys &key &allow-other-keys)
                                                              (declare #+sbcl (type prop prop)
-                                                              (ignore keys))
+                                                                      (ignore keys))
                                                              #-sbcl (check-type prop prop)
                                                              (shopfun (items-for-sale-of prop) :format-items t)))
                  :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
@@ -248,6 +248,6 @@
                                                 (declare #+sbcl (type prop prop)
                                                          (ignore keys)
                                                  (ignorable prop))
-                                                 #-sbcl (check-type prop prop)
+                                                #-sbcl (check-type prop prop)
                                                 (go-to-sleep)))))
   (:documentation "Class for beds, you can sleep in these."))
