@@ -671,10 +671,34 @@ You can also specify multiple directions, for example @code{(move :south :south)
                (substitutef (inventory-of selected-user) wear inventory :count 1)
                (setf (wear-of selected-user) a)))))
 (defunassert (yadfa-battle:fight (attack &key target friendly-target)
-                                 "Use a move on an enemy. @var{ATTACK} is either a keyword which is the indicator to select an attack that you know, or @code{T} for default. @var{TARGET} is the index of the enemy you're attacking. @var{FRIENDLY-TARGET} is a member on your team you're using the move on instead. Only specify either a @var{FRIENDLY-TARGET} or @var{TARGET}. Setting both might make the game's code unhappy")
-    (target (or null unsigned-byte)
+                                 "Use a move on an enemy. @var{ATTACK} is either a keyword which is the indicator to select an attack that you know, or @code{T} for default. @var{TARGET} is the index or type specifier of the enemy you're attacking. @var{FRIENDLY-TARGET} is a member on your team you're using the move on instead. Only specify either a @var{FRIENDLY-TARGET} or @var{TARGET}. Setting both might make the game's code unhappy")
+    (target (or null unsigned-byte type-specifier)
+            friendly-target (or null unsigned-byte type-specifier)
             attack (or symbol boolean))
-  (process-battle :attack attack :target target :friendly-target friendly-target))
+  (let ((selected-target (cond (target
+                                (let ((a (typecase target
+                                           (unsigned-byte (nth target (enemies-of *battle*)))
+                                           (type-specifier (find target (enemies-of *battle*)
+                                                                 :test (lambda (o e)
+                                                                         (typep e o)))))))
+                                  (or a
+                                      (progn
+                                        (write-line "That target doesn't exist")
+                                        (return-from yadfa-battle:fight)))))
+                               (friendly-target
+                                (let ((a (typecase friendly-target
+                                           (unsigned-byte (nth friendly-target (team-of *game*)))
+                                           (type-specifier (find friendly-target (team-of *game*)
+                                                                 :test (lambda (o e)
+                                                                         (typep e o)))))))
+                                  (or a
+                                      (progn
+                                        (write-line "That target doesn't exist")
+                                        (return-from yadfa-battle:fight)))))
+                               (t (iter (for i in (enemies-of *battle*))
+                                    (when (>= (health-of i) 0)
+                                      (leave i)))))))
+    (process-battle :attack attack :selected-target selected-target)))
 (defunassert (yadfa-battle:stats (&key user enemy)
                                  "Prints the current stats in battle, essentially this game's equivalent of a health and energy bar in battle. @var{USER} is the index of the member in your team, @var{ENEMY} is the index of the enemy in battle. Set both to @code{NIL} to show the stats for everyone.")
     (user (or unsigned-byte null)
@@ -900,10 +924,10 @@ You can also specify multiple directions, for example @code{(move :south :south)
         (process-potty i))
       ret)))
 (defunassert (yadfa-battle:use-item (item &key target enemy-target)
-                                    "Uses an item. @var{ITEM} is an index of an item in your inventory. @var{TARGET} is an index of your team. Setting this to 0 will use it on yourself. @var{ENEMY-TARGET} is an index of an enemy in battle if you're using it on an enemy in battle. Only specify either a @var{TARGET} or @var{ENEMY-TARGET}. Setting both might make the game's code unhappy")
+                                    "Uses an item. @var{ITEM} is an index of an item in your inventory. @var{TARGET} is an index or type specifier of a character in your team. Setting this to 0 will use it on yourself. @var{ENEMY-TARGET} is an index or type specifier of an enemy in battle if you're using it on an enemy in battle. Only specify either a @var{TARGET} or @var{ENEMY-TARGET}. Setting both might make the game's code unhappy")
     (item (or unsigned-byte type-specifier)
-          target (or null unsigned-byte)
-          enemy-target (or null unsigned-byte))
+          target (or null unsigned-byte type-specifier)
+          enemy-target (or null unsigned-byte type-specifier))
   (let ((selected-item (typecase item
                          (unsigned-byte
                           (nth item (inventory-of (player-of *game*))))
@@ -911,28 +935,38 @@ You can also specify multiple directions, for example @code{(move :south :south)
                           (find item (inventory-of (player-of *game*))
                                 :test #'(lambda (type-specifier obj)
                                           (typep obj type-specifier))))))
-        (team-length (list-length (team-of *game*)))
-        (enemies-length (list-length (enemies-of *battle*))))
+        (selected-target (cond ((and target enemy-target)
+                                (format t "Only specify TARGET or ENEMY-TARGET. Not both.")
+                                (return-from yadfa-battle:use-item))
+                               (enemy-target
+                                (let ((a (typecase enemy-target
+                                           (unsigned-byte (nth enemy-target (enemies-of *battle*)))
+                                           (type-specifier (find enemy-target (enemies-of *battle*)
+                                                                 :test (lambda (o e)
+                                                                         (typep e o)))))))
+                                  (or a
+                                      (progn
+                                        (write-line "That target doesn't exist")
+                                        (return-from yadfa-battle:use-item)))))
+                               (target
+                                (let ((a (typecase target
+                                           (unsigned-byte (nth target (team-of *game*)))
+                                           (type-specifier (find target (team-of *game*)
+                                                                 :test (lambda (o e)
+                                                                         (typep e o)))))))
+                                  (or a
+                                      (progn
+                                        (write-line "That target doesn't exist")
+                                        (return-from yadfa-battle:use-item)))))
+                               (t (iter (for i in (enemies-of *battle*))
+                                    (when (>= (health-of i) 0)
+                                      (leave i)))))))
     (cond ((not item)
            (format t "You don't have that item~%")
-           (return-from yadfa-battle:use-item))
-          ((and target (< team-length target))
-           (format t "You only have ~d team members~%" team-length)
-           (return-from yadfa-battle:use-item))
-          ((and enemy-target (< enemies-length enemy-target))
-           (format t "there are only ~d enemies~%" enemies-length)
-           (return-from yadfa-battle:use-item))
-          ((and target enemy-target)
-           (format t "Only specify TARGET or ENEMY-TARGET. Not both.")
            (return-from yadfa-battle:use-item)))
     (process-battle
      :item selected-item
-     :friendly-target (cond (target target)
-                            (enemy-target nil)
-                            (t
-                             (position (first (turn-queue-of *battle*)) (team-of *game*))))
-     :target (cond (enemy-target enemy-target)
-                   (t nil)))))
+     :selected-target selected-target)))
 (defunassert (yadfa-battle:reload (ammo-type))
     (ammo-type (and (or list (and symbol (not keyword))) (not null)))
   (unless (wield-of (first (turn-queue-of *battle*)))
