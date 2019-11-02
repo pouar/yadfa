@@ -266,7 +266,7 @@
            (all-new nil all-new-supplied-p)
            (parent-cache nil parent-cache-supplied-p)
            (record-type nil record-type-supplied-p)
-           &allow-other-keys) &body body)
+      &allow-other-keys) &body body)
   `(cond
      (clim-listener::*application-frame*
       (push (clim:updating-output (,stream ,@(and unique-id-supplied-p `(:unique-id ,unique-id)) ,@(and id-test-supplied-p `(:id-test ,id-test))
@@ -697,8 +697,8 @@
          ,(if (iter (for i in direct-superclasses)
                 (when (subtypep i 'yadfa:onesie)
                   (leave t)))
-              direct-superclasses
-              `(yadfa:onesie ,@direct-superclasses))
+           direct-superclasses
+           `(yadfa:onesie ,@direct-superclasses))
        ,@body)
      (defclass ,(format-symbol (symbol-package base-class) "~a/OPENED" (symbol-name base-class))
          (,(format-symbol (symbol-package base-class) "~a" (symbol-name base-class))
@@ -1523,177 +1523,180 @@
   nil)
 (defmethod output-process-potty-text ((user player) padding (type (eql :wet)) (action (eql :potty-dance)) had-accident)
   (format t "~a~%"
-          (random-elt (list "You feel like your bladder is going to explode"
-                            "You're doing a potty dance like a 5 year old"
-                            "You feel like you're going to wet yourself"
-                            "You whine as you hold yourself in desperation"
-                            "Aww, does the baby need to potty?"))))
+          (random-elt '("You feel like your bladder is going to explode"
+                        "You're doing a potty dance like a 5 year old"
+                        "You feel like you're going to wet yourself"
+                        "You whine as you hold yourself in desperation"
+                        "Aww, does the baby need to potty?"))))
 (defmethod output-process-potty-text ((user player) padding (type (eql :wet)) (action (eql :desparate)) had-accident)
   (format t "~a~%"
-          (random-elt (list "You feel like your bladder is going to explode"
-                            "You're doing a potty dance like a 5 year old"
-                            "You feel like you're going to wet yourself"
-                            "You whine as you hold yourself in desperation"
-                            "Aww, does the baby need to potty?"))))
+          (random-elt '("You feel like your bladder is going to explode"
+                        "You're doing a potty dance like a 5 year old"
+                        "You feel like you're going to wet yourself"
+                        "You whine as you hold yourself in desperation"
+                        "Aww, does the baby need to potty?"))))
 (defmethod output-process-potty-text ((user player) padding (type (eql :wet)) (action (eql :need-to-potty)) had-accident)
   (format t "You need to pee~%"))
 (defmethod output-process-potty-text ((user player) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
           (let ((j (switch ((getf (car had-accident) :accident) :test 'eq)
-                     (:dribble (list "You gasp in horror as a little leaks out"
-                                     "You think you just leaked a little"
-                                     (format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                             (random-elt '("groan" "whine")))))
-                     (:some (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                     (:all (let ((a (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                                          "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                                          "You cross your legs in a vain attempt to hold it in but fail miserably"
-                                          "You gasp in embarrassment as you flood yourself like a toddler"
-                                          "You let out a groan as your bladder empties itself"
-                                          "You fall to your knees clutching the front of your diapers struggling to keep your diapers dry and flood yourself"
-                                          (format nil
-                                                  "LOOK EVERYBODY!!!! ~A IS WETTING ~A DIAPERS!!!!~%~%*~a eeps and hides ~a soggy padding in embarrassment*"
-                                                  (string-upcase (name-of user))
-                                                  (if (malep user)
-                                                      "HIS"
-                                                      "HER")
-                                                  (name-of user)
-                                                  (if (malep user)
-                                                      "his"
-                                                      "her")))))
+                     (:dribble `("You gasp in horror as a little leaks out"
+                                 "You think you just leaked a little"
+                                 ,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                          (random-elt '("groan" "whine")))))
+                     (:some '("You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                     (:all (let ((a `("After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                      "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                      "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                      "You gasp in embarrassment as you flood yourself like a toddler"
+                                      "You let out a groan as your bladder empties itself"
+                                      "You fall to your knees clutching the front of your diapers struggling to keep your diapers dry and flood yourself"
+                                      ,(format nil
+                                               "LOOK EVERYBODY!!!! ~A IS WETTING ~A DIAPERS!!!!~%~%*~a eeps and hides ~a soggy padding in embarrassment*"
+                                               (string-upcase (name-of user))
+                                               (if (malep user)
+                                                   "HIS"
+                                                   "HER")
+                                               (name-of user)
+                                               (if (malep user)
+                                                   "his"
+                                                   "her")))))
                              (unless (malep user)
                                (push "You press your legs together while fidgeting and squirming until your flood your pamps like the baby girl you are" a))
+                             (when (member (tail-type-of user) '(:medium :large :lizard) :test 'eq)
+                               "You clutch the front of your diaper with your legs crossed and your tail between your legs in vain as you flood your pamps")
                              a)))))
             (when (>= (getf (car had-accident) :wet-amount) 300)
               (push (format nil "Aww, the baby is using ~a diapers?" (if (malep user) "his" "her")) j))
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
     (format t "~a~%"
-            (random-elt (list "Your face turns red as you leak everywhere"
-                              "Your diaper leaks all over the place, this is why you're supposed to change it"
-                              "What's the point in having a diaper if you're just going to leak everywhere like you're doing now."
-                              "Your diaper leaks. There goes the carpet."
-                              "Heh, baby made a puddle"
-                              "Your diapers sprung a leak")))))
+            (random-elt '("Your face turns red as you leak everywhere"
+                          "Your diaper leaks all over the place, this is why you're supposed to change it"
+                          "What's the point in having a diaper if you're just going to leak everywhere like you're doing now."
+                          "Your diaper leaks. There goes the carpet."
+                          "Heh, baby made a puddle"
+                          "Your diapers sprung a leak"
+                          "You eep as you make a puddle on the floor then hide your face in embarrassment")))))
 (defmethod output-process-potty-text ((user player) (padding (eql 'pullon)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
           (random-elt (switch ((getf (car had-accident) :accident) :test 'eq)
-                        (:dribbe (list "You gasp in horror as a little leaks out"
-                                       "You think you just leaked a little"
-                                       (format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                               (random-elt '("groan" "whine")))))
-                        (:some (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                        (:all (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                                    "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                                    "You cross your legs in a vain attempt to hold it in but fail miserably"
-                                    "You gasp in embarrassment as you flood yourself like a toddler"
-                                    "You let out a groan as your bladder empties itself"
-                                    "You fall to your knees clutching the front of your pullups struggling to keep them dry and flood yourself"
-                                    "The little pictures on the front of your pullups fade showing everyone what you did"
-                                    (format nil "Naughty ~a wetting your pullups. You know you're supposed to use the toilet like a big kid."
-                                            (if (malep user) "boy" "girl"))
-                                    (format nil "LOOK EVERYBODY!!!! ~a IS WETTING ~A PULLUPS!!!!!!~%~%*~a eeps and hides ~a soggy pullups in embarrassment*"
-                                            (string-upcase (name-of user))
-                                            (if (malep user) "HIS" "HER")
-                                            (name-of user)
-                                            (if (malep user) "his" "her")))))))
+                        (:dribbe `("You gasp in horror as a little leaks out"
+                                   "You think you just leaked a little"
+                                   ,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                            (random-elt '("groan" "whine")))))
+                        (:some '("You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                        (:all `("After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                "You gasp in embarrassment as you flood yourself like a toddler"
+                                "You let out a groan as your bladder empties itself"
+                                "You fall to your knees clutching the front of your pullups struggling to keep them dry and flood yourself"
+                                "The little pictures on the front of your pullups fade showing everyone what you did"
+                                ,(format nil "Naughty ~a wetting your pullups. You know you're supposed to use the toilet like a big kid."
+                                         (if (malep user) "boy" "girl"))
+                                ,(format nil "LOOK EVERYBODY!!!! ~a IS WETTING ~A PULLUPS!!!!!!~%~%*~a eeps and hides ~a soggy pullups in embarrassment*"
+                                         (string-upcase (name-of user))
+                                         (if (malep user) "HIS" "HER")
+                                         (name-of user)
+                                         (if (malep user) "his" "her")))))))
   (format t "~a~%"
-          (let ((out (list "Your face turns red as you leak everywhere"
-                           "Your pullups leak. There goes the carpet."
-                           "Heh, baby made a puddle"
-                           "Your pullups sprung a leak")))
+          (let ((out '("Your face turns red as you leak everywhere"
+                       "Your pullups leak. There goes the carpet."
+                       "Heh, baby made a puddle"
+                       "Your pullups sprung a leak")))
             (when (filter-items (wear-of user) 'pullup)
               (push "Your pullups leaks all over the place, You sure you're ready for those?" out))
             (random-elt out))))
 (defmethod output-process-potty-text ((user player) (padding (eql 'closed-bottoms)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
           (random-elt (switch ((getf (car had-accident) :accident) :test 'eq)
-                        (:dribble (list "You gasp in horror as a little leaks out"
-                                        "You think you just leaked a little"
-                                        (format nil
-                                                "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                                (random-elt '("groan" "whine")))))
-                        (:some (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                        (:all (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                                    "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                                    "You cross your legs in a vain attempt to hold it in but fail miserably"
-                                    "You gasp in embarrassment as you flood yourself like a toddler"
-                                    "You let out a groan as your bladder empties itself"
-                                    "You fall to your knees holding your crotch struggling to keep your pants dry and flood yourself")))))
+                        (:dribble `("You gasp in horror as a little leaks out"
+                                    "You think you just leaked a little"
+                                    ,(format nil
+                                             "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                             (random-elt '("groan" "whine")))))
+                        (:some '("You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                        (:all '("After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                "You gasp in embarrassment as you flood yourself like a toddler"
+                                "You let out a groan as your bladder empties itself"
+                                "You fall to your knees holding your crotch struggling to keep your pants dry and flood yourself")))))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
     (format t "~a~%"
-            (random-elt (list "Maybe you should start wearing diapers"
-                              (format nil "Bad ~a! No going potty in the house!" (if (random 2) (species-of user) (name-of user)))
-                              "A puddle appears on the floor"
-                              "There goes the carpet"
-                              "Heh, baby made a puddle"
-                              "Your pants are ruined"
-                              (format nil "Heh, baby wet ~a pants" (if (malep user) "his" "her"))
-                              (format nil "Bad ~a! Look what you did to your pants!"
-                                      (if (random 2) (species-of user) (name-of user))))))))
+            (random-elt `("Maybe you should start wearing diapers"
+                          ,(format nil "Bad ~a! No going potty in the house!" (if (random 2) (species-of user) (name-of user)))
+                          "A puddle appears on the floor"
+                          "There goes the carpet"
+                          "Heh, baby made a puddle"
+                          "Your pants are ruined"
+                          ,(format nil "Heh, baby wet ~a pants" (if (malep user) "his" "her"))
+                          ,(format nil "Bad ~a! Look what you did to your pants!"
+                                   (if (random 2) (species-of user) (name-of user))))))))
 (defmethod output-process-potty-text ((user player) (padding (eql nil)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
           (let
               ((j (switch ((getf (car had-accident) :accident) :test 'eq)
-                    (:dribble (list "You gasp in horror as a little leaks out"
-                                    "You think you just leaked a little"
-                                    (format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                            (random-elt '("groan" "whine")))))
-                    (:some (list "You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                    (:all (list "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                                "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                                "You cross your legs in a vain attempt to hold it in but fail miserably"
-                                "You gasp in embarrassment as you flood yourself like a toddler"
-                                "You let out a groan as your bladder empties itself")))))
+                    (:dribble `("You gasp in horror as a little leaks out"
+                                "You think you just leaked a little"
+                                ,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                         (random-elt '("groan" "whine")))))
+                    (:some '("You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                    (:all '("After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                            "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                            "You cross your legs in a vain attempt to hold it in but fail miserably"
+                            "You gasp in embarrassment as you flood yourself like a toddler"
+                            "You let out a groan as your bladder empties itself")))))
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
     (format t "~a~%"
-            (random-elt (list "Maybe you should start wearing diapers"
-                              (format nil "Bad ~a! No going potty in the house!" (if (random 2) (species-of user) (name-of user)))
-                              "A puddle appears on the floor"
-                              "There goes the carpet"
-                              "Heh, baby made a puddle")))))
+            (random-elt `("Maybe you should start wearing diapers"
+                          ,(format nil "Bad ~a! No going potty in the house!" (if (random 2) (species-of user) (name-of user)))
+                          "A puddle appears on the floor"
+                          "There goes the carpet"
+                          "Heh, baby made a puddle")))))
 (defmethod output-process-potty-text ((user player) padding (type (eql :mess)) (action (eql :potty-dance)) had-accident)
   (format t "~a~%"
-          (random-elt (list "You feel like you're gonna mess yourself"
-                            "You clench hard trying to avoid messing"
-                            "You fart a little due to the pressure"
-                            "Aww, does the baby need to potty?"))))
+          (random-elt '("You feel like you're gonna mess yourself"
+                        "You clench hard trying to avoid messing"
+                        "You fart a little due to the pressure"
+                        "Aww, does the baby need to potty?"))))
 (defmethod output-process-potty-text ((user player) padding (type (eql :mess)) (action (eql :desparate)) had-accident)
   (format t "~a~%"
-          (random-elt (list "You feel like you're gonna mess yourself"
-                            "You clench hard trying to avoid messing"
-                            "You fart a little due to the pressure"
-                            "Aww, does the baby need to potty?"))))
+          (random-elt '("You feel like you're gonna mess yourself"
+                        "You clench hard trying to avoid messing"
+                        "You fart a little due to the pressure"
+                        "Aww, does the baby need to potty?"))))
 (defmethod output-process-potty-text ((user player) padding (type (eql :mess)) (action (eql :need-to-potty)) had-accident)
   (format t "You need to poo~%"))
 (defmethod output-process-potty-text ((user player) (padding (eql 'tabbed-briefs)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
-          (let ((j (list "Reaching the breaking point, you instinctively squat down with your tail up and mess"
-                         "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
-                         "You try to fart to relieve the pressure, except it wasn't a fart"
-                         "You end up messing your self"
-                         "The back of your diaper expands as you accidentally mess yourself"
-                         "You instinctively squat down with your tail up and mess your diapers, then hold the back of your diapers checking your load in embarrassment"
-                         (format nil "Heh, the baby blorted ~a pamps." (if (malep user) "his" "her")))))
+          (let ((j `("Reaching the breaking point, you instinctively squat down with your tail up and mess"
+                     "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
+                     "You try to fart to relieve the pressure, except it wasn't a fart"
+                     "You end up messing your self"
+                     "The back of your diaper expands as you accidentally mess yourself"
+                     "You instinctively squat down with your tail up and mess your diapers, then hold the back of your diapers checking your load in embarrassment"
+                     ,(format nil "Heh, the baby blorted ~a pamps." (if (malep user) "his" "her")))))
             (when (filter-items (wear-of user) 'diaper)
               (push (format nil "Aww, is the baby messing ~a diapers" (if (malep user) "his" "her")) j))
             (random-elt j)))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
     (format t "~a~%"
-            (random-elt (list "Your face turns red as your mess falls out the leg guards"
-                              "Your diaper leaks all over the place, this is why you're supposed to change it"
-                              "What's the point in having a diaper if you're just going to leak everywhere like you're doing now."
-                              "Your diaper leaks. There goes the carpet."
-                              "Not on the carpet!!!"
-                              "Blowout!!!!")))))
+            (random-elt '("Your face turns red as your mess falls out the leg guards"
+                          "Your diaper leaks all over the place, this is why you're supposed to change it"
+                          "What's the point in having a diaper if you're just going to leak everywhere like you're doing now."
+                          "Your diaper leaks. There goes the carpet."
+                          "Not on the carpet!!!"
+                          "Blowout!!!!")))))
 (defmethod output-process-potty-text ((user player) (padding (eql 'pullon)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
-          (let ((j (list "Reaching the breaking point, you instinctively squat down with your tail up and mess"
-                         "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
-                         "You try to fart to relieve the pressure, except it wasn't a fart"
-                         "You end up messing your self"
-                         "The back of your pullups expands as you accidentally mess yourself")))
+          (let ((j '("Reaching the breaking point, you instinctively squat down with your tail up and mess"
+                     "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
+                     "You try to fart to relieve the pressure, except it wasn't a fart"
+                     "You end up messing your self"
+                     "The back of your pullups expands as you accidentally mess yourself")))
             (when (filter-items (wear-of user) 'pullup)
               (push (format nil "Naughty ~a messing your pullups. You know you're supposed to use the toilet like a big kid"
                             (if (malep user) "boy" "girl"))
@@ -1701,40 +1704,40 @@
             (random-elt j)))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
     (format t "~a~%"
-            (random-elt (list "Your face turns red as your mess falls out the leg guards"
-                              "Your pullups leaks all over the place, You sure you're ready for those?"
-                              "Your pullups leak. There goes the carpet."
-                              "Not on the carpet!!!")))))
+            (random-elt '("Your face turns red as your mess falls out the leg guards"
+                          "Your pullups leaks all over the place, You sure you're ready for those?"
+                          "Your pullups leak. There goes the carpet."
+                          "Not on the carpet!!!")))))
 (defmethod output-process-potty-text ((user player) (padding (eql 'closed-bottoms)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
-          (random-elt (list "Reaching the breaking point, you instinctively squat down with your tail up and mess"
-                            "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
-                            "You try to fart to relieve the pressure, except it wasn't a fart"
-                            "You end up messing your self"
-                            "a lump forms at the seat of your pants")))
+          (random-elt '("Reaching the breaking point, you instinctively squat down with your tail up and mess"
+                        "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
+                        "You try to fart to relieve the pressure, except it wasn't a fart"
+                        "You end up messing your self"
+                        "a lump forms at the seat of your pants")))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
     (format t "~a~%"
-            (random-elt (list "Maybe you should start wearing diapers"
-                              (format nil "Bad ~a! No going potty in the house!"
-                                      (if (random 2) (species-of user) (name-of user)))
-                              "There goes the carpet"
-                              "Heh, baby made a mess"
-                              "Your pants are ruined"
-                              (format nil "Heh, baby messed ~a pants" (if (malep user) "his" "her"))
-                              (format nil "Bad ~a! Look what you did to your pants!" (if (random 2) (species-of user) (name-of user))))))))
+            (random-elt `("Maybe you should start wearing diapers"
+                          ,(format nil "Bad ~a! No going potty in the house!"
+                                   (if (random 2) (species-of user) (name-of user)))
+                          "There goes the carpet"
+                          "Heh, baby made a mess"
+                          "Your pants are ruined"
+                          ,(format nil "Heh, baby messed ~a pants" (if (malep user) "his" "her"))
+                          ,(format nil "Bad ~a! Look what you did to your pants!" (if (random 2) (species-of user) (name-of user))))))))
 (defmethod output-process-potty-text ((user player) (padding (eql nil)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
-          (random-elt (list "Reaching the breaking point, you instinctively squat down with your tail up and mess"
-                            "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
-                            "You try to fart to relieve the pressure, except it wasn't a fart"
-                            "You end up messing your self")))
+          (random-elt '("Reaching the breaking point, you instinctively squat down with your tail up and mess"
+                        "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
+                        "You try to fart to relieve the pressure, except it wasn't a fart"
+                        "You end up messing your self")))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
     (format t "~a~%"
-            (random-elt (list "Maybe you should start wearing diapers"
-                              (format nil "Bad ~a! No going potty in the house!"
-                                      (if (random 2) (species-of user) (name-of user)))
-                              "There goes the carpet"
-                              "Heh, baby made a mess")))))
+            (random-elt `("Maybe you should start wearing diapers"
+                          ,(format nil "Bad ~a! No going potty in the house!"
+                                   (if (random 2) (species-of user) (name-of user)))
+                          "There goes the carpet"
+                          "Heh, baby made a mess")))))
 (defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
   (let ((normal ())
         (leak ()))
@@ -2900,8 +2903,14 @@
      (clim:stream-set-cursor-position *standard-output* (+ x 400) y)))
 (defun format-stats (user)
   (format t "Name: ~a~%" (name-of user))
+  (out "Sex: " (if (malep user) "Male" "Female") :%)
   (format t "Species: ~a~%" (species-of user))
   (format t "Description: ~a~%" (description-of user))
+  (when (typep user 'team-member)
+    (out "Tail Type: " (tail-type-of user) :%
+         "Tail: " (tail-of user) :%
+         "Wings: " (wings-of user) :%
+         "Skin: " (skin-of user) :%))
   (format t "Health: ")
   (draw-bar (/ (health-of user) (calculate-stat user :health))
             ((> (health-of user) (* (calculate-stat user :health) 1/2)) :green)
@@ -3629,7 +3638,7 @@
   (let* ((default (make-instance 'player))
          (wear '(yadfa-items:short-dress yadfa-items:tshirt yadfa-items:bra yadfa-items:jeans
                  yadfa-items:boxers yadfa-items:panties yadfa-items:pullups yadfa-items:diaper))
-         name male species clothes bladder dergy)
+         name male species clothes bladder dergy wings skin tail tail-type bio)
     (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
       (fresh-line *query-io*)
       (setf name (clim:accept 'string :prompt "Name" :default (name-of default) :view clim:+text-field-view+ :stream *query-io*))
@@ -3648,12 +3657,32 @@
                                  :prompt "Bladder capacity" :default :normal :view clim:+option-pane-view+ :stream *query-io*))
       (fresh-line *query-io*)
       (setf dergy (clim:accept '(clim:completion (:normal :dergy))
-                               :prompt "Metabolism type" :default :normal :view clim:+option-pane-view+ :stream *query-io*)))
+                               :prompt "Metabolism type" :default :normal :view clim:+option-pane-view+ :stream *query-io*))
+      (fresh-line *query-io*)
+      (setf bio (clim:accept 'string :prompt "Description" :default (description-of default) :view '(clim:text-editor-view :ncolumns 80 :nlines 7)
+                                     :stream *query-io*)))
+    (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+      (setf tail-type (clim:accept '(clim:completion (:small :medium :large :lizard :bird-small :bird-large nil))
+                                   :prompt "Tail type" :default (tail-type-of default) :view clim:+option-pane-view+ :stream *query-io*))
+      (fresh-line *query-io*)
+      (setf tail (clim:accept '((clim:subset-completion (:multi :scales :fur :feathers)))
+                              :prompt "Tail attributes" :default (tail-of default) :view clim:+check-box-view+ :stream *query-io*))
+      (fresh-line *query-io*)
+      (setf wings (clim:accept '((clim:subset-completion (:scales :fur :feathers)))
+                               :prompt "Wings attributes" :default (wings-of default) :view clim:+check-box-view+ :stream *query-io*))
+      (fresh-line *query-io*)
+      (setf skin (clim:accept '((clim:subset-completion (:scales :fur :feathers)))
+                              :prompt "Skin attributes" :default (skin-of default) :view clim:+check-box-view+ :stream *query-io*)))
     (setf (player-of *game*) (make-instance 'player
                                             :position '(0 0 0 yadfa-zones:home)
                                             :name name
                                             :male male
                                             :species species
+                                            :description bio
+                                            :skin skin
+                                            :wings wings
+                                            :tail tail
+                                            :tail-type tail-type
                                             :bladder/need-to-potty-limit (getf '(:normal 300 :low 200 :overactive 149) bladder)
                                             :bladder/potty-dance-limit (getf '(:normal 450 :low 300 :overactive 150) bladder)
                                             :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) bladder)

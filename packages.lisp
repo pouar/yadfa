@@ -164,6 +164,10 @@
    #:attributes-of
    #:direction-attributes-of
    #:target-of
+   #:tail-of
+   #:tail-type-of
+   #:wings-of
+   #:skin-of
    #:last-process-potty-time-of
    #:process-battle-accident-of
    #:process-potty-dance-of

@@ -257,7 +257,26 @@
       (set-status-condition 'yadfa-status-conditions:messing character))
     t))
 (defclass team-member (base-character)
-  ()
+  ((skin
+    :initarg :skin
+    :initform '()
+    :accessor skin-of
+    :documentation "attributes for the character's skin, such as whether he/she has fur or not. current supported elements are @code{:SCALES}, @code{:FUR}, and @code{:FEATHERS}")
+   (tail
+    :initarg :tail
+    :initform '()
+    :accessor tail-of
+    :documentation "attributes for the character's tail. current supported elements are @code{:MULTI}, @code{:SCALES}, @code{:FUR}, and @code{:FEATHERS}")
+   (tail-type
+    :initarg :tail-type
+    :initform nil
+    :accessor tail-type-of
+    :documentation "type of tail the character has. current supported values are @code{:SMALL}, @code{:MEDIUM}, @code{:LARGE}, @code{:LIZARD}, @code{:BIRD-SMALL}, @code{:BIRD-LARGE}, and @code{NIL}")
+   (wings
+    :initarg :wings
+    :initform '()
+    :accessor wings-of
+    :documentation "list of attributes for the character's wings. current supported elements are @code{:SCALES}, @code{:FUR}, and @code{:FEATHERS}"))
   (:documentation "Either the player or an ally inherits this class"))
 (defclass potty-trained-team-member (team-member) ())
 (defclass ally (team-member)
@@ -368,7 +387,10 @@
    :moves (list (make-instance 'yadfa-moves:watersport)
                 (make-instance 'yadfa-moves:mudsport)
                 (make-instance 'yadfa-moves:mush)
-                (make-instance 'yadfa-moves:tickle))))
+                (make-instance 'yadfa-moves:tickle))
+   :tail-type :medium
+   :tail '(:fur)
+   :skin '(:fur)))
 (defmethod initialize-instance :after
     ((c player) &rest initargs)
   (declare (ignorable initargs))

@@ -12,6 +12,9 @@
                                 :sogginess (second (assoc :sogginess-capacity diaper))
                                 :messiness (second (assoc :messiness-capacity diaper)))))
    :species "Raccoon"
+   :tail-type :medium
+   :tail '(:fur)
+   :skin '(:fur)
    :description "Used to be one of the Diapered Raccoon Bandits. Was kicked out after he was forced to give the location of Pirate's Cove to the Navy. He was humiliated constantly by the Diapered Pirates until you rescued him. Is too embarrassed to admit when he as to go unless he's desperate"
    :level 5))
 (defmethod initialize-instance :after
@@ -31,6 +34,9 @@
    :name "Chris"
    :male t
    :species "Fox"
+   :tail-type :medium
+   :tail '(:fur)
+   :skin '(:fur)
    :description "An orange fox. has gotten accustomed to being treated like a pet and will typically wear nothing but a collar, refuses to be housebroken like a good fox so he must be diapered at all times."
    :wear (list (make-instance 'yadfa-items:gold-collar)
                (make-instance 'yadfa-items:bandit-diaper))))
@@ -39,6 +45,9 @@
    :name "Kristy"
    :male nil
    :species "Fox"
+   :tail-type :medium
+   :tail '(:fur)
+   :skin '(:fur)
    :description "A beautiful orange vixen who has a personality that is more like a child than an adult. Loves wearing thick diapers, can't stand pants. Has gone without diapers for so long that she has become dependent on them."
    :wear (list (make-instance 'yadfa-items:toddler-dress)
                (make-instance 'yadfa-items:bandit-female-diaper))))
@@ -47,6 +56,9 @@
    :name "Furry"
    :male t
    :species "Fox"
+   :tail-type :medium
+   :tail '(:fur)
+   :skin '(:fur)
    :description "A fox that likes to wear a fursuit. Doesn't talk much. The team got him as a pet, and as a plushie."
    :wear (list (make-instance 'yadfa-items:watertight-fursuit)
                (make-instance 'yadfa-items:kurikia-thick-cloth-diaper))))
