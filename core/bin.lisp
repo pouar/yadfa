@@ -313,12 +313,15 @@ You can also specify multiple directions, for example @code{(move :south :south)
             (when b
               (format t ":~20a~30a~%" a (name-of b)))))
     (flet ((z (delta direction)
-             (when (and (get-zone (append (mapcar #'+ (butlast (position-of (player-of *game*))) delta) (last (position-of (player-of *game*)))))
-                        (not (hiddenp (get-zone (append (mapcar #'+ (butlast (position-of (player-of *game*))) delta)
-                                                        (last (position-of (player-of *game*))))))))
-               (format t "~s ~a~%"
-                       direction
-                       (name-of (get-zone (append (mapcar #'+ (butlast (position-of (player-of *game*))) delta) (last (position-of (player-of *game*))))))))))
+             (destructuring-bind (x y z map) (position-of (player-of *game*))
+               (declare (type integer x y z)
+                        (type symbol map))
+               (let ((position `(,@(mapcar #'+ (list x y z) delta) ,map)))
+                 (when (and (get-zone position)
+                            (not (hiddenp (get-zone position))))
+                   (format t "~s ~a~%"
+                           direction
+                           (name-of (get-zone position))))))))
       (when directions
         (z (list 1 0 0) :east)
         (z (list -1 0 0) :west)
@@ -335,10 +338,12 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (when map
       (cond ((eq map t)
              (print-map t))
-            (t (print-map (list (first (position-of (player-of *game*)))
-                                (second (position-of (player-of *game*)))
-                                map
-                                (fourth (position-of (player-of *game*))))))))
+            (t (print-map
+                (destructuring-bind (x y z m) (position-of (player-of *game*))
+                  (declare (type integer x y z)
+                           (type symbol m)
+                           (ignore z))
+                  (list x y map m))))))
     (when descriptions
       (cond ((eq user t)
              (format t "Name: ~a~%Species: ~a~%Description: ~a~%~%"

@@ -264,14 +264,9 @@
     :documentation "attributes for the character's skin, such as whether he/she has fur or not. current supported elements are @code{:SCALES}, @code{:FUR}, and @code{:FEATHERS}")
    (tail
     :initarg :tail
-    :initform '()
-    :accessor tail-of
-    :documentation "attributes for the character's tail. current supported elements are @code{:MULTI}, @code{:SCALES}, @code{:FUR}, and @code{:FEATHERS}")
-   (tail-type
-    :initarg :tail-type
     :initform nil
-    :accessor tail-type-of
-    :documentation "type of tail the character has. current supported values are @code{:SMALL}, @code{:MEDIUM}, @code{:LARGE}, @code{:LIZARD}, @code{:BIRD-SMALL}, @code{:BIRD-LARGE}, and @code{NIL}")
+    :accessor tail-of
+    :documentation "attributes for the character's tail. Is @code{NIL} if the character doesn't have a tail. Takes the same syntax as the cdr of a function form with the lambda list @code{(tail-type &optional tail)}  current supported values for @var{TAIL-TYPE} are @code{:SMALL}, @code{:MEDIUM}, @code{:LARGE}, @code{:LIZARD}, @code{:BIRD-SMALL}, @code{:BIRD-LARGE}, and @code{NIL}. current supported elements for @var{TAIL} are @code{:MULTI}, @code{:SCALES}, @code{:FUR}, and @code{:FEATHERS}")
    (wings
     :initarg :wings
     :initform '()
@@ -388,8 +383,7 @@
                 (make-instance 'yadfa-moves:mudsport)
                 (make-instance 'yadfa-moves:mush)
                 (make-instance 'yadfa-moves:tickle))
-   :tail-type :medium
-   :tail '(:fur)
+   :tail '(:medium :fur)
    :skin '(:fur)))
 (defmethod initialize-instance :after
     ((c player) &rest initargs)

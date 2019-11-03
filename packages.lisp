@@ -165,7 +165,6 @@
    #:direction-attributes-of
    #:target-of
    #:tail-of
-   #:tail-type-of
    #:wings-of
    #:skin-of
    #:last-process-potty-time-of

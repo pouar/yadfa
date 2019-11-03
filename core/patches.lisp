@@ -272,6 +272,14 @@
                               args)))
 (in-package :clim-listener)
 ;;;; because it was quicker and easier than trying to write one of these myself from scratch
+
+(define-condition storage-condition* (storage-condition) ()
+  (:report (lambda (condition stream)
+             (declare (ignore condition))
+             (write-line "Thank you for playing Wing Commander!" stream))))
+(defmethod frame-exit ((frame listener))
+  (unwind-protect (error 'storage-condition*)
+    (call-next-method)))
 (macro-level:macro-level
   `(setf *default-text-style*
          (make-text-style ,@(if (find :mcclim-ffi-freetype *features*) '("DejaVu Sans Mono" "Book") '(:fix :roman)) :normal)))
@@ -420,21 +428,8 @@
             (if interactorp
                 (format frame-query-io "~&Command aborted.~&")
                 (beep))))))))
+
 (in-package :yadfa)
-#+sbcl (sb-ext:with-unlocked-packages (:cl :sb-kernel)
-         (defun print-storage-condition (condition stream)
-           (declare (ignore condition))
-           (write-line "Thank you for playing Wing Commander!" stream))
-         (define-condition storage-condition (serious-condition) ()
-           (:report print-storage-condition))
-         (define-condition sb-kernel::control-stack-exhausted (storage-condition) ()
-           (:report print-storage-condition))
-         (define-condition sb-kernel::binding-stack-exhausted (storage-condition) ()
-           (:report print-storage-condition))
-         (define-condition sb-kernel::alien-stack-exhausted (storage-condition) ()
-           (:report print-storage-condition))
-         (define-condition sb-kernel::heap-exhausted-error (storage-condition) ()
-           (:report print-storage-condition)))
 (define-condition uwu (simple-error) ()
   (:report (lambda (condition stream)
              (declare (ignore condition))

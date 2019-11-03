@@ -7,9 +7,9 @@
 * TODO move the change-the-baby function outside the YADFA package, possibly creating a new package for it
 * TODO go through ~YADFA:HOME;CORE;BIN.LISP~ and add the option to specify type specifiers instead of just an ~UNSIGNED-BYTE~
 * DONE have ~YADFA::SET-LOGICAL-PATHNAMES~ run when ~ASDF:CLEAR-CONFIGURATION~ is done
-* TODO add generated maze
+* DONE add generated maze
 ** DONE Create the functions that generate it
-** TODO Connect them to the rest of the map
+** DONE Connect them to the rest of the map
 * DONE add hash table that can hold shared enemy spawn lists
 * TODO add ~YADFA:ENSURE-EVENT~ function
 * TODO add DEPTH keyword to ~YADFA-BIN:LST~ to optionally limit the amount of items printed to ~*STANDARD-OUTPUT*~

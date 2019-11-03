@@ -351,9 +351,13 @@
 (defunassert (get-destination (direction position))
     (direction symbol position list)
   (macrolet ((a (pos x y z)
-               `(let ((b (append (mapcar #'+ (butlast ,pos) '(,x ,y ,z)) (last ,pos))))
-                  (when (get-zone b)
-                    b))))
+               (with-gensyms ((posx "POSX") (posy "POSY") (posz "POSZ") (posm "POSM") (b "B"))
+                 `(let ((,b (destructuring-bind (,posx ,posy ,posz ,posm) ,pos
+                              (declare (type integer ,posx ,posy ,posz)
+                                       (type symbol ,posm))
+                              (append1 (mapcar #'+ (list ,posx ,posy ,posz) '(,x ,y ,z)) ,posm))))
+                    (when (get-zone ,b)
+                      ,b)))))
     (case direction
       (:north (a position 0 -1 0))
       (:south (a position 0 1 0))
@@ -459,42 +463,45 @@
           (let ((position (if (eq position t)
                               (position-of (player-of *game*))
                               position)))
-            (iter (for y
-                       from (- (second position) 15)
-                       to (+ (second position) 15))
-              (for y-pos
-                   from (second start-position)
-                   to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
-                   by (clim:pattern-height pattern))
-              (iter (for x
-                         from (- (first position) 15)
-                         to (+ (first position) 15))
-                (for x-pos
-                     from (first start-position)
-                     to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
-                     by (clim:pattern-width pattern))
-                (let* ((current-position (append (list x y) (cddr position)))
-                       (char (cons (if (or (and (get-zone current-position)
-                                                (hiddenp (get-zone current-position)))
-                                           (not (get-zone current-position)))
-                                       #P"blank.xpm"
-                                       (a current-position))
-                                   (clim:make-rgb-color (if (and (get-zone current-position)
-                                                                 (warp-points-of (get-zone current-position)))
-                                                            1
-                                                            0)
-                                                        (if (equal current-position (position-of (player-of *game*)))
-                                                            0.7
-                                                            0)
-                                                        (if (or (travelablep current-position :up)
-                                                                (travelablep current-position :down))
-                                                            1
-                                                            0)))))
-                  (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
-                  (when (get-zone current-position)
-                    (clim:with-output-as-presentation
-                        (*standard-output* (get-zone (list x y (third position) (fourth position))) 'zone)
-                      (clim:draw-pattern* *standard-output* pattern x-pos y-pos))))))))
+            (destructuring-bind (posx posy posz posm) position
+              (declare (type integer posx posy posz)
+                       (type symbol posm))
+              (iter (for y
+                         from (- posy 15)
+                         to (+ posy 15))
+                (for y-pos
+                     from (second start-position)
+                     to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
+                     by (clim:pattern-height pattern))
+                (iter (for x
+                           from (- posx 15)
+                           to (+ posx 15))
+                  (for x-pos
+                       from (first start-position)
+                       to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
+                       by (clim:pattern-width pattern))
+                  (let* ((current-position `(,x ,y ,posz ,posm))
+                         (char (cons (if (or (and (get-zone current-position)
+                                                  (hiddenp (get-zone current-position)))
+                                             (not (get-zone current-position)))
+                                         #P"blank.xpm"
+                                         (a current-position))
+                                     (clim:make-rgb-color (if (and (get-zone current-position)
+                                                                   (warp-points-of (get-zone current-position)))
+                                                              1
+                                                              0)
+                                                          (if (equal current-position (position-of (player-of *game*)))
+                                                              0.7
+                                                              0)
+                                                          (if (or (travelablep current-position :up)
+                                                                  (travelablep current-position :down))
+                                                              1
+                                                              0)))))
+                    (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
+                    (when (get-zone current-position)
+                      (clim:with-output-as-presentation
+                          (*standard-output* (get-zone current-position) 'zone)
+                        (clim:draw-pattern* *standard-output* pattern x-pos y-pos)))))))))
         (when clim-listener::*application-frame*
           (clim:stream-set-cursor-position *standard-output* (first start-position) (+ (second start-position) (* 31 (clim:pattern-height pattern)))))))))
 (declaim (ftype (function ((or simple-string coerced-function)) simple-string) get-zone-text))
@@ -515,7 +522,10 @@
                                         (getf-direction old-position old-direction :exit-text)
                                         (enter-text-of (get-zone position))))))
   (flet ((z (delta direction)
-           (let ((current-position (append (mapcar #'+ (butlast position) delta) (last position))))
+           (let ((current-position (destructuring-bind (x y z m) position
+                                     (declare (type integer x y z)
+                                              (type symbol m))
+                                     `(,@(mapcar #'+ (list x y z) delta) ,m))))
              (when (and (get-zone current-position)
                         (not (hiddenp (get-zone current-position))))
                (format t "To ~s is ~a. " direction (name-of (get-zone current-position)))))))
@@ -1317,9 +1327,14 @@
                     (push (format nil "You lift your leg near the ~a and flood your pamps, then squat down on all fours and mess"
                                   (name-of prop))
                           both-list)
-                    (push (format nil "~a squats down on all fours with ~a tail raised like an animal and messes ~a diapers"
+                    (push (format nil "~a squats down on all fours~a like an animal and messes ~a diapers"
                                   (name-of user)
-                                  (if (malep user) "his" "her")
+                                  (if (member (car (tail-of user)) '(:medium :large))
+                                      (format nil " with ~a tail raised"
+                                              (if (malep user)
+                                                  "his"
+                                                  "her"))
+                                      "")
                                   (if (malep user) "his" "her"))
                           mess-list))
                   (do-push (format nil "~a goes potty in ~a diapers like a toddler"
@@ -1339,11 +1354,17 @@
                                 (name-of user)
                                 (if (malep user) "his" "her"))
                         wet-list)
-                  (push (apply #'format nil "~a squats down with ~a tail raised and fills ~a diapers"
-                               (name-of user)
-                               (if (malep user)
-                                   '("his" "his")
-                                   '("her" "her")))
+                  (push (format nil "~a squats down~a and fills ~a diapers"
+                                (name-of user)
+                                (if (member (car (tail-of user)) '(:medium :large))
+                                    (format nil " with ~a tail raised"
+                                            (if (malep user)
+                                                "his"
+                                                "her"))
+                                    "")
+                                (if (malep user)
+                                    "his"
+                                    "her"))
                         mess-list)
                   (push (format nil "heh, the baby blorted ~a diapers" (if (malep user) "his" "her")) mess-list)
                   (push (format nil "~a diapers sprung a leak" (name-of user)) wet-leak-list)
@@ -1367,11 +1388,12 @@
                                   (name-of prop)
                                   (if (malep user) "his" "her"))
                           both-list)
-                    (push (format nil "~a squats down on all fours with ~a tail raised like an animal and messes ~a pullups"
-                                  (name-of user)
-                                  (if (malep user) "his" "her")
-                                  (if (malep user) "his" "her"))
-                          mess-list))
+                    (when (member (car (tail-of user)) '(:medium :large))
+                      (push (format nil "~a squats down on all fours with ~a tail raised like an animal and messes ~a pullups"
+                                    (name-of user)
+                                    (if (malep user) "his" "her")
+                                    (if (malep user) "his" "her"))
+                            mess-list)))
                   (do-push (format nil
                                    "~a's pullups leak all over, there goes the carpet" (name-of user))
                     wet-leak-list mess-leak-list both-leak-list)
@@ -1563,7 +1585,7 @@
                                                    "her")))))
                              (unless (malep user)
                                (push "You press your legs together while fidgeting and squirming until your flood your pamps like the baby girl you are" a))
-                             (when (member (tail-type-of user) '(:medium :large :lizard) :test 'eq)
+                             (when (member (car (tail-of user)) '(:medium :large :lizard) :test 'eq)
                                "You clutch the front of your diaper with your legs crossed and your tail between your legs in vain as you flood your pamps")
                              a)))))
             (when (>= (getf (car had-accident) :wet-amount) 300)
@@ -1672,12 +1694,18 @@
   (format t "You need to poo~%"))
 (defmethod output-process-potty-text ((user player) (padding (eql 'tabbed-briefs)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
-          (let ((j `("Reaching the breaking point, you instinctively squat down with your tail up and mess"
+          (let ((j `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
+                              (if (member (car (tail-of user)) '(:medium :large))
+                                  " with your tail up"
+                                  ""))
                      "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
                      "You try to fart to relieve the pressure, except it wasn't a fart"
                      "You end up messing your self"
                      "The back of your diaper expands as you accidentally mess yourself"
-                     "You instinctively squat down with your tail up and mess your diapers, then hold the back of your diapers checking your load in embarrassment"
+                     ,(format nil "You instinctively squat down~a and mess your diapers, then hold the back of your diapers checking your load in embarrassment"
+                              (if (member (car (tail-of user)) '(:medium :large))
+                                  " with your tail up"
+                                  ""))
                      ,(format nil "Heh, the baby blorted ~a pamps." (if (malep user) "his" "her")))))
             (when (filter-items (wear-of user) 'diaper)
               (push (format nil "Aww, is the baby messing ~a diapers" (if (malep user) "his" "her")) j))
@@ -1692,7 +1720,10 @@
                           "Blowout!!!!")))))
 (defmethod output-process-potty-text ((user player) (padding (eql 'pullon)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
-          (let ((j '("Reaching the breaking point, you instinctively squat down with your tail up and mess"
+          (let ((j `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
+                              (if (member (car (tail-of user)) '(:medium :large))
+                                  " with your tail up"
+                                  ""))
                      "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
                      "You try to fart to relieve the pressure, except it wasn't a fart"
                      "You end up messing your self"
@@ -1710,7 +1741,10 @@
                           "Not on the carpet!!!")))))
 (defmethod output-process-potty-text ((user player) (padding (eql 'closed-bottoms)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
-          (random-elt '("Reaching the breaking point, you instinctively squat down with your tail up and mess"
+          (random-elt `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
+                                 (if (member (car (tail-of user)) '(:medium :large))
+                                     " with your tail up"
+                                     ""))
                         "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
                         "You try to fart to relieve the pressure, except it wasn't a fart"
                         "You end up messing your self"
@@ -1727,7 +1761,10 @@
                           ,(format nil "Bad ~a! Look what you did to your pants!" (if (random 2) (species-of user) (name-of user))))))))
 (defmethod output-process-potty-text ((user player) (padding (eql nil)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "~a~%"
-          (random-elt '("Reaching the breaking point, you instinctively squat down with your tail up and mess"
+          (random-elt `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
+                                 (if (member (car (tail-of user)) '(:medium :large))
+                                     " with your tail up"
+                                     ""))
                         "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
                         "You try to fart to relieve the pressure, except it wasn't a fart"
                         "You end up messing your self")))
@@ -1764,9 +1801,12 @@
                      (format s "~a: Aww, did the baby wet ~a diapers~%~%"
                              (name-of (player-of *game*))
                              (if (malep user) "his" "her"))
-                     (format s "~a: *heavily blushing* No *tries to hide it with ~a paws and tail*~%~%"
+                     (format s "~a: *heavily blushing* No *tries to hide it with ~a paws~a*~%~%"
                              (name-of user)
-                             (if (malep user) "his" "her"))
+                             (if (malep user) "his" "her")
+                             (if (member (car (tail-of user)) '(:medium :large :lizard))
+                                 " and tail"
+                                 ""))
                      (format s "*~a squishes ~a's diaper*~%~%"
                              (name-of (player-of *game*))
                              (name-of user))
@@ -1778,9 +1818,12 @@
                      (format s "~a: Aww, did the baby wet ~a diapers~%~%"
                              (name-of (player-of *game*))
                              (if (malep user) "his" "her"))
-                     (format s "~a: *heavily blushing* No *tries to hide it with ~a paws and tail*~%~%"
+                     (format s "~a: *heavily blushing* No *tries to hide it with ~a paws~a*~%~%"
                              (name-of user)
-                             (if (malep user) "his" "her"))
+                             (if (malep user) "his" "her")
+                             (if (member (car (tail-of user)) '(:medium :large :lizard))
+                                 " and tail"
+                                 ""))
                      (format s "~a: Aww, the poor baby made puddles~%~%" (name-of (player-of *game*)))
                      (format s "*~a gasps with a horrified look on ~a face when ~a notices it.~%~%"
                              (name-of user)
@@ -1793,11 +1836,13 @@
                              (if (malep user) "his" "her")
                              (if (malep user) "his" "her")
                              (if (malep user) "his" "her"))
-                     (format s "~a soggy padding, blushes heavily and quickly covers ~a soggy padding with ~a paws and tail hoping no one will notice*~%~%"
+                     (format s "~a soggy padding, blushes heavily and quickly covers ~a soggy padding with ~a paws~a hoping no one will notice*~%~%"
                              (if (malep user) "his" "her")
                              (if (malep user) "his" "her")
-                             (if (malep user) "his" "her"))
-                     )
+                             (if (malep user) "his" "her")
+                             (if (member (car (tail-of user)) '(:medium :large :lizard))
+                                 " and tail"
+                                 "")))
             normal)
           (do-push (with-output-to-string (s)
                      (format s "*~a bounces up and down with ~a knees pressed together and paws pressed against ~a crotch, pauses when ~a bladder gives out looks down and notices "
@@ -1805,11 +1850,13 @@
                              (if (malep user) "his" "her")
                              (if (malep user) "his" "her")
                              (if (malep user) "his" "her"))
-                     (format s "~a padding is leaking, blushes heavily and quickly covers ~a soggy padding with ~a paws and tail hoping no one will notice*~%~%"
+                     (format s "~a padding is leaking, blushes heavily and quickly covers ~a soggy padding with ~a paws~a hoping no one will notice*~%~%"
                              (if (malep user) "his" "her")
                              (if (malep user) "his" "her")
-                             (if (malep user) "his" "her"))
-                     )
+                             (if (malep user) "his" "her")
+                             (if (member (car (tail-of user)) '(:medium :large :lizard))
+                                 " and tail"
+                                 "")))
             leak)))
     (if (> (getf (car had-accident) :leak-amount) 0)
         (format t "~a" (random-elt leak))
@@ -1846,15 +1893,21 @@
                              (if (malep user) "his" "her")
                              (if (malep user) "his" "her"))
                      (if (filter-items (wear-of user) 'pullup)
-                         (format s "the pictures on ~a pullups have faded, blushes heavily and quickly covers ~a soggy pullups with ~a paws and tail hoping no one will notice*~%~%"
+                         (format s "the pictures on ~a pullups have faded, blushes heavily and quickly covers ~a soggy pullups with ~a paws~a hoping no one will notice*~%~%"
                                  (if (malep user) "his" "her")
                                  (if (malep user) "his" "her")
-                                 (if (malep user) "his" "her"))
-                         (format s "that ~a wetted ~a pullups, blushes heavily and quickly covers ~a soggy pullups with ~a paws and tail hoping no one will notice*~%~%"
+                                 (if (malep user) "his" "her")
+                                 (if (member (car (tail-of user)) '(:medium :large :lizard))
+                                     " and tail"
+                                     ""))
+                         (format s "that ~a wetted ~a pullups, blushes heavily and quickly covers ~a soggy pullups with ~a paws~a hoping no one will notice*~%~%"
                                  (if (malep user) "he" "she")
                                  (if (malep user) "his" "her")
                                  (if (malep user) "his" "her")
-                                 (if (malep user) "his" "her"))))
+                                 (if (malep user) "his" "her")
+                                 (if (member (car (tail-of user)) '(:medium :large :lizard))
+                                     " and tail"
+                                     ""))))
             normal leak)
           (do-push (with-output-to-string (s)
                      (format s "*~a has an accident*~%~%"
@@ -1899,11 +1952,14 @@
                              (if (malep user) "his" "her")
                              (if (malep user) "his" "her")
                              (if (malep user) "his" "her"))
-                     (format s "~a flooded ~aself, blushes heavily and quickly covers the front of ~a pants with ~a paws and tail hoping no one will notice*~%~%"
+                     (format s "~a flooded ~aself, blushes heavily and quickly covers the front of ~a pants with ~a paws~a hoping no one will notice*~%~%"
                              (if (malep user) "his" "her")
                              (if (malep user) "him" "her")
                              (if (malep user) "his" "her")
-                             (if (malep user) "his" "her")))
+                             (if (malep user) "his" "her")
+                             (if (member (car (tail-of user)) '(:medium :large :lizard))
+                                 " and tail"
+                                 "")))
             normal leak)))
     (if (> (getf (car had-accident) :leak-amount) 0)
         (format t "~a" (random-elt leak))
@@ -2123,9 +2179,12 @@
                (format s "~a: Aww, did the baby mess ~a diapers~%~%"
                        (name-of (player-of *game*))
                        (if (malep user) "his" "her"))
-               (format s "~a: *heavily blushing* No *tries to hide it with ~a paws and tail*~%~%"
+               (format s "~a: *heavily blushing* No *tries to hide it with ~a paws~a*~%~%"
                        (name-of user)
-                       (if (malep user) "his" "her"))
+                       (if (malep user) "his" "her")
+                       (if (member (car (tail-of user)) '(:medium :large :lizard))
+                           " and tail"
+                           ""))
                (format s "*~a pats the back of ~a's diaper causing ~a to scrunch ~a face*~%~%"
                        (name-of (player-of *game*))
                        (name-of user)
@@ -2139,9 +2198,12 @@
                (format s "~a: Aww, did the baby mess ~a diapers~%~%"
                        (name-of (player-of *game*))
                        (if (malep user) "his" "her"))
-               (format s "~a: *heavily blushing* No *tries to hide it with ~a paws and tail*~%~%"
+               (format s "~a: *heavily blushing* No *tries to hide it with ~a paws~a*~%~%"
                        (name-of user)
-                       (if (malep user) "his" "her"))
+                       (if (malep user) "his" "her")
+                       (if (member (car (tail-of user)) '(:medium :large :lizard))
+                           " and tail"
+                           ""))
                (format s "~a: Aww, the poor baby made a mess on the floor~%~%" (name-of (player-of *game*)))
                (apply #'format s "*~a gasps with a horrified look on ~a face when ~a notices it.~%~%"
                       (name-of user)
@@ -2637,22 +2699,34 @@
                                            padding)))))))
 (defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'tabbed-briefs)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "~{~a~}~%"
-          (let ((a (list (random-elt (list (apply #'format nil "*~a instinctively squats down with ~a tail up and mess ~a diapers*"
-                                                  (name-of user)
-                                                  (if (malep user)
-                                                      '("his" "his")
-                                                      '("her" "her")))
+          (let ((a (list (random-elt (list (format nil "*~a instinctively squats down~a and mess ~a diapers*"
+                                                   (name-of user)
+                                                   (if (malep user)
+                                                       "his" "her")
+                                                   (if (member (car (tail-of user)) '(:medium :large))
+                                                       (format nil " with ~a tail up"
+                                                               (if (malep user)
+                                                                   "his" "her"))
+                                                       ""))
                                            (apply #'format nil
                                                   "*The back of ~a's diaper expands as ~a accidentally messes ~aself*"
                                                   (name-of user)
                                                   (if (malep user)
                                                       '("he" "him")
                                                       '("she" "her")))
-                                           (apply #'format nil "*~a instinctively squats down with ~a tail up and messes ~a diapers then holds the back of ~a diapers checking ~a load in embarrassment*~%~%"
-                                                  (name-of user)
-                                                  (if (malep user)
-                                                      '("his" "his" "his" "his")
-                                                      '("her" "her" "her" "her")))))))
+                                           (format nil "*~a instinctively squats down~a and messes ~a diapers then holds the back of ~a diapers checking ~a load in embarrassment*~%~%"
+                                                   (name-of user)
+                                                   (if (member (car (tail-of user)) '(:medium :large))
+                                                       (format nil " with ~a tail up"
+                                                               (if (malep user)
+                                                                   "his" "her"))
+                                                       "")
+                                                   (if (malep user)
+                                                       "his" "her")
+                                                   (if (malep user)
+                                                       "his" "her")
+                                                   (if (malep user)
+                                                       "his" "her"))))))
                 (b (random-elt (list (format nil "~%~%~a: Heh, baby ~a blorted ~a pamps."
                                              (name-of (player-of *game*))
                                              (name-of user)
@@ -2669,11 +2743,15 @@
                               "Blowout!!!!")))))
 (defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'pullon)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "~{~a~}~%"
-          (let ((a (list (random-elt (list (apply #'format nil "*~a instinctively squats down with ~a tail up and mess ~a pullups*"
-                                                  (name-of user)
-                                                  (if (malep user)
-                                                      '("his" "his")
-                                                      '("her" "her")))
+          (let ((a (list (random-elt (list (format nil "*~a instinctively squats down~a and mess ~a pullups*"
+                                                   (name-of user)
+                                                   (if (member (car (tail-of user)) '(:medium :large))
+                                                       (format nil " with ~a tail up"
+                                                               (if (malep user)
+                                                                   "his" "her"))
+                                                       "")
+                                                   (if (malep user)
+                                                       "his" "her"))
                                            (apply #'format nil "*The back of ~a's pullups expands as ~a accidentally messes ~aself*"
                                                   (name-of user)
                                                   (if (malep user)
@@ -2694,11 +2772,15 @@
                               (format nil "~a pullups leak all over the place" (name-of user)))))))
 (defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'closed-bottoms)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "*~a*~%"
-          (random-elt (list (apply #'format nil "~a instinctively squats down with ~a tail up and messes ~a pants"
-                                   (name-of user)
-                                   (if (malep user)
-                                       '("his" "his")
-                                       '("her" "her")))
+          (random-elt (list (format nil "~a instinctively squats down~a and messes ~a pants"
+                                    (name-of user)
+                                    (if (member (car (tail-of user)) '(:medium :large))
+                                        (format nil " with ~a tail up"
+                                                (if (malep user)
+                                                    "his" "her"))
+                                        "")
+                                    (if (malep user)
+                                        "his" "her"))
                             (apply #'format nil "a lump forms at the seat of ~a's pants"
                                    (name-of user)))))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
@@ -2717,11 +2799,13 @@
                               (format nil "~a: Bad ~a! Look what you did to your pants!" (name-of (player-of *game*)) (name-of user)))))))
 (defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql nil)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
   (format t "*~a*~%"
-          (random-elt (list (format nil "Reaching the breaking point, ~a instinctively squats down with ~a tail up and messes"
+          (random-elt (list (format nil "Reaching the breaking point, ~a instinctively squats down~a and messes"
                                     (name-of user)
-                                    (if (malep user)
-                                        "his"
-                                        "her"))
+                                    (if (member (car (tail-of user)) '(:medium :large))
+                                        (format nil " with ~a tail up"
+                                                (if (malep user)
+                                                    "his" "her"))
+                                        ""))
                             (format nil "~a has an accident and makes a mess on the floor" (name-of user)))))
   (let ((a (random-elt (list (format nil "~a: Bad ~a! No going potty in the house!~%~%*~a baps ~a on the nose with a newspaper*"
                                      (name-of (player-of *game*))
@@ -2907,8 +2991,7 @@
   (format t "Species: ~a~%" (species-of user))
   (format t "Description: ~a~%" (description-of user))
   (when (typep user 'team-member)
-    (out "Tail Type: " (tail-type-of user) :%
-         "Tail: " (tail-of user) :%
+    (out "Tail: " (tail-of user) :%
          "Wings: " (wings-of user) :%
          "Skin: " (skin-of user) :%))
   (format t "Health: ")
@@ -3663,10 +3746,10 @@
                                      :stream *query-io*)))
     (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
       (setf tail-type (clim:accept '(clim:completion (:small :medium :large :lizard :bird-small :bird-large nil))
-                                   :prompt "Tail type" :default (tail-type-of default) :view clim:+option-pane-view+ :stream *query-io*))
+                                   :prompt "Tail type" :default (car (tail-of default)) :view clim:+option-pane-view+ :stream *query-io*))
       (fresh-line *query-io*)
       (setf tail (clim:accept '((clim:subset-completion (:multi :scales :fur :feathers)))
-                              :prompt "Tail attributes" :default (tail-of default) :view clim:+check-box-view+ :stream *query-io*))
+                              :prompt "Tail attributes" :default (cdr (tail-of default)) :view clim:+check-box-view+ :stream *query-io*))
       (fresh-line *query-io*)
       (setf wings (clim:accept '((clim:subset-completion (:scales :fur :feathers)))
                                :prompt "Wings attributes" :default (wings-of default) :view clim:+check-box-view+ :stream *query-io*))
@@ -3681,8 +3764,7 @@
                                             :description bio
                                             :skin skin
                                             :wings wings
-                                            :tail tail
-                                            :tail-type tail-type
+                                            :tail (when tail-type (cons tail-type tail))
                                             :bladder/need-to-potty-limit (getf '(:normal 300 :low 200 :overactive 149) bladder)
                                             :bladder/potty-dance-limit (getf '(:normal 450 :low 300 :overactive 150) bladder)
                                             :bladder/potty-desperate-limit (getf '(:normal 525 :low 350 :overactive 160) bladder)
