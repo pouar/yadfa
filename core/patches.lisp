@@ -273,12 +273,12 @@
 (in-package :clim-listener)
 ;;;; because it was quicker and easier than trying to write one of these myself from scratch
 
-(define-condition storage-condition* (storage-condition) ()
+(define-condition emm386-memory-manager-error (serious-condition) ()
   (:report (lambda (condition stream)
              (declare (ignore condition))
              (write-line "Thank you for playing Wing Commander!" stream))))
 (defmethod frame-exit ((frame listener))
-  (unwind-protect (error 'storage-condition*)
+  (unwind-protect (error 'emm386-memory-manager-error)
     (call-next-method)))
 (macro-level:macro-level
   `(setf *default-text-style*
