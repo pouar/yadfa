@@ -27,6 +27,7 @@ yadfa
 **/*.wx64fsl
 **/*.wx32fsl
 **/*.dll
+docs/*/dir
 docs/reference/yadfa-reference.*
 docs/guide/*.toc
 docs/guide/*.aux
