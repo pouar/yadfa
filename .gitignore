@@ -34,6 +34,7 @@ docs/*/*.aux
 docs/*/*.log
 docs/*/*.html
 docs/*/*.info
+docs/*/*.ps
 docs/*/*.pdf
 docs/*/*.dvi
 docs/*/*.tmp
