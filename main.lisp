@@ -1,5 +1,13 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package #:yadfa)
+(defun build-texi ()
+  (if (asdf:component-loaded-p "yadfa/docs")
+      (uiop:symbol-call '#:net.didierverna.declt '#:declt :yadfa
+                        :license :gpl
+                        :texi-name "yadfa-reference"
+                        :texi-directory (translate-logical-pathname "yadfa:home;docs;reference;")
+                        :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically")
+      (format *error-output* "Can't build texi file on ~a~%" (lisp-implementation-type))))
 (defun main ()
   (pushnew
    'yadfa::find-mod
@@ -29,12 +37,7 @@
   (load #P"yadfa:config;yadfarc" :if-does-not-exist nil)
   (in-package :yadfa-user)
   (when (find "texi" (uiop:command-line-arguments) :test #'string=)
-    (when (asdf:component-loaded-p "yadfa/docs")
-      (uiop:symbol-call '#:net.didierverna.declt '#:declt :yadfa
-                        :license :gpl
-                        :texi-name "yadfa-reference"
-                        :texi-directory (translate-logical-pathname "yadfa:home;docs;reference;")
-                        :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically"))
+    (build-texi)
     (uiop:quit))
   (switch-user-packages)
   (when (featurep :mcclim-ffi-freetype)

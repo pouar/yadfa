@@ -32,6 +32,8 @@
 (when (find "ft" (uiop:command-line-arguments) :test #'string=)
   (pushnew :mcclim-ffi-freetype *features*))
 (ql:quickload :yadfa)
+(when (find "texi" (uiop:command-line-arguments) :test #'string=)
+  (yadfa::build-texi))
 (when (probe-file (uiop:merge-pathnames* (make-pathname :name "yadfa") (asdf:component-pathname (asdf:find-system "yadfa"))))
   (delete-file (uiop:merge-pathnames* (make-pathname :name "yadfa") (asdf:component-pathname (asdf:find-system "yadfa")))))
 (asdf:make :yadfa :force (when (find "force" (uiop:command-line-arguments) :test #'string=) t))
