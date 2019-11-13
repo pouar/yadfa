@@ -31,14 +31,24 @@ modules:
       - type: archive
         url: https://ftp.gnu.org/gnu/wget/wget-1.20.3.tar.gz
         sha256: 31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e
+    build-options:
+      strip: true
+    post-install:
+      - rm -rf /app/share /app/etc
   - name: tinytex
     buildsystem: simple
     build-commands:
-      - bash -c 'TEXDIR=/app/tmp/texlive;wget -qO- https://github.com/yihui/tinytex/raw/master/tools/install-base.sh | sh -s - "$@";rm -rf $TEXDIR;mkdir -p $TEXDIR;mv texlive/* $TEXDIR;rm -r texlive;$TEXDIR/bin/*/tlmgr install $(wget -qO- https://github.com/yihui/tinytex/raw/master/tools/pkgs-custom.txt | tr "\n" " ") texinfo;$TEXDIR/bin/*/tlmgr path add'
+      - bash -c 'TEXDIR=/app/tmp/texlive;wget -qO- https://github.com/yihui/tinytex/raw/master/tools/install-base.sh | sh -s - "$@";rm -rf $TEXDIR;mkdir -p $TEXDIR;mv texlive/* $TEXDIR;rm -r texlive;$TEXDIR/bin/*/tlmgr install $(cat pkgs-custom.txt | tr "\n" " ") texinfo;$TEXDIR/bin/*/tlmgr path add'
     sources:
       - type: archive
         sha256: 40871eb08a650315e765b7169b3cf8da43ac51b75c9ab61656079c68a58d718d
         url: https://github.com/yihui/tinytex/archive/v0.17.tar.gz
+    sources:
+      - type: file
+        sha256: 5d1db01e005d019db3a4642dadafc2d4e2b85b3aec9ad02b9aafd18c00669207
+        url: https://gitlab.com/pouar/yadfa/raw/master/flatpak/pkgs-custom.txt
+    post-install:
+      - rm -rf /app/bin
   - name: sbcl-bin
     buildsystem: simple
     build-commands:
@@ -50,6 +60,8 @@ modules:
         url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.8/sbcl-1.5.8-x86-64-linux-binary.tar.bz2
         sha256: 63fca9fb30aab7939d1bee0e9b1e995be4d97b0c480670ceeabe8e7363d394d9
   - name: sbcl
+    build-options:
+      strip: true
     buildsystem: simple
     build-commands:
       - sed -i 's|if $GNUMAKE -C contrib/$i test < /dev/null|if $GNUMAKE -C contrib/$i < /dev/null|' make-target-contrib.sh
@@ -120,3 +132,6 @@ modules:
       - type: git
         branch: master
         url: https://gitlab.com/pouar/yadfa.git
+    post-install:
+      - rm -rf /app/tmp /app/etc /app/share/runtime /app/share/locale /app/share/man /app/lib/debug /app/lib/yadfa/ci /app/lib/yadfa/flatpak /app/lib/yadfa/chocolatey /app/lib/yadfa/.git
+      - rm -f /app/lib/yadfa/appveyor-*.lisp .appveyor.yml .gitattributes .gitignore .gitlab-ci.yml .mailmap
