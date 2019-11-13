@@ -29,6 +29,7 @@ yadfa
 **/*.dll
 docs/*/dir
 docs/reference/yadfa-reference.*
+docs/guide/yadfa-guide-figures/**
 docs/*/*.toc
 docs/*/*.aux
 docs/*/*.log
