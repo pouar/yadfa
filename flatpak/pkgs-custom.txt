@@ -6,6 +6,7 @@ booktabs
 caption
 dvips
 ec
+epsf
 etoolbox
 fancyvrb
 float
