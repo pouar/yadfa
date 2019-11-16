@@ -839,7 +839,7 @@
   (unless (get-zone '(0 0 0 pocket-map))
     (make-pocket-zone (0 0 0)
       :name "Pocket Map Entrance"
-      :description "Welcome to the Pocket Map. It's like the secret bases in Pokemon, except you customize it by scripting, and you can take it with you."
+      :description "Welcome to the Pocket Map. It's like the secret bases in Pokémon, except you customize it by scripting, and you can take it with you."
       :enter-text "You're at the start of the Pocket Map. Use the Pocket Map machine again at anytime to exit."))
   (let ((new-position
           (if (eq (fourth (position-of (player-of *game*))) :pocket-map)

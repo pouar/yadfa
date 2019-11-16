@@ -103,16 +103,16 @@
                                                                                    (getf (get-props-from-zone (position-of (player-of *game*))) :guard))
                                                                                   "A dolphin wearing pullups"))))))))))))
 (ensure-zone (1 5 0 silver-cape)
-  :name "Silver Cape Pokemon Center"
-  :description "A place to heal your Pokemon"
+  :name "Silver Cape Pokémon Center"
+  :description "A place to heal your Pokémon"
   :enter-text "You enter the street"
   :direction-attributes (list :south (list :hidden t))
   :props (list :magic-healing-machine (make-instance 'prop
                                                      :name "Magic Healing Machine"
-                                                     :description "Heal your Pokemon here"
+                                                     :description "Heal your Pokémon here"
                                                      :actions (list
                                                                :use (make-action
-                                                                     :documentation "Heal your Pokemon"
+                                                                     :documentation "Heal your Pokémon"
                                                                      :lambda '(lambda
                                                                                (prop &rest keys &key &allow-other-keys)
                                                                                (declare (type prop prop) (ignore prop))

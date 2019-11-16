@@ -3,7 +3,7 @@
 (defclass superglitch (stat/move) ()
   (:default-initargs
    :name "Superglitch"
-   :description "Classic glitch move from the Pokemon games, but without the undefined behavior and unwanted side effects."
+   :description "Classic glitch move from the Pokémon games, but without the undefined behavior and unwanted side effects."
    :attack '(lambda (target user self)
              (declare (ignore self))
              (format t

@@ -32,16 +32,16 @@
 (defevent enter-pokemon-area-1
   :lambda (lambda (self)
             (declare (ignore self))
-            (out "You find a Pokemon trainer" :% :%
-                 "Pokemon trainer: OK, Bowser has paid me to guard this star, so I'm going to fight you with all my might, with my level 2 Magikarp" :% :%)
+            (out "You find a Pokémon trainer" :% :%
+                 "Pokémon trainer: OK, Bowser has paid me to guard this star, so I'm going to fight you with all my might, with my level 2 Magikarp" :% :%)
             (set-new-battle '((yadfa-enemies:magikarp . (list :level 2)))
                             :continuable t
-                            :enter-battle-text "Pokemon trainer wants to battle. Pokémon trainer sent out Magikarp"
+                            :enter-battle-text "Pokémon trainer wants to battle. Pokémon trainer sent out Magikarp"
                             :win-events '(win-pokemon-area-1))))
 (defevent win-pokemon-area-1
   :lambda (lambda (self)
             (declare (ignore self))
-            (out "Pokemon trainer: What?!?! I can't believe you beat my level 2 Magikarp!!!! You must be like, Mewtwo level of strong!!!!" :% :%
+            (out "Pokémon trainer: What?!?! I can't believe you beat my level 2 Magikarp!!!! You must be like, Mewtwo level of strong!!!!" :% :%
                  (name-of (player-of *game*)) " got a shine star for winning" :% :%)
             (push (make-instance 'yadfa-items:shine-star) (inventory-of (player-of *game*)))))
 (defevent enter-blank-area-1
