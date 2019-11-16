@@ -38,6 +38,7 @@ docs/*/*.info
 docs/*/*.ps
 docs/*/*.pdf
 docs/*/*.dvi
+docs/*/*.xml
 docs/*/*.tmp
 docs/*/*.log
 mods.conf
