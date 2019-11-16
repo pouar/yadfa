@@ -1,6 +1,6 @@
 SRC := yadfa-reference.texi
 export MAKEINFO := makeinfo
-export TEX := tex
+export TEX := pdftex --output-format=dvi
 export PDFTEX := xetex
 TEXOBJS := yadfa-reference.ps yadfa-reference.dvi yadfa-reference.pdf
 OBJS := yadfa-reference.info yadfa-reference.html yadfa-reference.xml
