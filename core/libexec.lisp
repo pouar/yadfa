@@ -2965,7 +2965,22 @@
                    / 100)
                 + 5))))
 (declaim (ftype (function (base-character base-character number) (values real real &optional)) calculate-damage))
-(defunassert (calculate-damage (target user attack-base))
+(defunassert (calculate-damage (target user attack-base)
+                               "Figures out the damage dealt, we use the formula
+
+ @mathjax{\\left({\\left({2 \\times level \\over 5}+2\\right) \\times attackbase \\times {attack \\over defense} \\over 50}+2\\right) \\times {randomrange \\over 100}}
+
+ which is the same as Pokèmon
+
+level is @code{(level-of @var{user})}
+
+attackbase is @var{attack-base}
+
+attack is @code{(calculate-stat @var{user} :attack)}
+
+defense is @code{(calculate-stat @var{user} :defense)}
+
+randomrange is @code{(random-from-range 85 100)}")
     (user base-character
           target base-character
           attack-base number)
