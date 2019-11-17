@@ -41,6 +41,7 @@ docs/*/*.dvi
 docs/*/*.xml
 docs/*/*.tmp
 docs/*/*.log
+docs/*/texfrag
 mods.conf
 flatpak/net.pouar.yadfa.appdata.xml
 TAGS
