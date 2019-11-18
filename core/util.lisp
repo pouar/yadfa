@@ -44,12 +44,21 @@ the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYW
   #+clisp (null
            (nth-value 1 (ignore-errors
                          (ext:type-expand type-specifier))))
-  #-(or sbcl openmcl ecl clisp) (typep type-specifier
-                                       '(or
-                                         null
-                                         (and symbol (not keyword))
-                                         list
-                                         class)))
+  ;; If you're wondering why we're parsing it multiple times, it's because CMUCL does this too.
+  ;; If CMUCL doesn't trust KERNEL:SPECIFIER-TYPE to get it right the first time, then why should we?
+  #+cmucl (not (and (let ((type (kernel:specifier-type type-specifier)))
+                      (typep type 'kernel:unknown-type)
+                      (typep (kernel:specifier-type (kernel:unknown-type-specifier type)) 'kernel:unknown-type))))
+  ;; Managed to get this out of the free version before it crashed trying to startup. Never could get it to work.
+  #+lispworks (type:valid-type-specifier-p type-specifier)
+  ;; type specifiers are too complicated for me to figure out whether it's valid or not, but this is good enough for this game.
+  #-(or sbcl openmcl ecl clisp cmucl lispworks) (or (typep type-specifier
+                                                           '(or
+                                                             null
+                                                             (and symbol (not keyword))
+                                                             class))
+                                                    (and (listp type-specifier)
+                                                         (typep (car type-specifier) '(and symbol (not keyword))))))
 (defun coerced-function-p (form)
   "checks whether the type is a lambda expression or function"
   (handler-case (coerce form 'function)
