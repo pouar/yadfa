@@ -21,7 +21,7 @@
 (ensure-zone (0 -18 0 candle-carnival)
   :name "Elevator"
   :description "An elevator to the upper deck"
-  :enter-text "You enter the elavator"
+  :enter-text "You enter the elevator"
   :props (list
           :panel (make-instance 'prop
                                 :actions (list :go-up (make-action :documentation "Makes the elevator go up"
@@ -32,7 +32,7 @@
 (ensure-zone (0 -18 5 candle-carnival)
   :name "Elevator"
   :description "An elevator to the upper deck"
-  :enter-text "You enter the elavator"
+  :enter-text "You enter the elevator"
   :props (list
           :panel (make-instance 'prop
                                 :actions (list :go-down (make-action :documentation "Makes the elevator go down"
@@ -70,15 +70,8 @@
   :name "Rocket Pad"
   :description "A rocket pad"
   :enter-text "You enter the rocket pad"
-  :props (list
-          :rocket (make-instance 'prop
-                                 :actions (list
-                                           :launch-and-ride (make-action :documentation "Launch the rocket and travel to Sky Base"
-                                                                         :lambda '(lambda (prop &rest keys &key &allow-other-keys)
-                                                                                   (declare (ignore prop))
-                                                                                   (write-line "You fly over to Sky Base then drop off the rocket. The base's antigravity slingshot device emits a force that pulls you back up and lands you on a platform like an invisible bungee cord, but one that pulls you to different platforms instead of just one. It seems this is the primary mode of transportation here.")
-                                                                                   (setf (position-of (player-of *game*)) '(0 0 0 sky-base-landing-pad))
-                                                                                   (trigger-event (events-of (get-zone (position-of (player-of *game*)))))))))))
+  :warp-points (list 'rocket '(0 0 0 sky-base-landing-pad))
+  :direction-attributes (list 'rocket (list :exit-text "You fly over to Sky Base then drop off the rocket. The base's antigravity slingshot device emits a force that pulls you back up and lands you on a platform like an invisible bungee cord, but one that pulls you to different platforms instead of just one. It seems this is the primary mode of transportation here.")))
 (ensure-zone (4 -18 0 candle-carnival)
   :name "Changing room"
   :description "Apparetnly this place is poweredby monkeys in hamster wheels"
@@ -124,13 +117,15 @@
                 sky-base:main-office
                 sky-base:shop
                 sky-base:nursery
-                sky-base:mansion))
+                sky-base:mansion
+                sky-base:launch-pad))
         (names '("Sky Base Landing Pad"
                  "Sky Base Living Quarters"
                  "Sky Base Main Office"
                  "Sky Base Shop"
-                 "Sky Base Nusery"
-                 "Sky Base Mansion")))
+                 "Sky Base Nursery"
+                 "Sky Base Mansion"
+                 "Sky Base Launch Pad")))
     `(progn
        ,@(iter
            (for sym in syms)
@@ -143,7 +138,8 @@
                           "The entrance to the main office"
                           "The entrance to Sky Base Shop"
                           "A place for ABDLs to hang out"
-                          "Your own personal quarters"))
+                          "Your own personal quarters"
+                          "Use this to head to the next area"))
            (collect `(ensure-zone (0 0 0 ,sym)
                        :name ,name
                        :description ,desc
@@ -159,6 +155,12 @@
                                           (collect `(0 0 0 ,i))))
                        ,@(when (eq sym 'sky-base:landing-pad)
                            '(:events '(yadfa-events:secret-underground-pipe-sky-base)))))))))
+(ensure-zone (0 -1 0 sky-base:launch-pad)
+  :name "Rocket Pad"
+  :description "A rocket pad"
+  :enter-text "You enter the rocket pad"
+  :warp-points (list 'rocket '(0 0 0 star-city))
+  :direction-attributes (list 'rocket (list :exit-text "You fly over to Star City")))
 (ensure-zone (0 0 0 star-city)
   :name "Star City"
   :description "A city orbiting the planet on a giant platform"
@@ -178,3 +180,9 @@
                           :description "A city orbiting the planet on a giant platform"
                           :enter-text "You're wondering across the platform")))))
          (finally (return a)))))
+(ensure-zone (0 22 0 star-city)
+  :name "Star City"
+  :description "A city orbiting the planet on a giant platform"
+  :enter-text "You're wondering across the platform"
+  :warp-points (list 'rainbow-slide '(0 0 0 peachs-castle-wannabe))
+  :direction-attributes (list 'rainbow-slide (list :exit-text "You slide down the slide back to the planet.")))

@@ -220,13 +220,6 @@
 (ensure-zone (-1 14 0 silver-cape)
   :name "Silver Cape Launch Pad"
   :description "You're at the launch pad"
-  :enter-text "Come one coma all to a trip to the Candle Carnival. An amusement park in the sky based on a dream Pouar had. For some reason, it looked a lot better in the dream. Use the rocket over there to fly there."
-  :props (list
-          :rocket (make-instance 'prop
-                                 :actions (list
-                                           :launch-and-ride (make-action :documentation "Launch the rocket and travel to Candle Carnival"
-                                                                         :lambda '(lambda (prop &rest keys &key &allow-other-keys)
-                                                                                   (declare (ignore prop))
-                                                                                   (write-line "You fly over to Candle Carnival.")
-                                                                                   (setf (position-of (player-of *game*)) '(0 0 0 candle-carnival))
-                                                                                   (trigger-event (events-of (get-zone (position-of (player-of *game*)))))))))))
+  :enter-text "Come one coma all to a trip to the Candle Carnival. An amusement park in the sky based on a dream Pouar had. For some reason, it looked a lot better in the dream. Still under construction. Use the rocket over there to fly there."
+  :warp-points (list 'rocket '(0 0 0 candle-carnival))
+  :direction-attributes (list 'rocket (list :exit-text "You fly over to Candle Carnival.")))
