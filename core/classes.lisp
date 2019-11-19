@@ -924,8 +924,6 @@
   ())
 (defclass pants (closed-pants)
   ())
-(defclass config (yadfa-class)
-  ())
 (defclass enemy (base-character)
   ((exp-yield
     :initarg :exp-yield
@@ -1105,9 +1103,9 @@
     :documentation "List of characters sent out to battle")
    (config
     :initarg :config
-    :initform (make-instance 'config)
+    :initform (make-hash-table :test 'equal)
     :accessor config-of
-    :documentation "Configuration, instance of the config class")
+    :documentation "Arbitrary Configuration")
    (time
     :initarg :time
     :initform 0
