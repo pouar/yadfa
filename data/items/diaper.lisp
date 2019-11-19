@@ -135,6 +135,10 @@
                      8500 "The back is clearly stained brown"
                      4250 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
+(defclass diaper-corset (closed-full-outfit thick-diaper) ()
+  (:default-initargs
+   :name "Diaper Corset"
+   :description "Full body suit that acts as a diaper. The only thing you need to wear."))
 (defclass midnight-diaper (thick-diaper) ()
   (:default-initargs
    :name "Midnight Diaper"
@@ -202,7 +206,21 @@
    :sogginess-capacity 6000
    :messiness-capacity 25000
    :name "Thick Rubber Diaper"
-   :description "A thick rubber diaper that can hold more than an normal diaper. Can be reused."))
+   :description "A thick rubber diaper that can hold more than an normal diaper. Can be reused."
+   :wear-wet-text '(6000 "little yellow streams are leaking down from the leg guards"
+                    350 "It squishes when you walk"
+                    1 "You can barely tell you wet it")
+   :wear-mess-text '(25000 "Poo is leaking out of the leg guards"
+                     2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
+                     1 "You can feel a slight mess back there")))
+(defclass cloth-diaper-corset (thick-cloth-diaper diaper-corset) ()
+  (:default-initargs
+   :name "Cloth Diaper Corset"
+   :description "Full body suit that acts as a cloth diaper. The only thing you need to wear. Can be reused"))
+(defclass rubber-diaper-corset (thick-rubber-diaper diaper-corset) ()
+  (:default-initargs
+   :name "Rubber Diaper Corset"
+   :description "Full body suit that acts as a rubber diaper. The only thing you need to wear. Can be reused."))
 (defclass disposable-swim-diaper (yadfa:diaper) ()
   (:default-initargs
    :sogginess-capacity 1400

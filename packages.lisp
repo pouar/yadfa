@@ -418,6 +418,9 @@
    #:gold-bar
    #:gem
    #:gold-collar
+   #:diaper-corset
+   #:cloth-diaper-corset
+   #:rubber-diaper-corset
    #:collar
    #:magic-diaper-key
    #:ak47
