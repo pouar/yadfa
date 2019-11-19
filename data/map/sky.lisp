@@ -109,7 +109,8 @@
    #:shop
    #:landing-pad
    #:nursery
-   #:mansion)
+   #:mansion
+   #:launch-pad)
   (:documentation "Contains symbols for the sky base"))
 (macro-level
   (let ((syms '(sky-base:landing-pad

@@ -537,7 +537,9 @@
    #:your-ship
    #:rpgmaker-dungeon
    #:haunted-house
-   #:haunted-forest)
+   #:haunted-forest
+   #:rocket
+   #:rainbow-slide)
   (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package :yadfa-events
   (:use :yadfa :yadfa-util :cl :iterate)
