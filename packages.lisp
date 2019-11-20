@@ -168,6 +168,7 @@
    #:wings-of
    #:skin-of
    #:config-of
+   #:stairs-of
    #:last-process-potty-time-of
    #:process-battle-accident-of
    #:process-potty-dance-of

@@ -5,6 +5,7 @@
   :description "zone-0-0-0-debug-map"
   :enter-text "zone-0-0-0-debug-map"
   :warp-points (list '\1 '(1 1 0 debug-map) '\2 '(0 -1 -1 debug-map))
+  :stairs (list :down t)
   :props (list :dresser (make-instance 'prop
                                        :name "Dresser"
                                        :description "A dresser"
@@ -30,7 +31,8 @@
   :name "zone-0-0--1-debug-map"
   :description "zone-0-0--1-debug-map"
   :enter-text "zone-0-0--1-debug-map"
-  :underwater t)
+  :underwater t
+  :stairs (list :up t))
 (ensure-zone (0 -1 -1 debug-map)
   :name "zone-0--1--1-debug-map"
   :description "zone-0--1--1-debug-map"

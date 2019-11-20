@@ -30,10 +30,12 @@
   :description "The jail beneath Navy HQ"
   :enter-text "You're inside Navy HQ"
   :locked nil
+  :stairs (list :up t)
   :events '(yadfa-events:get-location-to-pirate-cove-1))
 (ensure-zone (-2 6 0 silver-cape)
   :name "Silver Cape Navy HQ Lobby"
   :description "The lobby of Navy HQ"
+  :stairs (list :down t)
   :enter-text "You're inside Navy HQ. A guard doing a potty dance in a soggy pullup is guarding the entrance to the Jail underneath"
   :props (list :guard (make-instance 'prop
                                      :name "Dolphin Navy Guard"

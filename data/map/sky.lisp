@@ -22,28 +22,18 @@
   :name "Elevator"
   :description "An elevator to the upper deck"
   :enter-text "You enter the elevator"
-  :props (list
-          :panel (make-instance 'prop
-                                :actions (list :go-up (make-action :documentation "Makes the elevator go up"
-                                                                   :lambda '(lambda (prop &rest keys &key &allow-other-keys)
-                                                                             (declare (ignore prop))
-                                                                             (write-line "Going up")
-                                                                             (setf (position-of (player-of *game*)) '(0 -18 5 candle-carnival))))))))
-(ensure-zone (0 -18 5 candle-carnival)
+  :stairs (list :up t)
+  :direction-attributes (list :up (list :exit-text "Going up")))
+(ensure-zone (0 -18 1 candle-carnival)
   :name "Elevator"
   :description "An elevator to the upper deck"
   :enter-text "You enter the elevator"
-  :props (list
-          :panel (make-instance 'prop
-                                :actions (list :go-down (make-action :documentation "Makes the elevator go down"
-                                                                     :lambda '(lambda (prop &rest keys &key &allow-other-keys)
-                                                                               (declare (ignore prop))
-                                                                               (write-line "Going up")
-                                                                               (setf (position-of (player-of *game*)) '(0 -18 0 candle-carnival))))))))
+  :stairs (list :down t)
+  :direction-attributes (list :down (list :exit-text "Going down")))
 (macro-level
   `(progn
      ,@(iter (for i from -17 to -2)
-         (collect `(ensure-zone (0 i 5 candle-carnival)
+         (collect `(ensure-zone (0 i 1 candle-carnival)
                      :name "Catwalk"
                      :description "A catwalk over the pool"
                      :enter-text "You're swimming in the pool"
@@ -52,21 +42,21 @@
   `(progn
      ,@(iter (for i from -10 to 10)
          (unless (= i -10)
-           (collect `(ensure-zone (i -10 5 candle-carnival)
+           (collect `(ensure-zone (i -10 1 candle-carnival)
                        :name "Catwalk"
                        :description "A catwalk over the pool"
                        :enter-text "You're swimming in the pool"
                        :warp-points '(dive (i -10 0 candle-carnival))))))))
-(ensure-zone (-11 -10 5 candle-carnival)
+(ensure-zone (-11 -10 1 candle-carnival)
   :name "Water slide"
   :description "A water slide that lets you slide to the bottom"
   :enter-text "You look down the water slide"
   :warp-points '(slide-down (-10 -9 0 candle-carnival)))
-(ensure-zone (11 -10 5 candle-carnival)
+(ensure-zone (11 -10 1 candle-carnival)
   :name "Power room"
   :description "Apparetnly this place is poweredby monkeys in hamster wheels"
   :enter-text "You're inside the power room")
-(ensure-zone (4 -1 5 candle-carnival)
+(ensure-zone (4 -1 1 candle-carnival)
   :name "Rocket Pad"
   :description "A rocket pad"
   :enter-text "You enter the rocket pad"
@@ -181,9 +171,67 @@
                           :description "A city orbiting the planet on a giant platform"
                           :enter-text "You're wondering across the platform")))))
          (finally (return a)))))
+(ensure-zone (-2 3 0 star-city)
+  :name "Star City Hotel Lobby"
+  :description "A luxurious hotel"
+  :enter-text "you're in the hotel lobby"
+  :stairs (list :up t))
+(macro-level
+  `(progn
+     ,@(iter (for x from -3 downto -7)
+         (collect `(ensure-zone (,x 3 0 star-city)
+                     :name "Star City Hotel Hall"
+                     :description "A luxurious hotel"
+                     :enter-text "you're in the hall")))))
+(ensure-zone (-3 2 0 star-city)
+  :name "Star City Hotel Diner"
+  :description "A luxurious hotel"
+  :enter-text "Welcome to the diner"
+  :direction-attributes (list :east (list :hidden t)
+                              :west (list :hidden t)))
+(ensure-zone (-4 2 0 star-city)
+  :name "Star City Hotel Shop"
+  :description "A luxurious hotel"
+  :enter-text "Welcome to the shop"
+  :direction-attributes (list :east (list :hidden t)
+                              :west (list :hidden t)))
+(ensure-zone (-5 2 0 star-city)
+  :name "Star City Hotel Spa"
+  :description "A luxurious hotel"
+  :enter-text "Welcome to the spa"
+  :direction-attributes (list :east (list :hidden t)
+                              :west (list :hidden t)))
+(ensure-zone (-6 2 0 star-city)
+  :name "Star City Hotel Gym"
+  :description "A luxurious hotel"
+  :enter-text "Welcome to the gym"
+  :direction-attributes (list :east (list :hidden t)
+                              :west (list :hidden t)))
+(ensure-zone (-7 2 0 star-city)
+  :name "Star City Hotel Pool"
+  :description "Welcome to the pool"
+  :enter-text "you're in the hall"
+  :direction-attributes (list :east (list :hidden t)
+                              :west (list :hidden t)))
+(ensure-zone (-1 3 0 star-city)
+  :name "Star City"
+  :description "A city orbiting the planet on a giant platform"
+  :enter-text "You're wondering across the platform")
+(ensure-zone (-2 3 1 star-city)
+  :name "Star City Hotel Hallway"
+  :description "A luxurious hotel"
+  :enter-text "you're in the hall"
+  :stairs (list :up t :down t))
+(macro-level
+  `(progn
+     ,@(iter (for x from -1 downto -5)
+         (collect `(ensure-zone (,x 3 1 star-city)
+                     :name "Star City Hotel Hall"
+                     :description "A luxurious hotel"
+                     :enter-text "you're in the hall")))))
 (ensure-zone (0 22 0 star-city)
   :name "Star City"
   :description "A city orbiting the planet on a giant platform"
   :enter-text "You're wondering across the platform"
-  :warp-points (list 'rainbow-slide '(0 0 0 peachs-castle-wannabe))
+  :warp-points (list 'rainbow-slide '(6 11 0 silver-cape))
   :direction-attributes (list 'rainbow-slide (list :exit-text "You slide down the slide back to the planet.")))

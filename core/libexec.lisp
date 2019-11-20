@@ -2,9 +2,7 @@
 ;;;; files used internally by the game, don't call these unless you're developing/modding (or cheating)
 (in-package :yadfa)
 ;;; list-length-< and list-length-<= are based off of sequence-of-length-p from Alexandria
-(declaim (inline list-length-< list-length-<= list-length-> list-length->=))
-(eval-always
-  (defun list-length-<= (length list)
+(defun list-length-<= (length list)
     (declare (type list list)
              (type integer length))
     (let ((n (1- length)))
@@ -12,16 +10,14 @@
   (defun list-length-< (length list)
     (declare (type list list)
              (type integer length))
-    (list-length-<= (1+ length) list)))
+    (list-length-<= (1+ length) list))
 (defun list-length-> (length list)
   (declare (type list list)
-           (type integer length)
-           (inline list-length-<=))
+           (type integer length))
   (not (list-length-<= length list)))
 (defun list-length->= (length list)
   (declare (type list list)
-           (type integer length)
-           (inline list-length-<))
+           (type integer length))
   (not (list-length-< length list)))
 (defun switch-user-packages ()
   (use-package *command-packages* :yadfa-user)
@@ -32,31 +28,21 @@
       (progn
         (unuse-package *battle-packages* :yadfa-user)
         (use-package *world-packages* :yadfa-user))))
-(declaim (inline get-event get-zone get-zone%))
 (defunassert (get-event (event-id))
     (event-id symbol)
   (gethash event-id *events*))
 (defunassert ((setf get-event) (new-value event-id))
     (event-id symbol)
   (setf (gethash event-id *events*) new-value))
-(declaim (ftype (function (list) (values (or zone null) t &optional)) get-zone get-zone%))
-(defun get-zone% (position)
+(declaim (ftype (function (list) (values (or zone null) t &optional)) get-zone))
+(defun get-zone (position)
   (declare (type list position))
   (gethash position (slot-value *game* 'zones)))
-(defun (setf get-zone%) (new-value position)
+(defun (setf get-zone) (new-value position)
   (declare (type list position)
            (type zone new-value))
   (setf (position-of new-value) position
         (gethash position (slot-value *game* 'zones)) new-value))
-(defunassert (get-zone (position))
-    (position list)
-  (get-zone% position))
-(defunassert ((setf get-zone) (new-value position))
-    (position list
-              new-value zone)
-  (setf (get-zone% position) new-value))
-
-(declaim (notinline get-event get-zone))
 (defmethod documentation ((x symbol) (doc-type (eql 'event)))
   (event-documentation (get-event x)))
 (eval-always
@@ -112,15 +98,13 @@
     (for j upfrom 0)
     (when (typep i type)
       (collect j))))
-(declaim (inline finished-events))
 (defun finished-events (events)
   (length=
    events
    (intersection
     events
     (finished-events-of *game*))))
-(declaim (notinline finished-events)
-         (ftype (function (closed-bottoms) number) get-diaper-expansion))
+(declaim (ftype (function (closed-bottoms) number) get-diaper-expansion))
 (defunassert (get-diaper-expansion (item))
     (item closed-bottoms)
   (+
@@ -282,8 +266,7 @@
                                                                                                                 ,@body
                                                                                                                 (read-char *query-io*))))))))
 (declaim (ftype (function ((or symbol list)) list) trigger-event))
-(defunassert (trigger-event (event-ids)
-                            (declare (inline get-event finished-events)))
+(defunassert (trigger-event (event-ids))
     (event-ids (or symbol list))
   (iter (for event-id in (ensure-list event-ids))
     (when (and
@@ -373,6 +356,8 @@
     (return-from get-path-end (values nil (format nil "Pick a direction the game knows about~%"))))
   (when (or (hiddenp (get-zone destination)) (and position direction (getf-direction position direction :hidden)))
     (return-from get-path-end (values nil (format nil "Pick a direction the game knows about~%"))))
+  (when (and direction (member direction '(:up :down)) (not (getf (stairs-of (get-zone (or position (position-of (player-of *game*))))) direction)))
+    (return-from get-path-end (values nil (format nil "There are no stairs there~%"))))
   (when (or (and (not (eq (lockedp (get-zone destination)) :nil))
                  (not (member-if (lambda (a)
                                    (typep a (lockedp (get-zone destination))))
@@ -410,17 +395,16 @@
               #P"yadfa:home;pixmaps;map-patterns;")
              :format :xpm
              :designs designs))))
-(declaim (inline travelablep))
 (defun travelablep (position direction)
   (declare (type list position)
            (type symbol direction))
   (and (get-zone (get-destination direction position))
        (get-zone position)
        (not (getf-direction position direction :hidden))
-       (not (hiddenp (get-zone (get-destination direction position))))))
-(declaim (notinline travelablep))
+       (not (hiddenp (get-zone (get-destination direction position))))
+       (or (and (member direction '(:up :down)) (not (getf (stairs-of (get-zone position)) direction)))
+           (and (not (member direction '(:up :down))) (not (getf (stairs-of (get-zone position)) direction))))))
 (defun print-map (position)
-  (declare (inline travelablep))
   (labels ((a (position)
              (let ((b 0)
                    (array
@@ -456,7 +440,6 @@
                                               (list clim:+background-ink+ clim:+foreground-ink+)))
             (start-position (when clim-listener::*application-frame*
                               (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
-        (declare (inline get-zone))
         (clim:updating-output (t)
           ;; position needs to be bound inside of clim:updating-output and not outside
           ;; for the presentation to notice when the floor the player is on changes
@@ -527,7 +510,9 @@
                                               (type symbol m))
                                      `(,@(mapcar #'+ (list x y z) delta) ,m))))
              (when (and (get-zone current-position)
-                        (not (hiddenp (get-zone current-position))))
+                        (not (hiddenp (get-zone current-position)))
+                        (or (and (member direction '(:up :down)) (not (getf (stairs-of (get-zone current-position)) direction)))
+                            (and (not (member direction '(:up :down))) (not (getf (stairs-of (get-zone current-position)) direction)))))
                (format t "To ~s is ~a. " direction (name-of (get-zone current-position)))))))
     (z '(-1 0 0) :west)
     (z '(1 0 0) :east)
@@ -583,8 +568,7 @@
     (with j = 0)
     (incf j (get-diaper-expansion i))
     (finally (return j))))
-(declaim (inline fast-thickness)
-         (ftype (function (list clothing) number) fast-thickness))
+(declaim (ftype (function (list clothing) number) fast-thickness))
 (defun fast-thickness (list item)
   #+sbcl (declare (type list list)
                   (type clothing item))
@@ -594,10 +578,8 @@
         (execute (cdr list) item (if (typep (car list) 'closed-bottoms)
                                      (+ count (get-diaper-expansion (car list)))
                                      count)))))
-(declaim (notinline fast-thickness))
 (declaim (ftype (function (base-character &optional cons) (values list symbol &optional)) pop-from-expansion))
-(defunassert (pop-from-expansion (user &optional wet/mess)
-                                 (declare (inline fast-thickness)))
+(defunassert (pop-from-expansion (user &optional wet/mess))
     (user base-character)
   (macrolet ((pushclothing (i wet/mess return)
                `(progn
@@ -735,7 +717,7 @@
             (setf (get-zone ',position)
                   (make-instance 'zone ,@body)))
           (export ',(fourth position) ',(symbol-package (fourth position)))
-          (get-zone% ',position)))
+          (get-zone ',position)))
 (defmacro defzone (position &body body)
   #.(format nil "defines the classes of the zones and adds an instance of them to the game's map hash table. Intended to be used to replace existing zones in more intrusive mods. Best to wrap this in an event and run @code{TRIGGER-EVENT} so it doesn't overwrite the zone every time this piece of code is loaded
 
@@ -747,7 +729,7 @@
      (setf (get-zone ',position)
            (make-instance 'zone ,@body))
      (export ',(fourth position) ',(symbol-package (fourth position)))
-     (get-zone% ',position)))
+     (get-zone ',position)))
 (defmacro ensure-zone* (position &body body)
   #.(format nil "Like @code{ENSURE-ZONE}, but position is a quoted list
 
@@ -759,7 +741,7 @@
             (setf (get-zone ,position)
                   (make-instance 'zone ,@body)))
           (export ',(fourth position) ',(symbol-package (fourth position)))
-          (get-zone% ,position)))
+          (get-zone ,position)))
 (defmacro defzone* (position &body body)
   #.(format nil "Like @code{DEFZONE}, but position is a quoted list
 
@@ -771,12 +753,12 @@
      (setf (get-zone ,position)
            (make-instance 'zone ,@body))
      (export ',(fourth position) ',(symbol-package (fourth position)))
-     (get-zone% ,position)))
+     (get-zone ,position)))
 (defmacro make-pocket-zone (position &body body)
   "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
   #+sbcl (declare (type list position))
   (check-type position list)
-  `(setf (get-zone% '(,@position :pocket-map))
+  `(setf (get-zone '(,@position :pocket-map))
          (make-instance 'zone ,@body)))
 (defun move-to-secret-underground ()
   (when *battle*

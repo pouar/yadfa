@@ -188,11 +188,12 @@
 (ensure-zone (6 24 0 bandits-domain)
   :name "Bandit's Cave Entrance"
   :description "A mysterious cave"
-  :enter-text "You enter the cave")
+  :enter-text "You enter the cave"
+  :warp-points (list 'descend '(6 24 -2 bandits-domain)))
 (ensure-zone (6 24 -2 bandits-domain)
   :name "Bandit's Cave"
   :description "A mysterious cave"
   :enter-text "You enter the cave"
   :warp-points (list 'cave-entrance '(6 24 0 bandits-domain)
-                     'descend '(6 24 2 bandits-domain))
+                     'descend '(6 24 -2 bandits-domain))
   :events '(yadfa-events:decend-bandits-cave-1))

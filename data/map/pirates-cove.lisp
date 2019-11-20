@@ -38,6 +38,12 @@
                      :name "Pirate's Cove Lighthouse"
                      :description "A lighthouse"
                      :enter-text "You're inside Pirate's Cove"
+                     :stairs (list ,@(typecase i
+                                       ((eql 0)
+                                        '(:up t))
+                                       ((eql 10)
+                                        '(:down t))
+                                       (t '(:up t :down t))))
                      :enemy-spawn-list '((:chance 1/8
                                           :enemies ((yadfa-enemies:diaper-pirate .
                                                      (list :level (random-from-range 4 8))))))

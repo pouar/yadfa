@@ -318,7 +318,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
                         (type symbol map))
                (let ((position `(,@(mapcar #'+ (list x y z) delta) ,map)))
                  (when (and (get-zone position)
-                            (not (hiddenp (get-zone position))))
+                            (not (hiddenp (get-zone position)))
+                            (or (and (member direction '(:up :down)) (not (getf (stairs-of (get-zone position)) direction)))
+                                (and (not (member direction '(:up :down))) (not (getf (stairs-of (get-zone position)) direction)))))
                    (format t "~s ~a~%"
                            direction
                            (name-of (get-zone position))))))))
@@ -420,7 +422,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (action (or keyword null)
             describe-action (or keyword null)
             prop symbol
-            describe list
+            describe boolean
             take (or null keyword list))
   (when (typep take 'list) (loop for i in take do (check-type i unsigned-byte)))
   (when list
@@ -463,8 +465,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
                              #.(format nil "Wear an item in your inventory. @var{WEAR} is the index you want to place this item. Smaller index refers to outer clothing. @var{INVENTORY} is an index in your inventory of the item you want to wear. You can also give it a type specifier which will pick the first item in your inventory of that type. @var{USER} is an index of an ally. Leave this at @code{NIL} to refer to yourself.
 
 ~a, ~a, and ~a."
-                                       (xref yadfa-bin:unwear :function) (xref yadfa-bin:change :function) (xref yadfa-bin:lst :function))
-                             (declare (inline fast-thickness)))
+                                       (xref yadfa-bin:unwear :function) (xref yadfa-bin:change :function) (xref yadfa-bin:lst :function)))
     (user (or null unsigned-byte)
           wear unsigned-byte
           inventory (or type-specifier unsigned-byte))
@@ -584,8 +585,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
                                #.(format nil "Change one of the clothes you're wearing with one in your inventory. @var{WEAR} is the index of the clothing you want to replace. Smaller index refers to outer clothing. @var{INVENTORY} is an index in your inventory of the item you want to replace it with. You can also give @var{INVENTORY} and @var{WEAR} a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. @var{USER} is an index of an ally. Leave this at @code{NIL} to refer to yourself.
 
 ~a, ~a, and ~a."
-                                         (xref yadfa-bin:unwear :function) (xref yadfa-bin:wear :function) (xref yadfa-bin:lst :function))
-                               (declare (inline fast-thickness)))
+                                         (xref yadfa-bin:unwear :function) (xref yadfa-bin:wear :function) (xref yadfa-bin:lst :function)))
     (user (or null unsigned-byte)
           inventory (or type-specifier unsigned-byte)
           wear (or type-specifier unsigned-byte))

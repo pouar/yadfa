@@ -453,6 +453,11 @@
     :initform nil
     :accessor hiddenp
     :documentation "When true, the game pretends this room doesn't exist. This is for when certain events in the game makes certain zones disappear from the map and to avoid making them be in the exact same state as in the beginning of the game when they reappear")
+   (stairs
+    :initarg :stairs
+    :initform '()
+    :accessor stairs-of
+    :documentation "plist with the @code{:UP} and @code{:DOWN} directions as keys, is true if there are stairs there.")
    (direction-attributes
     :initarg :direction-attributes
     :initform ()
