@@ -1,4 +1,4 @@
-(defsystem "yadfa-furaffinity-pouar-myawesomemod"
+(defsystem "yadfa.furaffinity.pouar.myawesomemod"
     :name "Example Mod"
     :version "1.0"
     :author "Pouar"

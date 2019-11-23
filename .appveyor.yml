@@ -18,6 +18,7 @@ install:
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/joaotavora/sly/archive/master.zip" -OutFile "$env:CACHE\sly.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/didierverna/declt/archive/master.zip" -OutFile "$env:CACHE\declt.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/McCLIM/McCLIM/archive/master.zip" -OutFile "$env:CACHE\mcclim.zip"
+- ps: Invoke-WebRequest -UserAgent wget -Uri "https://gitlab.com/pouar/illogical-pathnames/-/archive/pouar/illogical-pathnames-pouar.zip" -OutFile "$env:CACHE\illogical-pathnames.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip" -OutFile $env:CACHE\dejavu.zip
 - cmd: 'C:\cygwin64\setup-x86_64.exe --quiet-mode --no-shortcuts --upgrade-also --packages texinfo-tex,texlive-collection-xetex,jq,make,m4,mingw64-x86_64-binutils,mingw64-x86_64-gcc-core,mingw64-x86_64-headers,mingw64-x86_64-pthreads,mingw64-x86_64-runtime'
 - ps: Expand-Archive $env:CACHE\ccl.zip -DestinationPath $env:CACHE
@@ -27,6 +28,7 @@ install:
 - ps: Expand-Archive $env:CACHE\declt.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\mcclim.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\dejavu.zip -DestinationPath $env:CACHE
+- ps: Expand-Archive $env:CACHE\illogical-pathnames.zip -DestinationPath $env:CACHE
 - ps: Copy-Item $env:CACHE\ccl\win64-headers\ -recurse -destination $env:CACHE\ccl-1.11.6\
 - ps: Copy-Item $env:CACHE\ccl\wx86cl64.image -destination $env:CACHE\ccl-1.11.6\
 - ps: Copy-Item $env:CACHE\dejavu-fonts-ttf-2.37\ttf\*.ttf  -destination C:\Windows\Fonts
@@ -40,6 +42,7 @@ install:
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\sly -ItemType SymbolicLink -Value $env:CACHE\sly-master
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\declt -ItemType SymbolicLink -Value $env:CACHE\declt-master
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\McCLIM -ItemType SymbolicLink -Value $env:CACHE\McCLIM-master
+- ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\illogical-pathnames -ItemType SymbolicLink -Value $env:CACHE\illogical-pathnames-pouar
 
 build_script:
 #- cmd: '"C:\Program Files\Steel Bank Common Lisp\1.4.14\sbcl" --script "appveyor-build-docs.lisp" texi'

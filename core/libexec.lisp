@@ -72,7 +72,20 @@
                                                  (make-pathname
                                                   :device (pathname-device (truename (uiop:argv0)))
                                                   :directory (pathname-directory (truename (uiop:argv0))))
-                                                 (asdf:component-pathname (asdf:find-system "yadfa"))))))))
+                                                 (asdf:component-pathname (asdf:find-system "yadfa")))))))
+    (ipath:define-illogical-host :yadfa.data (uiop:merge-pathnames*
+                                              (make-pathname
+                                               :directory '(:relative "yadfa"))
+                                              (uiop:xdg-data-home)))
+    (ipath:define-illogical-host :yadfa.config (uiop:merge-pathnames*
+                                                (make-pathname
+                                                 :directory '(:relative "yadfa"))
+                                                (uiop:xdg-config-home)))
+    (ipath:define-illogical-host :yadfa.home (if uiop:*image-dumped-p*
+                                                 (make-pathname
+                                                  :device (pathname-device (truename (uiop:argv0)))
+                                                  :directory (pathname-directory (truename (uiop:argv0))))
+                                                 (asdf:system-source-directory "yadfa"))))
   (set-logical-pathnames))
 (defun process-potty-dance-check (character attack)
   (and (or
@@ -143,20 +156,10 @@
                     old)
                    (t new))))
     (iter (for i in (uiop:directory*
-                     #P"yadfa:data;mods;**;*.asd"))
-      (when (string= (pathname-type i) "asd")
-        (setf (gethash (pathname-name i) *mod-registry*)
-              (preferred-mod (gethash (pathname-name i) *mod-registry*)
-                             (if (typep i 'logical-pathname)
-                                 i
-                                 (translate-pathname i
-                                                     (uiop:merge-pathnames*
-                                                      (make-pathname
-                                                       :directory '(:relative "yadfa" "mods" :wild-inferiors)
-                                                       :name :wild
-                                                       :type :wild)
-                                                      (uiop:xdg-data-home))
-                                                     "yadfa:data;mods;**;*.*.*"))))))))
+                     #P(:yadfa.data ("mods" :wild-inferiors) (:wild "asd") :newest)))
+      (setf (gethash (pathname-name i) *mod-registry*)
+            (preferred-mod (gethash (pathname-name i) *mod-registry*)
+                           i)))))
 (defun clear-pattern-cache ()
   (clrhash *pattern-cache*))
 (defunassert (find-mod (system))

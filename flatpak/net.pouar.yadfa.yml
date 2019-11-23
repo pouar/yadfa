@@ -81,6 +81,7 @@ modules:
       - cp -R declt/ /app/tmp/home/quicklisp/local-projects/declt/
       - cp -R McCLIM/ /app/tmp/home/quicklisp/local-projects/McCLIM/
       - cp -R sly/ /app/tmp/home/quicklisp/local-projects/sly/
+      - cp -R illogical-pathnames/ /app/tmp/home/quicklisp/local-projects/illogical-pathnames/
     sources:
       - type: file
         url: https://beta.quicklisp.org/quicklisp.lisp
@@ -99,6 +100,9 @@ modules:
       - type: git
         dest: sly
         url: https://github.com/joaotavora/sly.git
+      - type: git
+        dest: illogical-pathnames
+        url: https://gitlab.com/pouar/illogical-pathnames.git
   - name: yadfa-cache
     buildsystem: simple
     build-commands:
