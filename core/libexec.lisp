@@ -156,7 +156,7 @@
                     old)
                    (t new))))
     (iter (for i in (uiop:directory*
-                     #P(:yadfa.data ("mods" :wild-inferiors) (:wild "asd") :newest)))
+                     #P(:yadfa.data ("mods" :**) (:* "asd") :newest)))
       (setf (gethash (pathname-name i) *mod-registry*)
             (preferred-mod (gethash (pathname-name i) *mod-registry*)
                            i)))))
