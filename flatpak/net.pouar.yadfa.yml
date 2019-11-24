@@ -99,6 +99,7 @@ modules:
         url: https://github.com/joaotavora/sly.git
       - type: git
         dest: illogical-pathnames
+        branch: pouar
         url: https://gitlab.com/pouar/illogical-pathnames.git
   - name: yadfa-cache
     buildsystem: simple
