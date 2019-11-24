@@ -9,7 +9,7 @@
    #:eggman-area))
 (defun can-potty (prop &key wet mess pants-down user)
   (declare (ignorable prop wet mess pants-down user))
-  (not (when (and (typep prop '(not yadfa-props:toilet)) (or pants-down (filter-items (wear-of user) 'incontinence-product)))
+  (not (when (and (typep prop '(not yadfa-props:toilet)) (or pants-down (null (filter-items (wear-of user) 'incontinence-product))))
          (format t "STOP!!! THE SIGN SAYS ~A ISN'T ALLOWED TO DO THAT HERE!!!!! Just hold it all in.~%~%" (string-upcase (name-of user)))
          (when (or (>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)) (>= (bowels/contents-of user) (bowels/potty-dance-limit-of user)))
            (format t "*~a whines and continues ~a embarrassing potty dance while the public watches and giggles*~%~%"
@@ -20,7 +20,7 @@
          t)))
 (defun can-potty-peachs-castle-wannabe (prop &key wet mess pants-down user)
   (declare (ignorable prop wet mess pants-down user))
-  (not (when (or pants-down (filter-items (wear-of user) 'incontinence-product))
+  (not (when (or pants-down (null (filter-items (wear-of user) 'incontinence-product)))
          (format t "STOP!!! ~A CAN'T DO THAT HERE!!!! THERE ARE LIKE KIDS HERE!!!!! Just hold it all in~%~%" (string-upcase (name-of user)))
          (when (or (>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)) (>= (bowels/contents-of user) (bowels/potty-dance-limit-of user)))
            (format t "*~a whines and continues ~a embarrassing potty dance while the public watches and giggles*~%~%"
