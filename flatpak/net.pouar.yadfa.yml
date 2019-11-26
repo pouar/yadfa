@@ -58,7 +58,7 @@ modules:
     sources:
       - type: archive
         url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.9/sbcl-1.5.9-x86-64-linux-binary.tar.bz2
-        sha256: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.9/sbcl-1.5.9-x86-64-linux-binary.tar.bz2
+        sha256: 4c789c6bc87d5e1a93e1b0e5f15d7023b22b61b93661e91f6a69a588a0b4eb16
   - name: sbcl
     build-options:
       strip: true
