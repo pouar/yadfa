@@ -114,10 +114,12 @@
    #:team-member
    #:potty-trained-team-member
    #:ally
+   #:ally-rebel
    #:ally-no-potty-training
    #:ally-rebel-potty-training
    #:ally-silent-potty-training
    #:ally-last-minute-potty-training
+   #:ally-feral
    #:playable-ally
    #:player
    #:zone
@@ -318,7 +320,8 @@
    #:face-sit
    #:ghost-tickle
    #:ghost-squish
-   #:ghost-mush)
+   #:ghost-mush
+   #:bite)
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package :yadfa-items
   (:import-from :macro-level :macro-level)
@@ -420,6 +423,7 @@
    #:gem
    #:gold-collar
    #:diaper-corset
+   #:blackjack-uniform-diaper
    #:cloth-diaper-corset
    #:rubber-diaper-corset
    #:collar
@@ -486,7 +490,10 @@
    #:dergy
    #:ghost
    #:catchable-enemy
-   #:catch-chance-of)
+   #:catch-chance-of
+   #:raptor
+   #:change-class-text
+   #:define-adoptable-enemy)
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package :yadfa-props
   (:import-from :macro-level :macro-level)
@@ -586,12 +593,14 @@
    #:get-diaper-locked-1)
   (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package :yadfa-allies
-  (:use :yadfa :yadfa-util :cl :iterate)
+  (:use :yadfa :yadfa-util :cl :iterate :alexandria)
   (:export
    #:slynk
    #:chris
    #:kristy
-   #:furry)
+   #:furry
+   #:raptor
+   #:diapered-kobold)
   (:documentation "Contains all the allies in the game"))
 (uiop:define-package :yadfa-user
   (:use :cl :yadfa :yadfa-util :ugly-tiny-infix-macro :alexandria)
@@ -599,5 +608,6 @@
   (:documentation "The package that the player typically executes commands from"))
 (uiop:define-package :yadfa-clim
   (:mix :clim :yadfa)
-  (:use :iterate :clim-lisp :clim-extensions)
-  (:documentation "CLIM related stuff"))
+  (:use :iterate :yadfa-util :clim-lisp :clim-extensions)
+  (:documentation "CLIM related stuff")
+  (:export #:stat-view #:+stat-view+ #:draw-bar))

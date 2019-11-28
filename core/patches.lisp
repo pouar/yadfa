@@ -160,15 +160,17 @@
          (y-position (slot-value frame 'y-position))
          (width (slot-value frame 'width))
          (height (slot-value frame 'height)))
-    (declare (ignore own-window exit-boxes modify-initial-query resize-frame scroll-bars x-position y-position width height))
+    (declare (ignore own-window exit-boxes modify-initial-query
+                     resize-frame scroll-bars x-position y-position width height))
     (when (and align-prompts ;; t means the same as :right
                (not (eq align-prompts :left)))
       (setf align-prompts :right))
     (multiple-value-bind (cx cy) (stream-cursor-position stream)
       (let* ((return-values nil)
-             (*accepting-values-stream* (make-instance 'accepting-values-stream
-                                                       :stream stream
-                                                       :align-prompts align-prompts))
+             (*accepting-values-stream*
+               (make-instance 'accepting-values-stream
+                              :stream stream
+                              :align-prompts align-prompts))
              (arecord (updating-output (stream :record-type 'accepting-values-record)
                         (when label
                           (format stream label)
@@ -282,7 +284,7 @@
     (call-next-method)))
 (macro-level:macro-level
   `(setf *default-text-style*
-         (make-text-style ,@(if (find :mcclim-ffi-freetype *features*) '("DejaVu Sans Mono" "Book") '(:fix :roman)) :normal)))
+         (make-text-style ,@(if (uiop:featurep :mcclim-ffi-freetype) '("DejaVu Sans Mono" "Book") '(:fix :roman)) :normal)))
 
 (define-command (com-clear-output :name "Clear Output History"
                                   :command-table application-commands

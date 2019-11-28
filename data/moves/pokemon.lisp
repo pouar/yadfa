@@ -84,3 +84,8 @@
                          (setf j t))
                        (finally (return j)))
                (write-line "it had no effect")))))
+(defclass bite (stat/move) ()
+  (:default-initargs
+   :name "Bite"
+   :description "Bites the enemy"
+   :power 80))

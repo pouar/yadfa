@@ -1,4 +1,4 @@
-OPTS := ft texi
+OPTS := texi
 SRC := build.lisp
 SBCL := sbcl
 CCL := ccl

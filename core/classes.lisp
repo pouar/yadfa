@@ -4,7 +4,7 @@
   (mapcar #'c2mop:slot-definition-name
           (c2mop:class-slots (class-of self))))
 (defun handle-slot (object slot)
-  (and (slot-boundp object slot) (slot-value object-slot)))
+  (and (slot-boundp object slot) (slot-value object slot)))
 (defclass yadfa-class ()
   ((attributes
     :initarg :attributes
@@ -325,6 +325,7 @@
          t)))
 (defclass ally-silent-potty-training (ally potty-trained-team-member) ())
 (defclass ally-last-minute-potty-training (ally potty-trained-team-member) ())
+(defclass ally-feral (ally potty-trained-team-member) ())
 (defmethod print-object ((obj ally) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (format stream "~w" (handle-slot obj 'name))))

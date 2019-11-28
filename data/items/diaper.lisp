@@ -139,6 +139,20 @@
   (:default-initargs
    :name "Diaper Corset"
    :description "Full body suit that acts as a diaper. The only thing you need to wear."))
+(defclass blackjack-uniform-diaper (diaper-corset) ()
+  (:default-initargs
+   :name "Blackjack Uniform Diaper"
+   :description "Full body suit that acts as a diaper based on the diaper corset. Has the player's name on the back and a spade on the crotch that fades when wet so everyone knows who the loser is."
+   :wear-wet-text '(4000 "little yellow streams are leaking down from the leg guards"
+                    2000 "The front is stained yellow"
+                    1400 "It squishes when you walk"
+                    150 "The spade on the front has faded away"
+                    50 "The spade on the front has partially faded"
+                    1 "You can barely tell you wet it")
+   :wear-mess-text '(17000 "Poo is leaking out of the leg guards"
+                     8500 "The back is clearly stained brown"
+                     4250 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
+                     1 "You can feel a slight mess back there")))
 (defclass midnight-diaper (thick-diaper) ()
   (:default-initargs
    :name "Midnight Diaper"

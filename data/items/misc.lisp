@@ -102,18 +102,7 @@
    :cant-use-predicate '(lambda (item user)
                          (unless (typep user 'yadfa-enemies:catchable-enemy)
                            (out (name-of item) " can't be used on " (name-of user) :%)
-                           t))
-   :special-actions (list :take-items '(lambda (item user &key &allow-other-keys)
-                                        (declare (ignore user))
-                                        (setf (inventory-of (player-of *game*))
-                                         (append (iter (for enemy in (contained-enemies-of item))
-                                                   (dolist (item (inventory-of enemy))
-                                                     (collect item))
-                                                   (dolist (item (wear-of enemy))
-                                                     (collect item))
-                                                   (setf (inventory-of enemy) nil
-                                                         (wear-of enemy) nil))
-                                          (inventory-of (player-of *game*))))))))
+                           t))))
 (defclass ghost-catcher (enemy-catcher) ()
   (:default-initargs
    :name "Ghost Catcher"
