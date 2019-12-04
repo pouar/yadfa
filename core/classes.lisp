@@ -3,6 +3,8 @@
 (defmethod ms:class-persistent-slots ((self standard-object))
   (mapcar #'c2mop:slot-definition-name
           (c2mop:class-slots (class-of self))))
+(defun handle-slot (object slot)
+  (and (slot-boundp object slot) (slot-value object-slot)))
 (defclass yadfa-class ()
   ((attributes
     :initarg :attributes
@@ -325,7 +327,7 @@
 (defclass ally-last-minute-potty-training (ally potty-trained-team-member) ())
 (defmethod print-object ((obj ally) stream)
   (print-unreadable-object (obj stream :type t :identity t)
-    (format stream "~w" (name-of obj))))
+    (format stream "~w" (handle-slot obj 'name))))
 (defclass playable-ally (ally) ())
 (defmethod initialize-instance :after
     ((c base-character) &rest initargs &key &allow-other-keys)
@@ -520,7 +522,7 @@
   (:documentation "A zone on the map"))
 (defmethod print-object ((obj zone) stream)
   (print-unreadable-object (obj stream :type t :identity t)
-    (format stream "~s \"~a\"" (position-of obj) (name-of obj))))
+    (format stream "~s \"~a\"" (handle-slot obj 'position) (handle-slot obj 'name))))
 (defclass stat/move (yadfa-class)
   ((name
     :initarg :name
@@ -592,7 +594,7 @@
   (:documentation "Tangible objects in the AREA that the player can interact with"))
 (defmethod print-object ((obj prop) stream)
   (print-unreadable-object (obj stream :type t :identity t)
-    (format stream "~w" (name-of obj))))
+    (format stream "~w" (handle-slot obj 'name))))
 (defclass item (yadfa-class)
   ((description
     :initarg :description
@@ -1030,7 +1032,7 @@
          t)))
 (defmethod print-object ((obj enemy) stream)
   (print-unreadable-object (obj stream :type t :identity t)
-    (format stream "\"~a ~a\"" (if (malep obj) "Male" "Female") (species-of obj))))
+    (format stream "\"~a ~a\"" (and (slot-boundp obj 'male) (if (slot-value obj 'male) "Male" "Female")) (handle-slot obj 'species))))
 (defclass potty-enemy (enemy) ()
   (:default-initargs
    :bladder/fill-rate (* (/ 2000 24 60) 2)
