@@ -3,21 +3,21 @@
 (defunassert (yadfa-world-commands:disown-adopted-enemies (&optional allies))
     (enemies (or list type-specifier))
   (setf allies
-        (typecase enemies
+        (typecase allies
           (null (accept-with-frame-resolved
                   (clim:accepting-values (*query-io*  :resynchronize-every-pass t)
-                    (setf enemies (clim:accept `(clim:subset-alist ,(iter (for enemy in (allies-of *game*))
-                                                                      (when (typep (class-of i) 'adopted-enemy)
-                                                                        (collect (cons (name-of enemy) enemy)))))
-                                               :prompt "Enemies to disown"
-                                               :stream *query-io*
-                                               :view clim:+check-box-view+)))))
+                    (clim:accept `(clim:subset-alist ,(iter (for enemy in (allies-of *game*))
+                                                        (when (typep (class-of enemy) 'adopted-enemy)
+                                                          (collect (cons (name-of enemy) enemy)))))
+                                 :prompt "Enemies to disown"
+                                 :stream *query-io*
+                                 :view clim:+check-box-view+))))
           (type-specifier (iter (for enemy in (allies-of *game*))
                             (when (typep enemy `(and ,allies adopted-enemy))
-                              (collect i))))
+                              (collect enemy))))
           (list (iter
                   (for enemy in (allies-of *game*))
-                  (generate current in enemies)
+                  (generate current in allies)
                   (for index upfrom 0)
                   (cond ((typep current '(not unsigned-byte))
                          (error "ENEMIES must be a list of unsigned-bytes"))
