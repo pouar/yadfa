@@ -42,19 +42,34 @@
                  (inventory-of (player-of *game*)))))))
      (when (getf (special-actions-of item) :adopt-enemies)
        (setf (getf (special-actions-of item) :adopt-enemies)
-             '(lambda (item user &allow-other-keys)
+             '(lambda (item user &allow-other-keys :enemies enemies)
                (if (iter (for i in (contained-enemies-of item))
                      (when (typep (class-of i) 'yadfa-enemies:adoptable-enemy)
                        (return t)))
-                (let (enemies)
-                  (accept-with-frame-resolved
-                    (clim:accepting-values (*query-io*  :resynchronize-every-pass t)
-                      (setf enemies (clim:accept `(clim:subset-alist ,(iter (for enemy in (contained-enemies-of item))
-                                                                        (when (typep (class-of i) 'yadfa-enemies:adoptable-enemy)
-                                                                          (collect (cons (name-of enemy) enemy)))))
-                                                 :prompt "Enemies to adopt"
-                                                 :stream *query-io*
-                                                 :view clim:+check-box-view+))))
+                (progn
+                  (setf enemies
+                        (typecase enemies
+                          (null (accept-with-frame-resolved
+                                  (clim:accepting-values (*query-io*  :resynchronize-every-pass t)
+                                    (setf enemies (clim:accept `(clim:subset-alist ,(iter (for enemy in (contained-enemies-of item))
+                                                                                      (when (typep (class-of i) 'yadfa-enemies:adoptable-enemy)
+                                                                                        (collect (cons (name-of enemy) enemy)))))
+                                                               :prompt "Enemies to adopt"
+                                                               :stream *query-io*
+                                                               :view clim:+check-box-view+)))))
+                          (type-specifier (iter (for enemy in (contained-enemies-of item))
+                                            (when (typep i enemies)
+                                              (collect i))))
+                          (list (iter
+                                  (for enemy in (contained-enemies-of item))
+                                  (generate current in enemies)
+                                  (for index upfrom 0)
+                                  (cond ((typep current '(not unsigned-byte))
+                                         (error "ENEMIES must be a list of unsigned-bytes"))
+                                        ((eql index current)
+                                         (collect enemy)
+                                         (next current)))))
+                          (t (error "ENEMIES must either be a list of unsigned-bytes or a type specifier"))))
                   (alexandria:removef (contained-enemies-of item) enemies
                                       :test (lambda (o e)
                                               (member e o)))
@@ -95,7 +110,7 @@
            (process-potty-dance-of target) nil)
 
      (push target (contained-enemies-of item)))))
-(defunassert (yadfa-items-battle-commands:catch-enemy (&optional (target 'yadfa-enemies:catchable-enemy) (item 'enemy-catcher))
+(defunassert (yadfa-battle-commands:catch-enemy (&optional (target 'yadfa-enemies:catchable-enemy) (item 'enemy-catcher))
                                                       "Catches an enemy using. @var{ITEM} which is a type specifier. @var{TARGET} is an index or type specifier of an enemy in battle or a type specifier")
     (item type-specifier
           target (or unsigned-byte type-specifier))
@@ -112,17 +127,17 @@
                            (or a
                                (progn
                                  (write-line "That target doesn't exist")
-                                 (return-from yadfa-items-battle-commands:catch-enemy))))))
+                                 (return-from yadfa-battle-commands:catch-enemy))))))
     (cond ((not item)
            (format t "You don't have an item with that type specifier that can catch that enemy~%")
-           (return-from yadfa-items-battle-commands:catch-enemy))
+           (return-from yadfa-battle-commands:catch-enemy))
           ((typep selected-target '(not yadfa-enemies:catchable-enemy))
            (format t "That enemy can't be caught~%")
-           (return-from yadfa-items-battle-commands:catch-enemy)))
+           (return-from yadfa-battle-commands:catch-enemy)))
     (process-battle
      :item selected-item
      :selected-target selected-target)))
-(defunassert (yadfa-items-world-commands:loot-caught-enemies (&optional item)
+(defunassert (yadfa-world-commands:loot-caught-enemies (&optional item)
                                                              "Loots the enemies you caught. @var{ITEM} is either a type specifier or an unsiged-byte of the item. Don't specify if you want to loot the enemies of all items")
     (item (or null unsigned-byte type-specifier))
   (cond ((null item)

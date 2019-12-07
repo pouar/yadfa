@@ -455,17 +455,18 @@
    #:catch-chance-multiplier-of
    #:catch-chance-delta-of)
   (:documentation "Contains all the items in the game"))
-(uiop:define-package :yadfa-items-battle-commands
+(uiop:define-package :yadfa-battle-commands
   (:import-from :macro-level :macro-level)
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
    #:catch-enemy)
   (:documentation "convenience functions for battle"))
-(uiop:define-package :yadfa-items-world-commands
+(uiop:define-package :yadfa-world-commands
   (:import-from :macro-level :macro-level)
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
-   #:loot-caught-enemies)
+   #:loot-caught-enemies
+   #:disown-adopted-enemies)
   (:documentation "convenience functions for battle"))
 (uiop:define-package :yadfa-enemies
   (:import-from :macro-level :macro-level)

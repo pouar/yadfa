@@ -43,9 +43,9 @@
   "Put functions that sets crap to fixed values here. Intended to be used similar to the feature in Cheat Engine used to set variables to a constant value, although will probably run less frequently and is generally easier to use since it doesn't involve working with memory addresses")
 (define-global-var *game* nil
   "contains the information to be serialized when saving and loading a game")
-(define-global-var *battle-packages* '(:yadfa-battle :yadfa-items-battle-commands)
+(define-global-var *battle-packages* '(:yadfa-battle :yadfa-battle-commands)
   "contains the package designators for the exported symbols to be used as commands in battle")
-(define-global-var *world-packages* '(:yadfa-world :yadfa-items-world-commands)
+(define-global-var *world-packages* '(:yadfa-world :yadfa-world-commands)
   "contains the package designators for the exported symbols to be used as commands outside of battle")
 (define-global-var *command-packages* '(:yadfa-bin)
   "contains the package designators for the exported symbols to be used as commands")
