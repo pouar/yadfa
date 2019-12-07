@@ -396,6 +396,7 @@
                 (dolist (i yadfa-clim::*records*) do (redisplay i *standard-output*))
                 (redisplay-frame-panes frame :force-p first-time)
                 (when first-time
+                  (yadfa::switch-user-packages)
                   (yadfa:intro-function frame-query-io))
                 (setq first-time nil needs-redisplay nil)
                 (when (>= (yadfa:time-of yadfa:*game*) (+ yadfa::*last-rng-update* 20))
@@ -417,7 +418,8 @@
             (if interactorp
                 (format frame-query-io "~&Command aborted.~&")
                 (beep))))))))
-
+(defmethod run-frame-top-level :before ((frame listener) &key)
+  (conditional-commands:change-entity-enabledness 'yadfa-clim::listener-start))
 (in-package :yadfa)
 (define-condition uwu (simple-error) ()
   (:report (lambda (condition stream)

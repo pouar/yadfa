@@ -21,13 +21,19 @@
   (not (list-length-< length list)))
 (defun switch-user-packages ()
   (use-package *command-packages* :yadfa-user)
-  (if *battle*
-      (progn
-        (unuse-package *world-packages* :yadfa-user)
-        (use-package *battle-packages* :yadfa-user))
-      (progn
-        (unuse-package *battle-packages* :yadfa-user)
-        (use-package *world-packages* :yadfa-user))))
+  (let ((clim:*application-frame* (clim:find-application-frame 'clim-listener::listener :create nil)))
+    (declare (special clim:*application-frame*))
+    (if *battle*
+        (progn
+          (unuse-package *world-packages* :yadfa-user)
+          (use-package *battle-packages* :yadfa-user)
+          (when clim:*application-frame*
+            (conditional-commands:change-entity-enabledness 'yadfa-clim::com-enable-battle)))
+        (progn
+          (unuse-package *battle-packages* :yadfa-user)
+          (use-package *world-packages* :yadfa-user)
+          (when clim:*application-frame*
+            (conditional-commands:change-entity-enabledness 'yadfa-clim::com-enable-world))))))
 (defunassert (get-event (event-id))
     (event-id symbol)
   (gethash event-id *events*))

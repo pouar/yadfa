@@ -1,7 +1,10 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-clim"; coding: utf-8-unix; -*-
 (in-package :yadfa-clim)
+(define-command-table yadfa-world-commands)
+(define-command-table yadfa-battle-commands)
+(define-command-table yadfa-bin-commands)
 (define-command-table yadfa-menu-commands)
-(define-command-table yadfa-presentation-commands)
+
 (define-command (yadfa-set-eol-action :command-table yadfa-menu-commands :menu "Set EOL Action")
     ((keyword '(member :scroll :allow :wrap :wrap*)
               :prompt "Keyword"))
@@ -13,7 +16,21 @@
     (find-menu-item "Yadfa" (find-command-table 'clim-listener::listener) :errorp nil)
   (add-menu-item-to-command-table (find-command-table 'clim-listener::listener) "Yadfa" :menu (find-command-table 'yadfa-menu-commands)))
 (pushnew (find-command-table 'yadfa-menu-commands) (command-table-inherit-from (find-command-table 'clim-listener::listener)))
-(pushnew (find-command-table 'yadfa-presentation-commands) (command-table-inherit-from (find-command-table 'clim-listener::listener)))
+(pushnew (find-command-table 'yadfa-world-commands) (command-table-inherit-from (find-command-table 'clim-listener::listener)))
+(pushnew (find-command-table 'yadfa-battle-commands) (command-table-inherit-from (find-command-table 'clim-listener::listener)))
+(pushnew (find-command-table 'yadfa-bin-commands) (command-table-inherit-from (find-command-table 'clim-listener::listener)))
+(conditional-commands:define-conditional-command (com-enable-world)
+    (clim-listener::listener :enable-commands (yadfa-world-commands yadfa-bin-commands)
+                             :disable-commands (yadfa-battle-commands))
+    ())
+(conditional-commands:define-conditional-command (com-enable-battle)
+    (clim-listener::listener :enable-commands (yadfa-battle-commands yadfa-bin-commands)
+                             :disable-commands (yadfa-world-commands))
+    ())
+(conditional-commands:add-entity-enabledness-change 'listener-start 'clim-listener::listener
+                                                    :enable-commands '(yadfa-bin-commands yadfa-world-commands)
+                                                    :disable-commands '(yadfa-world-commands)
+                                                    :change-status nil)
 (defclass stat-view (view) ())
 (defconstant +stat-view+ (make-instance 'stat-view))
 (defmacro draw-bar (medium stat &rest colors)
@@ -124,7 +141,7 @@
             ((>= (bowels/contents-of object) (bowels/need-to-potty-limit-of object)) :yellow)
             (t :green))
   (terpri stream))
-(define-command (com-yadfa-move :command-table yadfa-presentation-commands :menu t :name "Move Here")
+(define-command (com-yadfa-move :command-table yadfa-world-commands :menu t :name "Move")
     ((zone zone))
   (block nil
     (apply #'yadfa-world:move
@@ -203,11 +220,11 @@
              (t
               (format t "You're either already on that zone or you tried specifying a path that involves turning (which this interface can't do because Pouar sucks at writing code that generates paths)~%")
               (return))))))
-(define-command (com-yadfa-describe-zone :command-table yadfa-presentation-commands :menu t :name "Print Zone Description")
+(define-command (com-yadfa-describe-zone :command-table yadfa-bin-commands :menu t :name "Describe Zone")
     ((zone zone))
   (yadfa-bin:lst :describe-zone zone))
 (define-presentation-to-command-translator com-yadfa-move-translator
-    (zone com-yadfa-move yadfa-presentation-commands
+    (zone com-yadfa-move yadfa-world-commands
      :documentation "Move"
      :pointer-documentation "Move Here"
      :gesture nil
@@ -215,8 +232,8 @@
     (object)
   (list object))
 (define-presentation-to-command-translator com-yadfa-describe-zone-translator
-    (zone com-yadfa-describe-zone yadfa-presentation-commands
-     :documentation "Print Zone Description"
+    (zone com-yadfa-describe-zone yadfa-bin-commands
+     :documentation "Describe Zone"
      :pointer-documentation "Print Zone Description"
      :gesture nil
      :menu t)

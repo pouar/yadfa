@@ -39,7 +39,6 @@
   (when (find "texi" (uiop:command-line-arguments) :test #'string=)
     (build-texi)
     (uiop:quit))
-  (switch-user-packages)
   (when (featurep :mcclim-ffi-freetype)
     (setf (symbol-value (uiop:find-symbol* '#:*library* '#:freetype2))
           (uiop:symbol-call '#:freetype2 '#:make-freetype)))
