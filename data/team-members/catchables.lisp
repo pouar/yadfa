@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-allies"; coding: utf-8-unix; -*-
 (in-package :yadfa-allies)
-(defclass raptor (playable-ally ally-feral) ()
+(defclass raptor (adopted-enemy ally-feral) ()
   (:default-initargs
    :name "Raptor"
    :malep (random-elt '(t nil))
@@ -10,7 +10,7 @@
                 (make-instance 'yadfa-moves:watersport)
                 (make-instance 'yadfa-moves:mudsport))
    :wear (list (make-instance 'yadfa-items:diaper))))
-(defclass diapered-kobold (playable-ally ally-silent-potty-training pantsable-character) ()
+(defclass diapered-kobold (adopted-enemy ally-silent-potty-training pantsable-character) ()
   (:default-initargs
    :name "Diapered Kobold"
    :description "They're apparently from a tribe of kobolds in the area. Their outfits are similar to the ancient Egyptians."

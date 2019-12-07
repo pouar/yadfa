@@ -44,13 +44,13 @@
        (setf (getf (special-actions-of item) :adopt-enemies)
              '(lambda (item user &allow-other-keys)
                (if (iter (for i in (contained-enemies-of item))
-                     (when (typep (class-of i) 'yadfa-enemies::adoptable-enemy)
+                     (when (typep (class-of i) 'yadfa-enemies:adoptable-enemy)
                        (return t)))
                 (let (enemies)
                   (accept-with-frame-resolved
                     (clim:accepting-values (*query-io*  :resynchronize-every-pass t)
                       (setf enemies (clim:accept `(clim:subset-alist ,(iter (for enemy in (contained-enemies-of item))
-                                                                        (when (typep (class-of i) 'yadfa-enemies::adoptable-enemy)
+                                                                        (when (typep (class-of i) 'yadfa-enemies:adoptable-enemy)
                                                                           (collect (cons (name-of enemy) enemy)))))
                                                  :prompt "Enemies to adopt"
                                                  :stream *query-io*
@@ -60,7 +60,7 @@
                                               (member e o)))
                   (alexandria:appendf (allies-of *game*) (iter (for i in enemies)
                                                            (write-line (yadfa-enemies:change-class-text i))
-                                                           (collect (change-class i (car (yadfa-enemies::change-class-target (find-class i))))))))
+                                                           (collect (change-class i (get (class-name i) 'yadfa-enemies:change-class-target))))))
                 (format t "No enemies in there to adopt"))))))))
 (defmethod catch-method ((item enemy-catcher) (target yadfa-enemies:ghost))
   (out "You failed to catch " (name-of target) :% :%)

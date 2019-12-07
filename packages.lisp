@@ -492,8 +492,9 @@
    #:catchable-enemy
    #:catch-chance-of
    #:raptor
+   #:change-class-target
    #:change-class-text
-   #:define-adoptable-enemy)
+   #:adoptable-enemy)
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package :yadfa-props
   (:import-from :macro-level :macro-level)
@@ -600,7 +601,8 @@
    #:kristy
    #:furry
    #:raptor
-   #:diapered-kobold)
+   #:diapered-kobold
+   #:adopted-enemy)
   (:documentation "Contains all the allies in the game"))
 (uiop:define-package :yadfa-user
   (:use :cl :yadfa :yadfa-util :ugly-tiny-infix-macro :alexandria)

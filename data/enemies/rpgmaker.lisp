@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-enemies"; coding: utf-8-unix; -*-
 (in-package :yadfa-enemies)
-(define-adoptable-enemy diapered-kobold (potty-enemy pantsable-character) ()
+(defclass diapered-kobold (potty-enemy pantsable-character adoptable-enemy) ()
   (:default-initargs
    :name "Diapered Kobold"
    :description "They're apparently from a tribe of kobolds in the area. Their outfits are similar to the ancient Egyptians."
@@ -10,8 +10,8 @@
    :bowels/contents (random 7000)
    :bitcoins-per-level 100
    :inventory (iter (for i from 0 to (random 10))
-                (collect (make-instance 'yadfa-items:cloth-diaper))))
-  (:change-class-target yadfa-allies:diapered-kobold))
+                (collect (make-instance 'yadfa-items:cloth-diaper)))))
+(setf (get 'diapered-kobold 'change-class-target) 'yadfa-allies:diapered-kobold)
 (defmethod initialize-instance :after
     ((c diapered-kobold) &rest args &key &allow-other-keys)
   (unless (iter (for (a b) on args)
@@ -135,14 +135,14 @@
 
 ;;; Raptors would most likely not have bladders irl, but I already threw
 ;;; scientific accuracy out the window when I gave them scales instead of feathers.
-(define-adoptable-enemy raptor (potty-enemy) ()
+(defclass raptor (potty-enemy adoptable-enemy) ()
     (:default-initargs
      :name "Raptor"
      :malep (random-elt '(t nil))
      :description "Biologically inaccurate velociraptor. The kind you see in Jurassic Park that looks more like a lizard than a prehistoric bird."
      :moves (list (make-instance 'yadfa-moves:roar)
                   (make-instance 'yadfa-moves:bite))
-     :species "Raptor")
-    (:change-class-target yadfa-allies:raptor))
+     :species "Raptor"))
+(setf (get 'diapered-kobold 'change-class-target) 'yadfa-allies:raptor)
 (defmethod change-class-text ((class raptor))
   (format nil "~a was adopted and diapered" (name-of class)))
