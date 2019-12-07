@@ -340,6 +340,7 @@
   (let ((*default-server-path* (if (eq (car (clim:port-server-path (clim:find-port))) :clx-ff)
                                    :clx-ttf nil))
         (*default-text-style* (make-text-style :fix :roman :normal))) ;; https://github.com/McCLIM/McCLIM/issues/913
+    (declare (special *default-server-path* *default-text-style*))
     (run-frame-top-level (make-application-frame 'game-frame
                                                  :pretty-name "Blackjack"
                                                  :ai (make-instance enemy :wear (list (make-instance 'yadfa-items:blackjack-uniform-diaper)))))))
