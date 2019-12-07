@@ -337,4 +337,9 @@
                      :inherited nil)))
         (thunk ('com-give-up (make-instance 'give-up) give-up))))))
 (defun run-game (&optional (enemy 'enemy))
-  (run-frame-top-level (make-application-frame 'game-frame :pretty-name "Blackjack" :ai (make-instance enemy :wear (list (make-instance 'yadfa-items:blackjack-uniform-diaper))))))
+  (let ((*default-server-path* (if (eq (car (clim:port-server-path (clim:find-port))) :clx-ff)
+                                   :clx-ttf nil))
+        (*default-text-style* (make-text-style :fix :roman :normal))) ;; https://github.com/McCLIM/McCLIM/issues/913
+    (run-frame-top-level (make-application-frame 'game-frame
+                                                 :pretty-name "Blackjack"
+                                                 :ai (make-instance enemy :wear (list (make-instance 'yadfa-items:blackjack-uniform-diaper)))))))
