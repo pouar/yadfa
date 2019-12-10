@@ -1,8 +1,4 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-blackjack"; coding: utf-8-unix; -*-
-(uiop:define-package :yadfa-blackjack
-  (:mix :clim :yadfa)
-  (:use :iterate :clim-lisp :clim-extensions :conditional-commands)
-  (:export #:run-game))
 (in-package :yadfa-blackjack)
 (define-command-table game-commands)
 (define-command-table playing-commands :inherit-from (game-commands))
@@ -33,6 +29,10 @@
 (defvar *ai-checkpoint*)
 (defvar *player-check-point*)
 (defvar *put-on-old-clothes*)
+(declaim (type vector *player-cards* *ai-cards* *deck*)
+         (type list *player-clothes*)
+         (type (member :playing :end-game :end-round) *round*)
+         (type boolean *put-on-old-clothes*))
 (define-conditional-application-frame game-frame
     ()
   (:enable-commands (playing-commands)
@@ -59,7 +59,11 @@
         *player-check-point*
         *ai-checkpoint*
         *put-on-old-clothes*)
-    (declare (special *player-cards* *player-clothes* *player-check-point* *ai-cards* *ai-checkpoint* *deck* *round*))
+    (declare (special *player-cards* *player-clothes* *player-check-point* *ai-cards* *ai-checkpoint* *deck* *round*)
+             (type vector *player-cards* *ai-cards* *deck*)
+             (type list *player-clothes*)
+             (type (member :playing :end-game :end-round) *round*)
+             (type boolean *put-on-old-clothes*))
     (unwind-protect (call-next-method)
       (if *put-on-old-clothes*
           (push *player-clothes* (inventory-of (player-of *game*)))
@@ -77,7 +81,7 @@
                                                                   "CLIM"))))))
      (draw-rectangle* ,medium x y (+ x 400) (+ y 15)
                       :filled nil)
-     (clim:stream-set-cursor-position ,medium (+ x 400) y)))
+     (setf (stream-cursor-position ,medium) (values (+ x 400) y))))
 (defun deal ()
   (set-mode :playing)
   (iter (for i in-vector *player-cards*)
@@ -150,20 +154,24 @@
           (set-mode :end-round)))))
 (define-command (com-exit-game :name t :command-table end-game-commands)
     ((put-on-old-clothes boolean :default nil :prompt "Put on old clothes?:"))
-  (setf *put-on-old-clothes* put-on-old-clothes)
-  (frame-exit *application-frame*))
+  (locally (declare (type boolean put-on-old-clothes))
+    (setf *put-on-old-clothes* put-on-old-clothes)
+    (frame-exit *application-frame*)))
 (define-command (com-give-up :name t :command-table playing-commands)
     ((go-potty '(member-alist (("Run to the toilet" :toilet)
                                ("Flood your pamps" :pamps)))
-               :default :pamps :prompt "[[Run to the toilet]] Or [[Flood your pamps]]?: ")
+               :default :pamps :prompt "[[Run to the toilet | Flood your pamps]]?: ")
      (put-on-old-clothes boolean :default nil :prompt "Put on old clothes?: "))
-  (let ((pants-down (case go-potty
-                      (:toilet t)
-                      (:pants nil))))
-    (wet :pants-down pants-down :clothes *player-clothes*)
-    (mess :pants-down pants-down :clothes *player-clothes*))
-  (setf *put-on-old-clothes* put-on-old-clothes)
-  (frame-exit *application-frame*))
+  (locally (declare (type boolean put-on-old-clothes)
+                    (type keyword go-potty))
+    (let ((pants-down (case go-potty
+                        (:toilet t)
+                        (:pants nil))))
+      (declare (type boolean pants-down))
+      (wet :pants-down pants-down :clothes *player-clothes*)
+      (mess :pants-down pants-down :clothes *player-clothes*))
+    (setf *put-on-old-clothes* put-on-old-clothes)
+    (frame-exit *application-frame*)))
 (defclass give-up () ())
 (define-presentation-to-command-translator give-up-with-accept
     (give-up com-give-up game-frame
@@ -177,7 +185,7 @@
       (fresh-line *query-io*)
       (setf go-potty (accept '(member-alist (("Run to the toilet" :toilet)
                                              ("Flood your pamps" :pamps)))
-                             :prompt "[[Run to the toilet]] Or [[Flood your pamps]]? "
+                             :prompt "[[Run to the toilet | Flood your pamps]]? "
                              :default :pamps :stream *query-io* :view +option-pane-view+))
       (fresh-line *query-io*)
       (setf put-on-old-clothes (accept 'boolean
@@ -297,7 +305,7 @@
                (stream-increment-cursor-position pane 0 40)
                (updating-output (pane :unique-id user :id-test 'eq :cache-value (bladder/contents-of user))
                  (present user 'base-character :view +stat-view+ :stream pane)))))
-    (stream-set-cursor-position pane 0 0)
+    (setf (stream-cursor-position pane) (values 0 0))
     (draw-row (ai-of frame) *ai-cards*)
     (draw-row (player-of *game*) *player-cards*)))
 (defun draw-gadgets (frame pane)

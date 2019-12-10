@@ -51,6 +51,7 @@
    #:present-with-frame-resolved
    #:updating-present-frame-resolved
    ;;functions
+   #:finished-events
    #:process-battle
    #:get-positions-of-type
    #:trigger-event
@@ -261,6 +262,7 @@
    #:thickness-capacity-of
    #:thickness-capacity-threshold-of
    #:waterproofp
+   #:leakproofp
    #:disposablep
    #:sogginess-of
    #:sogginess-capacity-of
@@ -321,7 +323,9 @@
    #:ghost-tickle
    #:ghost-squish
    #:ghost-mush
-   #:bite)
+   #:bite
+   #:teleporting-flood
+   #:teleporting-mess)
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package :yadfa-items
   (:import-from :macro-level :macro-level)
@@ -396,6 +400,10 @@
    #:kurikia-thick-diaper
    #:thick-cloth-diaper
    #:thick-diaper
+   #:infinity-diaper
+   #:temple-diaper
+   #:cursed-diaper
+   #:temple-pullups
    #:thick-diaper-package
    #:kurikia-thick-rubber-diaper
    #:kurikia-thick-cloth-diaper
@@ -552,7 +560,8 @@
    #:haunted-house
    #:haunted-forest
    #:rocket
-   #:rainbow-slide)
+   #:rainbow-slide
+   #:pyramid)
   (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package :yadfa-events
   (:use :yadfa :yadfa-util :cl :iterate)
@@ -592,7 +601,9 @@
    #:enter-silver-cape-1
    #:obtain-pirate-ship-1
    #:get-location-to-pirate-cove-1
-   #:get-diaper-locked-1)
+   #:get-diaper-locked-1
+   #:pyramid-puzzle-1
+   #:infinity-diaper-obtained-1)
   (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package :yadfa-allies
   (:use :yadfa :yadfa-util :cl :iterate :alexandria)
@@ -611,6 +622,20 @@
   (:documentation "The package that the player typically executes commands from"))
 (uiop:define-package :yadfa-clim
   (:mix :clim :yadfa)
-  (:use :iterate :yadfa-util :clim-lisp :clim-extensions)
+  (:use :iterate :yadfa-util :clim-lisp :clim-extensions :conditional-commands)
   (:documentation "CLIM related stuff")
   (:export #:stat-view #:+stat-view+ #:draw-bar #:run-listener))
+(uiop:define-package :yadfa-blackjack
+  (:mix :clim :yadfa)
+  (:use :iterate :clim-lisp :clim-extensions :conditional-commands)
+  (:export #:run-game))
+(uiop:define-package :yadfa-pyramid
+  (:mix :clim :yadfa :alexandria)
+  (:use :iterate :clim-lisp :clim-extensions :conditional-commands :yadfa-util)
+  (:export #:run-game #:stat-view #:+stat-view+ #:process-potty)
+  (:shadow #:area))
+(uiop:define-package :yadfa-puzzle
+  (:mix :clim :yadfa)
+  (:use :iterate :clim-lisp :clim-extensions :yadfa-pyramid :conditional-commands :yadfa-util)
+  (:export #:run-game)
+  (:shadow #:run-game))

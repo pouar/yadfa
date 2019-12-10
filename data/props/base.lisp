@@ -4,18 +4,18 @@
    :name "Toilet"
    :description "A toilet"
    :actions (list :use (make-action
-                        :documentation "Use the toilet. if WET or MESS is T, the player will empty his bladder/bowels completely. If a number is given, the player will empty his bladder by that amount, however the player will mess completely no matter what number you give it if you provide a number. If ALLY number is specified, that ALLY uses the toilet, otherwise it's the player"
+                        :documentation "Use the toilet. if WET or MESS is T, the player will empty his bladder/bowels completely. If a real is given, the player will empty his bladder by that amount, however the player will mess completely no matter what number you give it if you provide a number. If ALLY number is specified, that ALLY uses the toilet, otherwise it's the player"
                         :lambda '(lambda (prop &rest keys &key wet mess pull-pants-down ally &allow-other-keys)
                                   (declare (type prop prop)
                                    (type boolean pull-pants-down)
                                    (type (or integer null) ally)
-                                   (type (or boolean number) wet mess)
+                                   (type (or boolean real) wet mess)
                                    (ignore keys))
                                   (check-type prop prop)
                                   (check-type pull-pants-down boolean)
                                   (check-type ally (or integer null))
-                                  (check-type wet (or boolean number))
-                                  (check-type mess (or boolean number))
+                                  (check-type wet (or boolean real))
+                                  (check-type mess (or boolean real))
                                   (block nil
                                     (when (and ally (>= ally (list-length (allies-of *game*))))
                                       (format t "That ally doesn't exist~%")

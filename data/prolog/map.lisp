@@ -69,7 +69,7 @@
             (name-of user) (if (malep user) "his" "her") (if (malep user) "his" "her"))
     (when (trigger-event 'yadfa-events:get-diaper-locked-1)
       (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%" (name-of user)))))
-(defevent initialize-enemy-spawn-list
+(defevent initialize-enemy-spawn-and-wear-lists
   :lambda (lambda (self)
             (declare (ignore self))
             (serapeum:dict*
@@ -154,5 +154,33 @@
                                              `(:level ,(random-from-range 2 5)))))
                                  (:chance 1/20
                                   :enemies ((yadfa-enemies:dergy .
-                                             `(:level ,(random-from-range 2 5)))))))))
-(trigger-event 'initialize-enemy-spawn-list)
+                                             `(:level ,(random-from-range 2 5)))))))
+            (serapeum:dict*
+             (must-wear-of *game*)
+             'pyramid '((or yadfa-items:temple-diaper yadfa-items:cursed-diaper yadfa-items:infinity-diaper) .
+                        (lambda (user)
+                          (declare (ignore user))
+                          (write-line "Only those who wear the enchanted pamps and only the enchanted pamps may enter.")
+                          nil)))
+            (serapeum:dict*
+             (must-wear*-of *game*)
+             'pyramid '((or yadfa-items:temple-diaper yadfa-items:cursed-diaper yadfa-items:infinity-diaper) .
+                        (lambda (user)
+                          (declare (ignore user))
+                          (write-line "You can't remove those here.")
+                          nil)))
+            (serapeum:dict*
+             (must-not-wear-of *game*)
+             'pyramid '((not (or yadfa-items:temple-diaper yadfa-items:cursed-diaper yadfa-items:infinity-diaper)) .
+                        (lambda (user)
+                          (declare (ignore user))
+                          (write-line "Only those who wear the enchanted pamps and only the enchanted pamps may enter.")
+                          nil)))
+            (serapeum:dict*
+             (must-not-wear*-of *game*)
+             'pyramid '((not (or yadfa-items:temple-diaper yadfa-items:cursed-diaper yadfa-items:infinity-diaper)) .
+                        (lambda (user)
+                          (declare (ignore user))
+                          (write-line "You can't wear those here.")
+                          nil)))))
+(trigger-event 'initialize-enemy-spawn-and-wear-lists)

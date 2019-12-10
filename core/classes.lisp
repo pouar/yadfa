@@ -488,28 +488,32 @@
                       (declare (ignore user))
                       t))
     :accessor must-wear-of
-    :documentation "Used to determine whether you can enter the zone based on what you're wearing. @var{USER} is a cons with the type specifier of what you must be wearing and a lambda expression or function that runs to determine if you can enter the zone")
+    :documentation #.(format nil "Used to determine whether you can enter the zone based on what you're wearing. @var{USER} is a cons with the type specifier of what you must be wearing and a lambda expression or function that runs to determine if you can enter the zone. You can also use a symbol as key for one of the values in the hash table in the @code{MUST-WEAR} slot in ~a."
+                             (ref game :class)))
    (must-wear*
     :initarg :must-wear*
     :initform '(t . (lambda (user)
                       (declare (ignore user))
                       t))
     :accessor must-wear*-of
-    :documentation "Similar to the @code{MUST-WEAR} slot but is done when you try to wear or change while still inside the zone")
+    :documentation #.(format nil "Similar to the @code{MUST-WEAR} slot but is done when you try to wear or change while still inside the zone. You can also use a symbol as key for one of the values in the hash table in the @code{MUST-WEAR*} slot in ~a."
+                             (ref game :class)))
    (must-not-wear
     :initarg :must-not-wear
     :initform '(nil . (lambda (user)
                         (declare (ignore user))
                         t))
     :accessor must-not-wear-of
-    :documentation "Used to determine whether you can enter the zone based on what you're wearing. @var{USER} is a cons with the type specifier of what you must not be wearing and a lambda expression or function that runs to determine if you can enter the zone")
+    :documentation #.(format nil "Used to determine whether you can enter the zone based on what you're wearing. @var{USER} is a cons with the type specifier of what you must not be wearing and a lambda expression or function that runs to determine if you can enter the zone. You can also use a symbol as key for one of the values in the hash table in the @code{MUST-NOT-WEAR} slot in ~a."
+                             (ref game :class)))
    (must-not-wear*
     :initarg :must-not-wear*
     :initform '(nil . (lambda (user)
                         (declare (ignore user))
                         t))
     :accessor must-not-wear*-of
-    :documentation "Similar to the @code{MUST-NOT-WEAR} slot but is done when you try to wear or change while still inside the zone")
+    :documentation #.(format nil "Similar to the @code{MUST-NOT-WEAR} slot but is done when you try to wear or change while still inside the zone. You can also use a symbol as key for one of the values in the hash table in the @code{MUST-NOT-WEAR*} slot in ~a."
+                             (ref game :class)))
    (no-wetting/messing
     :initarg no-wetting/messing
     :initform '(lambda (user)
@@ -779,6 +783,11 @@
     :initform nil
     :accessor waterproofp
     :documentation "Whether this prevents your diapers from swelling up in water")
+   (leakproof
+    :initarg :leakproof
+    :initform nil
+    :accessor leakproofp
+    :documentation "Whether this diaper leaks")
    (disposable
     :initarg :disposable
     :initform nil
@@ -1101,10 +1110,42 @@
     :documentation "Hash table of zones in the game")
    (enemy-spawn-list
     :initarg :enemy-spawn-list
-    :initform (make-hash-table :test #'equal)
+    :initform (make-hash-table :test #'eq)
     :accessor enemy-spawn-list-of
     :documentation "contains enemy spawn lists that can be reused. Use a symbol instead of a list in the enemy spawn list to use a key")
-   (player
+   (must-wear
+    :initarg :must-wear
+    :initform (make-hash-table :test #'eq)
+    :accessor must-wear-of
+    :documentation #.(format nil "hash table of conses that can be used with @code{MUST-WEAR} in ~a.
+
+See @code{MUST-WEAR} in ~a."
+                             (ref zone :class) (ref zone :class)))
+   (must-not-wear
+    :initarg :must-not-wear
+    :initform (make-hash-table :test #'eq)
+    :accessor must-not-wear-of
+    :documentation #.(format nil "hash table of conses that can be used with @code{MUST-NOT-WEAR} in ~a.
+
+See @code{MUST-NOT-WEAR} in ~a."
+                             (ref zone :class) (ref zone :class)))
+   (must-wear*
+    :initarg :must-wear*
+    :initform (make-hash-table :test #'eq)
+    :accessor must-wear*-of
+    :documentation #.(format nil "hash table of conses that can be used with @code{MUST-WEAR*} in ~a.
+
+See @code{MUST-WEAR*} in ~a."
+                             (ref zone :class) (ref zone :class)))
+   (must-not-wear*
+    :initarg :must-not-wear*
+    :initform (make-hash-table :test #'eq)
+    :accessor must-not-wear*-of
+    :documentation #.(format nil "hash table of conses that can be used with @code{MUST-NOT-WEAR*} in ~a.
+
+See @code{MUST-NOT-WEAR*} in ~a."
+                             (ref zone :class) (ref zone :class)))
+   (player%
     :initarg :player
     :initform nil
     :accessor player-of
@@ -1129,7 +1170,7 @@
     :initform 0
     :accessor time-of
     :documentation "Turns since start of game")
-   (finished-events
+   (finished-events%
     :initarg :finished-events
     :initform '()
     :accessor finished-events-of

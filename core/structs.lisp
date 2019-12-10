@@ -5,10 +5,10 @@
   "An event in the game"
   (id nil
    :type symbol)
-  (lambda '(lambda (self)
+  (lambda (lambda (self)
             (declare (ignore self)) nil)
     :type (or list symbol function))
-  (predicate '(lambda (self)
+  (predicate (lambda (self)
                (declare (ignore self)) t)
    :type (or list function))
   (repeatable nil :type boolean)

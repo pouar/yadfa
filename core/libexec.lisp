@@ -1,16 +1,16 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
-;;;; files used internally by the game, don't call these unless you're developing/modding (or cheating)
+;;;; code used internally by the game, don't call these unless you're developing/modding (or cheating)
 (in-package :yadfa)
 ;;; list-length-< and list-length-<= are based off of sequence-of-length-p from Alexandria
 (defun list-length-<= (length list)
-    (declare (type list list)
-             (type integer length))
-    (let ((n (1- length)))
-      (or (minusp n) (nthcdr n list))))
-  (defun list-length-< (length list)
-    (declare (type list list)
-             (type integer length))
-    (list-length-<= (1+ length) list))
+  (declare (type list list)
+           (type integer length))
+  (let ((n (1- length)))
+    (or (minusp n) (nthcdr n list))))
+(defun list-length-< (length list)
+  (declare (type list list)
+           (type integer length))
+  (list-length-<= (1+ length) list))
 (defun list-length-> (length list)
   (declare (type list list)
            (type integer length))
@@ -117,29 +117,16 @@
     (for j upfrom 0)
     (when (typep i type)
       (collect j))))
-(defun finished-events (events)
-  (length=
-   events
-   (intersection
-    events
-    (finished-events-of *game*))))
-(declaim (ftype (function (closed-bottoms) number) get-diaper-expansion))
+(declaim (ftype (function ((or list symbol)) (values boolean &optional)) finished-events))
+(defunassert (finished-events (events))
+    (events (or list symbol))
+  (null (set-difference (ensure-list events) (finished-events-of *game*))))
+(declaim (ftype (function (closed-bottoms) (values real &optional)) get-diaper-expansion))
 (defunassert (get-diaper-expansion (item))
     (item closed-bottoms)
-  (+
-   (* 10
-      (/
-       (+ (sogginess-of item)
-          (messiness-of item))
-       (-
-        (* 72 36)
-        (*
-         (/
-          (* 72 5/7)
-          2)
-         18/2
-         pi))))
-   (thickness-of item)))
+  (+ (* 10 (/ (+ (sogginess-of item) (messiness-of item))
+              (- (* 72 36) (* (/ (* 72 5/7) 2) 18/2 pi))))
+     (thickness-of item)))
 (defgeneric resolve-enemy-spawn-list (element)
   (:documentation "returns the enemy-spawn-list in the hash table (enemy-spawn-list-of *game*) if a symbol or itself if a list")
   (:method ((element symbol)) (gethash element (enemy-spawn-list-of *game*)))
@@ -395,9 +382,9 @@
     (return-from get-path-end (values nil (format nil "zone ~a is locked~%" destination))))
   destination)
 (defunassert (print-map-pattern-cache (path designs))
-    (path pathname)
-  (or (gethash (list :map-pattern path designs) *pattern-cache*)
-      (setf (gethash (list :map-pattern path designs) *pattern-cache*)
+    (path pathname designs list)
+  (or (gethash `(:map-pattern ,path ,designs) *pattern-cache*)
+      (setf (gethash `(:map-pattern ,path ,designs) *pattern-cache*)
             (clim:make-pattern-from-bitmap-file
              (uiop:merge-pathnames*
               path
@@ -437,7 +424,7 @@
                  (for byte-position upfrom 0)
                  (unless (travelablep position direction)
                    (setf (ldb (byte 1 byte-position) b) 1)))
-               (eval (aref array b)))))
+               (aref array b))))
     (updating-present-frame-resolved (*query-io* :unique-id `(map% ,position)
                                                  :id-test #'equal
                                                  :cache-value (sxhash (list (position-of (player-of *game*))
@@ -577,7 +564,7 @@
     (with j = 0)
     (incf j (get-diaper-expansion i))
     (finally (return j))))
-(declaim (ftype (function (list clothing) number) fast-thickness))
+(declaim (ftype (function (list clothing) (values real &optional)) fast-thickness))
 (defun fast-thickness (list item)
   #+sbcl (declare (type list list)
                   (type clothing item))
@@ -780,18 +767,19 @@
     (return-from move-to-secret-underground))
   (when
       (iter (for i in (cons (player-of *game*) (allies-of *game*)))
-        (when (or (and (list-length-> 1
-                                      (filter-items (wear-of i)
-                                                    (car (must-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground))))))
-                       (not (funcall (coerce (cdr (must-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground)))) 'function)
-                                     i)))
-                  (and
-                   (list-length-< 0
-                                  (filter-items (wear-of i)
-                                                (car (must-not-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground))))))
-                   (not (funcall (coerce (cdr (must-not-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground)))) 'function)
-                                 i))))
-          (leave t)))
+        (let ((wear (typecase (must-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground)))
+                      (cons (must-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground))))
+                      (symbol (gethash (must-wear-of *game*)
+                                       (must-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground)))))))
+              (not-wear (typecase (must-not-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground)))
+                          (cons (must-not-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground))))
+                          (symbol (gethash (must-not-wear-of *game*) (must-not-wear-of (get-zone '(0 0 0 yadfa-zones:secret-underground))))))))
+          (when (or (and (list-length-> 1 (filter-items (wear-of i) (car wear)))
+                         (not (funcall (coerce (cdr wear) 'function) i)))
+                    (and
+                     (list-length-< 0 (filter-items (wear-of i) (car not-wear)))
+                     (not (funcall (coerce (cdr not-wear) 'function) i))))
+            (leave t))))
     (return-from move-to-secret-underground))
 
   (incf (time-of *game*))
@@ -842,16 +830,17 @@
       (return-from move-to-pocket-map))
     (when
         (iter (for i in (cons (player-of *game*) (allies-of *game*)))
-          (when (or (and (list-length-> 1
-                                        (filter-items (wear-of i) (car (must-wear-of (get-zone new-position)))))
-                         (not (funcall (coerce (cdr (must-wear-of (get-zone new-position)))
-                                               'function)
-                                       i)))
-                    (and (list-length-< 0
-                                        (filter-items (wear-of i) (car (must-not-wear-of (get-zone new-position)))))
-                         (not (funcall (coerce (cdr (must-not-wear-of (get-zone new-position))) 'function)
-                                       i))))
-            (leave t)))
+          (let ((wear (typecase (must-wear-of (get-zone new-position))
+                        (cons (must-wear-of (get-zone new-position)))
+                        (symbol (gethash (must-wear-of *game*) (must-wear-of (get-zone new-position))))))
+                (not-wear (typecase (must-not-wear-of (get-zone new-position))
+                            (cons (must-not-wear-of (get-zone new-position)))
+                            (symbol (gethash (must-not-wear-of *game*) (must-not-wear-of (get-zone new-position)))))))
+            (when (or (and (list-length-> 1 (filter-items (wear-of i) (car wear)))
+                           (not (funcall (coerce (cdr wear) 'function) i)))
+                      (and (list-length-< 0 (filter-items (wear-of i) (car not-wear)))
+                           (not (funcall (coerce (cdr not-wear) 'function) i))))
+              (leave t))))
       (return-from move-to-pocket-map))
     (incf (time-of *game*))
     (unless (eq (fourth (position-of (player-of *game*))) :pocket-map)
@@ -885,16 +874,16 @@
                                       (funcall (coerce (getf i :lambda) 'function)))
                                      (t (getf i :enemies))))
                (return-from move-to-pocket-map)))))))
-(declaim (ftype (function (&key (:wet-amount (or boolean number)) (:force-fill-amount (or null number)) (:pants-down t) (:accident t)
-                                (:force-wet-amount (or null number)) (:wetter base-character) (:clothes list)) (values list &optional)) wet))
+(declaim (ftype (function (&key (:wet-amount (or boolean real)) (:force-fill-amount (or null real)) (:pants-down t) (:accident t)
+                                (:force-wet-amount (or boolean real)) (:wetter base-character) (:clothes list)) (values list &optional)) wet))
 (defunassert (wet (&key (wet-amount t) force-fill-amount pants-down accident force-wet-amount (wetter (player-of *game*)) (clothes nil clothes-supplied-p))
                   #.(format nil "this function is mostly for mods, doesn't print text or diaper expansion, that's handled by other functions. @var{WETTER} is the instance of @code{BASE-CHARACTER} doing the flooding. @var{WET-AMOUNT} is the amount @var{WETTER} floods but won't flood if he/she can't go, passing @code{T} to @var{WET-AMOUNT} means to use @code{(BLADDER/CONTENTS-OF WETTER)}, @var{FORCE-WET-AMOUNT} causes @var{WETTER} to wet regardless. @var{FORCE-FILL-AMOUNT} will set @code{(BLADDER/CONTENTS-OF WETTER)} to that amount first. @var{PANTS-DOWN} is @code{T} if @var{WETTER} pulls his/her pants down first. @var{ACCIDENT} is @code{T} if the wetting isn't intentional and @var{WETTER} may or may not be able to stop the flow. if @var{CLOTHES} is passed, it will be the one @var{WETTER} floods, otherwise it will be @code{(wear-of @var{WETTER})}
 
 ~a."
                             (xref mess :function)))
-    (force-fill-amount (or null number)
-                       force-wet-amount (or null number)
-                       wet-amount (or boolean number)
+    (force-fill-amount (or null real)
+                       force-wet-amount (or boolean real)
+                       wet-amount (or boolean real)
                        wetter base-character)
   (let* ((return-value ())
          (affected-clothes ())
@@ -945,9 +934,12 @@
                (for i in (reverse clothes))
                (when (typep i 'closed-bottoms)
                  (cond ((> amount-left (- (sogginess-capacity-of i) (sogginess-of i)))
-                        (decf amount-left (- (sogginess-capacity-of i) (sogginess-of i)))
+                        (if (leakproofp i)
+                            (setf amount-left 0)
+                            (decf amount-left (- (sogginess-capacity-of i) (sogginess-of i))))
                         (setf (sogginess-of i) (sogginess-capacity-of i))
-                        (push i affected-clothes))
+                        (push i affected-clothes)
+                        )
                        ((> amount-left 0)
                         (incf (sogginess-of i) amount-left)
                         (setf amount-left 0)
@@ -957,17 +949,17 @@
       (setf (getf return-value :leak-amount) amount-left)
       (setf (getf return-value :wet-amount) amount))
     return-value))
-(declaim (ftype (function (&key (:mess-amount (or boolean number)) (:force-fill-amount (or null number)) (:pants-down t) (:accident t)
-                                (:force-mess-amount (or null number)) (:messer base-character) (:clothes list)) (values list &optional)) mess))
+(declaim (ftype (function (&key (:mess-amount (or boolean real)) (:force-fill-amount (or null real)) (:pants-down t) (:accident t)
+                                (:force-mess-amount (or boolean real)) (:messer base-character) (:clothes list)) (values list &optional)) mess))
 (defunassert (mess (&key (mess-amount t) force-fill-amount pants-down accident force-mess-amount (messer (player-of *game*)) (clothes nil clothes-supplied-p))
                    #.(format nil "this function is mostly for mods, doesn't print text or diaper expansion, that's handled by other functions. @var{MESSER} is the instance of @code{BASE-CHARACTER} doing the messing. @var{MESS-AMOUNT} is the amount @var{MESSER} messes but won't mess if he/she can't go, passing @code{T} to @var{MESS-AMOUNT} means to use @code{(BOWELS/CONTENTS-OF MESSER)}, @var{FORCE-MESS-AMOUNT} causes @var{MESSER} to mess regardless. @var{FORCE-FILL-AMOUNT} will set @code{(BOWELS/CONTENTS-OF MESSER)} to that amount first. @var{PANTS-DOWN} is @code{T} if @var{MESSER} pulls his/her pants down first. @var{ACCIDENT} is @code{T} if the messing isn't intentional. If @var{CLOTHES} is passed, it will be the one @var{MESSER} messes, otherwise it will be @code{(wear-of @var{MESSER})}
 
 
 ~a."
                              (xref wet :function)))
-    (force-fill-amount (or null number)
-                       force-mess-amount (or null number)
-                       mess-amount (or boolean number)
+    (force-fill-amount (or null real)
+                       force-mess-amount (or boolean real)
+                       mess-amount (or boolean real)
                        messer base-character)
   (let* ((return-value ())
          (affected-clothes ())
@@ -1007,7 +999,9 @@
                (for i in (reverse clothes))
                (when (typep i 'closed-bottoms)
                  (cond ((> amount-left (- (messiness-capacity-of i) (messiness-of i)))
-                        (decf amount-left (- (messiness-capacity-of i) (messiness-of i)))
+                        (if (leakproofp i)
+                            (setf amount-left 0)
+                            (decf amount-left (- (messiness-capacity-of i) (messiness-of i))))
                         (setf (messiness-of i) (messiness-capacity-of i))
                         (push i affected-clothes))
                        ((> amount-left 0)
@@ -1048,8 +1042,8 @@
           (incf i)))))
 (defunassert (potty-on-toilet (prop &key wet mess pants-down (user (player-of *game*))))
     (prop yadfa-props:toilet
-          wet (or boolean number)
-          mess (or boolean number))
+          wet (or boolean real)
+          mess (or boolean real))
   (when (notany #'identity (list wet mess))
     (setf wet t
           mess t))
@@ -1109,8 +1103,8 @@
                 out)
           (format t "~a~%" (random-elt out))))))
 (defunassert (potty-on-self-or-prop (prop &key wet mess pants-down (user (player-of *game*))))
-    (wet (or boolean number)
-         mess (or boolean number))
+    (wet (or boolean real)
+         mess (or boolean real))
   (when (notany #'identity (list wet mess))
     (setf wet t
           mess t))
@@ -1487,7 +1481,7 @@
 ;;; Wish the API I made for this wasn't so complex, but I wasn't sure how to make it simple and still retain the functionality
 (defgeneric get-babyish-padding (user))
 (defgeneric get-process-potty-action-type (user type had-accident))
-(defgeneric output-process-potty-text (user padding type action had-accident))
+(defgeneric output-process-potty-text (user padding type action had-accident &key stream))
 (defmethod get-babyish-padding ((user team-member))
   (macro-level `(cond ,@(iter (for i in '(tabbed-briefs pullon closed-bottoms))
                           (collect `((filter-items (wear-of user) ',i)
@@ -1535,32 +1529,34 @@
          :potty-dance)
         ((>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
          :need-to-potty)))
-(defmethod output-process-potty-text (user padding type (action (eql nil)) had-accident)
+(defmethod output-process-potty-text (user padding type (action (eql nil)) had-accident &key (stream *standard-output*))
+  (declare (ignore stream))
   nil)
-(defmethod output-process-potty-text ((user player) padding (type (eql :wet)) (action (eql :potty-dance)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) padding (type (eql :wet)) (action (eql :potty-dance)) had-accident &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt '("You feel like your bladder is going to explode"
                         "You're doing a potty dance like a 5 year old"
                         "You feel like you're going to wet yourself"
                         "You whine as you hold yourself in desperation"
                         "Aww, does the baby need to potty?"))))
-(defmethod output-process-potty-text ((user player) padding (type (eql :wet)) (action (eql :desparate)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) padding (type (eql :wet)) (action (eql :desparate)) had-accident &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt '("You feel like your bladder is going to explode"
                         "You're doing a potty dance like a 5 year old"
                         "You feel like you're going to wet yourself"
                         "You whine as you hold yourself in desperation"
                         "Aww, does the baby need to potty?"))))
-(defmethod output-process-potty-text ((user player) padding (type (eql :wet)) (action (eql :need-to-potty)) had-accident)
-  (format t "You need to pee~%"))
-(defmethod output-process-potty-text ((user player) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) padding (type (eql :wet)) (action (eql :need-to-potty)) had-accident &key (stream *standard-output*))
+  (format stream "You need to pee~%"))
+(defmethod output-process-potty-text ((user player) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (let ((j (switch ((getf (car had-accident) :accident) :test 'eq)
                      (:dribble `("You gasp in horror as a little leaks out"
                                  "You think you just leaked a little"
                                  ,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
                                           (random-elt '("groan" "whine")))))
-                     (:some '("You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                     (:some '("You gasp in horror as you flood yourself, but manage to stop yourself"))
                      (:all (let ((a `("After doing a potty dance like a 5 year old, you freeze and pee yourself"
                                       "Grabbing your crotch you pause and blush as you flood yourself like an infant"
                                       "You cross your legs in a vain attempt to hold it in but fail miserably"
@@ -1586,7 +1582,7 @@
               (push (format nil "Aww, the baby is using ~a diapers?" (if (malep user) "his" "her")) j))
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream  "~a~%"
             (random-elt '("Your face turns red as you leak everywhere"
                           "Your diaper leaks all over the place, this is why you're supposed to change it"
                           "What's the point in having a diaper if you're just going to leak everywhere like you're doing now."
@@ -1594,8 +1590,9 @@
                           "Heh, baby made a puddle"
                           "Your diapers sprung a leak"
                           "You eep as you make a puddle on the floor then hide your face in embarrassment")))))
-(defmethod output-process-potty-text ((user player) (padding (eql 'pullon)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) (padding (eql 'pullon)) (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt (switch ((getf (car had-accident) :accident) :test 'eq)
                         (:dribbe `("You gasp in horror as a little leaks out"
                                    "You think you just leaked a little"
@@ -1616,7 +1613,7 @@
                                          (if (malep user) "HIS" "HER")
                                          (name-of user)
                                          (if (malep user) "his" "her")))))))
-  (format t "~a~%"
+  (format stream "~a~%"
           (let ((out '("Your face turns red as you leak everywhere"
                        "Your pullups leak. There goes the carpet."
                        "Heh, baby made a puddle"
@@ -1624,8 +1621,9 @@
             (when (filter-items (wear-of user) 'pullup)
               (push "Your pullups leaks all over the place, You sure you're ready for those?" out))
             (random-elt out))))
-(defmethod output-process-potty-text ((user player) (padding (eql 'closed-bottoms)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) (padding (eql 'closed-bottoms)) (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt (switch ((getf (car had-accident) :accident) :test 'eq)
                         (:dribble `("You gasp in horror as a little leaks out"
                                     "You think you just leaked a little"
@@ -1640,7 +1638,7 @@
                                 "You let out a groan as your bladder empties itself"
                                 "You fall to your knees holding your crotch struggling to keep your pants dry and flood yourself")))))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt `("Maybe you should start wearing diapers"
                           ,(format nil "Bad ~a! No going potty in the house!" (if (random 2) (species-of user) (name-of user)))
                           "A puddle appears on the floor"
@@ -1650,8 +1648,9 @@
                           ,(format nil "Heh, baby wet ~a pants" (if (malep user) "his" "her"))
                           ,(format nil "Bad ~a! Look what you did to your pants!"
                                    (if (random 2) (species-of user) (name-of user))))))))
-(defmethod output-process-potty-text ((user player) (padding (eql nil)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) (padding (eql nil)) (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (let
               ((j (switch ((getf (car had-accident) :accident) :test 'eq)
                     (:dribble `("You gasp in horror as a little leaks out"
@@ -1666,28 +1665,29 @@
                             "You let out a groan as your bladder empties itself")))))
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt `("Maybe you should start wearing diapers"
                           ,(format nil "Bad ~a! No going potty in the house!" (if (random 2) (species-of user) (name-of user)))
                           "A puddle appears on the floor"
                           "There goes the carpet"
                           "Heh, baby made a puddle")))))
-(defmethod output-process-potty-text ((user player) padding (type (eql :mess)) (action (eql :potty-dance)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) padding (type (eql :mess)) (action (eql :potty-dance)) had-accident &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt '("You feel like you're gonna mess yourself"
                         "You clench hard trying to avoid messing"
                         "You fart a little due to the pressure"
                         "Aww, does the baby need to potty?"))))
-(defmethod output-process-potty-text ((user player) padding (type (eql :mess)) (action (eql :desparate)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) padding (type (eql :mess)) (action (eql :desparate)) had-accident &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt '("You feel like you're gonna mess yourself"
                         "You clench hard trying to avoid messing"
                         "You fart a little due to the pressure"
                         "Aww, does the baby need to potty?"))))
-(defmethod output-process-potty-text ((user player) padding (type (eql :mess)) (action (eql :need-to-potty)) had-accident)
-  (format t "You need to poo~%"))
-(defmethod output-process-potty-text ((user player) (padding (eql 'tabbed-briefs)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) padding (type (eql :mess)) (action (eql :need-to-potty)) had-accident &key (stream *standard-output*))
+  (format stream "You need to poo~%"))
+(defmethod output-process-potty-text ((user player) (padding (eql 'tabbed-briefs)) (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (let ((j `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
                               (if (member (car (tail-of user)) '(:medium :large))
                                   " with your tail up"
@@ -1705,15 +1705,16 @@
               (push (format nil "Aww, is the baby messing ~a diapers" (if (malep user) "his" "her")) j))
             (random-elt j)))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt '("Your face turns red as your mess falls out the leg guards"
                           "Your diaper leaks all over the place, this is why you're supposed to change it"
                           "What's the point in having a diaper if you're just going to leak everywhere like you're doing now."
                           "Your diaper leaks. There goes the carpet."
                           "Not on the carpet!!!"
                           "Blowout!!!!")))))
-(defmethod output-process-potty-text ((user player) (padding (eql 'pullon)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) (padding (eql 'pullon)) (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (let ((j `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
                               (if (member (car (tail-of user)) '(:medium :large))
                                   " with your tail up"
@@ -1728,13 +1729,14 @@
                     j))
             (random-elt j)))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt '("Your face turns red as your mess falls out the leg guards"
                           "Your pullups leaks all over the place, You sure you're ready for those?"
                           "Your pullups leak. There goes the carpet."
                           "Not on the carpet!!!")))))
-(defmethod output-process-potty-text ((user player) (padding (eql 'closed-bottoms)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) (padding (eql 'closed-bottoms)) (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
                                  (if (member (car (tail-of user)) '(:medium :large))
                                      " with your tail up"
@@ -1744,7 +1746,7 @@
                         "You end up messing your self"
                         "a lump forms at the seat of your pants")))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt `("Maybe you should start wearing diapers"
                           ,(format nil "Bad ~a! No going potty in the house!"
                                    (if (random 2) (species-of user) (name-of user)))
@@ -1753,8 +1755,9 @@
                           "Your pants are ruined"
                           ,(format nil "Heh, baby messed ~a pants" (if (malep user) "his" "her"))
                           ,(format nil "Bad ~a! Look what you did to your pants!" (if (random 2) (species-of user) (name-of user))))))))
-(defmethod output-process-potty-text ((user player) (padding (eql nil)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user player) (padding (eql nil)) (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
                                  (if (member (car (tail-of user)) '(:medium :large))
                                      " with your tail up"
@@ -1763,13 +1766,14 @@
                         "You try to fart to relieve the pressure, except it wasn't a fart"
                         "You end up messing your self")))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt `("Maybe you should start wearing diapers"
                           ,(format nil "Bad ~a! No going potty in the house!"
                                    (if (random 2) (species-of user) (name-of user)))
                           "There goes the carpet"
                           "Heh, baby made a mess")))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident))
+                                      had-accident &key (stream *standard-output*))
   (let ((normal ())
         (leak ()))
     (if (and (car had-accident) (= (getf (car had-accident) :wet-amount) 10))
@@ -1853,9 +1857,10 @@
                                  "")))
             leak)))
     (if (> (getf (car had-accident) :leak-amount) 0)
-        (format t "~a" (random-elt leak))
-        (format t "~a" (random-elt normal)))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql 'pullon)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
+        (format stream "~a" (random-elt leak))
+        (format stream "~a" (random-elt normal)))))
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql 'pullon)) (type (eql :wet)) (action (eql :had-accident))
+                                      had-accident &key (stream *standard-output*))
   (let ((normal ())
         (leak ()))
     (if (and (car had-accident) (= (getf (car had-accident) :wet-amount) 10))
@@ -1921,9 +1926,10 @@
                                (if (malep user) "boy" "girl")))
               leak))))
     (if (> (getf (car had-accident) :leak-amount) 0)
-        (format t "~a" (random-elt leak))
-        (format t "~a" (random-elt normal)))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql 'closed-bottoms)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
+        (format stream "~a" (random-elt leak))
+        (format stream "~a" (random-elt normal)))))
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql 'closed-bottoms)) (type (eql :wet)) (action (eql :had-accident))
+                                      had-accident &key (stream *standard-output*))
   (let ((normal ())
         (leak ()))
     (if (and (car had-accident) (= (getf (car had-accident) :wet-amount) 10))
@@ -1956,9 +1962,10 @@
                                  "")))
             normal leak)))
     (if (> (getf (car had-accident) :leak-amount) 0)
-        (format t "~a" (random-elt leak))
-        (format t "~a" (random-elt normal)))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql nil)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
+        (format stream "~a" (random-elt leak))
+        (format stream "~a" (random-elt normal)))))
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql nil)) (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                       &key (stream *standard-output*))
   (let ((normal ())
         (leak ()))
     (if (and (car had-accident) (= (getf (car had-accident) :wet-amount) 10))
@@ -1990,10 +1997,11 @@
                 (format s "Then walks away heavily blushing hoping no one will notice*~%~%"))
             normal leak)))
     (if (> (getf (car had-accident) :leak-amount) 0)
-        (format t "~a" (random-elt leak))
-        (format t "~a" (random-elt normal)))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) padding (type (eql :wet)) (action (eql :potty-dance)) had-accident)
-  (format t "~a"
+        (format stream "~a" (random-elt leak))
+        (format stream "~a" (random-elt normal)))))
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) padding (type (eql :wet)) (action (eql :potty-dance)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a"
           (random-elt (if (= (random 5) 0)
                           (list (with-output-to-string (s)
                                   (format s "~a: ~a, do you need to potty?~%~%"
@@ -2032,8 +2040,9 @@
                                   (format s "*~a starts moaning with ~a legs crossed*~%~%"
                                           (name-of user)
                                           (if (malep user) "his" "her"))))))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) padding (type (eql :wet)) (action (eql :desparate)) had-accident)
-  (format t "~a"
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) padding (type (eql :wet)) (action (eql :desparate)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a"
           (random-elt
            (if (= (random 5) 0)
                (list (with-output-to-string (s)
@@ -2066,11 +2075,11 @@
                        (format s "*~a starts moaning with ~a legs crossed*~%~%"
                                (name-of user)
                                (if (malep user) "his" "her"))))))))
-(defmethod output-process-potty-text ((user ally-rebel-potty-training) padding (type (eql :wet)) (action (eql :had-accident)) had-accident)
+(defmethod output-process-potty-text ((user ally-rebel-potty-training) padding (type (eql :wet)) (action (eql :had-accident)) had-accident &key (stream *standard-output*))
   (cond ((and
           (car had-accident)
           (> (getf (car had-accident) :leak-amount) 0))
-         (format t "~a"
+         (format stream "~a"
                  (random-elt
                   (list (with-output-to-string (s)
                           (format s "*~a stops in his tracks*~%~%"
@@ -2112,7 +2121,7 @@
                                   (name-of (player-of *game*))))))))
         ((and (car had-accident)
               (> (getf (car had-accident) :wet-amount) 0))
-         (format t "~a"
+         (format stream "~a"
                  (random-elt (list (with-output-to-string (s)
                                      (format s "*~a stops in his tracks*~%~%"
                                              (name-of user))
@@ -2131,9 +2140,10 @@
                                      (format s "*~a floods ~a diapers*~%~%"
                                              (name-of user)
                                              (if (malep user) "his" "her")))))))))
-(defmethod output-process-potty-text ((user ally-no-potty-training) padding (type (eql :wet)) (action (eql :had-accident)) had-accident)
+(defmethod output-process-potty-text ((user ally-no-potty-training) padding (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
   (cond ((and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
-         (format t "~a"
+         (format stream "~a"
                  (random-elt (list (with-output-to-string (s)
                                      (format s "*~a floods ~a nappies, then leaks and leaves puddles*~%~%"
                                              (name-of user)
@@ -2159,12 +2169,13 @@
                                      (format s "~a: No shit~%~%"
                                              (name-of (player-of *game*))))))))
         ((and (car had-accident) (> (getf (car had-accident) :wet-amount) 0))
-         (format t "~a"
+         (format stream "~a"
                  (random-elt (list (with-output-to-string (s)
                                      (format s "*~a floods ~a diapers*~%~%"
                                              (name-of user)
                                              (if (malep user) "his" "her")))))))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql :diaper)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql :diaper)) (type (eql :mess)) (action (eql :had-accident))
+                                      had-accident &key (stream *standard-output*))
   (let ((normal ())
         (leak ()))
     (do-push (with-output-to-string (s)
@@ -2227,9 +2238,10 @@
                           '("her" "she"))))
       leak)
     (if (> (getf (cdr had-accident) :leak-amount) 0)
-        (format t "~a" (random-elt leak))
-        (format t "~a" (random-elt normal)))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql :pullup)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
+        (format stream "~a" (random-elt leak))
+        (format stream "~a" (random-elt normal)))))
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql :pullup)) (type (eql :mess)) (action (eql :had-accident))
+                                      had-accident &key (stream *standard-output*))
   (let ((normal ())
         (leak ()))
     (do-push (with-output-to-string (s)
@@ -2256,9 +2268,10 @@
                          (if (malep user) "boy" "girl")))
         leak))
     (if (> (getf (cdr had-accident) :leak-amount) 0)
-        (format t "~a" (random-elt leak))
-        (format t "~a" (random-elt normal)))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql 'closed-bottoms)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
+        (format stream "~a" (random-elt leak))
+        (format stream "~a" (random-elt normal)))))
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql 'closed-bottoms)) (type (eql :mess)) (action (eql :had-accident))
+                                      had-accident &key (stream *standard-output*))
   (let ((normal ())
         (leak ()))
     (do-push (with-output-to-string (s)
@@ -2269,9 +2282,10 @@
                           '("her" "she" "she"))))
       normal leak)
     (if (> (getf (cdr had-accident) :leak-amount) 0)
-        (format t "~a" (random-elt leak))
-        (format t "~a" (random-elt normal)))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql nil)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
+        (format stream "~a" (random-elt leak))
+        (format stream "~a" (random-elt normal)))))
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql nil)) (type (eql :mess)) (action (eql :had-accident))
+                                      had-accident &key (stream *standard-output*))
   (let ((normal ())
         (leak ()))
     (do-push
@@ -2292,10 +2306,11 @@
                (format s "Then walks away heavily blushing hoping no one will notice*~%~%"))
       normal leak)
     (if (> (getf (cdr had-accident) :leak-amount) 0)
-        (format t "~a" (random-elt leak))
-        (format t "~a" (random-elt normal)))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) padding (type (eql :mess)) (action (eql :potty-dance)) had-accident)
-  (format t "~a"
+        (format stream "~a" (random-elt leak))
+        (format stream "~a" (random-elt normal)))))
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) padding (type (eql :mess)) (action (eql :potty-dance)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a"
           (random-elt (if (= (random 5) 0)
                           (list (with-output-to-string (s)
                                   (format s "~a: ~a, do you need to potty?~%~%"
@@ -2332,8 +2347,9 @@
                                   (format s "*~a starts moaning with ~a legs crossed*~%~%"
                                           (name-of user)
                                           (if (malep user) "his" "her"))))))))
-(defmethod output-process-potty-text ((user ally-last-minute-potty-training) padding (type (eql :mess)) (action (eql :desparate)) had-accident)
-  (format t "~a"
+(defmethod output-process-potty-text ((user ally-last-minute-potty-training) padding (type (eql :mess)) (action (eql :desparate)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a"
           (random-elt (if (= (random 5) 0)
                           (list (with-output-to-string (s)
                                   (format s "~a: ~a!!! I GOTTY POTTY!!! *bounces up and down holding ~aself*~%~%"
@@ -2363,15 +2379,16 @@
                                    (format s "*~a starts moaning with ~a legs crossed*~%~%"
                                            (name-of user)
                                            (if (malep user) "his" "her"))))))))
-(defmethod output-process-potty-text ((user ally-rebel-potty-training) padding (type (eql :mess)) (action (eql :had-accident)) had-accident)
+(defmethod output-process-potty-text ((user ally-rebel-potty-training) padding (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
   (cond ((and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-         (format t "~a"
+         (format stream "~a"
                  (random-elt (list (with-output-to-string (s)
                                      (format s "*~a squats down and pushes a big load into ~a already loaded diaper, then predictably has a blowout*~%~%"
                                              (name-of user)
                                              (if (malep user) "his" "her")))))))
         ((and (cdr had-accident) (> (getf (cdr had-accident) :mess-amount) 0))
-         (format t "~a"
+         (format stream "~a"
                  (random-elt (list (with-output-to-string (s)
                                      (format s "*~a squats down and pushes a big load into ~a diaper like an infant*~%~%"
                                              (name-of user)
@@ -2382,21 +2399,23 @@
                                             (if (malep user)
                                                 '("his" "his" "his" "him")
                                                 '("her" "her" "her" "her"))))))))))
-(defmethod output-process-potty-text ((user ally-no-potty-training) padding (type (eql :mess)) (action (eql :had-accident)) had-accident)
+(defmethod output-process-potty-text ((user ally-no-potty-training) padding (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
   (cond ((and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-         (format t "~a"
+         (format stream "~a"
                  (random-elt (list (with-output-to-string (s)
                                      (format s "*~a squats down and pushes a big load into ~a already loaded diaper, then predictably has a blowout*~%~%"
                                              (name-of user)
                                              (if (malep user) "his" "her")))))))
         ((and (cdr had-accident) (> (getf (cdr had-accident) :mess-amount) 0))
-         (format t "~a"
+         (format stream "~a"
                  (random-elt (list (with-output-to-string (s)
                                      (format s "*~a squats down and pushes a big load into ~a diaper like an infant*~%~%"
                                              (name-of user)
                                              (if (malep user) "his" "her")))))))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) padding (type (eql :wet)) (action (eql :potty-dance)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) padding (type (eql :wet)) (action (eql :potty-dance)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt (let ((a (list (format nil "*~a is doing a potty dance like a 5 year old*"
                                              (name-of user))
                                      (format nil "*~a hops from foot to foot holding ~a crotch*"
@@ -2410,8 +2429,9 @@
                         (unless (malep user)
                           (push (format nil "~a fidgets and squirms while pressing her legs together" (name-of user)) a))
                         a))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) padding (type (eql :wet)) (action (eql :desparate)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) padding (type (eql :wet)) (action (eql :desparate)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt (let ((a (list (format nil "*~a is doing a potty dance like a 5 year old*"
                                              (name-of user))
                                      (format nil "*~a hops from foot to foot holding ~a crotch*"
@@ -2431,8 +2451,9 @@
                           (push (format nil "~a fidgets, squirms, and bounces while pressing her legs together" (name-of user))
                                 a))
                         a))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident))
+                                      had-accident &key (stream *standard-output*))
+  (format stream "~a~%"
           (let ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
                           (list (format nil "*~a gasps in horror as a little leaks out*" (name-of user))
                                 (format nil "*~a's bladder just leaked a little*" (name-of user))))
@@ -2471,7 +2492,7 @@
                                                       "her")))))))))
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt (list (format nil "*~a's face turns red as ~a leak everywhere*"
                                       (name-of user)
                                       (if (malep user) "he" "she"))
@@ -2484,8 +2505,9 @@
                                       (name-of (player-of *game*))
                                       (name-of user)
                                       (name-of user)))))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'pullon)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'pullon)) (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (let ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
                           (list (format nil "*~a gasps in horror as a little leaks out*" (name-of user))
                                 (format nil "*~a's bladder just leaked a little*" (name-of user))))
@@ -2528,7 +2550,7 @@
                             (if (malep user) "he" "she"))
                     j))
             (random-elt j)))
-  (format t "~a~%"
+  (format stream "~a~%"
           (random-elt (list (format nil "*~a's face turns red as ~a leak everywhere*"
                                     (name-of user)
                                     (if (malep user) "he" "she"))
@@ -2537,8 +2559,9 @@
                                     (if (malep user) "he" "she"))
                             (format nil "*~a's pullups sprung a leak*"
                                     (name-of user))))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'closed-bottoms)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'closed-bottoms)) (type (eql :wet)) (action (eql :had-accident))
+                                      had-accident &key (stream *standard-output*))
+  (format stream "~a~%"
           (let ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
                           (list (format nil "*~a gasps in horror as a little leaks out*" (name-of user))
                                 (format nil "*~a's bladder just leaked a little*" (name-of user))))
@@ -2582,7 +2605,7 @@
                             a)))))
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt (list (format nil "~a: Bad ~a! No going potty in the house!~%~%*~a baps ~a's on the nose with a newspaper*"
                                       (name-of (player-of *game*))
                                       (name-of user)
@@ -2602,8 +2625,9 @@
                               (format nil "~a: Bad ~a! Look what you did to your pants!"
                                       (name-of (player-of *game*))
                                       (name-of user)))))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql nil)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql nil)) (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (let ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
                           (list (format nil "*~a gasps in horror as a little leaks out*" (name-of user))
                                 (format nil "*~a's bladder just leaked a little*" (name-of user))))
@@ -2647,7 +2671,7 @@
                             a)))))
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt (list (format nil "~a: Bad ~a! No going potty in the house!~%~%*~a baps ~a's on the nose with a newspaper*"
                                       (name-of (player-of *game*))
                                       (name-of user)
@@ -2658,8 +2682,9 @@
                               (format nil "~a: Heh, baby ~a made a puddle"
                                       (name-of (player-of *game*))
                                       (name-of user)))))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) padding (type (eql :mess)) (action (eql :potty-dance)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) padding (type (eql :mess)) (action (eql :potty-dance)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt (list (format nil "*~a is doing a potty dance like a 5 year old*" (name-of user))
                             (apply #'format nil "*~a crosses ~a legs in an attempt to avoid messing ~aself*"
                                    (name-of user)
@@ -2676,8 +2701,9 @@
                                                      closed-bottoms ("seat of his pants" . "seat of her pants")
                                                      nil ("back of himself" . "back of herself"))
                                                    padding)))))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) padding (type (eql :mess)) (action (eql :desparate)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) padding (type (eql :mess)) (action (eql :desparate)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt (list (format nil "*~a is doing a potty dance like a 5 year old*" (name-of user))
                             (apply #'format nil "*~a crosses ~a legs in an attempt to avoid messing ~aself*"
                                    (name-of user)
@@ -2695,8 +2721,9 @@
                                              closed-bottoms ("seat of his pants" . "seat of her pants")
                                              nil ("back of himself" . "back of herself"))
                                            padding)))))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'tabbed-briefs)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "~{~a~}~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'tabbed-briefs)) (type (eql :mess)) (action (eql :had-accident))
+                                      had-accident &key (stream *standard-output*))
+  (format stream "~{~a~}~%"
           (let ((a (list (random-elt (list (format nil "*~a instinctively squats down~a and mess ~a diapers*"
                                                    (name-of user)
                                                    (if (malep user)
@@ -2732,15 +2759,16 @@
                                      nil))))
             (when b (push b (cdr (last a))))))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-    (format t "*~a*~%"
+    (format stream "*~a*~%"
             (random-elt (list (format nil "~a face turns red as ~a mess falls out the leg guards"
                                       (name-of user)
                                       (if (malep user)
                                           "his"
                                           "her"))
                               "Blowout!!!!")))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'pullon)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "~{~a~}~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'pullon)) (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~{~a~}~%"
           (let ((a (list (random-elt (list (format nil "*~a instinctively squats down~a and mess ~a pullups*"
                                                    (name-of user)
                                                    (if (member (car (tail-of user)) '(:medium :large))
@@ -2761,15 +2789,16 @@
                                      nil))))
             (when b (push b (cdr (last a))))))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-    (format t "*~a*~%"
+    (format stream "*~a*~%"
             (random-elt (list (format nil "~a face turns red as ~a mess falls out the leg guards"
                                       (name-of user)
                                       (if (malep user)
                                           "his"
                                           "her"))
                               (format nil "~a pullups leak all over the place" (name-of user)))))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'closed-bottoms)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "*~a*~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql 'closed-bottoms)) (type (eql :mess)) (action (eql :had-accident))
+                                      had-accident &key (stream *standard-output*))
+  (format stream "*~a*~%"
           (random-elt (list (format nil "~a instinctively squats down~a and messes ~a pants"
                                     (name-of user)
                                     (if (member (car (tail-of user)) '(:medium :large))
@@ -2782,7 +2811,7 @@
                             (apply #'format nil "a lump forms at the seat of ~a's pants"
                                    (name-of user)))))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt (list (format nil "~a: Bad ~a! No going potty in the house!~%~%*~a baps ~a on the nose with a newspaper*"
                                       (name-of (player-of *game*))
                                       (name-of user)
@@ -2795,8 +2824,9 @@
                                       (name-of user)
                                       (if (malep user) "his" "her"))
                               (format nil "~a: Bad ~a! Look what you did to your pants!" (name-of (player-of *game*)) (name-of user)))))))
-(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql nil)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "*~a*~%"
+(defmethod output-process-potty-text ((user ally-silent-potty-training) (padding (eql nil)) (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "*~a*~%"
           (random-elt (list (format nil "Reaching the breaking point, ~a instinctively squats down~a and messes"
                                     (name-of user)
                                     (if (member (car (tail-of user)) '(:medium :large))
@@ -2812,11 +2842,11 @@
                                      (name-of user))
                              nil))))
     (when a
-      (format t "~a~%" a))))
+      (format stream "~a~%" a))))
 
 
-(defmethod output-process-potty-text ((user ally-feral) padding (type (eql :wet)) (action (eql :potty-dance)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-feral) padding (type (eql :wet)) (action (eql :potty-dance)) had-accident &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt (list (format nil "*~a is doing a potty dance like a 5 year old*"
                                     (name-of user))
                             (format nil "*~a hops from foot to foot*"
@@ -2826,8 +2856,8 @@
                             (format nil "~a fidgets and squirms while pressing ~a legs together"
                                     (if (malep user) "his" "her")
                                     (name-of user))))))
-(defmethod output-process-potty-text ((user ally-feral) padding (type (eql :wet)) (action (eql :desparate)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-feral) padding (type (eql :wet)) (action (eql :desparate)) had-accident &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt (list (format nil "*~a is doing a potty dance like a 5 year old*"
                                     (name-of user))
                             (format nil "*~a hops from foot to foot*"
@@ -2837,8 +2867,9 @@
                             (format nil "~a fidgets and squirms while pressing ~a legs together"
                                     (if (malep user) "his" "her")
                                     (name-of user))))))
-(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'tabbed-briefs)) (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (let ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
                           (list (format nil "*~a gasps in horror as a little leaks out*" (name-of user))
                                 (format nil "*~a's bladder just leaked a little*" (name-of user))))
@@ -2870,7 +2901,7 @@
                                            '("she" "her"))))))))
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt (list (format nil "*~a's face turns red as ~a leak everywhere*"
                                       (name-of user)
                                       (if (malep user) "he" "she"))
@@ -2883,8 +2914,9 @@
                                       (name-of (player-of *game*))
                                       (name-of user)
                                       (name-of user)))))))
-(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'pullon)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'pullon)) (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (let ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
                           (list (format nil "*~a gasps in horror as a little leaks out*" (name-of user))
                                 (format nil "*~a's bladder just leaked a little*" (name-of user))))
@@ -2921,7 +2953,7 @@
                             (if (malep user) "he" "she"))
                     j))
             (random-elt j)))
-  (format t "~a~%"
+  (format stream "~a~%"
           (random-elt (list (format nil "*~a's face turns red as ~a leak everywhere*"
                                     (name-of user)
                                     (if (malep user) "he" "she"))
@@ -2930,8 +2962,9 @@
                                     (if (malep user) "he" "she"))
                             (format nil "*~a's pullups sprung a leak*"
                                     (name-of user))))))
-(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'closed-bottoms)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'closed-bottoms)) (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (let ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
                           (list (format nil "*~a gasps in horror as a little leaks out*" (name-of user))
                                 (format nil "*~a's bladder just leaked a little*" (name-of user))))
@@ -2973,7 +3006,7 @@
                             a)))))
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt (list (format nil "~a: Bad ~a! No going potty in the house!~%~%*~a baps ~a's on the nose with a newspaper*"
                                       (name-of (player-of *game*))
                                       (name-of user)
@@ -2993,8 +3026,9 @@
                               (format nil "~a: Bad ~a! Look what you did to your pants!"
                                       (name-of (player-of *game*))
                                       (name-of user)))))))
-(defmethod output-process-potty-text ((user ally-feral) (padding (eql nil)) (type (eql :wet)) (action (eql :had-accident)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-feral) (padding (eql nil)) (type (eql :wet)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~a~%"
           (let ((j (cond ((<= (getf (car had-accident) :wet-amount) 10)
                           (list (format nil "*~a gasps in horror as a little leaks out*" (name-of user))
                                 (format nil "*~a's bladder just leaked a little*" (name-of user))))
@@ -3033,7 +3067,7 @@
                             a)))))
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt (list (format nil "~a: Bad ~a! No going potty in the house!~%~%*~a baps ~a's on the nose with a newspaper*"
                                       (name-of (player-of *game*))
                                       (name-of user)
@@ -3044,8 +3078,8 @@
                               (format nil "~a: Heh, baby ~a made a puddle"
                                       (name-of (player-of *game*))
                                       (name-of user)))))))
-(defmethod output-process-potty-text ((user ally-feral) padding (type (eql :mess)) (action (eql :potty-dance)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-feral) padding (type (eql :mess)) (action (eql :potty-dance)) had-accident &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt (list (format nil "*~a is doing a potty dance like a 5 year old*" (name-of user))
                             (apply #'format nil "*~a crosses ~a legs in an attempt to avoid messing ~aself*"
                                    (name-of user)
@@ -3053,8 +3087,8 @@
                                        '("his" "him")
                                        '("her" "her")))
                             (format nil "*~a hunches down with ~a legs arched*" (name-of user) (if (malep user) "his" "her"))))))
-(defmethod output-process-potty-text ((user ally-feral) padding (type (eql :mess)) (action (eql :desparate)) had-accident)
-  (format t "~a~%"
+(defmethod output-process-potty-text ((user ally-feral) padding (type (eql :mess)) (action (eql :desparate)) had-accident &key (stream *standard-output*))
+  (format stream "~a~%"
           (random-elt (list (format nil "*~a is doing a potty dance like a 5 year old*" (name-of user))
                             (apply #'format nil "*~a crosses ~a legs in an attempt to avoid messing ~aself*"
                                    (name-of user)
@@ -3062,8 +3096,9 @@
                                        '("his" "him")
                                        '("her" "her")))
                             (format nil "*~a hunches down with ~a legs arched*" (name-of user) (if (malep user) "his" "her"))))))
-(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'tabbed-briefs)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "~{~a~}~%"
+(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'tabbed-briefs)) (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~{~a~}~%"
           (let ((a (list (random-elt (list (format nil "*~a instinctively squats down~a and mess ~a diapers*"
                                                    (name-of user)
                                                    (if (malep user)
@@ -3086,15 +3121,16 @@
                                      nil))))
             (when b (push b (cdr (last a))))))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-    (format t "*~a*~%"
+    (format stream "*~a*~%"
             (random-elt (list (format nil "~a face turns red as ~a mess falls out the leg guards"
                                       (name-of user)
                                       (if (malep user)
                                           "his"
                                           "her"))
                               "Blowout!!!!")))))
-(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'pullon)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "~{~a~}~%"
+(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'pullon)) (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "~{~a~}~%"
           (let ((a (list (random-elt (list (format nil "*~a instinctively squats down~a and mess ~a pullups*"
                                                    (name-of user)
                                                    (if (member (car (tail-of user)) '(:medium :large))
@@ -3115,15 +3151,16 @@
                                      nil))))
             (when b (push b (cdr (last a))))))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-    (format t "*~a*~%"
+    (format stream "*~a*~%"
             (random-elt (list (format nil "~a face turns red as ~a mess falls out the leg guards"
                                       (name-of user)
                                       (if (malep user)
                                           "his"
                                           "her"))
                               (format nil "~a pullups leak all over the place" (name-of user)))))))
-(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'closed-bottoms)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "*~a*~%"
+(defmethod output-process-potty-text ((user ally-feral) (padding (eql 'closed-bottoms)) (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "*~a*~%"
           (random-elt (list (format nil "~a instinctively squats down~a and messes ~a pants"
                                     (name-of user)
                                     (if (member (car (tail-of user)) '(:medium :large))
@@ -3136,7 +3173,7 @@
                             (apply #'format nil "a lump forms at the seat of ~a's pants"
                                    (name-of user)))))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
-    (format t "~a~%"
+    (format stream "~a~%"
             (random-elt (list (format nil "~a: Bad ~a! No going potty in the house!~%~%*~a baps ~a on the nose with a newspaper*"
                                       (name-of (player-of *game*))
                                       (name-of user)
@@ -3149,8 +3186,9 @@
                                       (name-of user)
                                       (if (malep user) "his" "her"))
                               (format nil "~a: Bad ~a! Look what you did to your pants!" (name-of (player-of *game*)) (name-of user)))))))
-(defmethod output-process-potty-text ((user ally-feral) (padding (eql nil)) (type (eql :mess)) (action (eql :had-accident)) had-accident)
-  (format t "*~a*~%"
+(defmethod output-process-potty-text ((user ally-feral) (padding (eql nil)) (type (eql :mess)) (action (eql :had-accident)) had-accident
+                                      &key (stream *standard-output*))
+  (format stream "*~a*~%"
           (random-elt (list (format nil "Reaching the breaking point, ~a instinctively squats down~a and messes"
                                     (name-of user)
                                     (if (member (car (tail-of user)) '(:medium :large))
@@ -3166,7 +3204,7 @@
                                      (name-of user))
                              nil))))
     (when a
-      (format t "~a~%" a))))
+      (format stream "~a~%" a))))
 (defunassert (process-potty (&optional (user (player-of *game*))))
     (user (or player ally))
   (let ((time-difference (- (time-of *game*) (last-process-potty-time-of user))))
@@ -3205,7 +3243,7 @@
 (declaim (ftype (function (symbol list) (values list &optional)) get-items-from-prop))
 (defun get-items-from-prop (prop position)
   (items-of (getf (get-props-from-zone position) prop)))
-(declaim (ftype (function (symbol list) (values number &optional)) get-bitcoins-from-prop))
+(declaim (ftype (function (symbol list) (values real &optional)) get-bitcoins-from-prop))
 (defun get-bitcoins-from-prop (prop position)
   (bitcoins-of (getf (get-props-from-zone position) prop)))
 (defun (setf get-items-from-prop) (new-value prop position)
@@ -3228,30 +3266,40 @@
 (declaim (ftype (function (base-character) list) calculate-diaper-usage))
 (defunassert (calculate-diaper-usage (user))
     (user base-character)
-  (iter (with j = (list :sogginess 0 :sogginess-capacity 0 :messiness 0 :messiness-capacity 0))
+  (iter
+    (with sogginess = 0)
+    (with sogginess-capacity = 0)
+    (with messiness = 0)
+    (with messiness-capacity = 0)
     (for i in (wear-of user))
     (when (typep i 'closed-bottoms)
-      (incf (getf j :sogginess) (sogginess-of i))
-      (incf (getf j :sogginess-capacity) (sogginess-capacity-of i))
-      (incf (getf j :messiness) (messiness-of i))
-      (incf (getf j :messiness-capacity) (messiness-capacity-of i)))
-    (finally (return j))))
+      (incf sogginess (sogginess-of i))
+      (incf sogginess-capacity (sogginess-capacity-of i))
+      (incf messiness (messiness-of i))
+      (incf messiness-capacity (messiness-capacity-of i)))
+    (finally (return `(:sogginess ,sogginess :sogginess-capacity ,sogginess-capacity
+                       :messiness ,messiness :messiness-capacity ,messiness-capacity)))))
 (declaim (ftype (function (list) list) calculate-diaper-usage*))
 (defunassert (calculate-diaper-usage* (clothes))
     (clothes list)
-  (iter (with j = (list :sogginess 0 :sogginess-capacity 0 :messiness 0 :messiness-capacity 0))
+  (iter
+    (with sogginess = 0)
+    (with sogginess-capacity = 0)
+    (with messiness = 0)
+    (with messiness-capacity = 0)
     (for i in clothes)
     (when (typep i 'closed-bottoms)
-      (incf (getf j :sogginess) (sogginess-of i))
-      (incf (getf j :sogginess-capacity) (sogginess-capacity-of i))
-      (incf (getf j :messiness) (messiness-of i))
-      (incf (getf j :messiness-capacity) (messiness-capacity-of i)))
-    (finally (return j))))
-(declaim (ftype (function (number) (values real real &optional)) calculate-level-to-exp))
+      (incf sogginess (sogginess-of i))
+      (incf sogginess-capacity (sogginess-capacity-of i))
+      (incf messiness (messiness-of i))
+      (incf messiness-capacity (messiness-capacity-of i)))
+    (finally (return `(:sogginess ,sogginess :sogginess-capacity ,sogginess-capacity
+                       :messiness ,messiness :messiness-capacity ,messiness-capacity)))))
+(declaim (ftype (function (real) (values real real &optional)) calculate-level-to-exp))
 (defunassert (calculate-level-to-exp (level))
-    (level number)
+    (level real)
   (floor (/ (* 4 (expt level 3)) 5)))
-(declaim (ftype (function (enemy) (values number &optional)) calculate-exp-yield))
+(declaim (ftype (function (enemy) (values real &optional)) calculate-exp-yield))
 (defunassert (calculate-exp-yield (target))
     (target enemy)
   ($ (exp-yield-of target) * (level-of target) / 7))
@@ -3316,7 +3364,7 @@
                       * (level-of user))
                    / 100)
                 + 5))))
-(declaim (ftype (function (base-character base-character number) (values real real &optional)) calculate-damage))
+(declaim (ftype (function (base-character base-character real) (values real real &optional)) calculate-damage))
 (defunassert (calculate-damage (target user attack-base)
                                "Figures out the damage dealt, we use the formula
 
@@ -3335,7 +3383,7 @@ defense is @code{(calculate-stat @var{user} :defense)}
 randomrange is @code{(random-from-range 85 100)}")
     (user base-character
           target base-character
-          attack-base number)
+          attack-base real)
   (round ($ ($ ($ ($ ($ ($ ($ 2 * (level-of user)) / 5) + 2) * attack-base * ($ (calculate-stat user :attack) / (calculate-stat target :defense)))
                   / 50)
                + 2)
@@ -3343,7 +3391,7 @@ randomrange is @code{(random-from-range 85 100)}")
 (defun present-stats (user)
   (updating-present-frame-resolved (*query-io* :unique-id `(stats% ,user) :id-test #'equal)
     (clim:updating-output (*query-io*)
-      (clim:present user 'base-character :view yadfa-clim:+stat-view+))))
+      (clim:present user (type-of user) :view yadfa-clim:+stat-view+))))
 (defun describe-item (item)
   (let ((i (if (listp item)
                (car item)
@@ -3692,24 +3740,16 @@ randomrange is @code{(random-from-range 85 100)}")
         (cond ((not item)
                (format t "item ~d doesn't exist~%" (car i)))
               ((> (* (value-of item) (cdr i)) (bitcoins-of user))
-               (format t "You don't have enough bitcoins to buy ~a~%"
-                       (if (= (cdr i) 1)
-                           (format nil "that ~a" (name-of item))
-                           (format nil "~d ~a"
-                                   (cdr i)
-                                   (if (plural-name-of item)
-                                       (plural-name-of item)
-                                       (format nil "~as" (name-of item)))))))
+               (format t "You don't have enough bitcoins to buy ~[~:*~a~;that~:;~:*~a~] ~:[~a~3:*~P~2*~;~2:*~[~a~*~;~*~a~:;~a~*~]~]~%"
+                       (cdr i) (plural-name-of item) (name-of item)))
               (t (iter (for j from 1 to (cdr i))
                    (push (apply #'make-instance
                                 (car (nth (car i) items-for-sale))
                                 (eval (cdr (nth (car i) items-for-sale))))
                          (inventory-of user)))
                  (decf (bitcoins-of user) (* (value-of item) (cdr i)))
-                 (format t "You buy ~d ~a for ~f bitcoins~%"
-                         (cdr i)
-                         (or (plural-name-of item) (format nil "~as" (name-of item)))
-                         (* (value-of item) (cdr i))))))))
+                 (format t "You buy ~d ~:[~a~3:*~P~2*~;~2:*~[~a~*~;~*~a~:;~a~*~]~] for ~d bitcoin~:P~%"
+                         (cdr i) (plural-name-of item) (name-of item) (* (value-of item) (cdr i))))))))
   (when items-to-sell
     (let ((items (sort (remove-duplicates items-to-sell) #'<)))
       (setf items (iter (generate i in items)
@@ -3756,7 +3796,7 @@ randomrange is @code{(random-from-range 85 100)}")
   (iter (for i in (getf (status-conditions-of *battle*) character))
     (when (or (eq (duration-of i) t) (> (duration-of i) 0))
       (funcall (coerce (battle-script-of i) 'function) (target-of i) character i)
-      (when (typep (duration-of i) 'number)
+      (when (typep (duration-of i) 'real)
         (decf (duration-of i))))
     (removef-if (getf (status-conditions-of *battle*) character)
                 (lambda (a) (and (not (eq a t)) (<= a 0)))
@@ -3812,7 +3852,7 @@ randomrange is @code{(random-from-range 85 100)}")
   (iter (for i in (getf (status-conditions-of *battle*) character))
     (when (or (eq (duration-of i) t) (> (duration-of i) 0))
       (funcall (coerce (battle-script-of i) 'function) (target-of i) character i)
-      (when (typep (duration-of i) 'number)
+      (when (typep (duration-of i) 'real)
         (decf (duration-of i))))
     (removef-if (getf (status-conditions-of *battle*) character)
                 (lambda (a) (and (not (eq a t)) (<= a 0)))
@@ -3931,10 +3971,10 @@ randomrange is @code{(random-from-range 85 100)}")
           (incf (time-of *game*))
           (setf (turn-queue-of *battle*)
                 (dsu-sort (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
-                        (when (> (health-of i) 0)
-                          (collect i)))
-                      '>
-                      :key (lambda (a) (calculate-stat a :speed))))))
+                            (when (> (health-of i) 0)
+                              (collect i)))
+                          '>
+                          :key (lambda (a) (calculate-stat a :speed))))))
       (format t "~a is next in battle~%" (name-of (first (turn-queue-of *battle*))))
       ret)))
 (defun ally-join (ally)
@@ -3971,9 +4011,9 @@ randomrange is @code{(random-from-range 85 100)}")
   (setf (name-of (player-of *game*)) name)
   (setf (species-of (player-of *game*)) species)
   (setf (malep (player-of *game*)) malep))
-(defun intro-function (query-io)
+(defun intro-function ()
   "This function sets up the player and prints the back story. If you're trying to create your own game with a different storyline using a mod, you can replace this function. Be careful when enabling mods that change the story line this significantly as they can overwrite each other"
-  (write-line "Enter your character's name, gender, and species" query-io)
+  (write-line "Enter your character's name, gender, and species" *query-io*)
   (let* ((default (make-instance 'player))
          (wear '(yadfa-items:short-dress yadfa-items:tshirt yadfa-items:bra yadfa-items:jeans
                  yadfa-items:boxers yadfa-items:panties yadfa-items:pullups yadfa-items:diaper))
@@ -4060,7 +4100,7 @@ randomrange is @code{(random-from-range 85 100)}")
       (iter (for j from 1 to (random 20))
         (push (make-instance i)
               (get-items-from-prop :dresser (position-of (player-of *game*))))))
-    (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" query-io)
+    (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" *query-io*)
     (when (eq dergy :dergy)
-      (write-line "Since you decided to have the dergy metabolism, Pouar decided to have mercy on you and give you a thicker diaper. It's in your inventory." query-io)
+      (write-line "Since you decided to have the dergy metabolism, Pouar decided to have mercy on you and give you a thicker diaper. It's in your inventory." *query-io*)
       (push (make-instance 'yadfa-items:kurikia-thick-rubber-diaper) (inventory-of (player-of *game*))))))

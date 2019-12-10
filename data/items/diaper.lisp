@@ -195,6 +195,16 @@
    :wear-mess-text '(10000 "Poo is leaking out of the leg guards"
                      2500 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
+(defclass temple-diaper (cloth-diaper) ()
+  (:default-initargs
+   :name "Temple Diaper"
+   :description "A diaper with weird Egyptian hieroglyphics on it"))
+(defclass cursed-diaper (cloth-diaper) ()
+  (:default-initargs
+   :name "Cursed Diaper"
+   :description "The diaper's tapes have a glow in the shape of a lock in front of them. You can't seem to remove them. Better think of something quick."
+   :locked t
+   :key nil))
 (defclass rubber-diaper (yadfa:diaper) ()
   (:default-initargs
    :sogginess-capacity 2000
@@ -215,6 +225,19 @@
   (:default-initargs
    :name "Thick Cloth Diaper"
    :description "A thick diaper that can hold more than an normal diaper. Can be reused."))
+(defclass infinity-diaper (thick-cloth-diaper) ()
+  (:default-initargs
+   :name "Infinity Diaper"
+   :description "A diaper that never leaks. It is very thick and has an Ankh on the front"
+   :leakproof t
+   :waterproof t
+   :value 1000000000
+   :wear-wet-text '(2000 "The front is stained yellow"
+                    1400 "It squishes when you walk"
+                    1 "You can barely tell you wet it")
+   :wear-mess-text '(8500 "The back is clearly stained brown"
+                     4250 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
+                     1 "You can feel a slight mess back there")))
 (defclass thick-rubber-diaper (thick-diaper rubber-diaper) ()
   (:default-initargs
    :sogginess-capacity 6000
@@ -375,6 +398,11 @@
    :wear-wet-text '(800 "it is completely drenched, you sure you're ready for these?"
                     200 "it is noticeably wet"
                     1 "the pictures haven't faded yet")))
+(defclass temple-pullups (cloth-pullups) ()
+  (:default-initargs
+   :value 200
+   :name "Temple Pullups"
+   :description "A pullup with weird Egyptian hieroglyphics on it"))
 (defclass navy-pullups (cloth-pullups) ()
   (:default-initargs
    :value 200
