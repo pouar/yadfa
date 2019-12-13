@@ -282,9 +282,6 @@
 (defmethod frame-exit ((frame listener))
   (unwind-protect (error 'emm386-memory-manager-error)
     (call-next-method)))
-(macro-level:macro-level
-  `(setf *default-text-style*
-         (make-text-style ,@(if (uiop:featurep :mcclim-ffi-freetype) '("DejaVu Sans Mono" "Book") '(:fix :roman)) :normal)))
 
 (define-command (com-clear-output :name "Clear Output History"
                                   :command-table application-commands
@@ -293,69 +290,6 @@
     ()
   (window-clear *standard-output*)
   (setf yadfa-clim::*records* nil))
-
-;;; The CLIM Listener has the fonts hardcoded, the following 8 forms change them
-(defmethod read-frame-command ((frame listener) &key (stream *standard-input*))
-  "Specialized for the listener, read a lisp form to eval, or a command."
-  (multiple-value-bind (object type)
-      (let ((*command-dispatchers* '(#\,)))
-        (with-text-style (stream *default-text-style*)
-          (accept 'command-or-form :stream stream :prompt nil :default "hello" :default-type 'empty-input)))
-    (cond
-      ((presentation-subtypep type 'empty-input)
-       ;; Do nothing.
-       `(com-eval (values)))
-      ((presentation-subtypep type 'command) object)
-      (t `(com-eval ,object)))))
-(defun apropos-present-symbol (symbol &optional (stream *standard-output*) show-package)
-  (let ((ink (cond ((eql (symbol-package symbol)
-                         (find-package "KEYWORD"))
-                    (make-rgb-color 0.46 0.0 0.0))
-                   ((fboundp symbol) (make-rgb-color 0.0  0.0  0.3))
-                   ((find-class symbol nil) (make-rgb-color 0.03 0.35 0.48))
-                   ((boundp symbol) (make-rgb-color 0.0  0.0  0.0))
-                   (t (make-rgb-color 0.6  0.6  0.6)))))
-    (with-drawing-options (stream :ink ink)
-      (with-output-as-presentation (stream symbol 'clim:symbol)
-        (if show-package
-            (let ((*package* (find-package :common-lisp-user)))
-              (format stream "~W" symbol))
-            (princ (symbol-name symbol) stream)))
-      (when (boundp symbol)
-        (format stream " = ")
-        (with-drawing-options (stream :ink +olivedrab+ ;; XXX
-                                      :text-style (make-text-style nil nil :small))
-          (let ((object (symbol-value symbol)))
-            (present object (presentation-type-of object) :stream stream)))))))
-(defun package-grapher (stream package inferior-fun)
-  "Draw package hierarchy graphs for `Show Package Users' and `Show Used Packages'."
-  (let ((normal-ink +foreground-ink+)
-        (arrow-ink  (make-rgb-color 0.72 0.72 0.72)))
-    (with-drawing-options (stream)
-      (format-graph-from-roots (list package)
-                               #'(lambda (package stream)
-                                   (let ((internal (count-internal-symbols package))
-                                         (external (count-external-symbols package)))
-                                     (with-drawing-options (stream :ink (if (plusp external)
-                                                                            normal-ink
-                                                                            (make-rgb-color 0.4 0.4 0.4)))
-                                       (with-output-as-presentation (stream package 'package
-                                                                            :single-box t)
-                                         (format stream "~A (~D/~D)" (package-name package) internal external)))))
-                               inferior-fun
-                               :stream stream
-                               :merge-duplicates t
-                               :graph-type :tree
-                               :orientation :horizontal
-                               :arc-drawer
-                               #'(lambda (stream foo bar x1 y1 x2 y2)
-                                   (declare (ignore foo bar))
-                                   (draw-arrow* stream x1 y1 x2 y2 :ink arrow-ink))))))
-(setf *apropos-symbol-unbound-family* (text-style-family *default-text-style*))
-(setf *apropos-symbol-unbound-face* (text-style-face *default-text-style*))
-(setf *apropos-symbol-bound-family* (text-style-family *default-text-style*))
-(setf *apropos-symbol-bound-face* (text-style-face *default-text-style*))
-(setf *graph-text-style* *default-text-style*)
 
 ;;; add init function
 (defmethod default-frame-top-level
@@ -420,6 +354,38 @@
                 (beep))))))))
 (defmethod run-frame-top-level :before ((frame listener) &key)
   (conditional-commands:change-entity-enabledness 'yadfa-clim::listener-start))
+#+mcclim-ffi-freetype
+(in-package :clim-freetype)
+#+mcclim-ffi-freetype
+(defun find-best-match (family face)
+  (let ((result (mcclim-fontconfig:match-font (append *main-filter*
+                                                      (make-family-pattern family)
+                                                      (make-face-pattern face))
+                                              '(:family :style :file :charset))))
+    (list (cdr (assoc :family result))
+          (cdr (assoc :style result))
+          (cdr (assoc :file result))
+          (cdr (assoc :charset result)))))
+#+mcclim-ffi-freetype
+(defun make-family-pattern (family)
+  (list (cond
+          ((typep family 'freetype-font-family) `(:family . ,(clim-extensions:font-family-name family)))
+          ((stringp family) `(:family . ,family))
+          ((eq family :fix) '(:family . "monospace"))
+          ((eq family :sans-serif) '(:family . "sans-serif"))
+          ((eq family :serif) '(:family . "serif"))
+          (t '(:family . "sans-serif")))))
+#+mcclim-ffi-freetype
+(defun make-face-pattern (face)
+  (loop
+    for f in (if (listp face) face (list face))
+    append (cond
+             ((typep f 'freetype-font-face) `(("style" . ,(clim-extensions:font-face-name face))))
+             ((stringp face) `((:style . ,face)))
+             ((eq f :roman) '((:style . "Regular")))
+             ((eq f :bold) '((:style . "Bold")))
+             ((eq f :italic) '((:style . "Italic")))
+             (t nil))))
 (in-package :yadfa)
 (define-condition uwu (simple-error) ()
   (:report (lambda (condition stream)

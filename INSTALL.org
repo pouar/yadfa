@@ -34,6 +34,8 @@ After which, either place this repo in either =~/common-lisp=, =~/quicklisp/loca
 (:tree "$PATH_TO_THIS_REPOSITORY")
 #+END_SRC
 
+I've patched the FreeType renderer to obey fontconfig's defaults, instead of trying to guess the font which ends up picking =UnifrakturCook Bold= for ~:fix :bold~ on my system. if you want to change this, there's a config file in [[file:flatpak/99-mcclim.conf][flatpak/99-mcclim.conf]] as an example, which is what the flatpak uses
+
 In Windows, `$XDG_CONFIG_HOME` is set to =C:/Users/$User/AppData/Local/=. Also, when setting the pathname, you need to use what the rest of the world uses as the directory separator, which is =/=, Not what Windows uses, which is =\=.
 
 After which, either run ~sbcl --script build.lisp mods~ or ~ccl -l build.lisp -- mods~ to build
