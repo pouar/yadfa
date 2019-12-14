@@ -42,8 +42,4 @@
   (when (featurep :mcclim-ffi-freetype)
     (setf (symbol-value (uiop:find-symbol* '#:*library* '#:freetype2))
           (uiop:symbol-call '#:freetype2 '#:make-freetype)))
-  (clim-listener:run-listener
-   :package :yadfa-user
-   :process-name "yadfa"
-   :height 768
-   :width 1024))
+  (yadfa-clim:run-listener))

@@ -4,27 +4,68 @@
 (define-command-table yadfa-battle-commands)
 (define-command-table yadfa-bin-commands)
 (define-command-table yadfa-menu-commands)
-
+(define-command-table application-commands)
+(define-command (com-clear-output :name "Clear Output History"
+                                  :command-table application-commands
+                                  :menu t
+                                  :provide-output-destination-keyword nil)
+    ()
+  (window-clear *standard-output*)
+  (setf *records* nil))
+(map-over-command-table-names (lambda (name command)
+                                   (unless (eq command 'clim-listener::com-clear-output)
+                                     (add-command-to-command-table command (find-command-table 'application-commands))
+                                     (add-menu-item-to-command-table (find-command-table 'application-commands) name :command command)))
+                                 (find-command-table 'clim-listener::application-commands)
+                                 :inherited nil)
+(conditional-commands:define-conditional-application-frame yadfa-listener (clim-listener::listener)
+  (:enable-commands '(yadfa-bin-commands yadfa-world-commands)
+   :disable-commands '(yadfa-world-commands))
+  ()
+  (:panes (clim-listener::interactor-container
+           (make-clim-stream-pane
+            :type 'clim-listener::listener-interactor-pane
+            :name 'clim-listener::interactor :scroll-bars t
+            :default-view clim-listener::+listener-view+
+            :end-of-line-action :wrap*))
+          (clim-listener::doc :pointer-documentation :default-view clim-listener::+listener-pointer-documentation-view+)
+          (clim-listener::wholine (make-pane 'clim-listener::wholine-pane
+                                             :display-function 'clim-listener::display-wholine :scroll-bars nil
+                                             :display-time :command-loop :end-of-line-action :allow)))
+  (:top-level (default-frame-top-level :prompt 'clim-listener::print-listener-prompt))
+  (:command-table (yadfa-listener
+                   :inherit-from (
+                                  clim-listener::listener
+                                  yadfa-menu-commands
+                                  yadfa-world-commands
+                                  yadfa-battle-commands
+                                  yadfa-bin-commands
+                                  application-commands)
+                   :menu (("Listener"   :menu application-commands)
+                          ("Lisp"       :menu clim-listener::lisp-commands)
+                          ("Filesystem" :menu clim-listener::filesystem-commands)
+                          ("Show"       :menu clim-listener::show-commands)
+                          ("Yadfa"      :menu yadfa-menu-commands))))
+  (:disabled-commands clim-listener::com-clear-output)
+  (:menu-bar t)
+  (:layouts (default
+             (vertically ()
+               clim-listener::interactor-container
+               clim-listener::doc
+               clim-listener::wholine))))
 (define-command (yadfa-set-eol-action :command-table yadfa-menu-commands :menu "Set EOL Action")
     ((keyword '(member :scroll :allow :wrap :wrap*)
               :prompt "Keyword"))
-  (setf (stream-end-of-line-action clim-listener::*query-io*) keyword))
+  (setf (stream-end-of-line-action *query-io*) keyword))
 (define-command (yadfa-gc :command-table yadfa-menu-commands :menu "GC")
     ()
   (trivial-garbage:gc :full t))
-(unless
-    (find-menu-item "Yadfa" (find-command-table 'clim-listener::listener) :errorp nil)
-  (add-menu-item-to-command-table (find-command-table 'clim-listener::listener) "Yadfa" :menu (find-command-table 'yadfa-menu-commands)))
-(pushnew (find-command-table 'yadfa-menu-commands) (command-table-inherit-from (find-command-table 'clim-listener::listener)))
-(pushnew (find-command-table 'yadfa-world-commands) (command-table-inherit-from (find-command-table 'clim-listener::listener)))
-(pushnew (find-command-table 'yadfa-battle-commands) (command-table-inherit-from (find-command-table 'clim-listener::listener)))
-(pushnew (find-command-table 'yadfa-bin-commands) (command-table-inherit-from (find-command-table 'clim-listener::listener)))
 (conditional-commands:define-conditional-command (com-enable-world)
-    (clim-listener::listener :enable-commands (yadfa-world-commands yadfa-bin-commands)
+    (yadfa-listener :enable-commands (yadfa-world-commands yadfa-bin-commands)
                              :disable-commands (yadfa-battle-commands))
     ())
 (conditional-commands:define-conditional-command (com-enable-battle)
-    (clim-listener::listener :enable-commands (yadfa-battle-commands yadfa-bin-commands)
+    (yadfa-listener :enable-commands (yadfa-battle-commands yadfa-bin-commands)
                              :disable-commands (yadfa-world-commands))
     ())
 (define-command
@@ -33,10 +74,6 @@
           :prompt "object"
           :gesture :inspect))
   (clouseau:inspect obj :new-process t))
-(conditional-commands:add-entity-enabledness-change 'listener-start 'clim-listener::listener
-                                                    :enable-commands '(yadfa-bin-commands yadfa-world-commands)
-                                                    :disable-commands '(yadfa-world-commands)
-                                                    :change-status nil)
 (defclass stat-view (view) ())
 (defconstant +stat-view+ (make-instance 'stat-view))
 (defmacro draw-bar (medium stat &rest colors)
@@ -283,3 +320,95 @@
         (if interactorp
             (format frame-query-io "~&Command aborted.~&")
             (beep))))))
+;;; add init function
+(defmethod default-frame-top-level
+    ((frame yadfa-listener)
+     &key (command-parser 'command-line-command-parser)
+          (command-unparser 'command-line-command-unparser)
+          (partial-command-parser
+           'command-line-read-remaining-arguments-for-partial-command)
+          (prompt "Command: "))
+  ;; Give each pane a fresh start first time through.
+  (let ((needs-redisplay t)
+        (first-time t))
+    (loop
+      ;; The variables are rebound each time through the loop because the
+      ;; values of frame-standard-input et al. might be changed by a command.
+      ;;
+      ;; We rebind *QUERY-IO* ensuring variable is always a stream,
+      ;; but we use FRAME-QUERY-IO for our own actions and to decide
+      ;; whenever frame has the query IO stream associated with it..
+      (let* ((frame-query-io (frame-query-io frame))
+             (interactorp (typep frame-query-io 'interactor-pane))
+             (*standard-input*  (or (frame-standard-input frame)  *standard-input*))
+             (*standard-output* (or (frame-standard-output frame) *standard-output*))
+             (*query-io* (or frame-query-io *query-io*))
+             ;; during development, don't alter *error-output*
+             ;; (*error-output* (frame-error-output frame))
+             (*pointer-documentation-output* (frame-pointer-documentation-output frame))
+             (*command-parser* command-parser)
+             (*command-unparser* command-unparser)
+             (*partial-command-parser* partial-command-parser))
+        (restart-case
+            (flet ((execute-command ()
+                     (alexandria:when-let ((command (read-frame-command frame :stream frame-query-io)))
+                       (setq needs-redisplay t)
+                       (serapeum:run-hooks 'yadfa:*cheat-hooks*)
+                       (execute-frame-command frame command))))
+              (when needs-redisplay
+                (dolist (i yadfa-clim::*records*) do (redisplay i *standard-output*))
+                (redisplay-frame-panes frame :force-p first-time)
+                (when first-time
+                  (yadfa::switch-user-packages)
+                  (yadfa:intro-function frame-query-io))
+                (setq first-time nil needs-redisplay nil)
+                (when (>= (yadfa:time-of yadfa:*game*) (+ yadfa::*last-rng-update* 20))
+                  (setf cl:*random-state* (make-random-state t)
+                        yadfa::*last-rng-update* (yadfa:time-of yadfa:*game*))))
+              (when interactorp
+                (setf (cursor-visibility (stream-text-cursor frame-query-io)) nil)
+                (when prompt
+                  (with-text-style (frame-query-io climi::+default-prompt-style+)
+                    (if (stringp prompt)
+                        (write-string prompt frame-query-io)
+                        (funcall prompt frame-query-io frame))
+                    (force-output frame-query-io))))
+              (execute-command)
+              (when interactorp
+                (fresh-line frame-query-io)))
+          (abort ()
+            :report "Return to application command loop."
+            (if interactorp
+                (format frame-query-io "~&Command aborted.~&")
+                (beep))))))))
+(define-condition emm386-memory-manager-error (serious-condition) ()
+  (:report (lambda (condition stream)
+             (declare (ignore condition))
+             (write-line "Thank you for playing Wing Commander!" stream))))
+(defmethod frame-exit ((frame yadfa-listener))
+  (unwind-protect (error 'emm386-memory-manager-error)
+    (call-next-method)))
+(defun run-listener (&key (new-process nil)
+                          (debugger t)
+                          (width 1024)
+                          (height 1024)
+                          port
+                          frame-manager
+                          (process-name "Yadfa")
+                          (package :yadfa-user))
+  (let* ((fm (or frame-manager (find-frame-manager :port (or port (find-port)))))
+         (frame (make-application-frame 'yadfa-listener
+                                        :frame-manager fm
+                                        :width width
+                                        :height height)))
+    (flet ((run ()
+             (let ((*package* (find-package package)))
+               (unwind-protect
+                    (if debugger
+                        (clim-debugger:with-debugger () (run-frame-top-level frame))
+                        (run-frame-top-level frame))
+                 (disown-frame fm frame)))))
+      (if new-process
+          (values (clim-sys:make-process #'run :name process-name)
+                  frame)
+          (run)))))

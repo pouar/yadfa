@@ -3973,7 +3973,6 @@ randomrange is @code{(random-from-range 85 100)}")
   (setf (malep (player-of *game*)) malep))
 (defun intro-function (query-io)
   "This function sets up the player and prints the back story. If you're trying to create your own game with a different storyline using a mod, you can replace this function. Be careful when enabling mods that change the story line this significantly as they can overwrite each other"
-  (setf (clim:stream-end-of-line-action query-io) :wrap*)
   (write-line "Enter your character's name, gender, and species" query-io)
   (let* ((default (make-instance 'player))
          (wear '(yadfa-items:short-dress yadfa-items:tshirt yadfa-items:bra yadfa-items:jeans

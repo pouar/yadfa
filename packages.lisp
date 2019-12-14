@@ -613,4 +613,4 @@
   (:mix :clim :yadfa)
   (:use :iterate :yadfa-util :clim-lisp :clim-extensions)
   (:documentation "CLIM related stuff")
-  (:export #:stat-view #:+stat-view+ #:draw-bar))
+  (:export #:stat-view #:+stat-view+ #:draw-bar #:run-listener))
