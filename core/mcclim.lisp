@@ -27,6 +27,29 @@
     (clim-listener::listener :enable-commands (yadfa-battle-commands yadfa-bin-commands)
                              :disable-commands (yadfa-world-commands))
     ())
+(define-command
+    (com-inspect :command-table global-command-table :name "Inspect" :menu t)
+    ((obj 'expression
+          :prompt "object"))
+  (clouseau:inspect obj))
+(define-presentation-to-command-translator com-inspect-translator
+    (expression com-inspect global-command-table
+     :menu t
+     :documentation "Inspect")
+    (object)
+  (list object))
+(define-presentation-to-command-translator com-describe-class-translator
+    (yadfa::yadfa-class climi::com-describe global-command-table
+     :menu t
+     :documentation "Describe")
+    (object)
+  (list object))
+(define-presentation-to-command-translator com-inspect-class-translator
+    (yadfa::yadfa-class com-inspect global-command-table
+     :menu t
+     :documentation "Inspect")
+    (object)
+  (list object))
 (conditional-commands:add-entity-enabledness-change 'listener-start 'clim-listener::listener
                                                     :enable-commands '(yadfa-bin-commands yadfa-world-commands)
                                                     :disable-commands '(yadfa-world-commands)
