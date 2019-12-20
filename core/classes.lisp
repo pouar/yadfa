@@ -882,7 +882,6 @@
   (declare (ignorable initargs))
   (setf (thickness-capacity-of c) (cdr (onesie-thickness-capacity-of c)))
   (setf (thickness-capacity-threshold-of c) (cdr (onesie-thickness-capacity-threshold-of c)))
-  (setf (waterproofp c) nil)
   (setf (bulge-text-of c) (cdr (onesie-bulge-text-of c))))
 (defmethod initialize-instance :after
     ((c onesie/closed) &rest initargs &key &allow-other-keys)

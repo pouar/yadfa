@@ -27,12 +27,14 @@
         (progn
           (unuse-package *world-packages* :yadfa-user)
           (use-package *battle-packages* :yadfa-user)
-          (when clim:*application-frame*
+          (let ((clim:*application-frame* (clim:find-application-frame 'yadfa-clim::yadfa-listener)))
+            (declare (special clim:*application-frame*))
             (conditional-commands:change-entity-enabledness 'yadfa-clim::com-enable-battle)))
         (progn
           (unuse-package *battle-packages* :yadfa-user)
           (use-package *world-packages* :yadfa-user)
-          (when clim:*application-frame*
+          (let ((clim:*application-frame* (clim:find-application-frame 'yadfa-clim::yadfa-listener)))
+            (declare (special clim:*application-frame*))
             (conditional-commands:change-entity-enabledness 'yadfa-clim::com-enable-world))))))
 (defunassert (get-event (event-id))
     (event-id symbol)

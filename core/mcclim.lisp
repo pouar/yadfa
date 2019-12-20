@@ -186,84 +186,33 @@
             (t :green))
   (terpri stream))
 (define-command (com-yadfa-move :command-table yadfa-world-commands :menu t :name "Move")
-    ((zone zone))
-  (block nil
-    (apply #'yadfa-world:move
-           (cond
-             (*battle*
-              (format t "You can't do this in battle~%")
-              (return))
-             ((and
-               (<
-                (first (position-of (player-of *game*)))
-                (first (position-of zone)))
-               (=
-                (second (position-of (player-of *game*)))
-                (second (position-of zone)))
-               (=
-                (third (position-of (player-of *game*)))
-                (third (position-of zone)))
-               (equal
-                (fourth (position-of (player-of *game*)))
-                (fourth (position-of zone))))
-              (iter (for i
-                         from (1+ (first (position-of (player-of *game*))))
-                         to (first (position-of zone)))
-                (collect :east)))
-             ((and
-               (>
-                (first (position-of (player-of *game*)))
-                (first (position-of zone)))
-               (=
-                (second (position-of (player-of *game*)))
-                (second (position-of zone)))
-               (=
-                (third (position-of (player-of *game*)))
-                (third (position-of zone)))
-               (equal
-                (fourth (position-of (player-of *game*)))
-                (fourth (position-of zone))))
-              (iter (for i
-                         from (1- (first (position-of (player-of *game*))))
-                         downto (first (position-of zone)))
-                (collect :west)))
-             ((and
-               (=
-                (first (position-of (player-of *game*)))
-                (first (position-of zone)))
-               (<
-                (second (position-of (player-of *game*)))
-                (second (position-of zone)))
-               (=
-                (third (position-of (player-of *game*)))
-                (third (position-of zone)))
-               (equal
-                (fourth (position-of (player-of *game*)))
-                (fourth (position-of zone))))
-              (iter (for i
-                         from (1+ (second (position-of (player-of *game*))))
-                         to (second (position-of zone)))
-                (collect :south)))
-             ((and
-               (=
-                (first (position-of (player-of *game*)))
-                (first (position-of zone)))
-               (>
-                (second (position-of (player-of *game*)))
-                (second (position-of zone)))
-               (=
-                (third (position-of (player-of *game*)))
-                (third (position-of zone)))
-               (equal
-                (fourth (position-of (player-of *game*)))
-                (fourth (position-of zone))))
-              (iter (for i
-                         from (1- (second (position-of (player-of *game*))))
-                         downto (second (position-of zone)))
-                (collect :north)))
-             (t
-              (format t "You're either already on that zone or you tried specifying a path that involves turning (which this interface can't do because Pouar sucks at writing code that generates paths)~%")
-              (return))))))
+    ((zone '(or zone form)))
+  (cond ((typep zone 'zone)
+         (block nil
+           (apply #'yadfa-world:move
+                  (destructuring-bind (new-x new-y new-z new-zone) (position-of zone)
+                    (destructuring-bind (old-x old-y old-z old-zone) (position-of (player-of *game*))
+                      (cond
+                        (*battle*
+                         (format t "You can't do this in battle~%")
+                         (return))
+                        ((and (< old-x new-x) (= old-y new-y) (= old-z new-z) (equal old-zone new-zone))
+                         (iter (for i from (1+ old-x) to new-x)
+                           (collect :east)))
+                        ((and (> old-x new-x) (= old-y new-y) (= old-z new-z) (equal old-zone new-zone))
+                         (iter (for i from (1- old-x) downto new-x)
+                           (collect :west)))
+                        ((and (= old-x new-x) (< old-y new-y) (= old-z new-z) (equal old-zone new-zone))
+                         (iter (for i from (1+ old-y) to new-y)
+                           (collect :south)))
+                        ((and (= old-x new-x) (> old-y new-y) (= old-z new-z) (equal old-zone new-zone))
+                         (iter (for i from (1- old-y) downto new-y)
+                           (collect :north)))
+                        (t
+                         (format t "You're either already on that zone or you tried specifying a path that involves turning (which this interface can't do because Pouar sucks at writing code that generates paths)~%")
+                         (return))))))))
+        (t
+         (apply 'yadfa-world:move zone))))
 (define-command (com-yadfa-describe-zone :command-table yadfa-bin-commands :menu t :name "Describe Zone")
     ((zone zone))
   (yadfa-bin:lst :describe-zone zone))
@@ -272,9 +221,48 @@
      :documentation "Move"
      :pointer-documentation "Move Here"
      :gesture nil
-     :menu t)
+     :menu t
+     :tester ((object) (destructuring-bind (new-x new-y new-z new-zone) (position-of object)
+                         (destructuring-bind (old-x old-y old-z old-zone) (position-of (player-of *game*))
+                           (and (= old-z new-z) (equal old-zone new-zone) (or (and (= old-y new-y) (/= old-x new-x))
+                                                                              (and (= old-x new-x) (/= old-y new-y))))))))
     (object)
   (list object))
+(define-presentation-to-command-translator com-yadfa-move-translator-up
+    (zone com-yadfa-move yadfa-world-commands
+     :documentation "Move Up"
+     :pointer-documentation "Move Up"
+     :gesture nil
+     :menu t
+     :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
+                   (get-zone (destructuring-bind (x y z zone) (position-of object)
+                         `(,x ,y ,(1- z) ,zone))))))
+    (object)
+  (list '(:up)))
+(define-presentation-to-command-translator com-yadfa-move-translator-down
+    (zone com-yadfa-move yadfa-world-commands
+     :documentation "Move Down"
+     :pointer-documentation "Move Down"
+     :gesture nil
+     :menu t
+     :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
+                            (get-zone (destructuring-bind (x y z zone) (position-of object)
+                                        `(,x ,y ,(1+ z) ,zone))))))
+    (object)
+  (list '(:down)))
+(define-presentation-to-command-translator com-yadfa-move-translator-warp
+    (zone com-yadfa-move yadfa-world-commands
+     :documentation "Warp"
+     :pointer-documentation "Warp"
+     :gesture nil
+     :menu t
+     :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
+                            (warp-points-of (get-zone (position-of object))))))
+    (object)
+  `(,(let ((*query-io* (frame-query-io (find-application-frame 'yadfa-listener))))
+                (accepting-values (*query-io* :resynchronize-every-pass t)
+                  (accept `(member ,(iter (for (key position) on (warp-points-of (get-zone (position-of object))) by 'cddr)
+                                      (collect key))) :view clim:+radio-box-view+ :stream *query-io*)))))
 (define-presentation-to-command-translator com-yadfa-describe-zone-translator
     (zone com-yadfa-describe-zone yadfa-bin-commands
      :documentation "Describe Zone"
