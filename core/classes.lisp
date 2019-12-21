@@ -553,7 +553,7 @@
     :initform '(t . (lambda (user)
                       (declare (ignore user))
                       t))
-    :type cons
+    :type (or cons symbol)
     :accessor must-wear-of
     :documentation #.(format nil "Used to determine whether you can enter the zone based on what you're wearing. @var{USER} is a cons with the type specifier of what you must be wearing and a lambda expression or function that runs to determine if you can enter the zone. You can also use a symbol as key for one of the values in the hash table in the @code{MUST-WEAR} slot in ~a."
                              (ref game :class)))
@@ -563,7 +563,7 @@
                       (declare (ignore user))
                       t))
     :accessor must-wear*-of
-    :type cons
+    :type (or cons symbol)
     :documentation #.(format nil "Similar to the @code{MUST-WEAR} slot but is done when you try to wear or change while still inside the zone. You can also use a symbol as key for one of the values in the hash table in the @code{MUST-WEAR*} slot in ~a."
                              (ref game :class)))
    (must-not-wear
@@ -571,7 +571,7 @@
     :initform '(nil . (lambda (user)
                         (declare (ignore user))
                         t))
-    :type cons
+    :type (or cons symbol)
     :accessor must-not-wear-of
     :documentation #.(format nil "Used to determine whether you can enter the zone based on what you're wearing. @var{USER} is a cons with the type specifier of what you must not be wearing and a lambda expression or function that runs to determine if you can enter the zone. You can also use a symbol as key for one of the values in the hash table in the @code{MUST-NOT-WEAR} slot in ~a."
                              (ref game :class)))
@@ -580,7 +580,7 @@
     :initform '(nil . (lambda (user)
                         (declare (ignore user))
                         t))
-    :type cons
+    :type (or cons symbol)
     :accessor must-not-wear*-of
     :documentation #.(format nil "Similar to the @code{MUST-NOT-WEAR} slot but is done when you try to wear or change while still inside the zone. You can also use a symbol as key for one of the values in the hash table in the @code{MUST-NOT-WEAR*} slot in ~a."
                              (ref game :class)))
