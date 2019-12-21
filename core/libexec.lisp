@@ -295,9 +295,9 @@
   (when continuable
     (setf
      (continue-battle-of (get-zone (position-of (player-of *game*))))
-     (list :enemies enemies
-           :win-events win-events
-           :enter-battle-text enter-battle-text)))
+     `(:enemies ,enemies
+       :win-events ,win-events
+       :enter-battle-text ,enter-battle-text)))
   (setf *battle*
         (apply #'make-instance 'battle
                :enemies (iter (for j in enemies)
