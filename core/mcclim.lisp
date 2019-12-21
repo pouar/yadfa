@@ -235,8 +235,9 @@
      :gesture nil
      :menu t
      :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
-                   (get-zone (destructuring-bind (x y z zone) (position-of object)
-                         `(,x ,y ,(1+ z) ,zone))))))
+                            (get-zone (destructuring-bind (x y z zone) (position-of object)
+                                        `(,x ,y ,(1+ z) ,zone)))
+                            (yadfa::travelablep (position-of (player-of *game*)) :up))))
     (object)
   '((:up)))
 (define-presentation-to-command-translator com-yadfa-move-translator-down
@@ -247,7 +248,8 @@
      :menu t
      :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
                             (get-zone (destructuring-bind (x y z zone) (position-of object)
-                                        `(,x ,y ,(1- z) ,zone))))))
+                                        `(,x ,y ,(1- z) ,zone)))
+                            (yadfa::travelablep (position-of (player-of *game*)) :down))))
     (object)
   '((:down)))
 (define-presentation-to-command-translator com-yadfa-move-translator-warp
@@ -257,12 +259,15 @@
      :gesture nil
      :menu t
      :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
-                            (warp-points-of (get-zone (position-of object))))))
+                            (iter (for (point position) on (warp-points-of (get-zone (position-of object))) by 'cddr)
+                              (unless (yadfa::travelablep (position-of (player-of *game*)) point)
+                                (collect point))))))
     (object)
   `((,(let ((*query-io* (frame-query-io (find-application-frame 'yadfa-listener))))
                 (accepting-values (*query-io* :resynchronize-every-pass t)
                   (accept `(member-alist ,(iter (for (key position) on (warp-points-of (get-zone (position-of object))) by 'cddr)
-                                      (collect (cons (write-to-string key) key)))) :view clim:+radio-box-view+ :stream *query-io*))))))
+                                            (unless (yadfa::travelablep (position-of (player-of *game*)) key)
+                                              (collect (cons (write-to-string key) key))))) :view clim:+radio-box-view+ :stream *query-io*))))))
 (define-presentation-to-command-translator com-yadfa-describe-zone-translator
     (zone com-yadfa-describe-zone yadfa-bin-commands
      :documentation "Describe Zone"
