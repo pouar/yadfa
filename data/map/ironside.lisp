@@ -18,7 +18,7 @@
   :description "Your typical suburban street. Some furries are driving in cars, some are walking, and some are riding on top of other furries treating them like a horse."
   :can-potty 'can-potty
   :potty-trigger 'trigger-diaper-police
-  :warp-points (list 'bandits-way '(0 0 0 bandits-domain))
+  :warp-points (list 'bandits-way '(0 10 0 bandits-domain))
   :enter-text "You enter the street")
 (ensure-zone (0 1 0 downtown)
   :name "Ironside Crap-Mart"

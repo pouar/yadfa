@@ -2,13 +2,13 @@
 (in-package :yadfa-zones)
 (macro-level
   `(progn
-     ,@(iter (for i from 0 to 20)
+     ,@(iter (for i from 10 to 20)
          (collect
              `(ensure-zone (0 ,i 0 bandits-domain)
                 :name "Bandit's Way"
                 :description "A path filled with bandits"
                 :enter-text "You follow the path"
-                :warp-points ,(when (= i 0) '(list 'ironside '(2 0 0 ironside)))
+                :warp-points ,(when (= i 10) '(list 'ironside '(2 0 0 ironside)))
                 :enemy-spawn-list 'bandits-way)))))
 
 (macro-level

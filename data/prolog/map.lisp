@@ -74,12 +74,12 @@
             (declare (ignore self))
             (serapeum:dict*
              (enemy-spawn-list-of *game*)
-             'bandits-way '((:chance 1/8
+             'bandits-way '((:chance 1/15
                              :enemies ((yadfa-enemies:female-diapered-raccoon-bandit .
-                                        `(:level ,(random-from-range 2 5)))))
-                            (:chance 1/8
+                                        `(:level ,(random-from-range 2 4)))))
+                            (:chance 1/15
                              :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
-                                        `(:level ,(random-from-range 2 5))))))
+                                        `(:level ,(random-from-range 2 4))))))
              'bandits-cove '((:chance 1/10
                               :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
                                          `(:level ,(random-from-range 2 5)
