@@ -238,7 +238,7 @@
                    (get-zone (destructuring-bind (x y z zone) (position-of object)
                          `(,x ,y ,(1- z) ,zone))))))
     (object)
-  (list '(:up)))
+  '((:up)))
 (define-presentation-to-command-translator com-yadfa-move-translator-down
     (zone com-yadfa-move yadfa-world-commands
      :documentation "Move Down"
@@ -249,20 +249,20 @@
                             (get-zone (destructuring-bind (x y z zone) (position-of object)
                                         `(,x ,y ,(1+ z) ,zone))))))
     (object)
-  (list '(:down)))
+  '((:down)))
 (define-presentation-to-command-translator com-yadfa-move-translator-warp
     (zone com-yadfa-move yadfa-world-commands
-     :documentation "Warp"
-     :pointer-documentation "Warp"
+     :documentation "Move To Waypoint"
+     :pointer-documentation "Move To Waypoint"
      :gesture nil
      :menu t
      :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
                             (warp-points-of (get-zone (position-of object))))))
     (object)
-  `(,(let ((*query-io* (frame-query-io (find-application-frame 'yadfa-listener))))
+  `((,(let ((*query-io* (frame-query-io (find-application-frame 'yadfa-listener))))
                 (accepting-values (*query-io* :resynchronize-every-pass t)
-                  (accept `(member ,(iter (for (key position) on (warp-points-of (get-zone (position-of object))) by 'cddr)
-                                      (collect key))) :view clim:+radio-box-view+ :stream *query-io*)))))
+                  (accept `(member-alist ,(iter (for (key position) on (warp-points-of (get-zone (position-of object))) by 'cddr)
+                                      (collect (cons (write-to-string key) key)))) :view clim:+radio-box-view+ :stream *query-io*))))))
 (define-presentation-to-command-translator com-yadfa-describe-zone-translator
     (zone com-yadfa-describe-zone yadfa-bin-commands
      :documentation "Describe Zone"
