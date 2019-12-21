@@ -1967,7 +1967,7 @@
         (format stream "~a" (random-elt leak))
         (format stream "~a" (random-elt normal)))))
 (defmethod output-process-potty-text ((user ally-last-minute-potty-training) (padding (eql nil)) (type (eql :wet)) (action (eql :had-accident)) had-accident
-                                       &key (stream *standard-output*))
+                                      &key (stream *standard-output*))
   (let ((normal ())
         (leak ()))
     (if (and (car had-accident) (= (getf (car had-accident) :wet-amount) 10))
@@ -3739,14 +3739,14 @@ randomrange is @code{(random-from-range 85 100)}")
           (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t)
                                         (fresh-line *query-io*)
                                         (setf item (clim:accept `(clim:member-alist ,(iter (for i in items-for-sale)
-                                                                       (collect (list (name-of (apply 'make-instance (car i) (eval (cdr i))))
-                                                                                      i)))) :prompt "Item"
-                                                                                            :view (make-instance 'clim:radio-box-view
-                                                                                                                 :orientation :vertical)
-                                                                                            :stream *query-io*))
+                                                                                       (collect (list (name-of (apply 'make-instance (car i) (eval (cdr i))))
+                                                                                                      i)))) :prompt "Item"
+                                                                                                            :view (make-instance 'clim:radio-box-view
+                                                                                                                                 :orientation :vertical)
+                                                                                                            :stream *query-io*))
                                         (fresh-line *query-io*)
                                         (setf quantity (clim:accept 'string :prompt "Quantity"
-                                                                                 :view clim:+text-field-view+ :stream *query-io*))))
+                                                                            :view clim:+text-field-view+ :stream *query-io*))))
           (when (and quantity item (handler-case (if (typep (parse-integer quantity) '(integer 1 *))
                                                      t
                                                      (progn (format t "Quantity must be an '(integer 1 *)~%")
@@ -3789,9 +3789,9 @@ randomrange is @code{(random-from-range 85 100)}")
         (let (items)
           (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t)
                                         (setf items (clim:accept `(clim:subset-alist ,(iter (for item in (remove-duplicates (inventory-of user)))
-                                                                                  (collect (cons (name-of item)
-                                                                                                 item)))) :prompt "Items"
-                                                                                                       :view clim:+check-box-view+ :stream *query-io*))))
+                                                                                        (collect (cons (name-of item)
+                                                                                                       item)))) :prompt "Items"
+                                                                                                                :view clim:+check-box-view+ :stream *query-io*))))
           (iter (for i in items)
             (format t "You sell your ~a for ~f bitcoins~%"
                     (name-of i)
