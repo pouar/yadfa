@@ -117,21 +117,21 @@
                                                               (ignore keys))
                                                              (check-type prop prop)
                                                              (shopfun (items-for-sale-of prop) :format-items t)))
-                 :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
+                 :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY). If ITEMS is not specified, you will be prompted for what items to buy"
                                          :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
                                                    (declare (type prop prop) (type list items) (ignore keys))
                                                    (check-type prop prop)
                                                    (check-type items list)
                                                    (shopfun (items-for-sale-of prop)
-                                                    :items-to-buy items
+                                                    :items-to-buy (or items t)
                                                     :user (player-of *game*))))
-                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory"
+                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory. If ITEMS is not specified, you will be prompted for what items to sell"
                                           :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
                                                     (declare (type prop prop) (type list items) (ignore keys))
                                                     (check-type prop prop)
                                                     (check-type items list)
                                                     (shopfun (items-for-sale-of prop)
-                                                     :items-to-sell items
+                                                     :items-to-sell (or items t)
                                                      :user (player-of *game*)))))))
 (defclass vending-machine (prop)
   ((items-for-sale
