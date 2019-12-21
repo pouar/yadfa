@@ -102,6 +102,7 @@
     :initarg :items-for-sale
     :initform ()
     :accessor items-for-sale-of
+    :type list
     :documentation "Quoted list of class names for sale"))
   (:default-initargs
    :name "Shop"
@@ -138,6 +139,7 @@
     :initarg :items-for-sale
     :initform ()
     :accessor items-for-sale-of
+    :type list
     :documentation "Quoted list of class names for sale"))
   (:default-initargs
    :name "Vending Machine"

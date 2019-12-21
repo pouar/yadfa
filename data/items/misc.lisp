@@ -67,31 +67,37 @@
     :initarg :contained-enemies
     :accessor contained-enemies-of
     :initform nil
+    :type list
     :documentation "list that contains the caught enemies")
    (contained-enemies-max-length
     :initarg :contained-enemies-max-length
     :accessor contained-enemies-max-length-of
     :initform 1
+    :type unsigned-byte
     :documentation "Maximum amount of enemies this can hold")
    (catch-chance-multiplier
     :initarg :catch-chance-multiplier
     :accessor catch-chance-multiplier-of
     :initform 1
+    :type (real 0)
     :documentation "Multiplier of the chance this item might catch an enemy")
    (catch-chance-delta
     :initarg :catch-chance-delta
     :accessor catch-chance-delta-of
     :initform 0
+    :type real
     :documentation "How much of an increase this item might catch an enemy. if the multiplier is also specified, then this gets multiplied too")
    (device-health
     :initarg :device-health
     :accessor device-health-of
     :initform 1
+    :type (or unsigned-byte null)
     :documentation "How many times it can fail to catch the enemy before it gets destroyed. @code{T} means it never gets destroyed")
    (max-device-health
     :initarg :device-health
     :accessor device-health-of
     :initform 1
+    :type (or unsigned-byte null)
     :documentation "The maximum amount of @var{DEVICE-HEALTH} this item has. @code{T} means it never gets destroyed"))
   (:default-initargs
    :name "Enemy Catcher"
