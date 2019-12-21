@@ -236,7 +236,7 @@
      :menu t
      :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
                    (get-zone (destructuring-bind (x y z zone) (position-of object)
-                         `(,x ,y ,(1- z) ,zone))))))
+                         `(,x ,y ,(1+ z) ,zone))))))
     (object)
   '((:up)))
 (define-presentation-to-command-translator com-yadfa-move-translator-down
@@ -247,7 +247,7 @@
      :menu t
      :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
                             (get-zone (destructuring-bind (x y z zone) (position-of object)
-                                        `(,x ,y ,(1+ z) ,zone))))))
+                                        `(,x ,y ,(1- z) ,zone))))))
     (object)
   '((:down)))
 (define-presentation-to-command-translator com-yadfa-move-translator-warp
