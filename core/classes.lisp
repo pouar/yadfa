@@ -512,7 +512,7 @@
     :initarg :locked
     :initform :nil
     :accessor lockedp
-    :type (or :nil type-specifier)
+    :type (or (eql :nil) type-specifier)
     :documentation "Whether this area is locked or not. contains the type specifier of the key needed to unlock it if locked, set to @code{:NIL} if it isn't locked")
    (hidden
     :initarg :hidden
@@ -867,7 +867,7 @@
    (thickness-capacity-threshold
     :initarg :thickness-capacity-threshold
     :initform 50
-    (or (real 0) null)
+    :type (or (real 0) null)
     :accessor thickness-capacity-threshold-of
     :documentation "How much higher than the thickness capacity the clothing can handle diaper expansion in mm before popping/tearing, @code{NIL} means it won't pop/tear")
    (key
