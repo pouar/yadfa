@@ -456,7 +456,7 @@
     :documentation "room description")
    (enter-text
     :initarg :enter-text
-    :type string
+    :type (or string coerced-function)
     :initform "Seems Pouar didn't make the text for this room yet, get to it you lazy fuck"
     :accessor enter-text-of
     :documentation "Text that pops up when you enter the room. either a string or a function designator or lambda expression with @code{NIL} as the lambda list that returns a string.")
