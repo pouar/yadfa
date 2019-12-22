@@ -9,6 +9,7 @@
                         :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically")
       (format *error-output* "Can't build texi file on ~a~%" (lisp-implementation-type))))
 (defun main ()
+  (declaim (optimize safety (debug 2)))
   (pushnew
    'yadfa::find-mod
    asdf:*system-definition-search-functions*)
