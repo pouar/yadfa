@@ -267,7 +267,7 @@
     :initarg :wield
     :initform nil
     :accessor wield-of
-    :type item
+    :type (or null item)
     :documentation "Item the character is wielding as a weapon")
    (process-battle-accident
     :initarg :process-battle-accident
