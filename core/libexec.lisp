@@ -1573,10 +1573,10 @@
                                       &key (stream *standard-output*))
   (format stream "~a~%"
           (random-elt (switch ((getf (car had-accident) :accident) :test 'eq)
-                        (:dribbe `("You gasp in horror as a little leaks out"
-                                   "You think you just leaked a little"
-                                   ,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                            (random-elt '("groan" "whine")))))
+                        (:dribble `("You gasp in horror as a little leaks out"
+                                    "You think you just leaked a little"
+                                    ,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                             (random-elt '("groan" "whine")))))
                         (:some '("You gasp in  horror as you flood yourself, but manage to stop yourself"))
                         (:all `("After doing a potty dance like a 5 year old, you freeze and pee yourself"
                                 "Grabbing your crotch you pause and blush as you flood yourself like an infant"
