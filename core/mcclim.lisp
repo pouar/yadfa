@@ -403,6 +403,6 @@
                         (run-frame-top-level frame))
                  (disown-frame fm frame)))))
       (if new-process
-          (values (clim-sys:make-process #'run :name process-name)
+          (values (bt:make-thread 'run :name process-name)
                   frame)
           (run)))))
