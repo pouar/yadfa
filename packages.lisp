@@ -626,7 +626,7 @@
   (:documentation "CLIM related stuff")
   (:export #:stat-view #:+stat-view+ #:draw-bar #:run-listener))
 (uiop:define-package :yadfa-blackjack
-  (:mix :clim :yadfa)
+  (:mix :alexandria :clim :yadfa)
   (:use :iterate :clim-lisp :clim-extensions :conditional-commands)
   (:export #:run-game))
 (uiop:define-package :yadfa-pyramid
