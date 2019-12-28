@@ -1022,6 +1022,8 @@
   (:documentation "these include diapers, pullups, and stuffers"))
 (defclass snap-bottoms (bottoms) ()
   (:documentation "These have snaps on them so don't tear when the diaper expands but instead come apart"))
+(defclass undies (clothing)
+  ())
 (defclass padding (incontinence-product) ()
   (:documentation "everything but stuffers"))
 (defclass ab-clothing-mixin (clothing) ()
@@ -1039,8 +1041,6 @@
   (:default-initargs
    :thickness (* 1/4 (+ 25 2/5))
    :thickness-capacity 20))
-(defclass undies (clothing)
-  ())
 (defclass skirt (bottoms)
   ()
   (:default-initargs
