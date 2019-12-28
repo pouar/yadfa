@@ -55,11 +55,11 @@
                     (when (or (>= (bladder/contents-of user) (bladder/potty-dance-limit-of user))
                               (and (>= (bladder/contents-of user) (bladder/need-to-potty-limit-of user)) (= 0 (random 5))))
                       (format t "~a~%"
-                              (cond ((filter-items (wear-of user) 'tabbed-briefs)
+                              (cond ((filter-items (wear-of user) 'diaper)
                                      (format nil "~a starts wetting ~a diapers~%" (name-of user) (if (malep user) "his" "her")))
-                                    ((filter-items (wear-of user) 'pullup)
+                                    ((filter-items (wear-of user) '(and pullup ab-clothing-mixin))
                                      (format nil "The little pictures on the front of ~a's pullups start fading~%" (name-of user)))
-                                    ((filter-items (wear-of user) 'pullon)
+                                    ((filter-items (wear-of user) 'pullup)
                                      (format nil "~a starts wetting ~a pullons~%" (name-of user) (if (malep user) "his" "her")))
                                     (t
                                      (format nil "~a starts wetting ~aself~%" (name-of user) (if (malep user) "him" "her")))))

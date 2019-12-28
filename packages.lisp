@@ -144,10 +144,7 @@
    #:onesie/closed
    #:incontinence-product
    #:padding
-   #:cub-undies
-   #:pullon
-   #:tabbed-briefs
-   #:incontinence-pad
+   #:ab-clothing-mixin
    #:undies
    #:top-undies
    #:stuffer
@@ -329,7 +326,7 @@
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package :yadfa-items
   (:import-from :macro-level :macro-level)
-  (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:incontinence-pad #:skirt)
+  (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:skirt)
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
    #:bandit-swimsuit/closed

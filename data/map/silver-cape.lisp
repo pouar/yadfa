@@ -77,7 +77,7 @@
                                                                         (block nil
                                                                           (let
                                                                               ((a (iter (for i in (inventory-of (player-of *game*)))
-                                                                                    (when (and (typep i 'yadfa:incontinence-pad) (<= (sogginess-of i) 0))
+                                                                                    (when (and (typep i 'stuffer) (<= (sogginess-of i) 0))
                                                                                       (collect i)))))
                                                                             (unless a
                                                                               (write-line "You don't have a clean stuffer to give her")

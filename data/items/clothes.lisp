@@ -1,7 +1,7 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-items"; coding: utf-8-unix; -*-
 (in-package :yadfa-items)
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defonesie onesie () ()
+  (defonesie onesie (ab-clothing-mixin) ()
     (:default-initargs
      :name "Onesie"
      :description "A onesie"
@@ -15,7 +15,7 @@
                            #.(* 11 25) "The flaps just barely cover the diapers"
                            #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
                            0 "The flaps hang over covering your underwear like a dress")))))
-(defonesie roomy-onesie () ()
+(defonesie roomy-onesie (ab-clothing-mixin) ()
   (:default-initargs
    :name "Roomy Onesie"
    :description "A onesie intended to accommodate thicker diapers"
@@ -65,7 +65,7 @@
                  #.(* 1/2 25) "The dress does a good job hiding your padding"
                  0 "It fits quite loosely")
    :thickness-capacity nil))
-(defclass toddler-dress (yadfa:dress) ()
+(defclass toddler-dress (yadfa:dress ab-clothing-mixin) ()
   (:default-initargs
    :name "Toddler's Dress"
    :plural-name "Toddler Dresses"
@@ -361,7 +361,7 @@
                  #.(* 1/2 25) "The dress does a good job hiding your padding"
                  0 "It fits quite loosely")
    :thickness-capacity nil))
-(defonesie shortalls (onesie) ()
+(defonesie shortalls (onesie ab-clothing-mixin) ()
   (:default-initargs
    :name "Shortalls"
    :plural-name "Shortalls"

@@ -24,7 +24,7 @@
                  (format t "You tear open the package and dump all the diapers out of it.~%")
                  (iter (for i from 1 to 20)
                    (push (make-instance 'yadfa-items:generic-diapers) (inventory-of user))))))
-(defclass generic-pullons (pullon) ()
+(defclass generic-pullons (pullup) ()
   (:default-initargs
    :sogginess-capacity 100
    :messiness-capacity 200
@@ -48,7 +48,7 @@
                  (format t "You tear open the package and dump all the diapers out of it.~%")
                  (iter (for i from 1 to 20)
                    (push (make-instance 'yadfa-items:generic-pullons) (inventory-of user))))))
-(defclass incontinence-pad (yadfa:incontinence-pad) ()
+(defclass incontinence-pad (stuffer) ()
   (:default-initargs
    :sogginess-capacity 1000
    :messiness-capacity 1000
@@ -73,7 +73,7 @@
                  (format t "You tear open the package and dump all the diapers out of it.~%")
                  (iter (for i from 1 to 20)
                    (push (make-instance 'yadfa-items:incontinence-pad) (inventory-of user))))))
-(defclass cloth-incontinence-pad (yadfa:incontinence-pad) ()
+(defclass cloth-incontinence-pad (stuffer) ()
   (:default-initargs
    :sogginess-capacity 1000
    :messiness-capacity 1000
@@ -199,7 +199,7 @@
   (:default-initargs
    :name "Temple Diaper"
    :description "A diaper with weird Egyptian hieroglyphics on it"))
-(defclass cursed-diaper (cloth-diaper) ()
+(defclass cursed-diaper (cloth-diaper ab-clothing-mixin) ()
   (:default-initargs
    :name "Cursed Diaper"
    :description "The diaper's tapes have a glow in the shape of a lock in front of them. You can't seem to remove them. Better think of something quick."
@@ -398,7 +398,7 @@
    :wear-wet-text '(800 "it is completely drenched, you sure you're ready for these?"
                     200 "it is noticeably wet"
                     1 "the pictures haven't faded yet")))
-(defclass temple-pullups (cloth-pullups) ()
+(defclass temple-pullups (cloth-pullups ab-clothing-mixin) ()
   (:default-initargs
    :value 200
    :name "Temple Pullups"
@@ -425,7 +425,7 @@
    :value 200
    :name "Swim diaper cover"
    :description "Designed to be worn over diapers to avoid embarrassing diaper swelling incidents when in the water. Doesn't hold anything on its own"))
-(defclass bandit-diaper (tabbed-briefs) ()
+(defclass bandit-diaper (yadfa:diaper) ()
   (:default-initargs
    :sogginess-capacity 1400
    :messiness-capacity 10000
@@ -444,7 +444,7 @@
   (:default-initargs
    :name "Bandit Adjustable Diaper"
    :description "A special diaper that can be pulled down like normal underwear so the wearer can still use the toilet. It has the bandit's insignia on the front which turns yellow when the diaper is used. It has tabs on the sides for easy removal. Unlike most diapers, these are reusable."))
-(defclass bandit-female-diaper (bandit-diaper) ()
+(defclass bandit-female-diaper (bandit-diaper ab-clothing-mixin) ()
   (:default-initargs
    :sogginess-capacity 10000
    :messiness-capacity 25000
@@ -478,7 +478,7 @@
    :thickness-capacity 400
    :name "Lower Bandit Swim diaper cover"
    :description "The females wear these when in the water to prevent their diapers from swelling up. It is transparent enough to show the state of the diaper and does nothing to hide the poofiness. It is much larger than the ones the males wear to accommodate the thicker padding."))
-(defclass pink-frilly-diaper (yadfa:diaper) ()
+(defclass pink-frilly-diaper (yadfa:diaper ab-clothing-mixin) ()
   (:default-initargs
    :sogginess-capacity 5000
    :name "Pink Diaper"

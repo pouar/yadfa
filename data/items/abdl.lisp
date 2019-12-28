@@ -1,16 +1,16 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-items"; coding: utf-8-unix; -*-
 (in-package :yadfa-items)
-(defclass pacifier (headpiece) ()
+(defclass pacifier (headpiece ab-clothing-mixin) ()
   (:default-initargs
    :name "Pacifier"
    :description "A pacifier you can suck on."
    :value 250))
-(defclass gold-pacifier (headpiece) ()
+(defclass gold-pacifier (headpiece ab-clothing-mixin) ()
   (:default-initargs
    :name "Gold-Pacifier"
    :description "A pacifier you can suck on. Has a golden mouth shield and a ruby for a handle"
    :value 10000))
-(defclass recovering-pacifier (headpiece) ()
+(defclass recovering-pacifier (headpiece ab-clothing-mixin) ()
   (:default-initargs
    :name "Recovering Pacifier"
    :description "A pacifier you can suck on. Recovers your health and energy when you suck on it"
@@ -23,7 +23,7 @@
                     (setf (health-of user) (calculate-stat user :health)))
                   (when (> (energy-of user) (calculate-stat user :energy))
                     (setf (energy-of user) (calculate-stat user :energy))))))
-(defclass healing-pacifier (headpiece) ()
+(defclass healing-pacifier (headpiece ab-clothing-mixin) ()
   (:default-initargs
    :name "Healing Pacifier"
    :description "A pacifier you can suck on. Recovers your health when you suck on it"
@@ -33,7 +33,7 @@
                   (incf (health-of user) (/ (calculate-stat user :health) 16))
                   (when (> (health-of user) (calculate-stat user :health))
                     (setf (health-of user) (calculate-stat user :health))))))
-(defclass energizing-pacifier (headpiece) ()
+(defclass energizing-pacifier (headpiece ab-clothing-mixin) ()
   (:default-initargs
    :name "Energizing Pacifier"
    :description "A pacifier you can suck on. Recovers your energy when you suck on it"

@@ -113,8 +113,8 @@
   (when (consp key)
     (format t "you dance around holding the front of your ~a like a 5 year old until you get an expression of horror and embarrassment on your face as you ~{~#[~;~a~;~a and ~a~:;~@{~a~#[~;, and ~:;, ~]~}~]~} your pamps~%"
             (typecase (car *wear*)
-              (tabbed-briefs "diapers")
-              (pullon "pullups"))
+              (diaper "diapers")
+              (pullup "pullups"))
             (collecting* (when (car *potty*)
                            (collect "flood"))
               (when (cdr *potty*)

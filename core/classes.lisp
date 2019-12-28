@@ -1026,20 +1026,20 @@
   (:documentation "These have snaps on them so don't tear when the diaper expands but instead come apart"))
 (defclass padding (incontinence-product) ()
   (:documentation "everything but stuffers"))
-(defclass cub-undies (incontinence-product) ()
-  (:documentation "babyish incontinence products"))
-(defclass pullon (padding) ()
+(defclass ab-clothing-mixin (clothing) ()
+  (:documentation "clothing that is more AB than DL"))
+(defclass pullup (padding) ()
   (:default-initargs
    :thickness (* 1/2 (+ 25 2/5))
    :thickness-capacity 40)
   (:documentation "pullups without the babyish designs"))
-(defclass tabbed-briefs (padding) ()
+(defclass diaper (padding) ()
   (:default-initargs
    :thickness (+ 25 2/5)
    :thickness-capacity 80
    :key 'yadfa-items:magic-diaper-key)
   (:documentation "Diapers without the babyish designs"))
-(defclass incontinence-pad (incontinence-product) ()
+(defclass stuffer (incontinence-product) ()
   (:default-initargs
    :thickness (* 1/4 (+ 25 2/5))
    :thickness-capacity 20)
@@ -1050,12 +1050,6 @@
   ()
   (:default-initargs
    :thickness-capacity (* (expt 6.0 1/3) 25.4)))
-(defclass stuffer (incontinence-pad cub-undies)
-  ())
-(defclass diaper (tabbed-briefs cub-undies)
-  ())
-(defclass pullup (pullon cub-undies)
-  ())
 (defclass skirt (bottoms)
   ()
   (:default-initargs
