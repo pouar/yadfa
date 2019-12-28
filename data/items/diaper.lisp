@@ -419,7 +419,7 @@
    :wear-wet-text '(800 "it is completely drenched, you sure you're ready for these?"
                     200 "it is noticeably wet"
                     1 "the pictures haven't faded yet")))
-(defclass swim-diaper-cover (undies) ()
+(defclass swim-diaper-cover (undies closed-bottoms) ()
   (:default-initargs
    :waterproof t
    :value 200
@@ -459,19 +459,19 @@
    :wear-mess-text '(100000 "Poo is leaking out of the leg guards"
                      25000 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
-(defclass bandit-swim-diaper-cover (undies) ()
+(defclass bandit-swim-diaper-cover (undies closed-bottoms) ()
   (:default-initargs
    :waterproof t
    :value 200
    :name "Bandit Swim diaper cover"
    :description "The higher ups wear these when in the water to prevent their diapers from swelling up. It has the bandits' insignia on it."))
-(defclass lower-bandit-swim-diaper-cover (undies) ()
+(defclass lower-bandit-swim-diaper-cover (undies closed-bottoms) ()
   (:default-initargs
    :waterproof t
    :value 200
    :name "Lower Bandit Swim diaper cover"
    :description "The lower ranks wear these when in the water to prevent their diapers from swelling up. It is transparent enough to show the state of the diaper and does nothing to hide the poofiness"))
-(defclass female-bandit-swim-diaper-cover (undies) ()
+(defclass female-bandit-swim-diaper-cover (undies closed-bottoms) ()
   (:default-initargs
    :waterproof t
    :value 200

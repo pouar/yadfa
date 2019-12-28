@@ -175,19 +175,19 @@
   (:default-initargs
    :name "Stretchable Orca Suit Lite"
    :description "A variant of the Orca Suit Lite that stretches to fit your humongous diapers"))
-(defclass boxers (undies) ()
+(defclass boxers (undies closed-bottoms) ()
   (:default-initargs
    :name "Boxers"
    :plural-name "Boxers"
    :description "You sure wearing these is a good idea piddler?"
    :value 100))
-(defclass panties (undies) ()
+(defclass panties (undies closed-bottoms) ()
   (:default-initargs
    :name "Panties"
    :plural-name "Panties"
    :description "You sure wearing these is a good idea piddler?"
    :value 100))
-(defclass bra (top-undies) ()
+(defclass bra (undies) ()
   (:default-initargs
    :name "Bra"
    :description "Prevents bouncing and indecent exposure, whether this is a good thing or not depends on your point of view."

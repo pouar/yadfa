@@ -137,7 +137,6 @@
    #:snap-bottoms
    #:closed-bottoms
    #:full-outfit
-   #:closed-pants
    #:closed-full-outfit
    #:onesie
    #:onesie/opened
@@ -146,7 +145,6 @@
    #:padding
    #:ab-clothing-mixin
    #:undies
-   #:top-undies
    #:stuffer
    #:diaper
    #:pullup

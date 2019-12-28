@@ -958,9 +958,7 @@
   (:documentation "these are stuff like pants and underwear and not skirts"))
 (defclass full-outfit (top bottoms)
   ())
-(defclass closed-pants (closed-bottoms) ()
-  (:documentation "closed bottoms that aren't undies"))
-(defclass closed-full-outfit (full-outfit closed-pants)
+(defclass closed-full-outfit (full-outfit closed-bottoms)
   ())
 (defclass onesie (full-outfit)
   ((onesie-thickness-capacity
@@ -1031,25 +1029,18 @@
 (defclass pullup (padding) ()
   (:default-initargs
    :thickness (* 1/2 (+ 25 2/5))
-   :thickness-capacity 40)
-  (:documentation "pullups without the babyish designs"))
+   :thickness-capacity 40))
 (defclass diaper (padding) ()
   (:default-initargs
    :thickness (+ 25 2/5)
    :thickness-capacity 80
-   :key 'yadfa-items:magic-diaper-key)
-  (:documentation "Diapers without the babyish designs"))
+   :key 'yadfa-items:magic-diaper-key))
 (defclass stuffer (incontinence-product) ()
   (:default-initargs
    :thickness (* 1/4 (+ 25 2/5))
-   :thickness-capacity 20)
-  (:documentation "stuffers without the babyish designs"))
-(defclass top-undies (top) ()
-  (:documentation "Similar to undies, but inherits top instead of closed-bottoms"))
-(defclass undies (closed-bottoms)
-  ()
-  (:default-initargs
-   :thickness-capacity (* (expt 6.0 1/3) 25.4)))
+   :thickness-capacity 20))
+(defclass undies (clothing)
+  ())
 (defclass skirt (bottoms)
   ()
   (:default-initargs
@@ -1062,7 +1053,7 @@
    :thickness-capacity-threshold nil))
 (defclass shirt (top)
   ())
-(defclass pants (closed-pants)
+(defclass pants (closed-bottoms)
   ())
 (defclass enemy (base-character)
   ((exp-yield

@@ -1141,7 +1141,7 @@
                        (list "diapers" "pamps" "huggies" "pampers" "padding"))
                       ((filter-items (wear-of user) 'pullup)
                        (list "pullups" "padding"))
-                      ((not (filter-items (wear-of user) 'closed-pants))
+                      ((filter-items (wear-of user) '(and undies bottoms))
                        (list "undies" "panties"))
                       (t (list "pants")))))
     (when (and
