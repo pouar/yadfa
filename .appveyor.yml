@@ -14,7 +14,7 @@ install:
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/releases/download/v1.11.5/ccl-1.11.5-windowsx86.zip" -OutFile $env:CACHE\ccl.zip
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/archive/v1.11.6.zip" -OutFile $env:CACHE\ccl-1.11.6.zip
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3.3/asdf-3.3.3.3.zip"  -OutFile $env:CACHE\asdf.zip
-#- ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/sbcl/sbcl/1.4.14/sbcl-1.4.14-x86-64-windows-binary.msi" -OutFile $env:CACHE\sbcl.msi
+- ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.0/sbcl-2.0.0-x86-64-windows-binary.msi" -OutFile $env:CACHE\sbcl.msi
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/joaotavora/sly/archive/master.zip" -OutFile "$env:CACHE\sly.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/didierverna/declt/archive/master.zip" -OutFile "$env:CACHE\declt.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/McCLIM/McCLIM/archive/master.zip" -OutFile "$env:CACHE\mcclim.zip"
@@ -45,8 +45,8 @@ install:
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\illogical-pathnames -ItemType SymbolicLink -Value $env:CACHE\illogical-pathnames-pouar
 
 build_script:
-#- cmd: '"C:\Program Files\Steel Bank Common Lisp\1.4.14\sbcl" --script "appveyor-build-docs.lisp" texi'
-#- cmd: 'C:\cygwin64\bin\bash.exe -lc "cd /cygdrive/c/projects/yadfa/docs/reference;make -j4 all"'
+- cmd: '"C:\Program Files\Steel Bank Common Lisp\2.0.0\sbcl" --script "appveyor-build-docs.lisp" texi'
+- cmd: 'C:\cygwin64\bin\bash.exe -lc "cd /cygdrive/c/projects/yadfa/docs/reference;make -j4 all"'
 - cmd: '"%CACHE%\ccl-1.11.6\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)"'
 - ps: cp chocolatey/yadfa.nuspec yadfa.nuspec # for some reason Chocolatey seems to expect the package build file to be in the same directory as the source directory
 - ps: choco pack yadfa.nuspec --version $(Get-Date -UFormat "0.9.%s")
@@ -57,18 +57,18 @@ test_script:
 - ps: |
     If(!(test-path C:\projects\yadfa\yadfa.exe )) { echo "yadfa.exe was not built";exit 1; }
     Else { echo "yadfa.exe was built"; }
-    #If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.html )) { echo "yadfa-reference.html was not built";exit 1; }
-    #Else { echo "yadfa-reference.html was built"; }
-    #If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.pdf )) { echo "yadfa-reference.pdf was not built";exit 1; }
-    #Else { echo "yadfa-reference.pdf was built"; }
-    #If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.info )) { echo "yadfa-reference.info was not built";exit 1; }
-    #Else { echo "yadfa-reference.info was built"; }
-    #If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.ps )) { echo "yadfa-reference.ps was not built";exit 1; }
-    #Else { echo "yadfa-reference.ps was built"; }
-    #If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.dvi )) { echo "yadfa-reference.dvi was not built";exit 1; }
-    #Else { echo "yadfa-reference.dvi was built"; }
-    #If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.xml )) { echo "yadfa-reference.xml was not built";exit 1; }
-    #Else { echo "yadfa-reference.xml was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.html )) { echo "yadfa-reference.html was not built";exit 1; }
+    Else { echo "yadfa-reference.html was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.pdf )) { echo "yadfa-reference.pdf was not built";exit 1; }
+    Else { echo "yadfa-reference.pdf was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.info )) { echo "yadfa-reference.info was not built";exit 1; }
+    Else { echo "yadfa-reference.info was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.ps )) { echo "yadfa-reference.ps was not built";exit 1; }
+    Else { echo "yadfa-reference.ps was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.dvi )) { echo "yadfa-reference.dvi was not built";exit 1; }
+    Else { echo "yadfa-reference.dvi was built"; }
+    If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.xml )) { echo "yadfa-reference.xml was not built";exit 1; }
+    Else { echo "yadfa-reference.xml was built"; }
     If(!(Get-ChildItem C:\projects\yadfa\yadfa*.nupkg )) { echo "nupkg was not built";exit 1; }
     Else { echo "nupkg was built"; }
 deploy_script:
