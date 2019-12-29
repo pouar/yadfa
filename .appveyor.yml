@@ -3,7 +3,7 @@ platform: x64
 clone_depth: 1
 environment:
   CACHE: 'c:\cache\'
-  SBCL_HOME: 'C:\Program Files\Steel Bank Common Lisp\1.4.14\'
+  SBCL_HOME: 'C:\Program Files\Steel Bank Common Lisp\2.0.0\'
   bintrayapikey:
     secure: O42a6FepgN/X3CzWpPbJkuKRhmENlIwBfbtMVQLKSWR/annp514THuh4Dynu6xLZ
 
