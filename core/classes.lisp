@@ -1026,7 +1026,7 @@
   ())
 (defclass padding (incontinence-product) ()
   (:documentation "everything but stuffers"))
-(defclass ab-clothing-mixin (clothing) ()
+(defclass ab-clothing (clothing) ()
   (:documentation "clothing that is more AB than DL"))
 (defclass pullup (padding) ()
   (:default-initargs

@@ -214,7 +214,7 @@
   (:default-initargs
    :name "Temple Diaper"
    :description "A diaper with weird Egyptian hieroglyphics on it"))
-(defclass cursed-diaper (cloth-mixin yadfa:diaper ab-clothing-mixin) ()
+(defclass cursed-diaper (cloth-mixin yadfa:diaper ab-clothing) ()
   (:default-initargs
    :name "Cursed Diaper"
    :description "The diaper's tapes have a glow in the shape of a lock in front of them. You can't seem to remove them. Better think of something quick."
@@ -401,7 +401,7 @@
    :wear-wet-text '(800 "it is completely drenched, you sure you're ready for these?"
                     200 "it is noticeably wet"
                     1 "the pictures haven't faded yet")))
-(defclass temple-pullups (pullup cloth-mixin ab-clothing-mixin) ()
+(defclass temple-pullups (pullup cloth-mixin ab-clothing) ()
   (:default-initargs
    :value 200
    :name "Temple Pullups"
@@ -459,7 +459,7 @@
   (:default-initargs
    :name "Bandit Adjustable Diaper"
    :description "A special diaper that can be pulled down like normal underwear so the wearer can still use the toilet. It has the bandit's insignia on the front which turns yellow when the diaper is used. It has tabs on the sides for easy removal. Unlike most diapers, these are reusable."))
-(defclass bandit-female-diaper (kurikia-thick-diaper bandit-diaper ab-clothing-mixin) ()
+(defclass bandit-female-diaper (kurikia-thick-diaper bandit-diaper ab-clothing) ()
   (:default-initargs
    :name "Female's Bandit Diaper"
    :description "A diaper with the Diapered Raccoon Bandits' insignia on the front. the insignia turns yellow when the wearer wets it so the males know when the lower ranks wet their diapers. It is much thicker than what the males wear. Unlike most diapers, these are reusable."
@@ -488,7 +488,7 @@
    :thickness-capacity 400
    :name "Lower Bandit Swim diaper cover"
    :description "The females wear these when in the water to prevent their diapers from swelling up. It is transparent enough to show the state of the diaper and does nothing to hide the poofiness. It is much larger than the ones the males wear to accommodate the thicker padding."))
-(defclass pink-frilly-diaper (yadfa:diaper ab-clothing-mixin undies) ()
+(defclass pink-frilly-diaper (yadfa:diaper ab-clothing undies) ()
   (:default-initargs
    :sogginess-capacity 5000
    :name "Pink Diaper"

@@ -143,7 +143,7 @@
    #:onesie/closed
    #:incontinence-product
    #:padding
-   #:ab-clothing-mixin
+   #:ab-clothing
    #:undies
    #:stuffer
    #:diaper
