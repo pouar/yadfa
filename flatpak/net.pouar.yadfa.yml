@@ -71,6 +71,13 @@ modules:
       - type: archive
         url: https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.0/sbcl-2.0.0-source.tar.bz2
         sha256: 90369256805d437c82ab9bdab9a410076f57810a50bb2b228de4e6c892692fcf
+      - type: file
+        url: https://github.com/sbcl/sbcl/commit/ea8835272eb481123e4d21a4690ad5b2ec1715c0.diff
+        sha256: 276a04c8589e720a9cd204dacbda7c137b97722a59cc44f94ee7ab8f6b758dd6
+      - type: shell
+        commands:
+          - patch -p1 -i ea8835272eb481123e4d21a4690ad5b2ec1715c0.diff
+          - rm ea8835272eb481123e4d21a4690ad5b2ec1715c0.diff
   - name: yadfa-deps
     buildsystem: simple
     build-commands:
