@@ -64,8 +64,8 @@ modules:
       strip: true
     buildsystem: simple
     build-commands:
-      - sed -i 's|if $GNUMAKE -C contrib/$i test < /dev/null|if $GNUMAKE -C contrib/$i < /dev/null|' make-target-contrib.sh
-      - sh -c 'echo "root:x:0:0:root,,,,:/root:/bin/sh" >> /etc/passwd;echo "root:x:0:root" >> /etc/group;SBCL_HOME="/app/tmp/sbcl-bin/lib/sbcl" PATH="$PATH:/app/tmp/sbcl-bin/bin" HOME="/app/tmp/home/" sh make.sh sbcl --fancy --with-sb-fasteval --without-sb-eval --with-sb-unicode --with-largefile'
+      - sed -i 's|-C $@ test <|-C $@ <|' contrib/build-contrib
+      - sh -c 'SBCL_HOME="/app/tmp/sbcl-bin/lib/sbcl" PATH="$PATH:/app/tmp/sbcl-bin/bin" HOME="/app/tmp/home/" sh make.sh sbcl --fancy --with-sb-fasteval --without-sb-eval --with-sb-unicode --with-largefile'
       - INSTALL_ROOT="/app/tmp/sbcl" HOME="/app/tmp/home/" sh install.sh
     sources:
       - type: archive
