@@ -13,3 +13,7 @@
 * DONE add hash table that can hold shared enemy spawn lists
 * TODO add ~YADFA:ENSURE-EVENT~ function
 * TODO add DEPTH keyword to ~YADFA-BIN:LST~ to optionally limit the amount of items printed to ~*STANDARD-OUTPUT*~
+* TODO add NPC team members
+  - the NPC team members should probably be initialized at the start of the battle and thrown away when the battle is over, as the team's controls for outside battle is mostly for characters you actually control, and the player won't really control these NPC team members.
+* TODO add the ability to customize the text for enemies flooding their pamps
+* TODO get rid of {water,mud}sport-{chance,limit} and replace it with a predicate or something that can be coerced into one, which should allow for more customizability.
