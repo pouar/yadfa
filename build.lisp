@@ -33,6 +33,8 @@
 (when (find "ft" (uiop:command-line-arguments) :test #'string=)
   (pushnew :mcclim-ffi-freetype *features*))
 (ql:quickload :yadfa)
+(when (find "immutable" (uiop:command-line-arguments) :test #'string=)
+  (map () 'asdf:register-immutable-system (asdf:already-loaded-systems)))
 (when (find "texi" (uiop:command-line-arguments) :test #'string=)
   (yadfa::build-texi))
 (when (probe-file (uiop:merge-pathnames* (make-pathname :name "yadfa") (asdf:component-pathname (asdf:find-system "yadfa"))))

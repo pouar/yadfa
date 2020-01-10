@@ -115,7 +115,7 @@ modules:
     buildsystem: simple
     build-commands:
       - ln -s $PWD /app/tmp/home/quicklisp/local-projects/yadfa
-      - bash -c 'export SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/";make -j4 all'
+      - bash -c 'export SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/";make OPTS="texi ft immutable" -j4 all'
       - bash -c 'cd docs/reference;install-info yadfa-reference.info dir'
       - bash -c 'cd flatpak;SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script create-appstream-metadata.lisp'
       - install -dm755 /app/lib/yadfa
