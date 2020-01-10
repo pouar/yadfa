@@ -50,3 +50,4 @@
 (define-global-var *command-packages* '(:yadfa-bin)
   "contains the package designators for the exported symbols to be used as commands")
 (define-global-var *last-rng-update* 0)
+(define-global-var *immutable* nil)

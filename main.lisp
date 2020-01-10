@@ -10,6 +10,8 @@
       (format *error-output* "Can't build texi file on ~a~%" (lisp-implementation-type))))
 (defun main ()
   (proclaim '(optimize safety (debug 2)))
+  (when yadfa::*immutable*
+    (map () 'asdf:register-immutable-system (asdf:already-loaded-systems)))
   (pushnew
    'yadfa::find-mod
    asdf:*system-definition-search-functions*)
