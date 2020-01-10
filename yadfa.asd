@@ -10,8 +10,7 @@
   :build-operation :program-op
   :build-pathname "yadfa"
   :entry-point "yadfa::main"
-  :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "mcclim-raster-image" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria" "serapeum" "global-vars" (:feature :sbcl "yadfa/docs") "float-features" "illogical-pathnames"
-                         "str" "listopia" "anaphora" "quasiquote-2.0" #|in case modders want them|#)
+  :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "mcclim-raster-image" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria" "serapeum" "global-vars" (:feature :sbcl "yadfa/docs") "float-features" "illogical-pathnames")
   :components ((:file "packages")
                (:file "main" :depends-on ("packages" "core"))
                (:module "core"
