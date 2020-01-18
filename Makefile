@@ -33,6 +33,9 @@ reference: docs/reference/yadfa-reference.texi
 reference2: yadfa
 	$(MAKE) -C docs/reference
 
+install-docs: yadfa
+	$(MAKE) -C docs/reference install-docs
+
 clean:
 	rm -f yadfa docs/reference/yadfa-reference.texi
 	$(MAKE) -C docs/reference clean

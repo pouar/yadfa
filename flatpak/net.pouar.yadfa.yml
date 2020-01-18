@@ -72,7 +72,7 @@ modules:
         sha256: 90369256805d437c82ab9bdab9a410076f57810a50bb2b228de4e6c892692fcf
       - type: file
         url: https://github.com/sbcl/sbcl/commit/ea8835272eb481123e4d21a4690ad5b2ec1715c0.diff
-        sha256: 276a04c8589e720a9cd204dacbda7c137b97722a59cc44f94ee7ab8f6b758dd6
+        sha256: 5a29484a45c20727c00f858c1eb8f7c2dd9e433054fbd419ea38c86d33d8c08e
       - type: shell
         commands:
           - patch -p1 -i ea8835272eb481123e4d21a4690ad5b2ec1715c0.diff
@@ -116,18 +116,13 @@ modules:
     build-commands:
       - ln -s $PWD /app/tmp/home/quicklisp/local-projects/yadfa
       - bash -c 'export SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/";make OPTS="texi ft immutable" -j4 all'
-      - bash -c 'cd docs/reference;install-info yadfa-reference.info dir'
       - bash -c 'cd flatpak;SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script create-appstream-metadata.lisp'
       - install -dm755 /app/lib/yadfa
       - git archive HEAD|tar -xf - -C /app/lib/yadfa/
       - install -Dm755 yadfa /app/lib/yadfa/
-      - install -Dm644 docs/reference/yadfa-reference.texi /app/lib/yadfa/docs/reference/
       - rm /app/tmp/home/quicklisp/local-projects/yadfa
-      - mkdir -p /app/bin /app/share/doc/yadfa /app/share/info /app/share/icons/hicolor/scalable/apps /app/share/applications /app/share/metainfo /app/lib
-      - install -Dm644 docs/reference/yadfa-reference.{html,pdf,dvi,ps,xml} /app/share/doc/yadfa/
-      - gzip -c docs/reference/yadfa-reference.info > /app/share/info/yadfa-reference.info.gz
-      - install -Dm644 docs/reference/dir /app/share/info/
-      - chmod 644 /app/share/info/yadfa-reference.info.gz
+      - mkdir -p /app/bin /app/share/icons/hicolor/scalable/apps /app/share/applications /app/share/metainfo /app/lib
+      - make prefix=/app install-docs
       - install -Dm644 flatpak/net.pouar.yadfa.svg /app/share/icons/hicolor/scalable/apps/net.pouar.yadfa.svg
       - install -Dm644 flatpak/net.pouar.yadfa.appdata.xml /app/share/metainfo/net.pouar.yadfa.appdata.xml
       - install -Dm644 flatpak/net.pouar.yadfa.appdata.xml.lisp /app/share/metainfo/net.pouar.yadfa.appdata.xml.lisp
