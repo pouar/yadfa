@@ -7,7 +7,7 @@ OBJS := yadfa-reference.info yadfa-reference.html
 INSTALL := install
 INSTALL_DATA := $(INSTALL) -m644
 INSTALL_DIR := $(INSTALL) -Ddm755
-.PHONY: maketex
+.PHONY: maketex install-info install-pdf install-html install-ps install-dvi install-texi install-docs dvi pdf info ps html
 prefix := /usr/local
 datarootdir := $(prefix)/share
 docdir := $(datarootdir)/doc/yadfa
