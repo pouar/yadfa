@@ -16,7 +16,7 @@ pages:
     - flatpak build-update-repo --gpg-sign='3874C167F45C00289B3CB2C84756E5342FDE60F3!' --prune-depth=10 --prune --generate-static-deltas public
     - tar -cf cache.tar .flatpak-builder public
     - mkdir yadfa-docs
-    - cp build/files/share/doc/yadfa/* build/files/lib/yadfa/docs/reference/* build/files/share/info/dir yadfa-docs
+    - cp build/files/share/doc/yadfa/* build/files/lib/yadfa/docs/reference/* build/files/share/info/dir build/files/share/info/yadfa-reference.info yadfa-docs
     - tar -cf - yadfa-docs|xz -9ec --lzma2=preset=9e,dict=100MB,pb=0,nice=273 - > public/yadfa-docs.tar.xz
   environment:
     name: production
