@@ -34,7 +34,7 @@ maketex: $(SRC)
 	$(MAKE) -j1 $(TEXOBJS)
 
 $(DESTDIR)$(docdir) $(DESTDIR)$(infodir): %:
-	$(INSTALL_DIR) -Ddm755 $@
+	$(INSTALL_DIR) $@
 
 install-info: yadfa-reference.info $(DESTDIR)$(infodir)
 	$(INSTALL_DATA) yadfa-reference.info $(DESTDIR)$(infodir)/
