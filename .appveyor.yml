@@ -3,7 +3,7 @@ platform: x64
 clone_depth: 1
 environment:
   CACHE: 'c:\cache\'
-  SBCL_HOME: 'C:\Program Files\Steel Bank Common Lisp\2.0.0\'
+  SBCL_HOME: 'C:\Program Files\Steel Bank Common Lisp\2.0.1\'
   bintrayapikey:
     secure: O42a6FepgN/X3CzWpPbJkuKRhmENlIwBfbtMVQLKSWR/annp514THuh4Dynu6xLZ
 
@@ -14,7 +14,7 @@ install:
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/releases/download/v1.11.5/ccl-1.11.5-windowsx86.zip" -OutFile $env:CACHE\ccl.zip
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/archive/v1.11.6.zip" -OutFile $env:CACHE\ccl-1.11.6.zip
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3.5/asdf-3.3.3.5.zip"  -OutFile $env:CACHE\asdf.zip
-#- ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.0/sbcl-2.0.0-x86-64-windows-binary.msi" -OutFile $env:CACHE\sbcl.msi
+#- ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.1/sbcl-2.0.1-x86-64-windows-binary.msi" -OutFile $env:CACHE\sbcl.msi
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/joaotavora/sly/archive/master.zip" -OutFile "$env:CACHE\sly.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/didierverna/declt/archive/master.zip" -OutFile "$env:CACHE\declt.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/McCLIM/McCLIM/archive/master.zip" -OutFile "$env:CACHE\mcclim.zip"
@@ -46,7 +46,7 @@ install:
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\illogical-pathnames -ItemType SymbolicLink -Value $env:CACHE\illogical-pathnames-pouar
 
 build_script:
-#- cmd: '"C:\Program Files\Steel Bank Common Lisp\2.0.0\sbcl" --script "appveyor-build-docs.lisp" texi'
+#- cmd: '"C:\Program Files\Steel Bank Common Lisp\2.0.1\sbcl" --script "appveyor-build-docs.lisp" texi'
 #- cmd: 'C:\cygwin64\bin\bash.exe -lc "cd /cygdrive/c/projects/yadfa/docs/reference;make -j4 all"'
 - cmd: '"%CACHE%\ccl-1.11.6\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)" -- immutable'
 - ps: cp chocolatey/yadfa.nuspec yadfa.nuspec # for some reason Chocolatey seems to expect the package build file to be in the same directory as the source directory
