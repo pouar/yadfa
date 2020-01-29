@@ -1067,7 +1067,7 @@
     :initform 0
     :accessor bitcoins-per-level-of
     :type (real 0)
-    :documentation "Bitcoins per level that you get from this enemy per battle")
+    :documentation "Bitcoins per level that you get from this enemy per battle. Only used if the @var{BITCOINS} slot is @code{NIL}.")
    (watersport-limit
     :initarg :watersport-limit
     :initform nil
@@ -1120,14 +1120,19 @@
                             (funcall (coerce (default-attack-of self) 'function) target self)))))))
     :accessor battle-script-of
     :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack"))
+  (bitcoins
+   :initarg :bitcoins
+   :initform nil
+   :type (or (real 0) null)
+   :accessor bitcoins-of
+   :documentation "Amount of Bitcoins the enemy has. Not limited to a single country.")
   (:default-initargs
    :base-stats (list :health 40
                      :attack 45
                      :defense 40
                      :energy 40
                      :speed 56)
-   :level (random-from-range 2 5)
-   :bitcoins nil)
+   :level (random-from-range 2 5))
   (:documentation "Class for enemies"))
 (defmethod process-battle-accident-method ((character enemy) attack item reload selected-target)
   (declare (ignore attack item reload selected-target))
