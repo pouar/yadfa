@@ -485,14 +485,14 @@
                         (clim:draw-pattern* *standard-output* pattern x-pos y-pos)))))))))
         (when clim-listener::*application-frame*
           (clim:stream-set-cursor-position *standard-output* (first start-position) (+ (second start-position) (* 31 (clim:pattern-height pattern)))))))))
-(declaim (ftype (function ((or string coerced-function)) string) get-zone-text))
+(declaim (ftype (function ((or string coerced-function)) (values string &optional)) get-zone-text))
 (defunassert (get-zone-text (text))
     (text (or string coerced-function))
   (typecase text
     (string
      text)
     (t
-     (the string (funcall (coerce text 'function))))))
+     (the (values string &optional) (funcall (coerce text 'function))))))
 (declaim (ftype (function (list &optional list symbol) null) print-enter-text))
 (defun print-enter-text (position &optional old-position old-direction)
   (let ((old-direction (find old-direction (warp-points-of (get-zone old-position))
