@@ -1119,13 +1119,13 @@
                            (t
                             (funcall (coerce (default-attack-of self) 'function) target self)))))))
     :accessor battle-script-of
-    :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack"))
-  (bitcoins
-   :initarg :bitcoins
-   :initform nil
-   :type (or (real 0) null)
-   :accessor bitcoins-of
-   :documentation "Amount of Bitcoins the enemy has. Not limited to a single country.")
+    :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack")
+   (bitcoins
+    :initarg :bitcoins
+    :initform nil
+    :type (or (real 0) null)
+    :accessor bitcoins-of
+    :documentation "Amount of Bitcoins the enemy has. Not limited to a single country."))
   (:default-initargs
    :base-stats (list :health 40
                      :attack 45
