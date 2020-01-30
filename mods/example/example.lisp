@@ -1,4 +1,4 @@
-(in-package #:yadfa-furaffinity-pouar-myawesomemod)
+(in-package #:yadfa.furaffinity.pouar.myawesomemod)
 (defun test () (print 1))
 (defevent test-4
     :lambda '(lambda (self)
