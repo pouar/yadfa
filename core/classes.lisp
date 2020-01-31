@@ -597,7 +597,13 @@
     :initform ()
     :type (or symbol list)
     :accessor enemy-spawn-list-of
-    :documentation "list containing what enemies might show up when you enter an area. Each entry looks like this @code{(:chance chance :enemies enemies)} If @var{RANDOM} is specified, then the probability of the enemy being spawn is @var{CHANCE} out of 1 where @var{CHANCE} is a number between 0 and 1"))
+    :documentation "list containing what enemies might show up when you enter an area. Each entry looks like this @code{(:chance chance :enemies enemies)} If @var{RANDOM} is specified, then the probability of the enemy being spawn is @var{CHANCE} out of 1 where @var{CHANCE} is a number between 0 and 1")
+   (team-npc-spawn-list
+    :initarg :team-npc-spawn-list
+    :initform ()
+    :type (or symbol list)
+    :accessor team-npc-spawn-list-of
+    :documentation "list containing what npcs team member might show up when you enter an area. Each entry looks like this @code{(:chance chance :npc npc)} If @var{RANDOM} is specified, then the probability of the enemy being spawn is @var{CHANCE} out of 1 where @var{CHANCE} is a number between 0 and 1"))
   (:documentation "A zone on the map"))
 (defmethod print-object ((obj zone) stream)
   (print-unreadable-object (obj stream :type t :identity t)
@@ -1055,20 +1061,8 @@
   ())
 (defclass pants (closed-bottoms)
   ())
-(defclass enemy (base-character)
-  ((exp-yield
-    :initarg :exp-yield
-    :initform 50
-    :accessor exp-yield-of
-    :type (real 0)
-    :documentation "Integer that is the base exp points that player receives when this guy is defeated")
-   (bitcoins-per-level
-    :initarg :bitcoins-per-level
-    :initform 0
-    :accessor bitcoins-per-level-of
-    :type (real 0)
-    :documentation "Bitcoins per level that you get from this enemy per battle. Only used if the @var{BITCOINS} slot is @code{NIL}.")
-   (watersport-limit
+(defclass npc (base-character)
+  ((watersport-limit
     :initarg :watersport-limit
     :initform nil
     :accessor watersport-limit-of
@@ -1119,7 +1113,20 @@
                            (t
                             (funcall (coerce (default-attack-of self) 'function) target self)))))))
     :accessor battle-script-of
-    :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack")
+    :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack")))
+(defclass enemy (npc)
+  ((exp-yield
+    :initarg :exp-yield
+    :initform 50
+    :accessor exp-yield-of
+    :type (real 0)
+    :documentation "Integer that is the base exp points that player receives when this guy is defeated")
+   (bitcoins-per-level
+    :initarg :bitcoins-per-level
+    :initform 0
+    :accessor bitcoins-per-level-of
+    :type (real 0)
+    :documentation "Bitcoins per level that you get from this enemy per battle. Only used if the @var{BITCOINS} slot is @code{NIL}.")
    (bitcoins
     :initarg :bitcoins
     :initform nil
@@ -1200,6 +1207,12 @@
     :accessor enemies-of
     :type list
     :documentation "List of enemies in battle")
+   (team-npcs
+    :initarg :team-npcs
+    :initform ()
+    :accessor team-npcs-of
+    :type list
+    :documentation "List of team members that the player doesn't actually control but are controlled by the game")
    (win-events
     :initarg :win-events
     :initform ()
@@ -1228,7 +1241,7 @@
      (with-output-to-string (s)
        (iter (for i in (enemies-of c))
          (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
-  (setf (turn-queue-of c) (sort (append* (enemies-of c) (team-of *game*)) '>
+  (setf (turn-queue-of c) (sort (append* (enemies-of c) (team-npcs-of c) (team-of *game*)) '>
                                 :key (lambda (a)
                                        (calculate-stat a :speed))))
   (incf (time-of *game*)))

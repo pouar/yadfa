@@ -112,6 +112,7 @@
    #:status-condition
    #:stats-view
    #:base-character
+   #:npc
    #:team-member
    #:potty-trained-team-member
    #:ally
@@ -199,6 +200,7 @@
    #:moves-of
    #:exp-of
    #:base-stats-of
+   #:team-npcs-of
    #:iv-stats-of
    #:bitcoins-of
    #:bitcoins-per-level-of
@@ -230,6 +232,7 @@
    #:must-not-wear*-of
    #:no-wetting/messing-of
    #:enemy-spawn-list-of
+   #:team-npc-spawn-list-of
    #:energy-cost-of
    #:power-of
    #:ai-flags-of
