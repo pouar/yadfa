@@ -86,6 +86,16 @@
 
 (in-package :climi)
 
+;;; the patch I added that makes the FreeType renderer pick the right defaults seems to make it a lot slower
+;;; especially now that McCLIM is no longer caching all the fonts because that doesn't work when *default-text-style*
+;;; changes. Cache all the fonts again for the FreeType renderer until this gets much faster upstream
+#+mcclim-ffi-freetype
+(defmethod text-style-mapping :around ((port clim-freetype::clx-freetype-port)
+                                       (text-style text-style)
+                                       &optional character-set)
+  (declare (ignore character-set))
+  (ensure-gethash text-style (port-text-style-mappings port) (call-next-method)))
+
 ;;; McCLIM is missing the accept-values application class which display-exit-boxes expects as an argument if you want to change what the function displays via :exit-boxes
 ;;; https://github.com/McCLIM/McCLIM/issues/582
 (define-application-frame accept-values ()
