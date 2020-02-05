@@ -196,34 +196,34 @@
     :initform 0
     :type (real 0)
     :accessor bowels/contents-of
-    :documentation "Amount in cg that the character is holding in")
+    :documentation "Amount in grams that the character is holding in")
    (bowels/fill-rate
     :initarg :bowels/fill-rate
-    :initform (* (/ 12000 24 60) 0)
+    :initform (* (/ 400 24 60) 0)
     :type (real 0)
     :accessor bowels/fill-rate-of
-    :documentation "Amount in cg that the character's bowels fills each turn")
+    :documentation "Amount in grams that the character's bowels fills each turn")
    (bowels/need-to-potty-limit
     :initarg :bowels/need-to-potty-limit
-    :initform 4000
+    :initform 400
     :type (real 0)
     :accessor bowels/need-to-potty-limit-of
     :documentation "How full the bowels need to be before the character needs to go")
    (bowels/potty-dance-limit
     :initarg :bowels/potty-dance-limit
-    :initform 6000
+    :initform 600
     :type (real 0)
     :accessor bowels/potty-dance-limit-of
     :documentation "How full the character's bowels need to be before the character starts doing a potty dance")
    (bowels/potty-desperate-limit
     :initarg :bowels/potty-desperate-limit
-    :initform 7000
+    :initform 700
     :type (real 0)
     :accessor bowels/potty-desperate-limit-of
     :documentation "How full the character's bowels needs to be before the character starts begging to be taken to the bathroom")
    (bowels/maximum-limit
     :initarg :bowels/maximum-limit
-    :initform 8000
+    :initform 800
     :type (real 0)
     :accessor bowels/maximum-limit-of
     :documentation "When the character's bowels gets this full, @{he,she@} messes @{him,her@}self")
@@ -338,7 +338,7 @@
    :level 5
    :species "fox"
    :bladder/fill-rate (* (/ 2000 24 60) 2)
-   :bowels/fill-rate (* (/ 12000 24 60) 2)
+   :bowels/fill-rate (* (/ 400 24 60) 2)
    :wear (list (make-instance 'yadfa-items:diaper))
    :moves (list (make-instance 'yadfa-moves:watersport) (make-instance 'yadfa-moves:mudsport))))
 (defclass ally-no-potty-training (ally) ())
@@ -433,7 +433,7 @@
    :level 5
    :species "Fox"
    :bladder/fill-rate (* (/ 2000 24 60) 2)
-   :bowels/fill-rate (* (/ 12000 24 60) 2)
+   :bowels/fill-rate (* (/ 400 24 60) 2)
    :wear (list (make-instance 'yadfa-items:diaper))
    :moves (list (make-instance 'yadfa-moves:watersport)
                 (make-instance 'yadfa-moves:mudsport)

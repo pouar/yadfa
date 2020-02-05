@@ -85,7 +85,7 @@
                            (format t "~a's health is already full~%" (name-of target))))
    :use-script '(lambda (item user)
                  (declare (ignore item))
-                 (incf (bowels/contents-of user) 500)
+                 (incf (bowels/contents-of user) 50)
                  (incf (health-of user) 50))))
 (defclass maximum-tomato (consumable) ()
   (:default-initargs

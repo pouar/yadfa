@@ -494,7 +494,6 @@
    #:fursuiter-servant
    #:diapered-dragon*
    #:diapered-dragon
-   #:dergy
    #:ghost
    #:catchable-enemy
    #:catch-chance-of

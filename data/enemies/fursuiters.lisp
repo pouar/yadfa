@@ -7,7 +7,7 @@
    :male (random-elt '(t nil))
    :species "Fox"
    :bladder/contents (random 500)
-   :bowels/contents (random 7000)
+   :bowels/contents (random 700)
    :wear (list (make-instance 'yadfa-items:fursuit)
                (make-instance 'yadfa-items:kurikia-thick-diaper))))
 (defmethod process-battle-accident-method ((character padded-fursuiter-servant) attack item reload selected-target)
@@ -61,7 +61,7 @@
    :male (random-elt '(t nil))
    :species "Fox"
    :bladder/contents (random 500)
-   :bowels/contents (random 7000)
+   :bowels/contents (random 700)
    :wear (list (make-instance 'yadfa-items:watertight-fursuit)
                (make-instance 'yadfa-items:tshirt)
                (make-instance 'yadfa-items:jeans)

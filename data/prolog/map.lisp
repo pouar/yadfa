@@ -151,9 +151,6 @@
                                                :wear ,(list (make-instance 'yadfa-items:kurikia-thick-diaper))))))
                                  (:chance 1/20
                                   :enemies ((yadfa-enemies:diapered-skunk .
-                                             `(:level ,(random-from-range 2 5)))))
-                                 (:chance 1/20
-                                  :enemies ((yadfa-enemies:dergy .
                                              `(:level ,(random-from-range 2 5)))))))
             (serapeum:dict*
              (must-wear-of *game*)
