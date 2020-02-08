@@ -1123,22 +1123,17 @@
     :documentation "Integer that is the base exp points that player receives when this guy is defeated")
    (bitcoins-per-level
     :initarg :bitcoins-per-level
-    :initform 0
-    :accessor bitcoins-per-level-of
-    :type (real 0)
-    :documentation "Bitcoins per level that you get from this enemy per battle. Only used if the @var{BITCOINS} slot is @code{NIL}.")
-   (bitcoins
-    :initarg :bitcoins
     :initform nil
+    :accessor bitcoins-per-level-of
     :type (or (real 0) null)
-    :accessor bitcoins-of
-    :documentation "Amount of Bitcoins the enemy has. Not limited to a single country."))
+    :documentation "Bitcoins per level that you get from this enemy per battle. Only used not @code{NIL}."))
   (:default-initargs
    :base-stats (list :health 40
                      :attack 45
                      :defense 40
                      :energy 40
                      :speed 56)
+   :bitcoins 0
    :level (random-from-range 2 5))
   (:documentation "Class for enemies"))
 (defmethod process-battle-accident-method ((character enemy) attack item reload selected-target)
