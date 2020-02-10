@@ -12,8 +12,8 @@ pages:
     - printf '%s' "$GPGKEY"|base64 -d|gpg --import
     - flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     - flatpak-builder --install-deps-from=flathub --force-clean build flatpak/net.pouar.yadfa.yml
-    - flatpak build-export --gpg-sign='3874C167F45C00289B3CB2C84756E5342FDE60F3!' public build
-    - flatpak build-update-repo --gpg-sign='3874C167F45C00289B3CB2C84756E5342FDE60F3!' --prune-depth=10 --prune --generate-static-deltas public
+    - flatpak build-export --gpg-sign='677EE149B5AFD7E5A4A5E246C65B2BA168C7FDC4' public build
+    - flatpak build-update-repo --gpg-sign='677EE149B5AFD7E5A4A5E246C65B2BA168C7FDC4' --prune-depth=10 --prune --generate-static-deltas public
     - tar -cf cache.tar .flatpak-builder public
     - mkdir yadfa-docs
     - cp build/files/share/doc/yadfa/* build/files/lib/yadfa/docs/reference/* build/files/share/info/dir build/files/share/info/yadfa-reference.info yadfa-docs
