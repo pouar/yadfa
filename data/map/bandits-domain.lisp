@@ -143,7 +143,7 @@
 (ensure-zone (-3 23 0 bandits-domain)
   :name "Bandit's Shop Bathroom"
   :description "CLOSED FOREVER!!!!! MUAHAHAHAHA!!!!"
-  :locked nil)
+  :locked t)
 (ensure-zone (-5 22 0 bandits-domain)
   :name "Bandit's Kennel"
   :description "A grungy looking kennel where the Raccoon Bandits keep their `pets'. Neglected so much that they literally forgot about their existence"

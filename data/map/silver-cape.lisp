@@ -29,7 +29,7 @@
   :name "Silver Cape Jail"
   :description "The jail beneath Navy HQ"
   :enter-text "You're inside Navy HQ"
-  :locked nil
+  :locked t
   :stairs (list :up t)
   :events '(yadfa-events:get-location-to-pirate-cove-1))
 (ensure-zone (-2 6 0 silver-cape)

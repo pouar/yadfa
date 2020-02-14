@@ -510,10 +510,16 @@
                              (xref yadfa-world:move :function)))
    (locked
     :initarg :locked
-    :initform :nil
+    :initform nil
     :accessor lockedp
-    :type (or (eql :nil) type-specifier)
-    :documentation "Whether this area is locked or not. contains the type specifier of the key needed to unlock it if locked, set to @code{:NIL} if it isn't locked")
+    :type boolean
+    :documentation "Whether this area is locked")
+   (key
+    :initarg :key
+    :initform nil
+    :accessor key-of
+    :type type-specifier
+    :documentation "Whether this area can be unlocked. if non-nil, contains the type specifier of the key needed to unlock it if locked.")
    (hidden
     :initarg :hidden
     :initform nil
