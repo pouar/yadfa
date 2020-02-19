@@ -1325,16 +1325,16 @@ See @code{MUST-NOT-WEAR*} in ~a."
     :documentation "Turns since start of game")
    (finished-events%
     :initarg :finished-events
-    :initform '()
-    :type list
+    :initform (make-hash-table :test 'equal)
+    :type hash-table
     :accessor finished-events-of
-    :documentation "A list containing all the symbols of events the player has finished")
-   (major-event
-    :initarg :major-event
-    :initform nil
-    :accessor major-event-of
-    :type symbol
-    :documentation "Symbol of the current major event")
+    :documentation "A hash table containing whether past events are finished, accepted, and/or declined. Lambda list of the key is @code{(EVENT &OPTIONAL STATUS)} Where @var{EVENT} is the event symbol and @var{STATUS} is either @code{:ACCEPTED}, @code{:DECLINED}. @var{STATUS} isn't passed if it means it is finished")
+   (current-events%
+    :initarg :finished-events
+    :initform (make-hash-table :test 'eq)
+    :type hash-table
+    :accessor current-events-of
+    :documentation "A hash table containing the events currently in progress. Is @code{T} if it is currently in progress.")
    (seen-enemies
     :initarg :seen-enemies
     :initform '()
@@ -1345,3 +1345,41 @@ See @code{MUST-NOT-WEAR*} in ~a."
     :type hash-table
     :documentation "Stores the event attributes of the game"))
   (:documentation "List of all the information in the game"))
+(defclass event (yadfa-class)
+  ((id
+    :initarg :id
+    :initform nil
+    :type symbol
+    :documentation "Unique id identifying the event")
+   (lambda
+     :initarg :lambda
+     :initform (lambda (self &optional accept)
+                 (declare (ignore self accept)) nil)
+     :type coerced-function
+     :documentation "Hook that runs when the event is triggered. @var{SELF} is the event id and @var{ACCEPT} is the result of the function in the @code{MISSION} slot")
+   (predicate
+    :initarg :predicate
+    :initform (lambda (self)
+                (declare (ignore self)) t)
+    :type coerced-function
+    :documentation "Returns true if the mission can be triggered and false if not")
+   (repeatable
+    :initarg :repeatable
+    :type boolean
+    :initform nil
+    :documentation "Is @code{T} if this event can be triggered more than once")
+   (mission
+    :initarg :mission
+    :initform nil
+    :type (or null coerced-function)
+    :documentation "If this event is a mission, this slot contains a function that runs the dialog and returns @code{:ACCEPTED} if the mission was accepted, @code{:DECLINED}, if it was declined, or @code{NIL} if it was deferred")
+   (finished-depends
+    :initarg :finished-depends
+    :initform nil
+    :type list
+    :documentation "List of event ids of events that needs to be finished before this event can be triggered")
+   (documentation
+    :initform nil
+    :initarg :documentation
+    :type (or null simple-string)
+    :documentation "Documentation explaining the event")))

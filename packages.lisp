@@ -52,6 +52,8 @@
    #:updating-present-frame-resolved
    ;;functions
    #:finished-events
+   #:unfinished-events
+   #:finish-events
    #:process-battle
    #:get-positions-of-type
    #:trigger-event
@@ -284,9 +286,9 @@
    #:team-of
    #:events-of
    #:finished-events-of
+   #:current-events-of
    #:seen-enemies-of
    #:action-lambda
-   #:event-p
    #:action-p
    #:fainted-of
    #:persistentp)
