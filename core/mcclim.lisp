@@ -131,9 +131,10 @@
               (collect (+ b (getf wield-stats a) (getf wear-stats a)))))
           (base-stats-of object))
   (let ((c (filter-items (wear-of object) 'closed-bottoms)))
-    (destructuring-bind (&key (sogginess 0) (sogginess-capacity 0) (messiness 0) (messiness-capacity 0)) c
+    (destructuring-bind (&key (sogginess 0) (sogginess-capacity 0) (messiness 0) (messiness-capacity 0))
+        (calculate-diaper-usage* c)
       (declare (type real sogginess sogginess-capacity messiness messiness-capacity))
-      (cond ((find '(or tabbed-briefs pullon incontinence-pad) c :test (lambda (o e) (typep e o)))
+      (cond ((find '(or diaper pullup stuffer) c :test (lambda (o e) (typep e o)))
              (format stream "Diaper State: ~{~a~}~%"
                      (let ((a ()))
                        (cond ((>= sogginess sogginess-capacity)
