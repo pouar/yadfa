@@ -1,8 +1,6 @@
 ;; -*- mode: common-lisp; -*-
 #+sbcl
 (declaim (sb-ext:muffle-conditions sb-kernel:redefinition-warning sb-ext:code-deletion-note))
-(declaim (optimize (debug 2) safety))
-(setf *read-default-float-format* 'long-float)
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
                                        (user-homedir-pathname))))
@@ -32,6 +30,11 @@
   (ql:quickload "swank"))
 (when (find "ft" (uiop:command-line-arguments) :test #'string=)
   (pushnew :mcclim-ffi-freetype *features*))
+(ql:quickload (loop for i in (asdf:system-depends-on (asdf:find-system :yadfa))
+                    when (stringp i) collect i
+                    when (and (listp i) (eq (first i) :feature) (uiop:featurep (second i))) collect (third i)))
+(declaim (optimize (debug 2) safety))
+(setf *read-default-float-format* 'long-float)
 (ql:quickload :yadfa)
 (when (find "immutable" (uiop:command-line-arguments) :test #'string=)
   (setf yadfa::*immutable* t))

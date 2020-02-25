@@ -1,6 +1,4 @@
 ;; -*- mode: common-lisp; -*-
-(declaim (optimize (debug 2) safety))
-(setf *read-default-float-format* 'long-float)
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
                                        (user-homedir-pathname))))
@@ -33,6 +31,11 @@
   (pushnew :mcclim-ffi-freetype *features*))
 (when (find "wait" (uiop:command-line-arguments) :test #'string=)
   (sleep 2))
+(ql:quickload (loop for i in (asdf:system-depends-on (asdf:find-system :yadfa))
+                    when (stringp i) collect i
+                    when (and (listp i) (eq (first i) :feature) (uiop:featurep (second i))) collect (third i)))
+(declaim (optimize (debug 2) safety))
+(setf *read-default-float-format* 'long-float)
 (ql:quickload :yadfa)
 (in-package :yadfa)
 (yadfa::main)
