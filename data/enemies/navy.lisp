@@ -14,68 +14,65 @@
    :bitcoins-per-level 60))
 (defmethod process-battle-accident-method ((character navy-officer) attack item reload selected-target)
   (declare (ignore attack item reload selected-target))
-  (cond ((or (>= (bladder/contents-of character)
-                 (bladder/maximum-limit-of character))
-             (>= (bowels/contents-of character) (bowels/maximum-limit-of character)))
-         (when (>= (bladder/contents-of character) (bladder/maximum-limit-of character))
-           (format t "~a lets out a quiet moan as ~a accidentally wets ~aself in battle~%"
+  (let* ((male (malep character))
+         (pamps (iter (for i in (wear-of character))
+                  (let ((i (typecase i
+                             (diaper 'diaper)
+                             (pullup 'pullup)
+                             (closed-bottoms 'closed-bottoms))))
+                    (when i
+                      (leave i)))))
+         (pampspronoun (if male
+                           (if pamps
+                               "his "
+                               "him")
+                           (if pamps
+                               "her "
+                               "her")))
+         (pampsname (case pamps
+                      (diaper "diapers")
+                      (pullup "pullups")
+                      (closed-bottoms "pants")
+                      (t "self"))))
+    (cond ((or (>= (bladder/contents-of character)
+                   (bladder/maximum-limit-of character))
+               (>= (bowels/contents-of character) (bowels/maximum-limit-of character)))
+           (let ((heshe (if male "he" "she"))
+                 (himher (if male "him" "her")))
+             (when (>= (bladder/contents-of character) (bladder/maximum-limit-of character))
+               (format t "~a lets out a quiet moan as ~a accidentally wets ~aself in battle~%"
+                       (name-of character)
+                       heshe
+                       himher)
+               (wet :wetter character)
+               (set-status-condition 'yadfa-status-conditions:wetting character))
+             (when (>= (bowels/contents-of character) (bowels/maximum-limit-of character))
+               (format t "~a involuntarily squats down as ~a accidentally messes ~aself in battle~%"
+                       (name-of character)
+                       heshe
+                       himher)
+               (mess :messer character)
+               (set-status-condition 'yadfa-status-conditions:messing character))
+             t))
+          ((and (watersport-limit-of character)
+                (<= (- (bladder/maximum-limit-of character) (bladder/contents-of character)) (watersport-limit-of character))
+                (< (random (watersport-chance-of character)) 1))
+           (format t "~a slightly blushes and lets go from the front of ~a~a and spreads ~a legs apart and floods them~%"
                    (name-of character)
-                   (if (malep character) "he" "she")
-                   (if (malep character) "him" "her"))
-           (wet :wetter character)
-           (set-status-condition 'yadfa-status-conditions:wetting character))
-         (when (>= (bowels/contents-of character) (bowels/maximum-limit-of character))
-           (format t "~a involuntarily squats down as ~a accidentally messes ~aself in battle~%"
+                   pampspronoun
+                   pampsname
+                   (if male
+                       "his"
+                       "her"))
+           (wet :wetter character))
+          ((and (mudsport-limit-of character)
+                (<= (- (bowels/maximum-limit-of character) (bowels/contents-of character)) (mudsport-limit-of character))
+                (< (random (mudsport-chance-of character)) 1))
+           (format t "~a slightly blushes and squats down and messes ~a~a~%"
                    (name-of character)
-                   (if (malep character) "he" "she")
-                   (if (malep character) "him" "her"))
-           (mess :messer character)
-           (set-status-condition 'yadfa-status-conditions:messing character))
-         t)
-        ((and (watersport-limit-of character)
-              (<= (- (bladder/maximum-limit-of character) (bladder/contents-of character)) (watersport-limit-of character))
-              (< (random (watersport-chance-of character)) 1))
-         (let* ((pamps (iter (for i in (wear-of character))
-                         (let ((i (typecase i
-                                    (diaper 'diaper)
-                                    (pullup 'pullup)
-                                    (closed-bottoms 'closed-bottoms))))
-                           (when i
-                             (leave i)))))
-                (position 0))
-           (when (malep character)
-             (setf (ldb (byte 2 0) position) 1))
-           (when pamps
-             (setf (ldb (byte 2 1) position) 1))
-           (format t "~a slightly blushes and lets go from the front of ~[him~;her ~;his ~;her~]~a and spreads ~3:*~:[her~;his~]~2* legs apart and floods them~%"
-                   (name-of character) pamps (case pamps
-                                               (diaper "diapers")
-                                               (pullup "pullups")
-                                               (closed-bottoms "pants")
-                                               (t "self"))))
-         (wet :wetter character))
-        ((and (mudsport-limit-of character)
-              (<= (- (bowels/maximum-limit-of character) (bowels/contents-of character)) (mudsport-limit-of character))
-              (< (random (mudsport-chance-of character)) 1))
-         (let* ((pamps (iter (for i in (wear-of character))
-                         (let ((i (typecase i
-                                    (diaper 'diaper)
-                                    (pullup 'pullup)
-                                    (closed-bottoms 'closed-bottoms))))
-                           (when i
-                             (leave i)))))
-                (position 0))
-           (when (malep character)
-             (setf (ldb (byte 2 0) position) 1))
-           (when pamps
-             (setf (ldb (byte 2 1) position) 1))
-           (format t "~a slightly blushes and squats down and messes ~[him~;her ~;his ~;her~]~a~%"
-                   (name-of character) pamps (case pamps
-                                               (diaper "diapers")
-                                               (pullup "pullups")
-                                               (closed-bottoms "pants")
-                                               (t "self"))))
-         (mess :messer character))))
+                   pampspronoun
+                   pampsname)
+           (mess :messer character)))))
 (defmethod initialize-instance :after
     ((c navy-officer) &rest args &key &allow-other-keys)
   (unless (iter (for (a b) on args)

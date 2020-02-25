@@ -691,19 +691,21 @@
   (if (and (car (onesie-thickness-capacity-of onesie))
            underclothes
            (> (total-thickness underclothes) (car (onesie-thickness-capacity-of onesie))))
-      (format t "~a struggles to snap the bottom of ~:[her~;his~] ~a like a toddler who can't dress ~:[her~;him~]self but ~:[her~;his~] ~a is too thick~%~%"
-              (name-of user)
-              (malep user)
-              (name-of onesie)
-              (malep user)
-              (malep user)
-              (name-of (thickest underclothes)))
-      (toggle-onesie%% onesie)))
+      (let* ((male (malep user))
+             (hisher (if male "his" "her")))
+        (format t "~a struggles to snap the bottom of ~a ~a like a toddler who can't dress ~aself but ~a ~a is too thick~%~%"
+                (name-of user)
+                hisher
+                (name-of onesie)
+                (if male "him" "her")
+                hisher
+                (name-of (thickest underclothes)))
+        (toggle-onesie%% onesie))))
 (defmethod toggle-onesie% ((onesie onesie/closed) underclothes (user base-character))
   (if (lockedp onesie)
-      (format t "~a can't unsnap ~:[her~;his~] ~a as it's locked~%~%"
+      (format t "~a can't unsnap ~a ~a as it's locked~%~%"
               (name-of user)
-              (malep user)
+              (if (malep user) "his" "her")
               (name-of onesie))
       (toggle-onesie%% onesie)))
 (defmacro defonesie (base-class direct-superclasses &body body)
@@ -817,13 +819,13 @@
   (when (or
          (and (lockedp (get-zone new-position))
               (or ignore-lock (member (key-of (get-zone new-position)) (inventory-of (player-of *game*))
-                                       :test (lambda (item key)
-                                               (typep key item)))))
-            (and (getf (getf (direction-attributes-of (get-zone (position-of (player-of *game*)))) direction) :locked)
-                 (member (getf (getf (direction-attributes-of (get-zone (position-of (player-of *game*)))) direction) :key)
-                         (inventory-of (player-of *game*))
-                         :test (lambda (item key)
-                                 (typep key item)))))
+                                      :test (lambda (item key)
+                                              (typep key item)))))
+         (and (getf (getf (direction-attributes-of (get-zone (position-of (player-of *game*)))) direction) :locked)
+              (member (getf (getf (direction-attributes-of (get-zone (position-of (player-of *game*)))) direction) :key)
+                      (inventory-of (player-of *game*))
+                      :test (lambda (item key)
+                              (typep key item)))))
     (format t "You unlock zone ~a~%" new-position)
     (setf (lockedp (get-zone new-position)) nil)
     (remf (getf (direction-attributes-of (get-zone (position-of (player-of *game*)))) direction) :locked))
@@ -1073,11 +1075,11 @@
      (return-from potty-on-toilet))
     ((and pants-down (iter (for i in (filter-items (wear-of user) 'closed-bottoms))
                        (when (lockedp i)
-                         (format t "~a struggles to remove ~:[her~;his~] ~a, realizes ~:[she~;he~] can't, then starts panicking while doing a potty dance.~%"
+                         (format t "~a struggles to remove ~a ~a, realizes ~a can't, then starts panicking while doing a potty dance.~%"
                                  (name-of user)
-                                 (malep user)
+                                 (if (malep user) "his" "her")
                                  (name-of i)
-                                 (malep user))
+                                 (if (malep user) "he" "she"))
                          (leave t))))
      (return-from potty-on-toilet)))
   (let* ((mess-return-value (when mess
@@ -1089,25 +1091,25 @@
       (format t "~a doesn't have to go~%" (name-of user))
       (return-from potty-on-toilet))
     (if (or pants-down (not (filter-items (wear-of user) 'closed-bottoms)))
-        (format t "~a used the ~a like a big ~:[girl~;boy~]"
+        (format t "~a used the ~a like a big ~a"
                 (name-of user)
                 (name-of prop)
-                (malep user))
+                (if (malep user) "boy" "girl"))
         (let* ((names ())
                (out ()))
           (push (if (and wet-return-value (> (getf wet-return-value :wet-amount) 0)) "soggy butt" "mushy butt") names)
-          (push (format nil "~a ~:[girl~;boy~]"
+          (push (format nil "~a ~a"
                         (if (and wet-return-value (> (getf wet-return-value :wet-amount) 0)) "soggy" "mushy")
-                        (malep user))
+                        (if (malep user) "boy" "girl"))
                 names)
           (when (and wet-return-value (> (getf wet-return-value :wet-amount) 0))
             (push (format nil "piddle ~a" (if (malep user) "prince" "princess")) names))
           (push (format nil "Looks like you missed a step ~a" (random-elt names)) out)
-          (push (format nil "Aww, looks like the little ~a forgot to take ~a ~:[her~;his~] first"
+          (push (format nil "Aww, looks like the little ~a forgot to take ~a ~a first"
                         (let ((a names))
                           (push (format nil "baby ~a" (if (malep user) "boy" "girl")) a)
                           (random-elt a))
-                        (malep user)
+                        (if (malep user) "his" "her")
                         (cond ((filter-items (wear-of user) 'diaper)
                                "diapers")
                               ((filter-items (wear-of user) 'pullup)
@@ -1136,11 +1138,11 @@
          (return-from potty-on-self-or-prop))
         ((and pants-down (iter (for i in (filter-items (wear-of user) 'closed-bottoms))
                            (when (lockedp i)
-                             (format t "~a struggles to remove ~:[her~;his~] ~a, realizes ~:[she~;he~] can't, then starts panicking while doing a potty dance.~%"
+                             (format t "~a struggles to remove ~a ~a, realizes ~a can't, then starts panicking while doing a potty dance.~%"
                                      (name-of user)
-                                     (malep user)
+                                     (if (malep user) "his" "her")
                                      (name-of i)
-                                     (malep user))
+                                     (if (malep user) "he" "she"))
                              (leave t))))
          (return-from potty-on-self-or-prop)))
   (let*
@@ -1192,288 +1194,301 @@
                (setf wet-leak-list ()
                      mess-leak-list ()
                      both-leak-list())))
-        (cond
-          ;; player pulls his pants down then potty
-          ((and pants-down (filter-items (wear-of user) 'closed-bottoms))
-           (do-push (format nil "~a pulled down ~:[her~;his~] ~a and went potty on the ~a"
-                            (name-of user)
-                            (malep user)
-                            (random-elt clothes)
-                            (if prop
-                                (name-of prop)
-                                "floor"))
-             both-list wet-list mess-list)
-           (do-push (format nil "~a pulls down ~:[her~;his~] ~a and marks ~:[her~;his~] territory"
-                            (name-of user)
-                            (malep user)
-                            (random-elt clothes)
-                            (malep user))
-             both-list wet-list mess-list)
-           (push (format nil "~a pulled down ~:[her~;his~] ~a and peed on the ~a"
-                         (name-of user)
-                         (malep user)
-                         (random-elt clothes)
-                         (if prop
-                             (name-of prop)
-                             "floor"))
-                 wet-list)
-           (push (format nil "~a pulled down ~a ~a and squats down and mess"
-                         (name-of user)
-                         (if (malep user) "his" "her")
-                         (random-elt clothes))
-                 mess-list)
-           (do-push (format nil "Bad ~a! No going potty on the ~a!"
-                            (species-of user)
-                            (if prop
-                                (name-of prop)
-                                "floor"))
-             wet-list mess-list both-list)
-           (format-lists))
-          ;; If the player specifies to pull his pants down without any on, assume he's intentionally going on the floor or prop
-          (pants-down
-           (push (format nil "~a goes potty on the ~a like an animal"
-                         (name-of user)
-                         (if prop
-                             (name-of prop)
-                             "floor"))
-                 both-list)
-           (push (format nil "~a pees on the ~a like an animal"
-                         (name-of user)
-                         (if prop
-                             (name-of prop)
-                             "floor"))
-                 wet-list)
-           (push (format nil "~a squats down and messes on the ~a like an animal"
-                         (name-of user)
-                         (if prop
-                             (name-of prop)
-                             "floor"))
-                 mess-list)
-           (push (format nil "~a lifts ~:[her~;his~] leg and pees on the ~a, then squats down on all fours and mess"
-                         (name-of user)
-                         (malep user)
-                         (if prop
-                             (name-of prop)
-                             "floor"))
-                 both-list)
-           (push (format nil
-                         "~a lifts ~:[her~;his~] leg and pees on the ~a"
-                         (name-of user)
-                         (malep user)
-                         (if prop
-                             (name-of prop)
-                             "floor"))
-                 wet-list)
-           (push (format nil "~a squat down on all fours and messes like an animal" (name-of user)) mess-list)
-           (do-push (format nil "Bad ~a! No going potty on the ~a!"
-                            (species-of user)
-                            (if prop
-                                (name-of prop)
-                                "floor"))
-             wet-list mess-list both-list)
-           (format-lists))
-          ;; otherwise assume the player is just standing there and lets go, possibly forgetting that he's not wearing padding
-          ((not (filter-items (wear-of user) 'closed-bottoms))
-           (if prop
-               (progn
-                 (push (format nil "~a lifts ~:[her~;his~] leg and pees on the ~a"
-                               (name-of user)
-                               (malep user)
-                               (name-of prop))
-                       wet-list)
-                 (push (format nil "~a squats down on all fours and mess like an animal"
-                               (name-of user))
-                       mess-list)
-                 (push (format nil "~a lifts ~:[her~;his~] leg and pees on the ~a, then squats down on all fours and mess"
-                               (name-of user)
-                               (malep user)
-                               (name-of prop))
-                       both-list)
-                 (do-push (format nil "Bad ~a! No going potty on the ~a!"
-                                  (species-of user)
-                                  (name-of prop))
-                   wet-list mess-list both-list))
-               (do-push (format nil "~a realized ~:[she~;he~] made a horrible mistake. ~:[She~;He~] weren't wearing any padding!!!"
-                                (name-of user)
-                                (malep user)
-                                (malep user))
-                 both-list wet-list mess-list))
-           (format-lists))
-          ;; player is using his pants like a toilet
-          (t
-           (cond ((and (not prop) wet-return-value (< (getf wet-return-value :wet-amount) 30))
-                  (push (format nil "~a lets a little out to relieve the pressure"
-                                (name-of user))
-                        wet-list)
-                  (push (format nil "Bad idea as ~a just made a puddle on the floor"
-                                (if (malep user) "he" "she"))
-                        wet-leak-list)
-                  (format-lists)
-                  (format-leak-lists))
-                 ((filter-items (wear-of user) 'diaper)
-                  (when prop
-                    (push (format nil "~a lifts ~:[her~;his~] leg near the ~a ~2:*and floods ~:[her~;his~]~* pamps"
-                                  (name-of user)
-                                  (malep user)
-                                  (name-of prop))
-                          wet-list)
-                    (push (format nil "~a lifts ~:[her~;his~] leg near the ~a~2:* and floods ~:[her~;his~]~* pamps. Looks like the little ~a isn't house-trained"
-                                  (name-of user)
-                                  (malep user)
+        (let* ((male (malep user))
+               (hisher (if male "his" "her"))
+               (name (name-of user)))
+          (cond
+            ;; player pulls his pants down then potty
+            ((and pants-down (filter-items (wear-of user) 'closed-bottoms))
+             (do-push (format nil "~a pulled down ~a ~a and went potty on the ~a"
+                              name
+                              hisher
+                              (random-elt clothes)
+                              (if prop
                                   (name-of prop)
-                                  (species-of user))
-                          wet-list)
-                    (push (format nil "You lift your leg near the ~a and flood your pamps, then squat down on all fours and mess"
-                                  (name-of prop))
-                          both-list)
-                    (push (format nil "~a squats down on all fours~:[~; with ~:[her~;his~] tail raised~:*~] like an animal and messes ~:[her~;his~] diapers"
-                                  (name-of user)
-                                  (member (car (tail-of user)) '(:medium :large))
-                                  (malep user))
-                          mess-list))
-                  (do-push (format nil "~a goes potty in ~:[her~;his~] diapers like a toddler"
-                                   (name-of user)
-                                   (malep user))
-                    wet-list mess-list both-list)
-                  (when (>= (getf wet-return-value :wet-amount) (bladder/potty-desperate-limit-of user))
-                    (do-push (format nil "after doing a potty dance like a 5 year old, ~a floods ~a diapers with a huge sigh of relief"
-                                     (name-of user)
-                                     (if (malep user) "his" "her"))
-                      wet-list))
-                  (when (filter-items (wear-of user) '(and diaper ab-clothing-mixin))
-                    (do-push (format nil "Aww, is the baby using ~a diapers?"
-                                     (if (malep user) "his" "her"))
-                      wet-list mess-list both-list))
-                  (push (format nil "~a pauses and floods ~a diapers"
-                                (name-of user)
-                                (if (malep user) "his" "her"))
-                        wet-list)
-                  (push (format nil "~a squats down~:[~; with ~:[her~;his~] tail raised~:*~] and fills ~:*~:[her~;his~] diapers"
-                                (name-of user)
-                                (member (car (tail-of user)) '(:medium :large))
-                                (malep user))
-                        mess-list)
-                  (push (format nil "heh, the baby blorted ~:[her~;his~] diapers" (malep user)) mess-list)
-                  (push (format nil "~a diapers sprung a leak" (name-of user)) wet-leak-list)
-                  (do-push (format nil
-                                   "~a's diapers leak all over, there goes the carpet" (name-of user))
-                    wet-leak-list mess-leak-list both-leak-list)
-                  (push (format nil "Blowout!!!") mess-leak-list)
-                  (push (format nil "Heh, baby made a puddle") wet-leak-list)
-                  (push (format nil "~a piddles ~:[her~;his~] pamps" (name-of user) (malep user)) wet-list))
-                 ((filter-items (wear-of user) 'pullup)
-                  (when prop
-                    (push (format nil "~a lifts ~:[her~;his~] leg near the ~a and floods ~:[her~;his~] pullups"
-                                  (name-of user)
-                                  (malep user)
+                                  "floor"))
+               both-list wet-list mess-list)
+             (do-push (format nil "~a pulls down ~a ~a and marks ~a territory"
+                              name
+                              hisher
+                              (random-elt clothes)
+                              hisher)
+               both-list wet-list mess-list)
+             (push (format nil "~a pulled down ~a ~a and peed on the ~a"
+                           name
+                           hisher
+                           (random-elt clothes)
+                           (if prop
+                               (name-of prop)
+                               "floor"))
+                   wet-list)
+             (push (format nil "~a pulled down ~a ~a and squats down and mess"
+                           name
+                           hisher
+                           (random-elt clothes))
+                   mess-list)
+             (do-push (format nil "Bad ~a! No going potty on the ~a!"
+                              (species-of user)
+                              (if prop
                                   (name-of prop)
-                                  (malep user))
-                          wet-list)
-                    (push (format nil "~a lifts ~a leg near the ~a and floods ~a pullups, then squats down on all fours and messes"
-                                  (name-of user)
-                                  (if (malep user) "his" "her")
+                                  "floor"))
+               wet-list mess-list both-list)
+             (format-lists))
+            ;; If the player specifies to pull his pants down without any on, assume he's intentionally going on the floor or prop
+            (pants-down
+             (push (format nil "~a goes potty on the ~a like an animal"
+                           name
+                           (if prop
+                               (name-of prop)
+                               "floor"))
+                   both-list)
+             (push (format nil "~a pees on the ~a like an animal"
+                           name
+                           (if prop
+                               (name-of prop)
+                               "floor"))
+                   wet-list)
+             (push (format nil "~a squats down and messes on the ~a like an animal"
+                           name
+                           (if prop
+                               (name-of prop)
+                               "floor"))
+                   mess-list)
+             (push (format nil "~a lifts ~a leg and pees on the ~a, then squats down on all fours and mess"
+                           name
+                           hisher
+                           (if prop
+                               (name-of prop)
+                               "floor"))
+                   both-list)
+             (push (format nil
+                           "~a lifts ~a leg and pees on the ~a"
+                           name
+                           hisher
+                           (if prop
+                               (name-of prop)
+                               "floor"))
+                   wet-list)
+             (push (format nil "~a squat down on all fours and messes like an animal" (name-of user)) mess-list)
+             (do-push (format nil "Bad ~a! No going potty on the ~a!"
+                              (species-of user)
+                              (if prop
                                   (name-of prop)
-                                  (if (malep user) "his" "her"))
-                          both-list)
-                    (when (member (car (tail-of user)) '(:medium :large))
-                      (push (format nil "~a squats down on all fours with ~:[her~;his~] tail raised like an animal and messes ~:*~:[her~;his~] pullups"
-                                    (name-of user)
-                                    (malep user))
-                            mess-list)))
-                  (do-push (format nil
-                                   "~a's pullups leak all over, there goes the carpet" (name-of user))
-                    wet-leak-list mess-leak-list both-leak-list)
-                  (when (filter-items (wear-of user) '(and pullup ab-clothing-mixin))
-                    (do-push
-                        (format nil "Bad ~:[girl~;boy~]! You know you're supposed to use the toilet like a big kid"
-                                (malep user))
+                                  "floor"))
+               wet-list mess-list both-list)
+             (format-lists))
+            ;; otherwise assume the player is just standing there and lets go, possibly forgetting that he's not wearing padding
+            ((not (filter-items (wear-of user) 'closed-bottoms))
+             (if prop
+                 (progn
+                   (push (format nil "~a lifts ~a leg and pees on the ~a"
+                                 name
+                                 hisher
+                                 (name-of prop))
+                         wet-list)
+                   (push (format nil "~a squats down on all fours and mess like an animal"
+                                 name)
+                         mess-list)
+                   (push (format nil "~a lifts ~a leg and pees on the ~a, then squats down on all fours and mess"
+                                 name
+                                 hisher
+                                 (name-of prop))
+                         both-list)
+                   (do-push (format nil "Bad ~a! No going potty on the ~a!"
+                                    (species-of user)
+                                    (name-of prop))
+                     wet-list mess-list both-list))
+                 (do-push (format nil "~a realized ~a made a horrible mistake. ~a weren't wearing any padding!!!"
+                                  name
+                                  (if male "he" "she")
+                                  (if male "He" "She"))
+                   both-list wet-list mess-list))
+             (format-lists))
+            ;; player is using his pants like a toilet
+            (t
+             (cond ((and (not prop) wet-return-value (< (getf wet-return-value :wet-amount) 30))
+                    (push (format nil "~a lets a little out to relieve the pressure"
+                                  name)
+                          wet-list)
+                    (push (format nil "Bad idea as ~a just made a puddle on the floor"
+                                  (if (malep user) "he" "she"))
+                          wet-leak-list)
+                    (format-lists)
+                    (format-leak-lists))
+                   ((filter-items (wear-of user) 'diaper)
+                    (when prop
+                      (push (format nil "~a lifts ~a leg near the ~a and floods ~a pamps"
+                                    name
+                                    hisher
+                                    (name-of prop)
+                                    hisher)
+                            wet-list)
+                      (push (format nil "~a lifts ~a leg near the ~a and floods ~a pamps. Looks like the little ~a isn't house-trained"
+                                    name
+                                    hisher
+                                    (name-of prop)
+                                    hisher
+                                    (species-of user))
+                            wet-list)
+                      (push (format nil "You lift your leg near the ~a and flood your pamps, then squat down on all fours and mess"
+                                    (name-of prop))
+                            both-list)
+                      (push (format nil "~a squats down on all fours~a like an animal and messes ~a diapers"
+                                    name
+                                    (if (member (car (tail-of user)) '(:medium :large))
+                                        (format nil " with ~a tail raised"
+                                                hisher)
+                                        "")
+                                    hisher)
+                            mess-list))
+                    (do-push (format nil "~a goes potty in ~a diapers like a toddler"
+                                     name
+                                     hisher)
                       wet-list mess-list both-list)
                     (when (>= (getf wet-return-value :wet-amount) (bladder/potty-desperate-limit-of user))
-                      (do-push (format nil "after doing a potty dance like a 5 year old, ~a floods ~:[her~;his~] pullups with a huge sigh of relief and just hopes no one will notice"
-                                       (name-of user)
-                                       (malep user))
+                      (do-push (format nil "after doing a potty dance like a 5 year old, ~a floods ~a diapers with a huge sigh of relief"
+                                       name
+                                       hisher)
                         wet-list))
-                    (do-push (format nil "Bad ~a! Look at the mess you made leaking everywhere like that! Do we have to put you back in diapers?!"
-                                     (if (malep user) "boy" "girl"))
+                    (when (filter-items (wear-of user) '(and diaper ab-clothing-mixin))
+                      (do-push (format nil "Aww, is the baby using ~a diapers?"
+                                       hisher)
+                        wet-list mess-list both-list))
+                    (push (format nil "~a pauses and floods ~a diapers"
+                                  name
+                                  hisher)
+                          wet-list)
+                    (push (format nil "~a squats down~a and fills ~a diapers"
+                                  name
+                                  (if (member (car (tail-of user)) '(:medium :large))
+                                      (format nil " with ~a tail raised"
+                                              hisher)
+                                      "")
+                                  hisher)
+                          mess-list)
+                    (push (format nil "heh, the baby blorted ~a diapers" hisher) mess-list)
+                    (push (format nil "~a diapers sprung a leak" name) wet-leak-list)
+                    (do-push (format nil
+                                     "~a's diapers leak all over, there goes the carpet" name)
+                      wet-leak-list mess-leak-list both-leak-list)
+                    (push (format nil "Blowout!!!") mess-leak-list)
+                    (push (format nil "Heh, baby made a puddle") wet-leak-list)
+                    (push (format nil "~a piddles ~a pamps" name hisher) wet-list))
+                   ((filter-items (wear-of user) 'pullup)
+                    (when prop
+                      (push (format nil "~a lifts ~a leg near the ~a and floods ~a pullups"
+                                    name
+                                    hisher
+                                    (name-of prop)
+                                    hisher)
+                            wet-list)
+                      (push (format nil "~a lifts ~a leg near the ~a and floods ~a pullups, then squats down on all fours and messes"
+                                    name
+                                    hisher
+                                    (name-of prop)
+                                    hisher)
+                            both-list)
+                      (when (member (car (tail-of user)) '(:medium :large))
+                        (push (format nil "~a squats down on all fours with ~a tail raised like an animal and messes ~a pullups"
+                                      name
+                                      hisher
+                                      hisher)
+                              mess-list)))
+                    (do-push (format nil
+                                     "~a's pullups leak all over, there goes the carpet" name)
+                      wet-leak-list mess-leak-list both-leak-list)
+                    (when (filter-items (wear-of user) '(and pullup ab-clothing-mixin))
+                      (do-push
+                          (format nil "Bad ~a! You know you're supposed to use the toilet like a big kid"
+                                  (if male "boy" "girl"))
+                        wet-list mess-list both-list)
+                      (when (>= (getf wet-return-value :wet-amount) (bladder/potty-desperate-limit-of user))
+                        (do-push (format nil "after doing a potty dance like a 5 year old, ~a floods ~a pullups with a huge sigh of relief and just hopes no one will notice"
+                                         name
+                                         hisher)
+                          wet-list))
+                      (do-push (format nil "Bad ~a! Look at the mess you made leaking everywhere like that! Do we have to put you back in diapers?!"
+                                       (if (malep user) "boy" "girl"))
+                        wet-leak-list mess-leak-list both-leak-list))
+                    (push (format nil "~a squats down and messes ~a pullups like a toddler"
+                                  name
+                                  hisher)
+                          mess-list)
+                    (do-push (format nil "~a goes potty in ~a pullups like a toddler"
+                                     name
+                                     hisher)
+                      mess-list wet-list both-list)
+                    (push (format nil "~a pauses and floods ~a pullups"
+                                  name
+                                  hisher)
+                          wet-list)
+                    (push (format nil "~a floods ~a pullups like a toddler"
+                                  name
+                                  hisher)
+                          wet-list)
+                    (push (format nil "~a mess falls out of ~a pullups and on the floor"
+                                  name
+                                  hisher)
+                          mess-leak-list)
+                    (push (format nil "~a's pullups sprung a leak"
+                                  name)
+                          wet-leak-list)
+                    (push (format nil "~a makes a puddle"
+                                  name)
+                          wet-leak-list)
+                    (when (eq user (player-of *game*))
+                      (push (format nil "You made a puddle on the floor. You sure you're ready for pullups?")
+                            wet-leak-list)))
+                   ((filter-items (wear-of user) 'stuffer)
+                    (push (format nil "~a floods ~aself like a toddler"
+                                  name
+                                  hisher)
+                          wet-list)
+                    (push (format nil "~a squats down and mess ~aself like a toddler"
+                                  name
+                                  hisher)
+                          mess-list)
+                    (do-push (format nil "~a goes potty in ~a pants like a toddler"
+                                     name
+                                     hisher)
+                      wet-list mess-list both-list)
+                    (push (format nil "A puddle forms on the floor. Maybe ~a should start wearing diapers"
+                                  (if (eq user (player-of *game*)) "you" name))
+                          wet-leak-list)
+                    (do-push (format nil "Heh, baby made a mess on the floor")
                       wet-leak-list mess-leak-list both-leak-list))
-                  (push (format nil "~a squats down and messes ~:[her~;his~] pullups like a toddler"
-                                (name-of user)
-                                (malep user))
-                        mess-list)
-                  (do-push (format nil "~a goes potty in ~:[her~;his~] pullups like a toddler"
-                                   (name-of user)
-                                   (malep user))
-                    mess-list wet-list both-list)
-                  (push (format nil "~a pauses and floods ~:[her~;his~] pullups"
-                                (name-of user)
-                                (malep user))
-                        wet-list)
-                  (push (format nil "~a floods ~:[her~;his~] pullups like a toddler"
-                                (name-of user)
-                                (malep user))
-                        wet-list)
-                  (push (format nil "~a mess falls out of ~:[her~;his~] pullups and on the floor"
-                                (name-of user)
-                                (malep user))
-                        mess-leak-list)
-                  (push (format nil "~a's pullups sprung a leak"
-                                (name-of user))
-                        wet-leak-list)
-                  (push (format nil "~a makes a puddle"
-                                (name-of user))
-                        wet-leak-list)
-                  (when (eq user (player-of *game*))
-                    (push (format nil "You made a puddle on the floor. You sure you're ready for pullups?")
-                          wet-leak-list)))
-                 ((filter-items (wear-of user) 'stuffer)
-                  (push (format nil "~a floods ~:[her~;him~]self like a toddler"
-                                (name-of user)
-                                (malep user))
-                        wet-list)
-                  (push (format nil "~a squats down and mess ~:[her~;him~]self like a toddler"
-                                (name-of user)
-                                (malep user))
-                        mess-list)
-                  (do-push (format nil "~a goes potty in ~:[her~;his~] pants like a toddler"
-                                   (name-of user)
-                                   (malep user))
-                    wet-list mess-list both-list)
-                  (push (format nil "A puddle forms on the floor. Maybe ~a should start wearing diapers"
-                                (if (eq user (player-of *game*)) "you" (name-of user)))
-                        wet-leak-list)
-                  (do-push (format nil "Heh, baby made a mess on the floor")
-                    wet-leak-list mess-leak-list both-leak-list))
-                 (t
-                  (do-push (format nil "~a realized ~:[she~;he~]~:* made a horrible mistake. ~:[She~;He~]'s not wearing any padding!!!"
-                                   (name-of user)
-                                   (malep user))
-                    wet-leak-list mess-leak-list both-leak-list)
-                  (push (format nil "~a flood ~:[her~;him~]self like a toddler"
-                                (name-of user)
-                                (malep user))
-                        wet-list)
-                  (push (format nil "~a squats down and messes ~:[her~;him~]self like a toddler"
-                                (name-of user)
-                                (malep user))
-                        mess-list)
-                  (do-push (format nil "~a goes potty in ~:[her~;his~] pants like a toddler"
-                                   (name-of user)
-                                   (malep user))
-                    wet-list mess-list both-list)
-                  (push (format nil "A puddle forms on the floor. Maybe ~a should start wearing diapers"
-                                (if (eq user (player-of *game*)) "you" (name-of user)))
-                        wet-leak-list)
-                  (do-push (format nil "Heh, baby made a mess on the floor")
-                    wet-leak-list mess-leak-list both-leak-list)))
-           (format-lists)
-           (format-leak-lists)
-           (multiple-value-bind (value key)
-               (pop-from-expansion user (cons wet-return-value mess-return-value))
-             (when (eq key :wet/mess)
-               (setf wet-return-value (car value)
-                     mess-return-value (cdr value))))
-           (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*)))) 'function)
-                    (cons wet-return-value mess-return-value) user)))))))
+                   (t
+                    (do-push (format nil "~a realized ~a made a horrible mistake. ~a's not wearing any padding!!!"
+                                     name
+                                     (if (malep user) "he" "she")
+                                     (if (malep user) "He" "She"))
+                      wet-leak-list mess-leak-list both-leak-list)
+                    (push (format nil "~a flood ~aself like a toddler"
+                                  (name-of user)
+                                  (if (malep user) "him" "her"))
+                          wet-list)
+                    (push (format nil "~a squats down and messes ~aself like a toddler"
+                                  (name-of user)
+                                  (if (malep user) "him" "her"))
+                          mess-list)
+                    (do-push (format nil "~a goes potty in ~a pants like a toddler"
+                                     (name-of user)
+                                     hisher)
+                      wet-list mess-list both-list)
+                    (push (format nil "A puddle forms on the floor. Maybe ~a should start wearing diapers"
+                                  (if (eq user (player-of *game*)) "you" name))
+                          wet-leak-list)
+                    (do-push (format nil "Heh, baby made a mess on the floor")
+                      wet-leak-list mess-leak-list both-leak-list)))
+             (format-lists)
+             (format-leak-lists)
+             (multiple-value-bind (value key)
+                 (pop-from-expansion user (cons wet-return-value mess-return-value))
+               (when (eq key :wet/mess)
+                 (setf wet-return-value (car value)
+                       mess-return-value (cdr value))))
+             (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*)))) 'function)
+                      (cons wet-return-value mess-return-value) user))))))))
 ;;; Wish the API I made for this wasn't so complex, but I wasn't sure how to make it simple and still retain the functionality
 (defgeneric get-babyish-padding (user))
 (defgeneric get-process-potty-action-type (user type had-accident))
@@ -1554,9 +1569,11 @@
                                           (random-elt '("groan" "whine")))))
                      (:some '("You gasp in horror as you flood yourself, but manage to stop yourself"))
                      (:all (let ((a `(,(format nil
-                                               "LOOK EVERYBODY!!!! ~:@(~A~) IS WETTING ~:[HER~;HIS~] DIAPERS!!!!~%~%*~2:*~a eeps and hides ~:[her~;his~] soggy padding in embarrassment*"
+                                               "LOOK EVERYBODY!!!! ~a IS WETTING ~a DIAPERS!!!!~%~%*~a eeps and hides ~a soggy padding in embarrassment*"
+                                               (string-upcase (name-of user))
+                                               (if (malep user) "HIS" "HER")
                                                (name-of user)
-                                               (malep user))
+                                               (if (malep user) "his" "her"))
                                       "After doing a potty dance like a 5 year old, you freeze and pee yourself"
                                       "Grabbing your crotch you pause and blush as you flood yourself like an infant"
                                       "You cross your legs in a vain attempt to hold it in but fail miserably"
@@ -1591,9 +1608,11 @@
                         (:some '("You gasp in horror as you flood yourself, but manage to stop yourself"))
                         (:all `(,(format nil "Naughty ~a wetting your pullups. You know you're supposed to use the toilet like a big kid."
                                          (if (malep user) "boy" "girl"))
-                                ,(format nil "LOOK EVERYBODY!!!! ~:@(~A~) IS WETTING ~:[HER~;HIS~] PULLUPS!!!!!!~%~%*~2:*~a eeps and hides ~:[her~;his~] soggy pullups in embarrassment*"
+                                ,(format nil "LOOK EVERYBODY!!!! ~A IS WETTING ~a PULLUPS!!!!!!~%~%*~a eeps and hides ~a soggy pullups in embarrassment*"
+                                         (string-upcase (name-of user))
+                                         (if (malep user) "HIS" "HER")
                                          (name-of user)
-                                         (malep user))
+                                         (if (malep user) "his" "her"))
                                 "After doing a potty dance like a 5 year old, you freeze and pee yourself"
                                 "Grabbing your crotch you pause and blush as you flood yourself like an infant"
                                 "You cross your legs in a vain attempt to hold it in but fail miserably"
@@ -1897,22 +1916,22 @@
                                      ""))))
             normal leak)
           (push (with-output-to-string (s)
-                     (format s "*~a has an accident*~%~%"
-                             (name-of user))
-                     (format s "~a: Bad ~a. You know you're supposed to use the toilet like a big ~a. Just look what you did to your pullups~%~%"
-                             (name-of (player-of *game*))
-                             (name-of user)
-                             (if (malep user) "boy" "girl")))
-            normal)
+                  (format s "*~a has an accident*~%~%"
+                          (name-of user))
+                  (format s "~a: Bad ~a. You know you're supposed to use the toilet like a big ~a. Just look what you did to your pullups~%~%"
+                          (name-of (player-of *game*))
+                          (name-of user)
+                          (if (malep user) "boy" "girl")))
+                normal)
           (when (filter-items (wear-of user) '(and pullup ab-clothing-mixin))
             (push (with-output-to-string (s)
-                       (format s "*~a has an accident and leaks*~%~%"
-                               (name-of user))
-                       (format s "~a: Bad ~a. You know you're supposed to use the toilet like a big ~a. Just look at the mess you made on the floor~%~%"
-                               (name-of (player-of *game*))
-                               (name-of user)
-                               (if (malep user) "boy" "girl")))
-              leak))))
+                    (format s "*~a has an accident and leaks*~%~%"
+                            (name-of user))
+                    (format s "~a: Bad ~a. You know you're supposed to use the toilet like a big ~a. Just look at the mess you made on the floor~%~%"
+                            (name-of (player-of *game*))
+                            (name-of user)
+                            (if (malep user) "boy" "girl")))
+                  leak))))
     (if (> (getf (car had-accident) :leak-amount) 0)
         (format stream "~a" (random-elt leak))
         (format stream "~a" (random-elt normal)))))
@@ -1935,10 +1954,20 @@
             normal leak))
         (progn
           (do-push (with-output-to-string (s)
-                     (format s "*~a bounces up and down with ~:[her~;his~] knees pressed together and paws pressed against ~:*~:[her~;his~] crotch, pauses when ~:*~:[her~;his~] bladder gives out looks down and notices ~:*~:[she~;he~] flooded ~:*~:[her~;him~]self, blushes heavily and quickly covers the front of ~:*~:[her~;his~] pants with ~:*~:[her~;his~] paws~:[~; with ~2:*~:[her~;his~] tail between ~:*~:*~:[her~;his~]~* legs~] hoping no one will notice*~%~%"
-                             (name-of user)
-                             (malep user)
-                             (member (car (tail-of user)) '(:medium :large :lizard))))
+                     (let* ((male (if (malep user) "his" "her")))
+                       (format s "*~a bounces up and down with ~a knees pressed together and paws pressed against ~a crotch, pauses when ~a bladder gives out looks down and notices ~a soggy padding, blushes heavily and quickly covers ~a soggy padding with ~a paws~a hoping no one will notice*~%~%"
+                               (name-of user)
+                               male
+                               male
+                               male
+                               male
+                               male
+                               male
+                               (if (member (car (tail-of user)) '(:medium :large :lizard))
+                                   (format nil " with ~a tail between ~a legs"
+                                           male
+                                           male)
+                                   ""))))
             normal leak)))
     (if (> (getf (car had-accident) :leak-amount) 0)
         (format stream "~a" (random-elt leak))
@@ -3529,8 +3558,12 @@ randomrange is @code{(random-from-range 85 100)}")
   (cons (wet :wetter user) (mess :messer user)))
 (defun go-to-sleep ()
   (iter (for i in (cons (player-of *game*) (allies-of *game*)))
-    (let ((return-value (go-to-sleep% i))
-          (out ()))
+    (let* ((return-value (go-to-sleep% i))
+           (out ())
+           (male (malep i))
+           (hisher (if male "his" "her"))
+           (name (name-of i))
+           (cheshe (if male "He" "She")))
       (multiple-value-bind (value key)
           (pop-from-expansion i return-value)
         (when (eq key :wet/mess)
@@ -3540,78 +3573,78 @@ randomrange is @code{(random-from-range 85 100)}")
         (cond ((filter-items (wear-of i) 'diaper)
                (if (> (getf (car return-value) :leak-amount) 0)
                    (progn (push (format nil "feeling all cold and soggy. ~a checks ~a diaper and to ~a embarrassment finds out it's leaking profusely. Seems ~a wet the bed.~%"
-                                        (if (malep i) "He" "She")
-                                        (if (malep i) "his" "her")
-                                        (if (malep i) "his" "her")
-                                        (name-of i))
+                                        cheshe
+                                        hisher
+                                        hisher
+                                        name)
                                 out)
                           (format t "~a" (random-elt out))
                           (setf out ()))
                    (progn (push (format nil "and hears a squish . ~a looks down at ~a diaper, notices that it's soggy and then folds ~a ears back and blushes. Looks like ~a wet the bed~%"
-                                        (if (malep i) "He" "She")
-                                        (if (malep i) "his" "her")
-                                        (if (malep i) "his" "her")
-                                        (name-of i))
+                                        cheshe
+                                        hisher
+                                        hisher
+                                        name)
                                 out)
                           (push (format nil "and looks down and pokes ~a diaper, then gets all blushy when it squishes. Seems ~a wet the bed~%"
-                                        (if (malep i) "his" "her")
-                                        (name-of i))
+                                        hisher
+                                        name)
                                 out)
                           (format t "~a" (random-elt out))
                           (setf out ()))))
               ((filter-items (wear-of i) 'pullup)
                (if (> (getf (car return-value) :leak-amount) 0)
                    (progn (push (format nil "feeling all cold and soggy. ~a checks ~a pullups and to ~a embarrassment finds out it's leaking profusely. Seems ~a wet the bed.~%"
-                                        (if (malep i) "He" "She")
-                                        (if (malep i) "his" "her")
-                                        (if (malep i) "his" "her")
-                                        (name-of i))
+                                        cheshe
+                                        hisher
+                                        hisher
+                                        name)
                                 out)
                           (format t "~a" (random-elt out))
                           (setf out ()))
                    (progn (push (format nil "and hears a squish. ~a looks down at ~a pullups, notices that ~a and then folds ~a ears back and blushes. Looks like ~a wet the bed~%"
-                                        (if (malep i) "He" "She")
+                                        cheshe
                                         (if (filter-items (wear-of i) '(ab-clothing-mixin pullup))
                                             "the little pictures have faded"
                                             "it's soggy")
-                                        (if (malep i) "his" "her")
-                                        (if (malep i) "his" "her")
-                                        (name-of i))
+                                        hisher
+                                        hisher
+                                        name)
                                 out)
                           (format t "~a" (random-elt out))
                           (setf out ()))))
               ((filter-items (wear-of i) 'stuffer)
                (if (> (getf (car return-value) :leak-amount) 0)
                    (progn (push (format nil "feeling all cold and soggy. ~a notices ~a PJs, the padding under ~a PJs, and bed are soaked. Seems ~a wet the bed~%"
-                                        (if (malep i) "He" "She")
-                                        (if (malep i) "his" "her")
-                                        (if (malep i) "his" "her")
-                                        (name-of i))
+                                        cheshe
+                                        hisher
+                                        hisher
+                                        name)
                                 out)
                           (format t "~a" (random-elt out))
                           (setf out ()))
                    (progn (push (format nil "and hears a squish from under ~a PJs. ~a checks the incontinence pad under them and notices that they're soaked and then folds ~a ears back and blushes. Looks like ~a wet the bed~%"
-                                        (if (malep i) "his" "her")
-                                        (if (malep i) "He" "She")
-                                        (if (malep i) "his" "her")
-                                        (name-of i))
+                                        hisher
+                                        cheshe
+                                        hisher
+                                        name)
                                 out)
                           (format t "~a" (random-elt out))
                           (setf out ()))))
               ((filter-items (wear-of i) 'closed-bottoms)
                (push (format nil "feeling all cold and soggy. ~a notices ~a PJs and bed are soaked then folds ~a ears back and blushes. Seems ~a wet the bed~%"
-                             (if (malep i) "He" "She")
-                             (if (malep i) "his" "her")
-                             (if (malep i) "his" "her")
-                             (name-of i))
+                             cheshe
+                             hisher
+                             hisher
+                             name)
                      out)
                (format t "~a" (random-elt out))
                (setf out ()))
               (t
                (push (format nil "feeling all cold and soggy. ~a notices the bed is soaked then folds ~a ears back and blushes. Seems ~a wet the bed~%"
-                             (if (malep i) "He" "She")
-                             (if (malep i) "his" "her")
-                             (name-of i))
+                             cheshe
+                             hisher
+                             name)
                      out)
                (format t "~a" (random-elt out))
                (setf out ()))))
@@ -3624,20 +3657,20 @@ randomrange is @code{(random-from-range 85 100)}")
                (progn
                  (push (format nil
                                "feeling all mushy. ~a notices to ~a embarrassment that ~a diaper is leaking poo all over the bed. Seems ~a messed the bed~%"
-                               (if (malep i) "He" "She")
-                               (if (malep i) "his" "her")
-                               (if (malep i) "his" "her")
-                               (name-of i))
+                               cheshe
+                               hisher
+                               hisher
+                               name)
                        out)
                  (format t "~a" (random-elt out))
                  (setf out ()))
                (progn
                  (push (format nil
                                "feeling all mushy. ~a notices to ~a embarrassment that ~a diaper is filled with poo. Seems ~a messed the bed~%"
-                               (if (malep i) "He" "She")
-                               (if (malep i) "his" "her")
-                               (if (malep i) "his" "her")
-                               (name-of i))
+                               cheshe
+                               hisher
+                               hisher
+                               name)
                        out)
                  (format t "~a" (random-elt out))
                  (setf out ()))))
@@ -3646,20 +3679,20 @@ randomrange is @code{(random-from-range 85 100)}")
                (progn
                  (push (format nil
                                "feeling all mushy. ~a notices to ~a embarrassment that ~a pullups is leaking poo all over the bed. Seems ~a messed the bed~%"
-                               (if (malep i) "He" "She")
-                               (if (malep i) "his" "her")
-                               (if (malep i) "his" "her")
-                               (name-of i))
+                               cheshe
+                               hisher
+                               hisher
+                               name)
                        out)
                  (format t "~a" (random-elt out))
                  (setf out ()))
                (progn
                  (push (format nil
                                "feeling all mushy. ~a notices to ~a embarrassment that ~a pullup is filled with poo. Seems ~a messed the bed~%"
-                               (if (malep i) "He" "She")
-                               (if (malep i) "his" "her")
-                               (if (malep i) "his" "her")
-                               (name-of i))
+                               cheshe
+                               hisher
+                               hisher
+                               name)
                        out)
                  (format t "~a" (random-elt out))
                  (setf out ()))))
@@ -3668,40 +3701,40 @@ randomrange is @code{(random-from-range 85 100)}")
                (progn
                  (push (format nil
                                "feeling all mushy. ~a notices to ~a embarrassment that ~a incontinence pad is leaking poo all over the bed and PJs. Seems ~a messed the bed~%"
-                               (if (malep i) "He" "She")
-                               (if (malep i) "his" "her")
-                               (if (malep i) "his" "her")
-                               (name-of i))
+                               cheshe
+                               hisher
+                               hisher
+                               name)
                        out)
                  (format t "~a" (random-elt out))
                  (setf out ()))
                (progn
                  (push (format nil
                                "feeling all mushy. ~a notices to ~a embarrassment that ~a incontinence pad is filled with poo. Seems ~a messed the bed~%"
-                               (if (malep i) "He" "She")
-                               (if (malep i) "his" "her")
-                               (if (malep i) "his" "her")
-                               (name-of i))
+                               cheshe
+                               hisher
+                               hisher
+                               name)
                        out)
                  (format t "~a" (random-elt out))
                  (setf out ()))))
           ((filter-items (wear-of i) 'closed-bottoms)
            (push (format nil
                          "feeling all mushy. ~a notices to ~a embarrassment that ~a PJs have poo in them and is getting on the bed. Seems ~a messed the bed~%"
-                         (if (malep i) "He" "She")
-                         (if (malep i) "his" "her")
-                         (if (malep i) "his" "her")
-                         (name-of i))
+                         cheshe
+                         hisher
+                         hisher
+                         name)
                  out)
            (format t "~a" (random-elt out))
            (setf out ()))
           (t
            (push (format nil
                          "feeling all mushy. ~a notices to ~a embarrassment that ~a bed has poo on it. Seems ~a messed the bed~%"
-                         (if (malep i) "He" "She")
-                         (if (malep i) "his" "her")
-                         (if (malep i) "his" "her")
-                         (name-of i))
+                         cheshe
+                         hisher
+                         hisher
+                         name)
                  out)
            (format t "~a" (random-elt out))
            (setf out ())))))))
@@ -3733,16 +3766,24 @@ randomrange is @code{(random-from-range 85 100)}")
             (setf quantity (parse-integer quantity))
             (let ((temp (apply 'make-instance (car item) (eval (cdr item)))))
               (cond ((> (* (value-of temp) quantity) (bitcoins-of user))
-                     (format t "You don't have enough bitcoins to buy ~[~:*~a~;that~:;~:*~a~] ~:[~a~3:*~P~2*~;~2:*~[~a~*~;~*~a~:;~a~*~]~]~%"
-                             quantity (plural-name-of temp) (name-of temp)))
+                     (format t "You don't have enough bitcoins to buy ~a~%"
+                             (if (= quantity 1)
+                                 (format nil "that ~a" (name-of item))
+                                 (format nil "~d ~a"
+                                         quantity
+                                         (if (plural-name-of temp)
+                                             (plural-name-of temp)
+                                             (format nil "~as" (name-of temp)))))))
                     (t (iter (for j from 1 to quantity)
                          (push (apply #'make-instance
                                       (car item)
                                       (eval (cdr item)))
                                (inventory-of user)))
                        (decf (bitcoins-of user) (* (value-of temp) quantity))
-                       (format t "You buy ~d ~:[~a~3:*~P~2*~;~2:*~[~a~*~;~*~a~:;~a~*~]~] for ~d bitcoin~:P~%"
-                               quantity (plural-name-of temp) (name-of temp) (* (value-of temp) quantity)))))))
+                       (format t "You buy ~d ~a for ~f bitcoins~%"
+                               quantity
+                               (or (plural-name-of temp) (format nil "~as" (name-of temp)))
+                               (* (value-of temp) quantity)))))))
         (iter (for i in items-to-buy)
           (let ((item (when (list-length-<= (car i) items-for-sale)
                         (apply #'make-instance
@@ -3751,16 +3792,24 @@ randomrange is @code{(random-from-range 85 100)}")
             (cond ((not item)
                    (format t "item ~d doesn't exist~%" (car i)))
                   ((> (* (value-of item) (cdr i)) (bitcoins-of user))
-                   (format t "You don't have enough bitcoins to buy ~[~:*~a~;that~:;~:*~a~] ~:[~a~3:*~P~2*~;~2:*~[~a~*~;~*~a~:;~a~*~]~]~%"
-                           (cdr i) (plural-name-of item) (name-of item)))
+                   (format t "You don't have enough bitcoins to buy ~a~%"
+                           (if (= (cdr i) 1)
+                               (format nil "that ~a" (name-of item))
+                               (format nil "~d ~a"
+                                       (cdr i)
+                                       (if (plural-name-of item)
+                                           (plural-name-of item)
+                                           (format nil "~as" (name-of item)))))))
                   (t (iter (for j from 1 to (cdr i))
                        (push (apply #'make-instance
                                     (car (nth (car i) items-for-sale))
                                     (eval (cdr (nth (car i) items-for-sale))))
                              (inventory-of user)))
                      (decf (bitcoins-of user) (* (value-of item) (cdr i)))
-                     (format t "You buy ~d ~:[~a~3:*~P~2*~;~2:*~[~a~*~;~*~a~:;~a~*~]~] for ~d bitcoin~:P~%"
-                             (cdr i) (plural-name-of item) (name-of item) (* (value-of item) (cdr i)))))))))
+                     (format t "You buy ~d ~a for ~f bitcoins~%"
+                             (cdr i)
+                             (or (plural-name-of item) (format nil "~as" (name-of item)))
+                             (* (value-of item) (cdr i)))))))))
   (when items-to-sell
     (if (eq items-to-sell t)
         (let (items)
