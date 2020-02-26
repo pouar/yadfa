@@ -27,11 +27,11 @@
                                              (collect i))))
                           (move-to-use nil))
                       (cond ((and (<= (health-of self) (/ (calculate-stat self :health) 4)) moves-with-health)
-                             (setf move-to-use (a:random-elt moves-with-health))
+                             (setf move-to-use (random-elt moves-with-health))
                              (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use))
                             (t
                              (when moves-can-use
-                               (setf move-to-use (a:random-elt moves-can-use)))
+                               (setf move-to-use (random-elt moves-can-use)))
                              (cond ((and (>= (bladder/contents-of target) (bladder/potty-dance-limit-of target)) (= (random 3) 0))
                                     (format t "~a gets a grin on ~a face~%" (name-of self) (if (malep self) "his" "her"))
                                     (let ((move-to-use (make-instance 'yadfa-moves:tickle)))

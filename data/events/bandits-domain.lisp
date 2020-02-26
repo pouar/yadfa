@@ -237,30 +237,30 @@
                    (name-of (player-of *game*)) ": Mind telling me your names?" :% :%)
               (finish-output)
               (accept-with-effective-frame (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
-                                             (fresh-line *query-io*)
-                                             (setf a (make-instance 'yadfa-allies:chris
-                                                                    :name (clim:accept 'string
-                                                                                       :prompt "Fox Name"
-                                                                                       :default (second
-                                                                                                 (assoc :name (progn
-                                                                                                                (c2mop:ensure-finalized
-                                                                                                                 (find-class 'yadfa-allies:chris))
-                                                                                                                (c2mop:compute-default-initargs
-                                                                                                                 (find-class 'yadfa-allies:chris)))))
-                                                                                       :view clim:+text-field-view+
-                                                                                       :stream *query-io*)))
-                                             (fresh-line *query-io*)
-                                             (setf b (make-instance 'yadfa-allies:kristy
-                                                                    :name (clim:accept 'string
-                                                                                       :prompt "Vixen Name"
-                                                                                       :default (second
-                                                                                                 (assoc :name (progn
-                                                                                                                (c2mop:ensure-finalized
-                                                                                                                 (find-class 'yadfa-allies:kristy))
-                                                                                                                (c2mop:compute-default-initargs
-                                                                                                                 (find-class 'yadfa-allies:kristy)))))
-                                                                                       :view clim:+text-field-view+
-                                                                                       :stream *query-io*)))))
+                                            (fresh-line *query-io*)
+                                            (setf a (make-instance 'yadfa-allies:chris
+                                                                   :name (clim:accept 'string
+                                                                                      :prompt "Fox Name"
+                                                                                      :default (second
+                                                                                                (assoc :name (progn
+                                                                                                               (c2mop:ensure-finalized
+                                                                                                                (find-class 'yadfa-allies:chris))
+                                                                                                               (c2mop:compute-default-initargs
+                                                                                                                (find-class 'yadfa-allies:chris)))))
+                                                                                      :view clim:+text-field-view+
+                                                                                      :stream *query-io*)))
+                                            (fresh-line *query-io*)
+                                            (setf b (make-instance 'yadfa-allies:kristy
+                                                                   :name (clim:accept 'string
+                                                                                      :prompt "Vixen Name"
+                                                                                      :default (second
+                                                                                                (assoc :name (progn
+                                                                                                               (c2mop:ensure-finalized
+                                                                                                                (find-class 'yadfa-allies:kristy))
+                                                                                                               (c2mop:compute-default-initargs
+                                                                                                                (find-class 'yadfa-allies:kristy)))))
+                                                                                      :view clim:+text-field-view+
+                                                                                      :stream *query-io*)))))
               (iter (for i in (list a b))
                 (do-push i (team-of *game*) (allies-of *game*)))
               (out "Fox: I'm " (name-of a) :% :%

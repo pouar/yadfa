@@ -3,7 +3,7 @@
 (defclass raptor (adopted-enemy ally-feral) ()
   (:default-initargs
    :name "Raptor"
-   :malep (a:random-elt '(t nil))
+   :malep (random-elt '(t nil))
    :description "Biologically inaccurate velociraptor. The kind you see in Jurassic Park that looks more like a lizard than a prehistoric bird."
    :moves (list (make-instance 'yadfa-moves:roar)
                 (make-instance 'yadfa-moves:bite)
@@ -15,7 +15,7 @@
    :name "Diapered Kobold"
    :description "They're apparently from a tribe of kobolds in the area. Their outfits are similar to the ancient Egyptians."
    :species "Kobold"
-   :male (a:random-elt '(t nil))
+   :male (random-elt '(t nil))
    :bladder/contents (random 500)
    :bowels/contents (random 7000)
    :inventory (iter (for i from 0 to (random 10))

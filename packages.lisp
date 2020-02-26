@@ -1,7 +1,8 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "common-lisp-user"; coding: utf-8-unix; -*-
 (in-package :cl-user)
 (uiop:define-package #:yadfa-util
-  (:use #:cl :iterate)
+  (:use #:cl :alexandria)
+  (:mix :iterate :serapeum)
   (:export
    #:shl
    #:shr
@@ -25,7 +26,8 @@
    #:defunassert)
   (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package :yadfa
-  (:use #:cl :yadfa-util :ugly-tiny-infix-macro :iterate)
+  (:use #:cl :yadfa-util :ugly-tiny-infix-macro :alexandria :global-vars)
+  (:mix :iterate :serapeum)
   (:import-from :macro-level #:macro-level)
   (:export
    ;;variables
@@ -476,7 +478,7 @@
   (:documentation "convenience functions for battle"))
 (uiop:define-package :yadfa-enemies
   (:import-from :macro-level :macro-level)
-  (:use :cl :yadfa :yadfa-util :iterate)
+  (:use :cl :yadfa :yadfa-util :iterate :alexandria)
   (:export
    #:magikarp
    #:egg-pawn
@@ -504,7 +506,7 @@
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package :yadfa-props
   (:import-from :macro-level :macro-level)
-  (:use :cl :yadfa :yadfa-util :iterate)
+  (:use :cl :yadfa :yadfa-util :iterate :alexandria)
   (:export
    #:toilet
    #:washer
@@ -603,7 +605,7 @@
    #:infinity-diaper-obtained-1)
   (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package :yadfa-allies
-  (:use :yadfa :yadfa-util :cl :iterate)
+  (:use :yadfa :yadfa-util :cl :iterate :alexandria)
   (:export
    #:slynk
    #:chris
@@ -614,7 +616,8 @@
    #:adopted-enemy)
   (:documentation "Contains all the allies in the game"))
 (uiop:define-package :yadfa-user
-  (:use :cl :yadfa :yadfa-util :ugly-tiny-infix-macro :iterate)
+  (:use :cl :yadfa :yadfa-util :ugly-tiny-infix-macro :alexandria)
+  (:mix :iterate :serapeum)
   (:documentation "The package that the player typically executes commands from"))
 (uiop:define-package :yadfa-clim
   (:mix :clim :yadfa)
@@ -622,11 +625,11 @@
   (:documentation "CLIM related stuff")
   (:export #:stat-view #:+stat-view+ #:draw-bar #:run-listener))
 (uiop:define-package :yadfa-blackjack
-  (:mix :clim :yadfa)
+  (:mix :alexandria :clim :yadfa)
   (:use :iterate :clim-lisp :clim-extensions :conditional-commands)
   (:export #:run-game))
 (uiop:define-package :yadfa-pyramid
-  (:mix :clim :yadfa)
+  (:mix :clim :yadfa :alexandria)
   (:use :iterate :clim-lisp :clim-extensions :conditional-commands :yadfa-util)
   (:export #:run-game #:stat-view #:+stat-view+ #:process-potty)
   (:shadow #:area))
@@ -635,6 +638,3 @@
   (:use :iterate :clim-lisp :clim-extensions :yadfa-pyramid :conditional-commands :yadfa-util)
   (:export #:run-game)
   (:shadow #:run-game))
-(loop for (i j) in '((#:s :serapeum) (#:a :alexandria) (#:g :global-vars)) do
-         (loop for k in '(:yadfa :yadfa-util :yadfa-items :yadfa-bin :yadfa-world :yadfa-battle :yadfa-moves :yadfa-battle-commands :yadfa-world-commands :yadfa-enemies :yadfa-props :yadfa-status-conditions :yadfa-zones :yadfa-events :yadfa-allies :yadfa-user :yadfa-clim :yadfa-blackjack :yadfa-pyramid :yadfa-puzzle) do
-                  (trivial-package-local-nicknames:add-package-local-nickname i j k)))

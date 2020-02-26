@@ -733,9 +733,9 @@
     :documentation "List of ammo this item has")
    (ammo-power
     :initarg :ammo-power
-    :initform 0
+    :initform ()
     :accessor ammo-power-of
-    :type real
+    :type list
     :documentation "Attack base when using this as ammo.")
    (reload-count
     :initarg :reload-count
@@ -1106,11 +1106,11 @@
                       (move-to-use nil))
                   (cond
                     ((and (<= (health-of self) (/ (calculate-stat self :health) 4)) moves-with-health)
-                     (setf move-to-use (a:random-elt moves-with-health))
+                     (setf move-to-use (random-elt moves-with-health))
                      (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use))
                     (t
                      (when moves-can-use
-                       (setf move-to-use (a:random-elt moves-can-use)))
+                       (setf move-to-use (random-elt moves-can-use)))
                      (cond ((and moves-can-use (= (random 2) 0))
                             (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use)
                             (decf (energy-of self) (energy-cost-of move-to-use)))
