@@ -2494,10 +2494,12 @@
                                            '("she" "her")))
                                 (apply #'format nil "~a falls to ~a knees clutching the front of ~a diaper in a desperate attempt to keep ~a diapers dry but ends up flooding ~a diapers"
                                        (name-of user)
-                                       (iter (for i from 1 to 4)
-                                         (collect (if (malep user)
-                                                      "his"
-                                                      "her")))))))))
+                                       (let ((b (if (malep user)
+                                                    "his"
+                                                    "her"))
+                                             a)
+                                         (dotimes (i 4 a)
+                                           (push b a)))))))))
             (a:random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
     (format stream "~a~%"
@@ -2548,10 +2550,12 @@
                                            '("she" "her")))
                                 (apply #'format nil "~a falls to ~a knees clutching the front of ~a pullups in a desperate attempt to keep the pictures on the front of ~a pullups from fading but ends up flooding ~a pullups"
                                        (name-of user)
-                                       (iter (for i from 1 to 4)
-                                         (collect (if (malep user)
-                                                      "his"
-                                                      "her")))))))))
+                                       (let ((b (if (malep user)
+                                                    "his"
+                                                    "her"))
+                                             a)
+                                         (dotimes (i 4 a)
+                                           (push b a)))))))))
             (when (>= (getf (car had-accident) :wet-amount) 300)
               (push (format nil "*The little pictures on the front of ~a's pullups fade showing everyone what ~a did*"
                             (name-of user)
@@ -2602,10 +2606,12 @@
                                                     '("she" "her")))
                                          (apply #'format nil "~a falls to ~a knees holding ~a crotch in a desperate attempt to keep ~a pants dry but ends up flooding ~a pants"
                                                 (name-of user)
-                                                (iter (for i from 1 to 4)
-                                                  (collect (if (malep user)
-                                                               "his"
-                                                               "her")))))))
+                                                (let ((b (if (malep user)
+                                                             "his"
+                                                             "her"))
+                                                      a)
+                                                  (dotimes (i 4 a)
+                                                    (push b a)))))))
                             (unless (malep user)
                               (push (format nil "~a struggles to hold it in while pressing her legs together before wetting her pants"
                                             (name-of user))
@@ -3774,7 +3780,7 @@ randomrange is @code{(random-from-range 85 100)}")
                                          (if (plural-name-of temp)
                                              (plural-name-of temp)
                                              (format nil "~as" (name-of temp)))))))
-                    (t (iter (for j from 1 to quantity)
+                    (t (dotimes (j quantity)
                          (push (apply #'make-instance
                                       (car item)
                                       (eval (cdr item)))
@@ -3800,7 +3806,7 @@ randomrange is @code{(random-from-range 85 100)}")
                                        (if (plural-name-of item)
                                            (plural-name-of item)
                                            (format nil "~as" (name-of item)))))))
-                  (t (iter (for j from 1 to (cdr i))
+                  (t (dotimes (j (cdr i))
                        (push (apply #'make-instance
                                     (car (nth (car i) items-for-sale))
                                     (eval (cdr (nth (car i) items-for-sale))))
@@ -4165,7 +4171,7 @@ randomrange is @code{(random-from-range 85 100)}")
     (iter (for i in (iter (for i in '(yadfa-items:diaper yadfa-items:pullups yadfa-items:boxers yadfa-items:panties))
                       (when (member i clothes :test #'eq)
                         (collect i))))
-      (iter (for j from 1 to (random 20))
+      (dotimes (j (random 20))
         (push (make-instance i)
               (get-items-from-prop :dresser (position-of (player-of *game*))))))
     (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" *query-io*)))
