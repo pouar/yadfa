@@ -4,7 +4,7 @@
     (enemies (or list type-specifier))
   (setf allies
         (typecase allies
-          (null (accept-with-frame-resolved
+          (null (accept-with-effective-frame
                   (clim:accepting-values (*query-io*  :resynchronize-every-pass t)
                     (clim:accept `(clim:subset-alist ,(iter (for enemy in (allies-of *game*))
                                                         (when (typep (class-of enemy) 'adopted-enemy)
@@ -28,7 +28,7 @@
                          (collect enemy)
                          (next current)))))
           (t (error "ALLIES must either be a list of unsigned-bytes or a type specifier"))))
-  (removef (allies-of *game*) allies :test (lambda (o e)
-                                             (member e o)))
-  (removef (team-of *game*) allies :test (lambda (o e)
+  (a:removef (allies-of *game*) allies :test (lambda (o e)
+                                               (member e o)))
+  (a:removef (team-of *game*) allies :test (lambda (o e)
                                              (member e o))))

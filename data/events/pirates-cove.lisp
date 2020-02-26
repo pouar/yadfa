@@ -31,7 +31,7 @@
                    "Raccoon: umm, thanks." :% :%
                    (name-of (player-of *game*)) ": got a name?" :% :%)
               (finish-output)
-              (accept-with-frame-resolved
+              (accept-with-effective-frame
                 (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
                   (setf coon (clim:accept 'string :stream *query-io* :prompt "Raccoon Name"
                                                   :default #.(second

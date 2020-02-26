@@ -49,7 +49,7 @@
                 (progn
                   (setf enemies
                         (typecase enemies
-                          (null (accept-with-frame-resolved
+                          (null (accept-with-effective-frame
                                   (clim:accepting-values (*query-io*  :resynchronize-every-pass t)
                                     (setf enemies (clim:accept `(clim:subset-alist ,(iter (for enemy in (contained-enemies-of item))
                                                                                       (when (typep (class-of i) 'yadfa-enemies:adoptable-enemy)
@@ -111,7 +111,7 @@
 
      (push target (contained-enemies-of item)))))
 (defunassert (yadfa-battle-commands:catch-enemy (&optional (target 'yadfa-enemies:catchable-enemy) (item 'enemy-catcher))
-                                                      "Catches an enemy using. @var{ITEM} which is a type specifier. @var{TARGET} is an index or type specifier of an enemy in battle or a type specifier")
+                                                "Catches an enemy using. @var{ITEM} which is a type specifier. @var{TARGET} is an index or type specifier of an enemy in battle or a type specifier")
     (item type-specifier
           target (or unsigned-byte type-specifier))
   (let ((selected-item (find item (inventory-of (player-of *game*))
@@ -138,7 +138,7 @@
      :item selected-item
      :selected-target selected-target)))
 (defunassert (yadfa-world-commands:loot-caught-enemies (&optional item)
-                                                             "Loots the enemies you caught. @var{ITEM} is either a type specifier or an unsiged-byte of the item. Don't specify if you want to loot the enemies of all items")
+                                                       "Loots the enemies you caught. @var{ITEM} is either a type specifier or an unsiged-byte of the item. Don't specify if you want to loot the enemies of all items")
     (item (or null unsigned-byte type-specifier))
   (cond ((null item)
          (iter (for item in (inventory-of *game*))

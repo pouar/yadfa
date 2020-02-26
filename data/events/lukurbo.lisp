@@ -14,18 +14,18 @@
             (finish-output)
             (format t "~a: I'm gonna call you ~a *snuggles*~%~%"
                     (name-of (player-of *game*))
-                    (name-of (accept-with-frame-resolved (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
-                                                           (fresh-line *query-io*)
-                                                           (let ((a (make-instance 'yadfa-allies:furry
-                                                                                   :name (clim:accept 'string
-                                                                                                      :prompt "Fursuiter Name"
-                                                                                                      :default (second
-                                                                                                                (assoc :name (progn
-                                                                                                                               (c2mop:ensure-finalized
-                                                                                                                                (find-class 'yadfa-allies:furry))
-                                                                                                                               (c2mop:compute-default-initargs
-                                                                                                                                (find-class 'yadfa-allies:furry)))))
-                                                                                                      :view clim:+text-field-view+
-                                                                                                      :stream *query-io*))))
-                                                             (do-push a (team-of *game*) (allies-of *game*))
-                                                             a)))))))
+                    (name-of (accept-with-effective-frame (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+                                                            (fresh-line *query-io*)
+                                                            (let ((a (make-instance 'yadfa-allies:furry
+                                                                                    :name (clim:accept 'string
+                                                                                                       :prompt "Fursuiter Name"
+                                                                                                       :default (second
+                                                                                                                 (assoc :name (progn
+                                                                                                                                (c2mop:ensure-finalized
+                                                                                                                                 (find-class 'yadfa-allies:furry))
+                                                                                                                                (c2mop:compute-default-initargs
+                                                                                                                                 (find-class 'yadfa-allies:furry)))))
+                                                                                                       :view clim:+text-field-view+
+                                                                                                       :stream *query-io*))))
+                                                              (do-push a (team-of *game*) (allies-of *game*))
+                                                              a)))))))

@@ -5,7 +5,7 @@
    :name "Diapered Kobold"
    :description "They're apparently from a tribe of kobolds in the area. Their outfits are similar to the ancient Egyptians."
    :species "Kobold"
-   :male (random-elt '(t nil))
+   :male (a:random-elt '(t nil))
    :bladder/contents (random 500)
    :bowels/contents (random 700)
    :bitcoins-per-level 100
@@ -28,7 +28,7 @@
    :name "Diapered Skunk"
    :description "They spray their diapers when attacking. Their diapers reek of a smell of urine, feces, and skunk spray."
    :species "Skunk"
-   :male (random-elt '(t nil))
+   :male (a:random-elt '(t nil))
    :bladder/contents (random 500)
    :bowels/contents (random 700)
    :watersport-chance 3
@@ -122,7 +122,7 @@
 (defclass raptor (potty-enemy adoptable-enemy) ()
     (:default-initargs
      :name "Raptor"
-     :malep (random-elt '(t nil))
+     :malep (a:random-elt '(t nil))
      :description "Biologically inaccurate velociraptor. The kind you see in Jurassic Park that looks more like a lizard than a prehistoric bird."
      :moves (list (make-instance 'yadfa-moves:roar)
                   (make-instance 'yadfa-moves:bite))
