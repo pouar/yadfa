@@ -16,6 +16,7 @@
    :name "Watersport"
    :description "Soak your diapers"
    :attack '(lambda (target user self)
+             (declare (ignore target))
              (format t "~a used ~a~%" (name-of user) (name-of self))
              (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
               (format t "But it failed~%")
@@ -26,6 +27,7 @@
    :name "Mudsport"
    :description "mess your diapers"
    :attack '(lambda (target user self)
+             (declare (ignore target))
              (format t "~a used ~a~%" (name-of user) (name-of self))
              (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
               (format t "But it failed~%")
@@ -39,6 +41,7 @@
    :description "massively mess your diapers, never fails"
    :energy-cost 5
    :attack '(lambda (target user self)
+             (declare (ignore target))
              (format t "~a used ~a~%" (name-of user) (name-of self))
              (mess :force-fill-amount (if (< (* 30 24 (bowels/fill-rate-of user)) (bowels/maximum-limit-of user))
                                        (bowels/maximum-limit-of user)
@@ -74,7 +77,7 @@
              (declare (ignore target))
              (format t "~a used ~a~%" (name-of user) (name-of self))
              (unless (iter (for i in (if (typep user 'team-member)
-                                         (enemies-of *battle)
+                                         (enemies-of *battle*)
                                          (team-of *game*)))
                        (with j = nil)
                        (when (>= (bladder/contents-of i) (bladder/need-to-potty-limit-of i))

@@ -2710,8 +2710,8 @@
                                     (funcall (if (malep user)
                                                  #'car
                                                  #'cdr)
-                                             (getf '(tabbed-briefs ("seat of his diapers" . "seat of her diapers")
-                                                     pullon ("seat of his pullups" . "seat of her pullups")
+                                             (getf '(diaper ("seat of his diapers" . "seat of her diapers")
+                                                     pullup ("seat of his pullups" . "seat of her pullups")
                                                      closed-bottoms ("seat of his pants" . "seat of her pants")
                                                      nil ("back of himself" . "back of herself"))
                                                    padding)))))))
@@ -2730,8 +2730,8 @@
                                      (if (malep user)
                                          #'car
                                          #'cdr)
-                                     (getf '(tabbed-briefs ("seat of his diapers" . "seat of her diapers")
-                                             pullon ("seat of his pullups" . "seat of her pullups")
+                                     (getf '(diaper ("seat of his diapers" . "seat of her diapers")
+                                             pullup ("seat of his pullups" . "seat of her pullups")
                                              closed-bottoms ("seat of his pants" . "seat of her pants")
                                              nil ("back of himself" . "back of herself"))
                                            padding)))))))

@@ -733,9 +733,9 @@
     :documentation "List of ammo this item has")
    (ammo-power
     :initarg :ammo-power
-    :initform ()
+    :initform 0
     :accessor ammo-power-of
-    :type list
+    :type real
     :documentation "Attack base when using this as ammo.")
    (reload-count
     :initarg :reload-count

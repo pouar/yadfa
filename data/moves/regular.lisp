@@ -26,8 +26,7 @@
    :energy-cost 5
    :attack '(lambda (target user self)
              (format t "~a used ~a~%" (name-of user) (name-of self))
-             (let ((amount 50)
-                   (wet (when (random 5))))
+             (let ((amount 50))
                (iter (while (> amount 0))
                  (for i in (reverse (wear-of user)))
                  (when (typep i 'closed-bottoms)
