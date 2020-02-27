@@ -1,7 +1,8 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "common-lisp-user"; coding: utf-8-unix; -*-
 (in-package :cl-user)
 (uiop:define-package #:yadfa-util
-  (:use #:cl #:iterate)
+  (:use #:cl :alexandria)
+  (:mix :iterate :serapeum)
   (:export
    #:shl
    #:shr
@@ -20,18 +21,24 @@
    #:collecting*
    #:summing*
    #:in*
-   #:sum*)
+   #:sum*
+   #:out
+   #:defunassert)
   (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package :yadfa
   (:use #:cl :yadfa-util :ugly-tiny-infix-macro :alexandria :global-vars)
   (:mix :iterate :serapeum)
   (:import-from :macro-level #:macro-level)
-  (:shadow )
   (:export
    ;;variables
    #:*battle*
    #:*game*
    #:*cheat-hooks*
+   #:*battle-packages*
+   #:*world-packages*
+   #:*command-packages*
+   ;;structures
+   #:event
    ;;macros
    #:defevent
    #:ensure-zone
@@ -40,10 +47,14 @@
    #:defzone*
    #:defonesie
    #:make-pocket-zone
-   #:accept-with-frame-resolved
-   #:present-with-frame-resolved
-   #:updating-present-frame-resolved
+   #:accept-with-effective-frame
+   #:present-with-effective-frame
+   #:updating-present-with-effective-frame
    ;;functions
+   #:finished-events
+   #:unfinished-events
+   #:finish-events
+   #:process-battle
    #:get-positions-of-type
    #:trigger-event
    #:intro-function
@@ -96,19 +107,23 @@
    #:get-babyish-padding
    #:resolve-enemy-spawn-list
    #:process-battle-accident-method
+   #:event-attributes
    ;;constructors
    #:make-action
    ;;classes
    #:status-condition
    #:stats-view
    #:base-character
+   #:npc
    #:team-member
    #:potty-trained-team-member
    #:ally
+   #:ally-rebel
    #:ally-no-potty-training
    #:ally-rebel-potty-training
    #:ally-silent-potty-training
    #:ally-last-minute-potty-training
+   #:ally-feral
    #:playable-ally
    #:player
    #:zone
@@ -125,19 +140,14 @@
    #:snap-bottoms
    #:closed-bottoms
    #:full-outfit
-   #:closed-pants
    #:closed-full-outfit
    #:onesie
    #:onesie/opened
    #:onesie/closed
    #:incontinence-product
    #:padding
-   #:cub-undies
-   #:pullon
-   #:tabbed-briefs
-   #:incontinence-pad
+   #:ab-clothing
    #:undies
-   #:top-undies
    #:stuffer
    #:diaper
    #:pullup
@@ -155,6 +165,11 @@
    #:attributes-of
    #:direction-attributes-of
    #:target-of
+   #:tail-of
+   #:wings-of
+   #:skin-of
+   #:config-of
+   #:stairs-of
    #:last-process-potty-time-of
    #:process-battle-accident-of
    #:process-potty-dance-of
@@ -187,6 +202,7 @@
    #:moves-of
    #:exp-of
    #:base-stats-of
+   #:team-npcs-of
    #:iv-stats-of
    #:bitcoins-of
    #:bitcoins-per-level-of
@@ -218,6 +234,7 @@
    #:must-not-wear*-of
    #:no-wetting/messing-of
    #:enemy-spawn-list-of
+   #:team-npc-spawn-list-of
    #:energy-cost-of
    #:power-of
    #:ai-flags-of
@@ -245,6 +262,7 @@
    #:thickness-capacity-of
    #:thickness-capacity-threshold-of
    #:waterproofp
+   #:leakproofp
    #:disposablep
    #:sogginess-of
    #:sogginess-capacity-of
@@ -263,18 +281,14 @@
    #:enemies-of
    #:win-events-of
    #:status-conditions-of
-   #:zones-of
    #:player-of
    #:allies-of
    #:team-of
    #:events-of
    #:finished-events-of
+   #:current-events-of
    #:seen-enemies-of
    #:action-lambda
-   #:action-documentation
-   #:action-attributes
-   #:event-attributes
-   #:event-p
    #:action-p
    #:fainted-of
    #:persistentp)
@@ -305,11 +319,17 @@
    #:pants
    #:fire-breath
    #:roar
-   #:face-sit)
+   #:face-sit
+   #:ghost-tickle
+   #:ghost-squish
+   #:ghost-mush
+   #:bite
+   #:teleporting-flood
+   #:teleporting-mess)
   (:documentation "Contains all the moves in the game"))
 (uiop:define-package :yadfa-items
   (:import-from :macro-level :macro-level)
-  (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:incontinence-pad #:skirt)
+  (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:skirt)
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
    #:bandit-swimsuit/closed
@@ -380,6 +400,10 @@
    #:kurikia-thick-diaper
    #:thick-cloth-diaper
    #:thick-diaper
+   #:infinity-diaper
+   #:temple-diaper
+   #:cursed-diaper
+   #:temple-pullups
    #:thick-diaper-package
    #:kurikia-thick-rubber-diaper
    #:kurikia-thick-cloth-diaper
@@ -406,6 +430,10 @@
    #:gold-bar
    #:gem
    #:gold-collar
+   #:diaper-corset
+   #:blackjack-uniform-diaper
+   #:cloth-diaper-corset
+   #:rubber-diaper-corset
    #:collar
    #:magic-diaper-key
    #:ak47
@@ -426,8 +454,28 @@
    #:pirate-dress
    #:pirate-shirt
    #:macguffin
-   #:itemfinder)
+   #:itemfinder
+   #:enemy-catcher
+   #:ghost-catcher
+   #:catch-method
+   #:contained-enemies-of
+   #:contained-enemies-max-length-of
+   #:catch-chance-multiplier-of
+   #:catch-chance-delta-of)
   (:documentation "Contains all the items in the game"))
+(uiop:define-package :yadfa-battle-commands
+  (:import-from :macro-level :macro-level)
+  (:use :yadfa :yadfa-util :cl :iterate)
+  (:export
+   #:catch-enemy)
+  (:documentation "convenience functions for battle"))
+(uiop:define-package :yadfa-world-commands
+  (:import-from :macro-level :macro-level)
+  (:use :yadfa :yadfa-util :cl :iterate)
+  (:export
+   #:loot-caught-enemies
+   #:disown-adopted-enemies)
+  (:documentation "convenience functions for battle"))
 (uiop:define-package :yadfa-enemies
   (:import-from :macro-level :macro-level)
   (:use :cl :yadfa :yadfa-util :iterate :alexandria)
@@ -448,7 +496,13 @@
    #:fursuiter-servant
    #:diapered-dragon*
    #:diapered-dragon
-   #:dergy)
+   #:ghost
+   #:catchable-enemy
+   #:catch-chance-of
+   #:raptor
+   #:change-class-target
+   #:change-class-text
+   #:adoptable-enemy)
   (:documentation "Contains all the enemies in the game"))
 (uiop:define-package :yadfa-props
   (:import-from :macro-level :macro-level)
@@ -496,8 +550,17 @@
    #:bandits-entrance
    #:secret-underground
    #:pirates-cove
+   #:candle-carnival
+   #:sky-base
+   #:star-city
+   #:flying-mansion
    #:your-ship
-   #:rpgmaker-dungeon)
+   #:rpgmaker-dungeon
+   #:haunted-house
+   #:haunted-forest
+   #:rocket
+   #:rainbow-slide
+   #:pyramid)
   (:documentation "Contains all the zone definitions in the game"))
 (uiop:define-package :yadfa-events
   (:use :yadfa :yadfa-util :cl :iterate)
@@ -526,26 +589,52 @@
    #:win-eggman-area-1
    #:pirates-cove-1
    #:pirates-cove-2
-   #:rpgmaker-dungeon-1
-   #:rpgmaker-dungeon-2
-   #:rpgmaker-dungeon-3
+   #:secret-underground-pipe-rpgmaker-dungeon
+   #:secret-underground-pipe-lukurbo
+   #:secret-underground-pipe-silver-cape
+   #:secret-underground-pipe-haunted-forest
+   #:secret-underground-pipe-haunted-house
+   #:secret-underground-pipe-candle-carnival
+   #:secret-underground-pipe-sky-base
+   #:secret-underground-pipe-star-city
    #:enter-silver-cape-1
    #:obtain-pirate-ship-1
    #:get-location-to-pirate-cove-1
-   #:get-diaper-locked-1)
+   #:get-diaper-locked-1
+   #:pyramid-puzzle-1
+   #:infinity-diaper-obtained-1)
   (:documentation "Contains all the event definitions in the game"))
 (uiop:define-package :yadfa-allies
-  (:use :yadfa :yadfa-util :cl :iterate)
+  (:use :yadfa :yadfa-util :cl :iterate :alexandria)
   (:export
    #:slynk
    #:chris
    #:kristy
-   #:furry)
+   #:furry
+   #:raptor
+   #:diapered-kobold
+   #:adopted-enemy)
   (:documentation "Contains all the allies in the game"))
 (uiop:define-package :yadfa-user
-  (:use :cl :yadfa :yadfa-util :yadfa-bin :ugly-tiny-infix-macro :alexandria)
+  (:use :cl :yadfa :yadfa-util :ugly-tiny-infix-macro :alexandria)
   (:mix :iterate :serapeum)
   (:documentation "The package that the player typically executes commands from"))
 (uiop:define-package :yadfa-clim
-  (:use :yadfa :iterate :clim :clim-lisp :clim-extensions)
-  (:documentation "CLIM related stuff"))
+  (:mix :clim :yadfa)
+  (:use :iterate :yadfa-util :clim-lisp :clim-extensions :conditional-commands)
+  (:documentation "CLIM related stuff")
+  (:export #:stat-view #:+stat-view+ #:draw-bar #:run-listener))
+(uiop:define-package :yadfa-blackjack
+  (:mix :alexandria :clim :yadfa)
+  (:use :iterate :clim-lisp :clim-extensions :conditional-commands)
+  (:export #:run-game))
+(uiop:define-package :yadfa-pyramid
+  (:mix :clim :yadfa :alexandria)
+  (:use :iterate :clim-lisp :clim-extensions :conditional-commands :yadfa-util)
+  (:export #:run-game #:stat-view #:+stat-view+ #:process-potty)
+  (:shadow #:area))
+(uiop:define-package :yadfa-puzzle
+  (:mix :clim :yadfa)
+  (:use :iterate :clim-lisp :clim-extensions :yadfa-pyramid :conditional-commands :yadfa-util)
+  (:export #:run-game)
+  (:shadow #:run-game))

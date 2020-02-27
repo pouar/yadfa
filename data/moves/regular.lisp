@@ -6,11 +6,14 @@
    :description "Mush the target's diaper"
    :attack '(lambda (target user self)
              (declare (ignore self))
-             (format t "~a mushes the back of ~a's diaper!~%" (name-of user) (name-of target))
-             (if (<= (getf (calculate-diaper-usage target) :messiness) 0)
-                 (format t "But it had no effect!~%")
-                 (progn (format t "~a's diaper has been mushed~%" (name-of target))
-                        (set-status-condition 'yadfa-status-conditions:mushed target))))))
+             (if (filter-items (wear-of user) 'incontinence-product)
+              (progn
+                (format t "~a mushes the back of ~a's diaper!~%" (name-of user) (name-of target))
+                (if (<= (getf (calculate-diaper-usage target) :messiness) 0)
+                    (format t "But it had no effect!~%")
+                    (progn (format t "~a's diaper has been mushed~%" (name-of target))
+                           (set-status-condition 'yadfa-status-conditions:mushed target))))
+              (out "it has no effect on " (name-of target) :%)))))
 (defclass pants (stat/move) ()
   (:default-initargs
    :name "Pants"
@@ -23,8 +26,7 @@
    :energy-cost 5
    :attack '(lambda (target user self)
              (format t "~a used ~a~%" (name-of user) (name-of self))
-             (let ((amount 50)
-                   (wet (when (random 5))))
+             (let ((amount 50))
                (iter (while (> amount 0))
                  (for i in (reverse (wear-of user)))
                  (when (typep i 'closed-bottoms)
@@ -72,11 +74,33 @@
                     (c (calculate-diaper-usage user))
                     (a (calculate-damage target user (power-of self))))
                (if (> (getf m :mess-amount) 0)
-                 (format t "~a sits on ~a's face and messes~%" (name-of user) (name-of target))
-                 (format t "~a sits on ~a's face~%" (name-of user) (name-of target)))
+                   (format t "~a sits on ~a's face and messes~%" (name-of user) (name-of target))
+                   (format t "~a sits on ~a's face~%" (name-of user) (name-of target)))
                (when (>= (getf c :messiness) 2000)
                  (format t "~a is grossed out by the smell~%" (name-of target))
                  (set-status-condition 'yadfa-status-conditions:skunked target))
                (format t "~a is damaged by the impact~%" (name-of target))
                (decf (health-of target) a)
                a))))
+(defclass teleporting-flood (stat/move) ()
+  (:default-initargs
+   :name "Teleporting Flood"
+   :description "Flood your diapers, but enchants the diaper so it all teleports into someone else's diaper."
+   :attack '(lambda (target user self)
+             (format t "~a used ~a~%" (name-of user) (name-of self))
+             (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
+              (format t "But it failed~%")
+              (progn (wet :wetter user :clothes (wear-of target))
+                     (format t "~a gets a freaked expression on ~a face as ~a floods ~a's pamps~%" (name-of target) (if (malep target) "his" "her")
+                             (name-of user) (name-of target)))))))
+(defclass teleporting-mess (stat/move) ()
+  (:default-initargs
+   :name "Teleporting Mess"
+   :description "Mess your diapers, but enchants the diaper so it all teleports into someone else's diaper."
+   :attack '(lambda (target user self)
+             (format t "~a used ~a~%" (name-of user) (name-of self))
+             (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
+              (format t "But it failed~%")
+              (progn (mess :messer user :clothes (wear-of target))
+                     (format t "~a gets a freaked expression on ~a face as ~a messes ~a's pamps~%" (name-of target) (if (malep target) "his" "her")
+                             (name-of user) (name-of target)))))))

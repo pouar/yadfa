@@ -1,7 +1,7 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-items"; coding: utf-8-unix; -*-
 (in-package :yadfa-items)
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defonesie onesie () ()
+  (defonesie onesie (ab-clothing) ()
     (:default-initargs
      :name "Onesie"
      :description "A onesie"
@@ -15,7 +15,7 @@
                            #.(* 11 25) "The flaps just barely cover the diapers"
                            #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
                            0 "The flaps hang over covering your underwear like a dress")))))
-(defonesie roomy-onesie () ()
+(defonesie roomy-onesie (ab-clothing) ()
   (:default-initargs
    :name "Roomy Onesie"
    :description "A onesie intended to accommodate thicker diapers"
@@ -65,7 +65,7 @@
                  #.(* 1/2 25) "The dress does a good job hiding your padding"
                  0 "It fits quite loosely")
    :thickness-capacity nil))
-(defclass toddler-dress (yadfa:dress) ()
+(defclass toddler-dress (yadfa:dress ab-clothing) ()
   (:default-initargs
    :name "Toddler's Dress"
    :plural-name "Toddler Dresses"
@@ -135,19 +135,19 @@
                            0 "The flaps hang over covering your underwear like a dress"))
      :description "An awesome black rubber onesie")))
 (defonesie stretchable-rubber-onesie (rubber-onesie) ()
-    (:default-initargs
-     :onesie-thickness-capacity (cons nil nil)
-     :onesie-thickness-capacity-threshold (cons nil nil)
-     :onesie-bulge-text '((60 "The onesie has easily stretched to accommodate your padding"
-                           20 "The diaper bulge makes it clear what you're wearing under there"
-                           0 "It fits snuggly")
-                          .
-                          (#.(* 12 25) "Your padding is clearly visible under there"
-                           #.(* 11 25) "The flaps just barely cover the diapers"
-                           #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
-                           0 "The flaps hang over covering your underwear like a dress"))
-     :name "Black Rubber Onesie"
-     :description "An awesome black rubber onesie that stretches to fit your humongous diapers"))
+  (:default-initargs
+   :onesie-thickness-capacity (cons nil nil)
+   :onesie-thickness-capacity-threshold (cons nil nil)
+   :onesie-bulge-text '((60 "The onesie has easily stretched to accommodate your padding"
+                         20 "The diaper bulge makes it clear what you're wearing under there"
+                         0 "It fits snuggly")
+                        .
+                        (#.(* 12 25) "Your padding is clearly visible under there"
+                         #.(* 11 25) "The flaps just barely cover the diapers"
+                         #.(* 1/2 25) "The flaps hang over covering your padding like a dress"
+                         0 "The flaps hang over covering your underwear like a dress"))
+   :name "Black Rubber Onesie"
+   :description "An awesome black rubber onesie that stretches to fit your humongous diapers"))
 (defclass orca-suit (closed-full-outfit) ()
   (:default-initargs
    :waterproof t
@@ -175,19 +175,19 @@
   (:default-initargs
    :name "Stretchable Orca Suit Lite"
    :description "A variant of the Orca Suit Lite that stretches to fit your humongous diapers"))
-(defclass boxers (undies) ()
+(defclass boxers (undies closed-bottoms) ()
   (:default-initargs
    :name "Boxers"
    :plural-name "Boxers"
    :description "You sure wearing these is a good idea piddler?"
    :value 100))
-(defclass panties (undies) ()
+(defclass panties (undies closed-bottoms) ()
   (:default-initargs
    :name "Panties"
    :plural-name "Panties"
    :description "You sure wearing these is a good idea piddler?"
    :value 100))
-(defclass bra (top-undies) ()
+(defclass bra (undies) ()
   (:default-initargs
    :name "Bra"
    :description "Prevents bouncing and indecent exposure, whether this is a good thing or not depends on your point of view."
@@ -361,7 +361,7 @@
                  #.(* 1/2 25) "The dress does a good job hiding your padding"
                  0 "It fits quite loosely")
    :thickness-capacity nil))
-(defonesie shortalls (onesie) ()
+(defonesie shortalls (onesie ab-clothing) ()
   (:default-initargs
    :name "Shortalls"
    :plural-name "Shortalls"

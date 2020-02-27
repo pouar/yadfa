@@ -7,9 +7,9 @@
    :species (random-elt '("Dolphin" "Orca" "Shark"))
    :male (random-elt '(t nil))
    :bladder/contents (random 500)
-   :bowels/contents (random 7000)
+   :bowels/contents (random 700)
    :watersport-limit 300
-   :mudsport-limit 4000
+   :mudsport-limit 400
    :inventory (iter (for i from 0 to (random 20)) (collect (make-instance 'yadfa-items:diaper)))))
 (defmethod initialize-instance :after ((c diaper-pirate) &rest args &key &allow-other-keys)
   (unless (iter (for (a b) on args)

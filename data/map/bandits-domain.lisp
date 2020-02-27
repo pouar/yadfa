@@ -2,13 +2,13 @@
 (in-package :yadfa-zones)
 (macro-level
   `(progn
-     ,@(iter (for i from 0 to 20)
+     ,@(iter (for i from 10 to 20)
          (collect
              `(ensure-zone (0 ,i 0 bandits-domain)
                 :name "Bandit's Way"
                 :description "A path filled with bandits"
                 :enter-text "You follow the path"
-                :warp-points ,(when (= i 0) '(list 'ironside '(2 0 0 ironside)))
+                :warp-points ,(when (= i 10) '(list 'ironside '(2 0 0 ironside)))
                 :enemy-spawn-list 'bandits-way)))))
 
 (macro-level
@@ -20,29 +20,29 @@
                 :description "A town run by the Raccoon Bandits"
                 :enter-text "You're wander around Bandit's Town"
                 ,@(when (= i -3)
-                    '(:events (list 'yadfa-events:enter-bandits-shop-2))))))))
+                    '(:events '(yadfa-events:enter-bandits-shop-2))))))))
 (ensure-zone (-3 22 0 bandits-domain)
   :name "Bandit's Shop"
   :description "A local shop"
   :enter-text "You enter the Bandit's Shop"
-  :must-wear '(padding . (lambda (user)
-                           (declare (ignore user))
-                           (write-line "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
-                           nil))
-  :must-wear* '(padding . (lambda (user)
-                            (declare (ignore user))
-                            (write-line "This area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
-                            nil))
-  :must-not-wear '((and closed-bottoms (not incontinence-product))
-                   . (lambda (user)
-                       (declare (ignore user))
-                       (write-line "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
-                       nil))
-  :must-not-wear* '((and closed-bottoms (not incontinence-product))
-                    . (lambda (user)
-                        (declare (ignore user))
-                        (write-line "This area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
-                        nil))
+  :must-wear (cons 'padding '(lambda (user)
+                              (declare (ignore user))
+                              (write-line "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
+                              nil))
+  :must-wear* (cons 'padding '(lambda (user)
+                               (declare (ignore user))
+                               (write-line "This area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
+                               nil))
+  :must-not-wear (cons '(and closed-bottoms (not incontinence-product))
+                       '(lambda (user)
+                         (declare (ignore user))
+                         (write-line "That area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
+                         nil))
+  :must-not-wear* (cons '(and closed-bottoms (not incontinence-product))
+                        '(lambda (user)
+                          (declare (ignore user))
+                          (write-line "This area is a diapers only pants free zone. Pants are strictly prohibited and padding is mandatory.")
+                          nil))
   :can-potty '(lambda
                (prop &key wet mess pants-down user)
                (declare (ignorable prop wet mess pants-down user))
@@ -139,22 +139,22 @@
                :changing-table (make-instance 'yadfa-props:automatic-changing-table)
                :bed (make-instance 'yadfa-props:bed)
                :checkpoint (make-instance 'yadfa-props:checkpoint))
-  :events (list 'yadfa-events:enter-bandits-shop-1 'yadfa-events:obtain-diaper-lock-1 'yadfa-events:enter-bandits-shop-3))
+  :events '(yadfa-events:enter-bandits-shop-1 yadfa-events:obtain-diaper-lock-1 yadfa-events:enter-bandits-shop-3 yadfa-events:get-warp-pipe-summoner-1))
 (ensure-zone (-3 23 0 bandits-domain)
   :name "Bandit's Shop Bathroom"
   :description "CLOSED FOREVER!!!!! MUAHAHAHAHA!!!!"
-  :locked nil)
+  :locked t)
 (ensure-zone (-5 22 0 bandits-domain)
   :name "Bandit's Kennel"
   :description "A grungy looking kennel where the Raccoon Bandits keep their `pets'. Neglected so much that they literally forgot about their existence"
   :enter-text "You enter the kennel"
-  :events (list 'yadfa-events:enter-bandits-kennel-1))
+  :events '(yadfa-events:enter-bandits-kennel-1))
 (ensure-zone (0 21 0 bandits-domain)
   :name "Bandit's Town Entrance"
   :description "The entrance to Bandit Town"
   :enter-text "You're at the entrance of Bandit Town"
   :warp-points (list 'home '(0 1 0 home))
-  :events (list 'yadfa-events:enter-bandits-village-1))
+  :events '(yadfa-events:enter-bandits-village-1))
 (macro-level
   `(progn
      ,@(iter (for i from 22 to 30)
@@ -168,7 +168,8 @@
   :description "A town run by the Raccoon Bandits"
   :enter-text "You see a sign that says \"To the south lies your generic RPG Maker Dungeon. Get ready for a mediocre adventure!!!! OOOOOOOOO!!!!"
   :warp-points (list 'rpgmaker-dungeon '(5 9 0 rpgmaker-dungeon))
-  :events (list 'yadfa-events:rpgmaker-dungeon-1))
+  :hidden t
+  :events '(yadfa-events:secret-underground-pipe-rpgmaker-dungeon))
 (ensure-zone (1 21 0 bandits-domain)
   :name "Bandit's Cove Dock"
   :description "The dock of Bandit's Cove"
@@ -187,11 +188,12 @@
 (ensure-zone (6 24 0 bandits-domain)
   :name "Bandit's Cave Entrance"
   :description "A mysterious cave"
-  :enter-text "You enter the cave")
+  :enter-text "You enter the cave"
+  :warp-points (list 'descend '(6 24 -2 bandits-domain)))
 (ensure-zone (6 24 -2 bandits-domain)
   :name "Bandit's Cave"
   :description "A mysterious cave"
   :enter-text "You enter the cave"
   :warp-points (list 'cave-entrance '(6 24 0 bandits-domain)
-                     'descend '(6 24 2 bandits-domain))
-  :events (list 'yadfa-events:decend-bandits-cave-1))
+                     'descend '(6 24 -2 bandits-domain))
+  :events '(yadfa-events:decend-bandits-cave-1))

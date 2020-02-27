@@ -9,10 +9,9 @@
                 :description "A busy street with various furries moving back and forth"
                 :enter-text "You enter the street"
                 :warp-points ,(when (= i 0) '(list 'rpgmaker-dungeon '(0 5 0 rpgmaker-dungeon)))
-                :hidden ,(when (= i 0) t)
                 ,@(cond ((= i 7)
                          '(:direction-attributes (list :east (list :hidden t)))))
-                ,@(when (= i 0) '(:events (list 'yadfa-events:enter-silver-cape-1 'yadfa-events:rpgmaker-dungeon-3))))))))
+                ,@(when (= i 0) '(:events '(yadfa-events:enter-silver-cape-1 yadfa-events:secret-underground-pipe-silver-cape))))))))
 (macro-level
   `(progn
      ,@(iter (for i from -10 to 10)
@@ -30,11 +29,13 @@
   :name "Silver Cape Jail"
   :description "The jail beneath Navy HQ"
   :enter-text "You're inside Navy HQ"
-  :locked nil
-  :events (list 'yadfa-events:get-location-to-pirate-cove-1))
+  :locked t
+  :stairs (list :up t)
+  :events '(yadfa-events:get-location-to-pirate-cove-1))
 (ensure-zone (-2 6 0 silver-cape)
   :name "Silver Cape Navy HQ Lobby"
   :description "The lobby of Navy HQ"
+  :stairs (list :down t)
   :enter-text "You're inside Navy HQ. A guard doing a potty dance in a soggy pullup is guarding the entrance to the Jail underneath"
   :props (list :guard (make-instance 'prop
                                      :name "Dolphin Navy Guard"
@@ -76,7 +77,7 @@
                                                                         (block nil
                                                                           (let
                                                                               ((a (iter (for i in (inventory-of (player-of *game*)))
-                                                                                    (when (and (typep i 'yadfa:incontinence-pad) (<= (sogginess-of i) 0))
+                                                                                    (when (and (typep i 'stuffer) (<= (sogginess-of i) 0))
                                                                                       (collect i)))))
                                                                             (unless a
                                                                               (write-line "You don't have a clean stuffer to give her")
@@ -104,16 +105,16 @@
                                                                                    (getf (get-props-from-zone (position-of (player-of *game*))) :guard))
                                                                                   "A dolphin wearing pullups"))))))))))))
 (ensure-zone (1 5 0 silver-cape)
-  :name "Silver Cape Pokemon Center"
-  :description "A place to heal your Pokemon"
+  :name "Silver Cape Pokémon Center"
+  :description "A place to heal your Pokémon"
   :enter-text "You enter the street"
   :direction-attributes (list :south (list :hidden t))
   :props (list :magic-healing-machine (make-instance 'prop
                                                      :name "Magic Healing Machine"
-                                                     :description "Heal your Pokemon here"
+                                                     :description "Heal your Pokémon here"
                                                      :actions (list
                                                                :use (make-action
-                                                                     :documentation "Heal your Pokemon"
+                                                                     :documentation "Heal your Pokémon"
                                                                      :lambda '(lambda
                                                                                (prop &rest keys &key &allow-other-keys)
                                                                                (declare (type prop prop) (ignore prop))
@@ -218,3 +219,9 @@
   :description "Path to a crappy version of Peach's Castle"
   :enter-text "You're at the entrance to some castle"
   :warp-points (list 'peachs-castle-wannabe '(0 0 0 peachs-castle-wannabe)))
+(ensure-zone (-1 14 0 silver-cape)
+  :name "Silver Cape Launch Pad"
+  :description "You're at the launch pad"
+  :enter-text "Come one coma all to a trip to the Candle Carnival. An amusement park in the sky based on a dream Pouar had. For some reason, it looked a lot better in the dream. Still under construction. Use the rocket over there to fly there."
+  :warp-points (list 'rocket '(0 0 0 candle-carnival))
+  :direction-attributes (list 'rocket (list :exit-text "You fly over to Candle Carnival.")))

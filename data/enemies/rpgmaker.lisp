@@ -1,15 +1,17 @@
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-enemies"; coding: utf-8-unix; -*-
 (in-package :yadfa-enemies)
-(defclass diapered-kobold (potty-enemy pantsable-character) ()
+(defclass diapered-kobold (potty-enemy pantsable-character adoptable-enemy) ()
   (:default-initargs
    :name "Diapered Kobold"
    :description "They're apparently from a tribe of kobolds in the area. Their outfits are similar to the ancient Egyptians."
    :species "Kobold"
    :male (random-elt '(t nil))
    :bladder/contents (random 500)
-   :bowels/contents (random 7000)
+   :bowels/contents (random 700)
    :bitcoins-per-level 100
    :inventory (iter (for i from 0 to (random 10))
                 (collect (make-instance 'yadfa-items:cloth-diaper)))))
+(setf (get 'diapered-kobold 'change-class-target) 'yadfa-allies:diapered-kobold)
 (defmethod initialize-instance :after
     ((c diapered-kobold) &rest args &key &allow-other-keys)
   (unless (iter (for (a b) on args)
@@ -28,7 +30,7 @@
    :species "Skunk"
    :male (random-elt '(t nil))
    :bladder/contents (random 500)
-   :bowels/contents (random 7000)
+   :bowels/contents (random 700)
    :watersport-chance 3
    :mudsport-chance 3
    :bitcoins-per-level 100
@@ -96,7 +98,7 @@
    :species "Dragon"
    :male t
    :bladder/contents (random 500)
-   :bowels/contents (random 7000)
+   :bowels/contents (random 700)
    :bitcoins-per-level 100
    :wear (list (make-instance 'yadfa-items:black-leather-jacket)
                (make-instance 'yadfa-items:high-capacity-diaper))
@@ -114,19 +116,17 @@
    :wear (list (make-instance 'yadfa-items:black-leather-jacket)
                (make-instance 'yadfa-items:baggy-jeans)
                (make-instance 'yadfa-items:high-capacity-diaper))))
-(defclass dergy (diapered-dragon) ()
-  (:default-initargs
-   :name "Dergy"
-   :description "An alien dragon like species that liquefies its food, so he lacks bowels as everything goes through its bladder. But since all that mass is forced through its bladder now, it fills up much quicker, so they have to go more often and can't hold it in for as long."
-   :species "Dergy"
-   :malep (random-elt '(t nil))
-   :bowels/contents 0
-   :bladder/fill-rate (* (/ 14000 24 60) 2)
-   :bowels/fill-rate 0
-   :bowels/need-to-potty-limit 1
-   :bowels/potty-dance-limit 1
-   :bowels/potty-desperate-limit 1
-   :bowels/maximum-limit 1
-   :wear (list (make-instance 'yadfa-items:kurikia-thick-rubber-diaper))
-   :inventory (iter (for i from 0 to (random 20))
-                       (collect (make-instance 'yadfa-items:kurikia-thick-rubber-diaper)))))
+
+;;; Raptors would most likely not have bladders irl, but I already threw
+;;; scientific accuracy out the window when I gave them scales instead of feathers.
+(defclass raptor (potty-enemy adoptable-enemy) ()
+    (:default-initargs
+     :name "Raptor"
+     :malep (random-elt '(t nil))
+     :description "Biologically inaccurate velociraptor. The kind you see in Jurassic Park that looks more like a lizard than a prehistoric bird."
+     :moves (list (make-instance 'yadfa-moves:roar)
+                  (make-instance 'yadfa-moves:bite))
+     :species "Raptor"))
+(setf (get 'diapered-kobold 'change-class-target) 'yadfa-allies:raptor)
+(defmethod change-class-text ((class raptor))
+  (format nil "~a was adopted and diapered" (name-of class)))

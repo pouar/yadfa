@@ -7,7 +7,7 @@
    :species "Raccoon"
    :male t
    :bladder/contents (random 500)
-   :bowels/contents (random 7000)
+   :bowels/contents (random 700)
    :wear (list (make-instance 'yadfa-items:bandit-uniform-tunic)
                (make-instance 'yadfa-items:bandit-adjustable-diaper))
    :inventory (let ((a ()))
@@ -48,6 +48,20 @@
                                    (t
                                     (funcall (coerce (default-attack-of self) 'function) target self)))))))))
 (defmethod process-battle-accident-method ((character diapered-raccoon-bandit) attack item reload selected-target)
+  (when (>= (bladder/contents-of character) (bladder/maximum-limit-of character))
+    (format t "~a lets out a quiet moan as ~a accidentally wets ~aself in battle~%"
+            (name-of character)
+            (if (malep character) "he" "she")
+            (if (malep character) "him" "her"))
+    (wet :wetter character)
+    (set-status-condition 'yadfa-status-conditions:wetting character))
+  (when (>= (bowels/contents-of character) (bowels/maximum-limit-of character))
+    (format t "~a involuntarily squats down as ~a accidentally messes ~aself in battle~%"
+            (name-of character)
+            (if (malep character) "he" "she")
+            (if (malep character) "him" "her"))
+    (mess :messer character)
+    (set-status-condition 'yadfa-status-conditions:messing character))
   (let ((wetting (find-if (lambda (o) (typep o 'yadfa-status-conditions:wetting))
                           (getf (status-conditions-of *battle*) character)))
         (messing (find-if (lambda (o) (typep o 'yadfa-status-conditions:messing))
@@ -68,7 +82,7 @@
    :species "Raccoon"
    :male t
    :bladder/contents (random 500)
-   :bowels/contents (random 7000)
+   :bowels/contents (random 700)
    :wear (list (make-instance 'yadfa-items:bandit-uniform-shirt)
                (make-instance 'yadfa-items:bandit-diaper
                               :sogginess (let ((a (random 3)))
@@ -86,7 +100,7 @@
    :species "Raccoon"
    :male nil
    :bladder/contents (random 500)
-   :bowels/contents (random 7000)
+   :bowels/contents (random 700)
    :wear (list (make-instance 'yadfa-items:bandit-uniform-sports-bikini-top)
                (make-instance 'yadfa-items:bandit-female-diaper
                               :sogginess (let ((a (random 3)))

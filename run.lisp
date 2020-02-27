@@ -1,16 +1,16 @@
 ;; -*- mode: common-lisp; -*-
-(declaim (optimize (safety 3)))
-(setf *read-default-float-format* 'long-float)
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
                                        (user-homedir-pathname))))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
+#+ccl (ccl:set-current-compiler-policy (ccl:new-compiler-policy :trust-declarations (lambda (env)
+                                                                                      (declare (ignore env)) nil)))
 (macrolet ((a ()
              `(progn
                 ,(when (position "debug" (uiop:command-line-arguments) :test #'string=)
                    '(declaim (optimize (debug 3))))
-                #+sbcl
+                #+(and sbcl (not sb-gmp))
                 ,(when (some #'(lambda (pathname)
                                  (handler-case
                                      (sb-alien:load-shared-object pathname :dont-save t)
@@ -21,16 +21,21 @@
                    '(asdf:load-system :sb-gmp)))))
   (a))
 #+sb-gmp (sb-gmp:install-gmp-funs)
-(when (position "slynk" (uiop:command-line-arguments) :test #'string=)
+(when (find "slynk" (uiop:command-line-arguments) :test #'string=)
   (ql:quickload "slynk")
   (uiop:symbol-call '#:slynk '#:create-server :dont-close t))
-(when (position "swank" (uiop:command-line-arguments) :test #'string=)
+(when (find "swank" (uiop:command-line-arguments) :test #'string=)
   (ql:quickload "swank")
   (uiop:symbol-call '#:swank '#:create-server :dont-close t))
-(when (position "ft" (uiop:command-line-arguments) :test #'string=)
+(when (find "ft" (uiop:command-line-arguments) :test #'string=)
   (pushnew :mcclim-ffi-freetype *features*))
-(when (position "wait" (uiop:command-line-arguments) :test #'string=)
+(when (find "wait" (uiop:command-line-arguments) :test #'string=)
   (sleep 2))
+(ql:quickload (loop for i in (asdf:system-depends-on (asdf:find-system :yadfa))
+                    when (stringp i) collect i
+                    when (and (listp i) (eq (first i) :feature) (uiop:featurep (second i))) collect (third i)))
+(declaim (optimize (debug 2) safety))
+(setf *read-default-float-format* 'long-float)
 (ql:quickload :yadfa)
 (in-package :yadfa)
 (yadfa::main)

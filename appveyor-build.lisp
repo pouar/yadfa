@@ -20,4 +20,4 @@
 |#
 (ql:quickload :yadfa)
 (asdf:make :yadfa)
-(#__exit 0)
+(uiop:quit)

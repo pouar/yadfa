@@ -1,6 +1,6 @@
 app-id: net.pouar.yadfa
 runtime: org.freedesktop.Platform
-runtime-version: '18.08'
+runtime-version: '19.08'
 sdk: org.freedesktop.Sdk
 command: /app/bin/yadfa
 cleanup:
@@ -31,14 +31,23 @@ modules:
       - type: archive
         url: https://ftp.gnu.org/gnu/wget/wget-1.20.3.tar.gz
         sha256: 31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e
+    build-options:
+      strip: true
+    post-install:
+      - rm -rf /app/share /app/etc
   - name: tinytex
     buildsystem: simple
     build-commands:
-      - bash -c 'TEXDIR=/app/tmp/texlive;wget -qO- https://github.com/yihui/tinytex/raw/master/tools/install-base.sh | sh -s - "$@";rm -rf $TEXDIR;mkdir -p $TEXDIR;mv texlive/* $TEXDIR;rm -r texlive;$TEXDIR/bin/*/tlmgr install $(wget -qO- https://github.com/yihui/tinytex/raw/master/tools/pkgs-custom.txt | tr "\n" " ") texinfo;$TEXDIR/bin/*/tlmgr path add'
+      - bash -c 'export TEXDIR=/app/tmp/texlive PATH="$PATH:/app/tmp/texlive/$(uname -m)-linux/bin";sh tools/install-base.sh - "$@" && rm -rf $TEXDIR && mkdir -p $TEXDIR && mv texlive/* $TEXDIR && rm -r texlive && $TEXDIR/bin/$(uname -m)-linux/tlmgr install $(cat pkgs-custom.txt | tr "\n" " ") && $TEXDIR/bin/$(uname -m)-linux/tlmgr path add'
     sources:
       - type: archive
-        sha256: 5c456088a51c26b1883f4c471753e75a18bb91d1a19340e668b88c2cc6a29675
-        url: https://github.com/yihui/tinytex/archive/v0.16.tar.gz
+        sha256: fa19e70b0a5fa417bdcf694777b613afaccf6014e2623a39bcf6f1d8ced3d5a4
+        url: https://github.com/yihui/tinytex/archive/v0.18.tar.gz
+      - type: file
+        path: pkgs-custom.txt
+        sha256: 4df05412b8e72e5b34b0a34384c36b31e47bdf0242f5ca4341a08151d7c209fd
+    post-install:
+      - rm -rf /app/bin
   - name: sbcl-bin
     buildsystem: simple
     build-commands:
@@ -47,18 +56,20 @@ modules:
       - chmod +x /app/tmp/sbcl-bin/bin/hostname
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.7/sbcl-1.5.7-x86-64-linux-binary.tar.bz2
-        sha256: 7f41c480076ce5917c604219ad0e6e28af477dc446b002b3c4d299644097af32
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.1/sbcl-2.0.1-x86-64-linux-binary.tar.bz2
+        sha256: ee9db4b5e71461690a719336d57299c4be3ac40163f963023d1a459f9469887d
   - name: sbcl
+    build-options:
+      strip: true
     buildsystem: simple
     build-commands:
-      - sed -i 's|if $GNUMAKE -C contrib/$i test < /dev/null|if $GNUMAKE -C contrib/$i < /dev/null|' make-target-contrib.sh
-      - sh -c 'echo "root:x:0:0:root,,,,:/root:/bin/sh" >> /etc/passwd;echo "root:x:0:root" >> /etc/group;SBCL_HOME="/app/tmp/sbcl-bin/lib/sbcl" PATH="$PATH:/app/tmp/sbcl-bin/bin" HOME="/app/tmp/home/" sh make.sh sbcl --fancy --with-sb-fasteval --without-sb-eval --with-sb-unicode --with-largefile'
+      - sed -i 's|-C $@ test <|-C $@ <|' contrib/build-contrib
+      - sh -c 'SBCL_HOME="/app/tmp/sbcl-bin/lib/sbcl" PATH="$PATH:/app/tmp/sbcl-bin/bin" HOME="/app/tmp/home/" sh make.sh sbcl --fancy --with-sb-fasteval --without-sb-eval --with-sb-unicode --with-largefile'
       - INSTALL_ROOT="/app/tmp/sbcl" HOME="/app/tmp/home/" sh install.sh
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/1.5.7/sbcl-1.5.7-source.tar.bz2
-        sha256: 54742fb5e2f3f350fbafd72bc73662fca21382b5553ed6a146098950d2409485
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.1/sbcl-2.0.1-source.tar.bz2
+        sha256: 8450d60b7264a34158f8811d46dc6e74ff855bbd1227752572877e6604ce56e8
   - name: yadfa-deps
     buildsystem: simple
     build-commands:
@@ -66,18 +77,16 @@ modules:
       - cp -R asdf-*/ /app/tmp/home/common-lisp/asdf/
       - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --load "quicklisp.lisp" --eval "(quicklisp-quickstart:install)"
       - mkdir -p /app/tmp/home/quicklisp/local-projects
-      - cp -R declt/ /app/tmp/home/quicklisp/local-projects/declt/
-      - cp -R McCLIM/ /app/tmp/home/quicklisp/local-projects/McCLIM/
-      - cp -R sly/ /app/tmp/home/quicklisp/local-projects/sly/
+      - cp -R declt McCLIM sly illogical-pathnames /app/tmp/home/quicklisp/local-projects
     sources:
       - type: file
         url: https://beta.quicklisp.org/quicklisp.lisp
         sha256: 4a7a5c2aebe0716417047854267397e24a44d0cce096127411e9ce9ccfeb2c17
       - type: archive
-        url: https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3.3/asdf-3.3.3.3.tar.gz
+        url: https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3.5/asdf-3.3.3.5.tar.gz
         strip-components: 0
         dest-filename: asdf.tar.gz
-        sha256: f366e7bae748425cec2ec38b5b54b97c5f7e39123355c895d696c142e6e8ad1a
+        sha256: fd38acaa06c2c7ec2140de74c085c2c4d02121b39b8a40d3cc8891a7fe91ba3d
       - type: git
         url: https://github.com/didierverna/declt.git
         dest: declt
@@ -87,31 +96,33 @@ modules:
       - type: git
         dest: sly
         url: https://github.com/joaotavora/sly.git
+      - type: git
+        dest: illogical-pathnames
+        branch: pouar
+        url: https://gitlab.com/pouar/illogical-pathnames.git
   - name: yadfa-cache
     buildsystem: simple
     build-commands:
-      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --eval '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' --eval "(progn (ql:update-client :prompt nil) (ql:update-all-dists :prompt nil) (pushnew :mcclim-ffi-freetype *features*) (ql:quickload '(:swank :mcclim :marshal :iterate :ugly-tiny-infix-macro :closer-mop :trivial-features :clim-listener :trivial-garbage :macro-level :cl-ansi-text :alexandria :plump-sexp :net.didierverna.declt :sb-aclrepl :serapeum :global-vars :str :listopia :anaphora :quasiquote-2.0)))"
+      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --eval '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' --eval "(progn (ql:update-client :prompt nil) (ql:update-all-dists :prompt nil) (pushnew :mcclim-ffi-freetype *features*) (ql:quickload '(:swank :mcclim :marshal :iterate :ugly-tiny-infix-macro :closer-mop :trivial-features :clim-listener :mcclim-raster-image :trivial-garbage :macro-level :cl-ansi-text :alexandria :plump-sexp :net.didierverna.declt :sb-aclrepl :serapeum :global-vars :float-features :illogical-pathnames :fiveam)))"
   - name: yadfa
     buildsystem: simple
     build-commands:
       - ln -s $PWD /app/tmp/home/quicklisp/local-projects/yadfa
-      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script build.lisp ft
-      - HOME="/app/tmp/home/" ./yadfa texi
-      - bash -c 'cd docs/reference;export HOME="/app/tmp/home/" PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH" PDFTEX=xetex PDFLATEX=xelatex;makeinfo --no-split --pdf ./yadfa-reference.texi;makeinfo --no-split --ps ./yadfa-reference.texi;makeinfo --no-split --dvi ./yadfa-reference.texi;makeinfo --no-split --docbook ./yadfa-reference.texi;makeinfo --no-split --css-include=style-common.css --css-include=style-single.css --html ./yadfa-reference.texi;makeinfo --no-split ./yadfa-reference.texi'
+      - bash -c 'export SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="/app/tmp/texlive/bin/x86_64-linux:$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/";make OPTS="texi ft immutable" -j$(nproc) all test'
       - bash -c 'cd flatpak;SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --script create-appstream-metadata.lisp'
       - install -dm755 /app/lib/yadfa
       - git archive HEAD|tar -xf - -C /app/lib/yadfa/
       - install -Dm755 yadfa /app/lib/yadfa/
-      - install -Dm644 docs/reference/yadfa-reference.texi /app/lib/yadfa/docs/reference/
       - rm /app/tmp/home/quicklisp/local-projects/yadfa
-      - mkdir -p /app/bin /app/share/doc/yadfa /app/share/info /app/share/icons/hicolor/scalable/apps /app/share/applications /app/share/metainfo /app/lib
-      - install -Dm644 docs/reference/yadfa-reference.{html,pdf,dvi,ps,xml} /app/share/doc/yadfa/
-      - gzip -c docs/reference/yadfa-reference.info > /app/share/info/yadfa-reference.info.gz
-      - chmod 644 /app/share/info/yadfa-reference.info.gz
+      - mkdir -p /app/bin /app/share/icons/hicolor/scalable/apps /app/share/applications /app/share/metainfo /app/lib
+      - make prefix=/app install-reference
+      - make -C docs/reference prefix=/app install-texi
       - install -Dm644 flatpak/net.pouar.yadfa.svg /app/share/icons/hicolor/scalable/apps/net.pouar.yadfa.svg
       - install -Dm644 flatpak/net.pouar.yadfa.appdata.xml /app/share/metainfo/net.pouar.yadfa.appdata.xml
       - install -Dm644 flatpak/net.pouar.yadfa.appdata.xml.lisp /app/share/metainfo/net.pouar.yadfa.appdata.xml.lisp
       - install -Dm755 flatpak/net.pouar.yadfa.desktop /app/share/applications/net.pouar.yadfa.desktop
+      - install -Ddm755 /app/etc/fonts/conf.d/
+      - install -Dm644 flatpak/99-mcclim.conf /app/etc/fonts/conf.d/
       - ln -s /app/lib/yadfa/yadfa /app/bin/yadfa
       - bash -c 'LIB="$(readlink /lib/x86_64-linux-gnu/libfreetype.so)"; ln -s "/lib/x86_64-linux-gnu/${LIB%.[0-9]*.[0-9]*}" /app/lib/libfreetype.so'
       - bash -c 'LIB="$(readlink /lib/x86_64-linux-gnu/libfontconfig.so)"; ln -s "/lib/x86_64-linux-gnu/${LIB%.[0-9]*.[0-9]*}" /app/lib/libfontconfig.so'
@@ -120,3 +131,6 @@ modules:
       - type: git
         branch: master
         url: https://gitlab.com/pouar/yadfa.git
+    post-install:
+      - rm -rf /app/tmp /app/etc /app/share/runtime /app/share/locale /app/share/man /app/lib/debug /app/lib/yadfa/ci /app/lib/yadfa/flatpak /app/lib/yadfa/chocolatey /app/lib/yadfa/.git
+      - rm -f /app/lib/yadfa/appveyor-*.lisp .appveyor.yml .gitattributes .gitignore .gitlab-ci.yml .mailmap

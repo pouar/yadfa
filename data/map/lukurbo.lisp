@@ -4,5 +4,5 @@
   :name "Lukubro Street"
   :description "You see many diapered furries and diapered fursuiters"
   :enter-text "You're wondering around the street"
-  :events (list 'yadfa-events:enter-lukurbo-1 'yadfa-events:rpgmaker-dungeon-2)
+  :events '(yadfa-events:enter-lukurbo-1 yadfa-events:secret-underground-pipe-lukurbo)
   :warp-points (list 'rpgmaker-dungeon '(9 5 0 rpgmaker-dungeon)))

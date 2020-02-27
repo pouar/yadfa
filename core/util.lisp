@@ -44,12 +44,21 @@ the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYW
   #+clisp (null
            (nth-value 1 (ignore-errors
                          (ext:type-expand type-specifier))))
-  #-(or sbcl openmcl ecl clisp) (typep type-specifier
-                                       '(or
-                                         null
-                                         (and symbol (not keyword))
-                                         list
-                                         class)))
+  ;; If you're wondering why we're parsing it multiple times, it's because CMUCL does this too.
+  ;; If CMUCL doesn't trust KERNEL:SPECIFIER-TYPE to get it right the first time, then why should we?
+  #+cmucl (not (and (let ((type (kernel:specifier-type type-specifier)))
+                      (typep type 'kernel:unknown-type)
+                      (typep (kernel:specifier-type (kernel:unknown-type-specifier type)) 'kernel:unknown-type))))
+  ;; Managed to get this out of the free version before it crashed trying to startup. Never could get it to work.
+  #+lispworks (type:valid-type-specifier-p type-specifier)
+  ;; type specifiers are too complicated for me to figure out whether it's valid or not, but this is good enough for this game.
+  #-(or sbcl openmcl ecl clisp cmucl lispworks) (or (typep type-specifier
+                                                           '(or
+                                                             null
+                                                             (and symbol (not keyword))
+                                                             class))
+                                                    (and (listp type-specifier)
+                                                         (typep (car type-specifier) '(and symbol (not keyword))))))
 (defun coerced-function-p (form)
   "checks whether the type is a lambda expression or function"
   (handler-case (coerce form 'function)
@@ -71,3 +80,51 @@ argument.")
 (setf (macro-function 'collecting*) (macro-function 'serapeum:collecting))
 (setf (fdefinition 'sum*) #'serapeum:sum)
 (setf (fdefinition 'in*) #'serapeum:in)
+(defmacro out (&rest strings)
+  (check-type strings list)
+  (alexandria:with-gensyms (element)
+    `(dolist (,element (list ,@(substitute #\Newline :% strings :test #'eq)))
+       (princ ,element))))
+(declaim (inline list-length-< list-length-<=))
+(eval-always
+  (defun list-length-<= (length list)
+    (declare (type list list)
+             (type integer length))
+    (let ((n (1- length)))
+      (or (minusp n) (nthcdr n list))))
+  (defun list-length-< (length list)
+    (declare (type list list)
+             (type integer length))
+    (list-length-<= (1+ length) list)))
+(defmacro defunassert (name-args-declares asserts &body body)
+  "Wrapper macro that brings the behavior of SBCL's type declaration to other implementations, @var{NAME-ARGS-DECLARES} is the function name, lambda list, and optionally the docstring and declarations (omitting the type declarations) @var{ASSERTS} is the type specifiers for the lambda list as a plist, @var{BODY} is the body of the function"
+  (declare (inline list-length-<))
+  (let* ((sbclp #.(uiop:featurep '(:or :sbcl :ccl)))
+         (declarep (and
+                    (list-length-< 2 name-args-declares)
+                    (typep (car (last name-args-declares)) 'list)
+                    (eq (caar (last name-args-declares)) 'declare)))
+         (types (multiple-value-bind (req op rest key allow aux keyp)
+                    (parse-ordinary-lambda-list (second name-args-declares))
+                  (declare (ignore rest allow aux keyp))
+                  (iter (for i in (append req (mapcar 'car op) (mapcar 'cadar key)))
+                    (when (member i (plist-keys asserts))
+                      (collect `(type ,(getf asserts i) ,i)))))))
+    `(defun
+         ,@(if declarep
+               (butlast name-args-declares)
+               name-args-declares)
+         ,@`(,(append (if declarep
+                       (car (last name-args-declares))
+                       '(declare))
+               types)
+             ,@(unless sbclp
+                 (multiple-value-bind (req op rest key allow aux keyp)
+                     (parse-ordinary-lambda-list (second name-args-declares))
+                   (declare (ignore rest allow aux keyp))
+                   (iter (for i in (append req (mapcar 'car op) (mapcar 'cadar key)))
+                     (when (member i (plist-keys asserts))
+                       (collect `(check-type ,i ,(if (member i (plist-keys asserts))
+                                                     (getf asserts i)
+                                                     t)))))))
+             ,@body))))

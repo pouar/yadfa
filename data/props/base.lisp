@@ -4,18 +4,18 @@
    :name "Toilet"
    :description "A toilet"
    :actions (list :use (make-action
-                        :documentation "Use the toilet. if WET or MESS is T, the player will empty his bladder/bowels completely. If a number is given, the player will empty his bladder by that amount, however the player will mess completely no matter what number you give it if you provide a number. If ALLY number is specified, that ALLY uses the toilet, otherwise it's the player"
+                        :documentation "Use the toilet. if WET or MESS is T, the player will empty his bladder/bowels completely. If a real is given, the player will empty his bladder by that amount, however the player will mess completely no matter what number you give it if you provide a number. If ALLY number is specified, that ALLY uses the toilet, otherwise it's the player"
                         :lambda '(lambda (prop &rest keys &key wet mess pull-pants-down ally &allow-other-keys)
                                   (declare (type prop prop)
                                    (type boolean pull-pants-down)
                                    (type (or integer null) ally)
-                                   (type (or boolean number) wet mess)
+                                   (type (or boolean real) wet mess)
                                    (ignore keys))
                                   (check-type prop prop)
                                   (check-type pull-pants-down boolean)
                                   (check-type ally (or integer null))
-                                  (check-type wet (or boolean number))
-                                  (check-type mess (or boolean number))
+                                  (check-type wet (or boolean real))
+                                  (check-type mess (or boolean real))
                                   (block nil
                                     (when (and ally (>= ally (list-length (allies-of *game*))))
                                       (format t "That ally doesn't exist~%")
@@ -82,7 +82,8 @@
                                                 (if (malep j) "him" "her")
                                                 (name-of j)
                                                 (if (malep j) "him" "her"))
-                                        (trigger-event 'yadfa-events:get-diaper-locked-1))))))))
+                                        (when (trigger-event 'yadfa-events:get-diaper-locked-1)
+                                          (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%" (name-of j))))))))))
   (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 (defclass checkpoint (prop) ()
   (:default-initargs
@@ -101,6 +102,7 @@
     :initarg :items-for-sale
     :initform ()
     :accessor items-for-sale-of
+    :type list
     :documentation "Quoted list of class names for sale"))
   (:default-initargs
    :name "Shop"
@@ -116,27 +118,28 @@
                                                               (ignore keys))
                                                              (check-type prop prop)
                                                              (shopfun (items-for-sale-of prop) :format-items t)))
-                 :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
+                 :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY). If ITEMS is not specified, you will be prompted for what items to buy"
                                          :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
                                                    (declare (type prop prop) (type list items) (ignore keys))
                                                    (check-type prop prop)
                                                    (check-type items list)
                                                    (shopfun (items-for-sale-of prop)
-                                                    :items-to-buy items
+                                                    :items-to-buy (or items t)
                                                     :user (player-of *game*))))
-                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory"
+                 :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory. If ITEMS is not specified, you will be prompted for what items to sell"
                                           :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
                                                     (declare (type prop prop) (type list items) (ignore keys))
                                                     (check-type prop prop)
                                                     (check-type items list)
                                                     (shopfun (items-for-sale-of prop)
-                                                     :items-to-sell items
+                                                     :items-to-sell (or items t)
                                                      :user (player-of *game*)))))))
 (defclass vending-machine (prop)
   ((items-for-sale
     :initarg :items-for-sale
     :initform ()
     :accessor items-for-sale-of
+    :type list
     :documentation "Quoted list of class names for sale"))
   (:default-initargs
    :name "Vending Machine"
@@ -149,7 +152,7 @@
            (list :list-items-for-sale (make-action :documentation "List items for sale"
                                                    :lambda '(lambda (prop &rest keys &key &allow-other-keys)
                                                              (declare #+sbcl (type prop prop)
-                                                              (ignore keys))
+                                                                      (ignore keys))
                                                              #-sbcl (check-type prop prop)
                                                              (shopfun (items-for-sale-of prop) :format-items t)))
                  :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
@@ -247,6 +250,6 @@
                                                 (declare #+sbcl (type prop prop)
                                                          (ignore keys)
                                                  (ignorable prop))
-                                                 #-sbcl (check-type prop prop)
+                                                #-sbcl (check-type prop prop)
                                                 (go-to-sleep)))))
   (:documentation "Class for beds, you can sleep in these."))

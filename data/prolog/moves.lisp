@@ -10,7 +10,7 @@
            (stat
              (when pants
                (iter (for i in (wear-of target))
-                 (when (typep i '(or tabbed-briefs pullon))
+                 (when (typep i '(or diaper pullup))
                    (let ((severity (cond ((and (> (sogginess-of i) 300) (> (messiness-of i) 4000))
                                           'both)
                                          ((> (messiness-of i) 4000)

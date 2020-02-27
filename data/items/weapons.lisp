@@ -6,7 +6,7 @@
    :plural-name "7.62x39mm Rounds"
    :value 400
    :description "7.62x39mm bullets"
-   :ammo-power-of 150))
+   :ammo-power 150))
 (defclass box-of-7.62×39mm (item) ()
   (:default-initargs
    :name "Box of 7.62x39mm Rounds"
@@ -51,7 +51,7 @@
    :plural-name "Exterminator Ammo"
    :value 100000
    :description "Ammo for the Exterminator"
-   :ammo-power-of 500))
+   :ammo-power 500))
 (defclass exterminator (weapon) ()
   (:default-initargs
    :name "Exterminator"

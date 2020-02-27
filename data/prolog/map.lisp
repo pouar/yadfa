@@ -9,7 +9,7 @@
    #:eggman-area))
 (defun can-potty (prop &key wet mess pants-down user)
   (declare (ignorable prop wet mess pants-down user))
-  (not (when (and (typep prop '(not yadfa-props:toilet)) (or pants-down (filter-items (wear-of user) 'incontinence-product)))
+  (not (when (and (typep prop '(not yadfa-props:toilet)) (or pants-down (null (filter-items (wear-of user) 'incontinence-product))))
          (format t "STOP!!! THE SIGN SAYS ~A ISN'T ALLOWED TO DO THAT HERE!!!!! Just hold it all in.~%~%" (string-upcase (name-of user)))
          (when (or (>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)) (>= (bowels/contents-of user) (bowels/potty-dance-limit-of user)))
            (format t "*~a whines and continues ~a embarrassing potty dance while the public watches and giggles*~%~%"
@@ -20,7 +20,7 @@
          t)))
 (defun can-potty-peachs-castle-wannabe (prop &key wet mess pants-down user)
   (declare (ignorable prop wet mess pants-down user))
-  (not (when (or pants-down (filter-items (wear-of user) 'incontinence-product))
+  (not (when (or pants-down (null (filter-items (wear-of user) 'incontinence-product)))
          (format t "STOP!!! ~A CAN'T DO THAT HERE!!!! THERE ARE LIKE KIDS HERE!!!!! Just hold it all in~%~%" (string-upcase (name-of user)))
          (when (or (>= (bladder/contents-of user) (bladder/potty-dance-limit-of user)) (>= (bowels/contents-of user) (bowels/potty-dance-limit-of user)))
            (format t "*~a whines and continues ~a embarrassing potty dance while the public watches and giggles*~%~%"
@@ -67,19 +67,20 @@
     (format t "Diaper Police: Aww, it looks like the baby is learning how to walk for the first time~%~%")
     (format t "*~a whines and covers ~a face with ~a paws in embarrassment*~%~%"
             (name-of user) (if (malep user) "his" "her") (if (malep user) "his" "her"))
-    (trigger-event 'yadfa-events:get-diaper-locked-1)))
-(defevent initialize-enemy-spawn-list
-  :lambda '(lambda (self)
+    (when (trigger-event 'yadfa-events:get-diaper-locked-1)
+      (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%" (name-of user)))))
+(defevent initialize-enemy-spawn-and-wear-lists
+  :lambda (lambda (self)
             (declare (ignore self))
             (serapeum:dict*
              (enemy-spawn-list-of *game*)
-             'bandits-way '((:max-random 8
+             'bandits-way '((:chance 1/15
                              :enemies ((yadfa-enemies:female-diapered-raccoon-bandit .
-                                        `(:level ,(random-from-range 2 5)))))
-                            (:max-random 8
+                                        `(:level ,(random-from-range 2 4)))))
+                            (:chance 1/15
                              :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
-                                        `(:level ,(random-from-range 2 5))))))
-             'bandits-cove '((:max-random 10
+                                        `(:level ,(random-from-range 2 4))))))
+             'bandits-cove '((:chance 1/10
                               :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
                                          `(:level ,(random-from-range 2 5)
                                            :wear ,(list
@@ -87,13 +88,13 @@
                                                    (make-instance 'yadfa-items:bandit-diaper
                                                                   :sogginess (random 1000)
                                                                   :messiness (random 6000)))))))
-                             (:max-random 10
+                             (:chance 1/10
                               :enemies ((yadfa-enemies:diapered-raccoon-bandit .
                                          `(:level ,(random-from-range 2 5)
                                            :wear ,(list (make-instance 'yadfa-items:bandit-swimsuit/closed)
                                                    (make-instance 'bandit-swim-diaper-cover)
                                                    (make-instance 'yadfa-items:bandit-diaper))))))
-                             (:max-random 10
+                             (:chance 1/10
                               :enemies ((yadfa-enemies:female-diapered-raccoon-bandit .
                                          `(:level ,(random-from-range 2 5)
                                            :wear ,(list
@@ -102,56 +103,81 @@
                                                    (make-instance 'yadfa-items:bandit-female-diaper
                                                                   :sogginess (random 1000)
                                                                   :messiness (random 6000))))))))
-             'rpgmaker-dungeon '((:max-random 20
+             'rpgmaker-dungeon '((:chance 1/20
                                   :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
                                              `(:level ,(random-from-range 2 5)))))
-                                 (:max-random 20
+                                 (:chance 1/20
                                   :enemies ((yadfa-enemies:padded-fursuiter-servant .
                                              `(:level ,(random-from-range 2 5)))))
-                                 (:max-random 20
+                                 (:chance 1/20
                                   :enemies ((yadfa-enemies:fursuiter-servant .
                                              `(:level ,(random-from-range 2 5)))))
-                                 (:max-random 20
+                                 (:chance 1/20
                                   :enemies ((yadfa-enemies:navy-officer .
                                              `(:level ,(random-from-range 2 5)))
                                             (yadfa-enemies:navy-officer* .
                                              `(:level ,(random-from-range 2 5)))))
-                                 (:max-random 20
+                                 (:chance 1/20
                                   :enemies ((yadfa-enemies:diaper-pirate .
                                              `(:level ,(random-from-range 2 5)))
                                             (yadfa-enemies:thickly-diaper-pirate .
                                              `(:level ,(random-from-range 2 5)))))
-                                 (:max-random 20
+                                 (:chance 1/20
                                   :enemies ((yadfa-enemies:diapered-raccoon-bandit .
                                              `(:level ,(random-from-range 2 5)))
                                             (yadfa-enemies:rookie-diapered-raccoon-bandit .
                                              `(:level ,(random-from-range 2 5)))))
-                                 (:max-random 20
+                                 (:chance 1/20
                                   :enemies ((yadfa-enemies:diapered-raccoon-bandit .
                                              `(:level ,(random-from-range 2 5)))
                                             (yadfa-enemies:female-diapered-raccoon-bandit .
                                              `(:level ,(random-from-range 2 5)))))
-                                 (:max-random 20
+                                 (:chance 1/20
                                   :enemies ((yadfa-enemies:diapered-kobold .
                                              `(:level ,(random-from-range 2 5)))
                                             (yadfa-enemies:diapered-kobold .
                                              `(:level ,(random-from-range 2 5)))))
-                                 (:max-random 25
+                                 (:chance 1/25
                                   :enemies ((yadfa-enemies:diapered-dragon .
                                              `(:level ,(random-from-range 4 10)))
                                             (yadfa-enemies:diapered-kobold .
                                              `(:level ,(random-from-range 2 5)
                                                :wear ,(list (make-instance 'yadfa-items:kurikia-thick-diaper))))))
-                                 (:max-random 25
+                                 (:chance 1/25
                                   :enemies ((yadfa-enemies:diapered-dragon* .
                                              `(:level ,(random-from-range 4 10)))
                                             (yadfa-enemies:diapered-kobold .
                                              `(:level ,(random-from-range 2 5)
                                                :wear ,(list (make-instance 'yadfa-items:kurikia-thick-diaper))))))
-                                 (:max-random 20
+                                 (:chance 1/20
                                   :enemies ((yadfa-enemies:diapered-skunk .
-                                             `(:level ,(random-from-range 2 5)))))
-                                 (:max-random 20
-                                  :enemies ((yadfa-enemies:dergy .
-                                             `(:level ,(random-from-range 2 5)))))))))
-(trigger-event 'initialize-enemy-spawn-list)
+                                             `(:level ,(random-from-range 2 5)))))))
+            (serapeum:dict*
+             (must-wear-of *game*)
+             'pyramid '((or yadfa-items:temple-diaper yadfa-items:cursed-diaper yadfa-items:infinity-diaper) .
+                        (lambda (user)
+                          (declare (ignore user))
+                          (write-line "Only those who wear the enchanted pamps and only the enchanted pamps may enter.")
+                          nil)))
+            (serapeum:dict*
+             (must-wear*-of *game*)
+             'pyramid '((or yadfa-items:temple-diaper yadfa-items:cursed-diaper yadfa-items:infinity-diaper) .
+                        (lambda (user)
+                          (declare (ignore user))
+                          (write-line "You can't remove those here.")
+                          nil)))
+            (serapeum:dict*
+             (must-not-wear-of *game*)
+             'pyramid '((not (or yadfa-items:temple-diaper yadfa-items:cursed-diaper yadfa-items:infinity-diaper)) .
+                        (lambda (user)
+                          (declare (ignore user))
+                          (write-line "Only those who wear the enchanted pamps and only the enchanted pamps may enter.")
+                          nil)))
+            (serapeum:dict*
+             (must-not-wear*-of *game*)
+             'pyramid '((not (or yadfa-items:temple-diaper yadfa-items:cursed-diaper yadfa-items:infinity-diaper)) .
+                        (lambda (user)
+                          (declare (ignore user))
+                          (write-line "You can't wear those here.")
+                          nil)))))
+(trigger-event 'initialize-enemy-spawn-and-wear-lists)

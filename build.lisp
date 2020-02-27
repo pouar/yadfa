@@ -1,17 +1,18 @@
 ;; -*- mode: common-lisp; -*-
 #+sbcl
 (declaim (sb-ext:muffle-conditions sb-kernel:redefinition-warning sb-ext:code-deletion-note))
-(setf *read-default-float-format* 'long-float)
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
                                        (user-homedir-pathname))))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
+#+ccl (ccl:set-current-compiler-policy (ccl:new-compiler-policy :trust-declarations (lambda (env)
+                                                                                      (declare (ignore env)) nil)))
 (macrolet ((a ()
              `(progn
                 ,(when (position "debug" (uiop:command-line-arguments) :test #'string=)
                    '(declaim (optimize (debug 3))))
-                #+sbcl
+                #+(and sbcl (not sb-gmp))
                 ,(when (some #'(lambda (pathname)
                                  (handler-case
                                      (sb-alien:load-shared-object pathname :dont-save t)
@@ -21,14 +22,24 @@
                              #+win32 '("libgmp.dll" "libgmp-10.dll" "libgmp-3.dll"))
                    '(asdf:load-system :sb-gmp)))))
   (a))
-#+sb-gmp (sb-gmp:install-gmp-funs)
-(when (position "slynk" (uiop:command-line-arguments) :test #'string=)
+#+sb-gmp (unless (eq (fdefinition 'sb-bignum:multiply-bignums) (fdefinition 'sb-gmp::gmp-mul))
+           (sb-gmp:install-gmp-funs))
+(when (find "slynk" (uiop:command-line-arguments) :test #'string=)
   (ql:quickload "slynk"))
-(when (position "swank" (uiop:command-line-arguments) :test #'string=)
+(when (find "swank" (uiop:command-line-arguments) :test #'string=)
   (ql:quickload "swank"))
-(when (position "ft" (uiop:command-line-arguments) :test #'string=)
+(when (find "ft" (uiop:command-line-arguments) :test #'string=)
   (pushnew :mcclim-ffi-freetype *features*))
+(ql:quickload (loop for i in (asdf:system-depends-on (asdf:find-system :yadfa))
+                    when (stringp i) collect i
+                    when (and (listp i) (eq (first i) :feature) (uiop:featurep (second i))) collect (third i)))
+(declaim (optimize (debug 2) safety))
+(setf *read-default-float-format* 'long-float)
 (ql:quickload :yadfa)
+(when (find "immutable" (uiop:command-line-arguments) :test #'string=)
+  (setf yadfa::*immutable* t))
+(when (find "texi" (uiop:command-line-arguments) :test #'string=)
+  (yadfa::build-texi))
 (when (probe-file (uiop:merge-pathnames* (make-pathname :name "yadfa") (asdf:component-pathname (asdf:find-system "yadfa"))))
   (delete-file (uiop:merge-pathnames* (make-pathname :name "yadfa") (asdf:component-pathname (asdf:find-system "yadfa")))))
-(asdf:make :yadfa :force (when (position "force" (uiop:command-line-arguments) :test #'string=) t))
+(asdf:make :yadfa :force (when (find "force" (uiop:command-line-arguments) :test #'string=) t))
