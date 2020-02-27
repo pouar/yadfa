@@ -54,17 +54,17 @@
   :warp-points '(slide-down (-10 -9 0 candle-carnival)))
 (ensure-zone (11 -10 1 candle-carnival)
   :name "Power room"
-  :description "Apparetnly this place is poweredby monkeys in hamster wheels"
+  :description "Apparently this place is powered by monkeys in hamster wheels"
   :enter-text "You're inside the power room")
 (ensure-zone (4 -1 1 candle-carnival)
   :name "Rocket Pad"
   :description "A rocket pad"
   :enter-text "You enter the rocket pad"
   :warp-points (list 'rocket '(0 0 0 sky-base-landing-pad))
-  :direction-attributes (list 'rocket (list :exit-text "You fly over to Sky Base then drop off the rocket. The base's antigravity slingshot device emits a force that pulls you back up and lands you on a platform like an invisible bungee cord, but one that pulls you to different platforms instead of just one. It seems this is the primary mode of transportation here.")))
+  :direction-attributes (list 'rocket (list :exit-text "You fly over to Sky Base then drop off the rocket. The base's anti-gravity slingshot device emits a force that pulls you back up and lands you on a platform like an invisible bungee cord, but one that pulls you to different platforms instead of just one. It seems this is the primary mode of transportation here.")))
 (ensure-zone (4 -18 0 candle-carnival)
   :name "Changing room"
-  :description "Apparetnly this place is poweredby monkeys in hamster wheels"
+  :description "Apparently this place is powered by monkeys in hamster wheels"
   :enter-text "You're inside the power room"
   :props (list
           :vending-machine (make-instance 'yadfa-props:shop
