@@ -39,3 +39,5 @@ install-reference:
 clean:
 	rm -f yadfa docs/reference/yadfa-reference.texi
 	$(MAKE) -C docs/reference clean
+test: yadfa
+	./yadfa test

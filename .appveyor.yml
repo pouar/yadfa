@@ -58,6 +58,7 @@ test_script:
 - ps: |
     If(!(test-path C:\projects\yadfa\yadfa.exe )) { echo "yadfa.exe was not built";exit 1; }
     Else { echo "yadfa.exe was built"; }
+    ./yadfa test
     #If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.html )) { echo "yadfa-reference.html was not built";exit 1; }
     #Else { echo "yadfa-reference.html was built"; }
     #If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.pdf )) { echo "yadfa-reference.pdf was not built";exit 1; }

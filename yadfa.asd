@@ -8,6 +8,7 @@
   :description "Yet Another Diaperfur Adventure"
   :long-description "Yet Another Diaperfur Adventure"
   :build-operation :program-op
+  :in-order-to ((test-op (test-op "yadfa/tests")))
   :build-pathname "yadfa"
   :entry-point "yadfa::main"
   :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "trivial-features" "clim-listener" "mcclim-raster-image" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria" "serapeum" "global-vars" (:feature :sbcl "yadfa/docs") "float-features" "illogical-pathnames")
@@ -130,3 +131,11 @@
   :description "Used for building the docs. Contains patches to Declt for using Texinfo commands in docstrings"
   :components ((:module "core"
                 :components ((:file "declt-patches")))))
+(asdf:defsystem "yadfa/tests"
+  :depends-on ("yadfa" "fiveam")
+  :perform (test-op (o s)
+                    (symbol-call '#:yadfa-tests '#:run-tests))
+  :components ((:module "t"
+                :serial t
+                :components ((:file "package")
+                             (:file "main")))))
