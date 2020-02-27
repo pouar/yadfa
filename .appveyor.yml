@@ -49,6 +49,7 @@ build_script:
 #- cmd: '"C:\Program Files\Steel Bank Common Lisp\2.0.1\sbcl" --script "appveyor-build-docs.lisp" texi'
 #- cmd: 'C:\cygwin64\bin\bash.exe -lc "cd /cygdrive/c/projects/yadfa/docs/reference;make -j4 all"'
 - cmd: '"%CACHE%\ccl-1.11.6\wx86cl64.exe" -b -l appveyor-build.lisp -e "(#__exit 0)" -- immutable'
+- cmd: '"%CACHE%\ccl-1.11.6\wx86cl64.exe" -b -e "(ql:quickload :fiveam)" -e "(#__exit 0)"'
 - ps: cp chocolatey/yadfa.nuspec yadfa.nuspec # for some reason Chocolatey seems to expect the package build file to be in the same directory as the source directory
 - ps: choco pack yadfa.nuspec --version $(Get-Date -UFormat "0.9.%s")
 artifacts:
