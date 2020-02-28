@@ -83,10 +83,10 @@ modules:
         url: https://beta.quicklisp.org/quicklisp.lisp
         sha256: 4a7a5c2aebe0716417047854267397e24a44d0cce096127411e9ce9ccfeb2c17
       - type: archive
-        url: https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.3.5/asdf-3.3.3.5.tar.gz
+        url: https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.4/asdf-3.3.4.tar.gz
         strip-components: 0
         dest-filename: asdf.tar.gz
-        sha256: fd38acaa06c2c7ec2140de74c085c2c4d02121b39b8a40d3cc8891a7fe91ba3d
+        sha256: f29cd59f52d95ac3e5ac8a9162e5772f608973bf340bdbc82673962f9e35d7bd
       - type: git
         url: https://github.com/didierverna/declt.git
         dest: declt
