@@ -22,10 +22,3 @@
   (test-initialize-package :yadfa-status-conditions))
 (test initialize-allies
   (test-initialize-package :yadfa-allies))
-(defun run-tests ()
-  (let ((tests (5am:run 'all-tests)))
-    (explain! tests)
-    (iter (for test in tests)
-      (when (5am::test-failure-p test)
-        (leave 1))
-      (finally (return 0)))))

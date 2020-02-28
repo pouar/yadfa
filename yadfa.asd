@@ -133,8 +133,10 @@
                 :components ((:file "declt-patches")))))
 (asdf:defsystem "yadfa/tests"
   :depends-on ("yadfa" "fiveam")
-  :perform (test-op (o s)
-                    (symbol-call '#:yadfa-tests '#:run-tests))
+  :defsystem-depends-on ("fiveam-asdf")
+  :class :fiveam-tester-system
+  :test-package :yadfa-tests
+  :test-names (#:all-tests)
   :components ((:module "t"
                 :serial t
                 :components ((:file "package")
