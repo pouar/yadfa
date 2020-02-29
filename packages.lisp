@@ -491,6 +491,7 @@
    #:diaper-pirate
    #:diapered-kobold
    #:diapered-skunk
+   #:diapered-skunk*
    #:thickly-diaper-pirate
    #:padded-fursuiter-servant
    #:fursuiter-servant
