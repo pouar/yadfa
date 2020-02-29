@@ -150,13 +150,15 @@
                                                 "An orca in pullups rushes by you clutching the front of his pullups and runs into the bathroom and locks the door. You groan while doing a potty dance in response."
                                                 "A diapered raccoon bandit is whining hopping from foot to foot in front of the locked bathroom door holding the front of his diaper waiting for it to open until he floods his diapers, then waddles away in embarrassment. You nearly piddle yourself from the sound of him piddling."
                                                 "You see a diapered skunk in front of the locked bathroom door with a look of relief on his face flooding his diapers. You're almost jealous of him."
-                                                "You head to the bathroom then groan while doing a potty dance when you find that the door is locked.")))
+                                                "You head to the bathroom then groan while doing a potty dance when you find that the door is locked."
+                                                #.(format nil "You see a diapered skunk leaking all over in front of the locked bathroom door with a look of relief on his face flooding his already overflowing diapers and leaving a puddle on the floor.~%~%Diapered Raccoon Bandit holding his nose with both paws: Can you please go be stinky somewhere else?"))))
                       ((>= (bowels/contents-of (player-of *game*)) (bowels/potty-dance-limit-of (player-of *game*)))
                        (alexandria:random-elt '("One of the diapered raccoon bandits waddles by you crinkling clutching the front of his diaper and scurries into the bathroom and locks the door. You groan while doing a potty dance in response."
                                                 "An orca in pullups rushes by you clutching the front of his pullups and runs into the bathroom and locks the door. You groan while doing a potty dance in response."
                                                 "A diapered raccoon bandit waiting in front of the bathroom door involuntarily squats down and messes his pamps, then waddles away in embarrassment. You nearly mess yourself from the sound of him messing."
                                                 "You see a diapered skunk in front of the locked bathroom door squatting down and filling his diapers. You're almost jealous of him."
-                                                "You head to the bathroom then groan while doing a potty dance when you find that the door is locked.")))
+                                                "You head to the bathroom then groan while doing a potty dance when you find that the door is locked."
+                                                #.(format nil "You see a diapered skunk leaking all over in front of the locked bathroom door squatting down and filling his already overflowing diapers and leaving a mess on the floor.~%~%Diapered Raccoon Bandit holding his nose with both paws: Can you please go be stinky somewhere else?"))))
                       (t
                        (alexandria:random-elt '("One of the diapered raccoon bandits waddles by you crinkling clutching the front of his diaper and scurries into the bathroom and locks the door."
                                                 "An orca in pullups rushes by you clutching the front of his pullups and runs into the bathroom and locks the door."
