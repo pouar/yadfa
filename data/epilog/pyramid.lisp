@@ -18,49 +18,51 @@
          (type (or cons boolean) *result*))
 (define-command-table puzzle-commands)
 (define-command-table game-commands)
-(defclass area ()
-  ((north
-    :initform nil
-    :initarg :north
-    :accessor northp)
-   (south
-    :initform nil
-    :initarg :south
-    :accessor southp)
-   (east
-    :initform nil
-    :initarg :east
-    :accessor eastp)
-   (west
-    :initform nil
-    :initarg :west
-    :accessor westp)
-   (objects
-    :initform nil
-    :initarg :objects
-    :accessor objects-of)
-   (puzzle
-    :initform nil
-    :initarg :puzzle
-    :accessor puzzle-of)))
+(serapeum:eval-always
+  (in-package :yadfa-pyramid)
+  (defclass area ()
+    ((north
+      :initform nil
+      :initarg :north
+      :accessor northp)
+     (south
+      :initform nil
+      :initarg :south
+      :accessor southp)
+     (east
+      :initform nil
+      :initarg :east
+      :accessor eastp)
+     (west
+      :initform nil
+      :initarg :west
+      :accessor westp)
+     (objects
+      :initform nil
+      :initarg :objects
+      :accessor objects-of)
+     (puzzle
+      :initform nil
+      :initarg :puzzle
+      :accessor puzzle-of)))
+  (defclass puzzle ()
+    ((name
+      :initform ""
+      :initarg :name
+      :accessor name-of)
+     (key-of
+      :initform nil
+      :initarg :key
+      :accessor key-of)
+     (needed-objects
+      :initform nil
+      :initarg :needed-objects
+      :accessor needed-objects-of))))
 (defclass object ()
   ((name
    :initform ""
    :initarg :name
    :accessor name-of)))
-(defclass puzzle ()
-  ((name
-    :initform ""
-    :initarg :name
-    :accessor name-of)
-   (key-of
-    :initform nil
-    :initarg :key
-    :accessor key-of)
-   (needed-objects
-    :initform nil
-    :initarg :needed-objects
-    :accessor needed-objects-of)))
 (defmethod print-object ((object object) stream)
   (print-unreadable-object (object stream :type t)
     (if (slot-boundp object 'name)

@@ -118,7 +118,9 @@
                                                       :type "lisp"))))
                              (:module "epilog"
                               :depends-on ("prolog" "enemies" "events" "items" "map" "moves" "props" "status-conditions" "team-members")
-                              :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
+                              :components #.(mapcar (lambda (p) `(:file ,(pathname-name p)
+                                                                        ,@(when (string= (pathname-name p) "puzzle")
+                                                                            '(:depends-on ("pyramid")))))
                                                     (directory-files
                                                      (pathname-directory-pathname
                                                       (uiop/lisp-build:current-lisp-file-pathname))

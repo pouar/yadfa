@@ -1,4 +1,7 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
+(in-package :yadfa-clim)
+(defclass stat-view (view) ())
+(defconstant +stat-view+ (make-instance 'stat-view))
 (in-package :yadfa)
 (eval-always
   (defmacro ref (symbol type)

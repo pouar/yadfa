@@ -74,8 +74,6 @@
           :prompt "object"
           :gesture :inspect))
   (clouseau:inspect obj :new-process t))
-(defclass stat-view (view) ())
-(defconstant +stat-view+ (make-instance 'stat-view))
 (defmacro draw-bar (medium stat &rest colors)
   `(multiple-value-bind (x y) (stream-cursor-position ,medium)
      (draw-rectangle* ,medium x y (+ x (* ,stat 400)) (+ y 15)

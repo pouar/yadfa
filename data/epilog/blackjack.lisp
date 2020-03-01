@@ -253,7 +253,9 @@
       (mess :pants-down pants-down :clothes *player-clothes*))
     (setf *put-on-old-clothes* put-on-old-clothes)
     (frame-exit *application-frame*)))
-(defclass give-up () ())
+(serapeum:eval-always
+  (in-package :yadfa-blackjack)
+  (defclass give-up () ()))
 (define-presentation-to-command-translator give-up-with-accept
     (give-up com-give-up game-frame
      :gesture :select
