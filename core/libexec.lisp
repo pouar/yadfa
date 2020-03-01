@@ -1813,7 +1813,7 @@
                                  " and tail"
                                  ""))
                      (format s "*~a squishes ~a's diaper*~%~%" player-name user-name)
-                     (format s "~a: Looks like it to me~%~%" (name-of (player-of *game*))))
+                     (format s "~a: Looks like it to me~%~%" player-name))
             normal)
           (do-push (with-output-to-string (s)
                      (format s "*~a has an accident*~%~%" user-name)
