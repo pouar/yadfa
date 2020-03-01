@@ -25,7 +25,8 @@ install:
 - cmd: 'C:\cygwin64\setup-x86_64.exe --quiet-mode --no-shortcuts --upgrade-also --packages jq,patch,make,m4,mingw64-x86_64-binutils,mingw64-x86_64-gcc-core,mingw64-x86_64-headers,mingw64-x86_64-pthreads,mingw64-x86_64-runtime'
 - ps: Expand-Archive $env:CACHE\ccl.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\ccl-1.11.6.zip -DestinationPath $env:CACHE
-- ps: Expand-Archive $env:CACHE\asdf.zip -DestinationPath $env:CACHE
+- ps: New-Item -ItemType Directory -Force -Path $env:USERPROFILE\common-lisp\
+- ps: Expand-Archive $env:CACHE\asdf.zip -DestinationPath $env:USERPROFILE\common-lisp\
 - ps: Expand-Archive $env:CACHE\sly.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\declt.zip -DestinationPath $env:CACHE
 - ps: Expand-Archive $env:CACHE\mcclim.zip -DestinationPath $env:CACHE
@@ -36,9 +37,8 @@ install:
 - ps: Copy-Item $env:CACHE\dejavu-fonts-ttf-2.37\ttf\*.ttf  -destination C:\Windows\Fonts
 - cmd:  refreshenv
 - cmd: 'start /wait msiexec /i %CACHE%\sbcl.msi /quiet /qn /norestart /log sbcl-install.log'
-- ps: Copy-Item $env:CACHE\asdf-3.3.4\ -recurse -destination $env:USERPROFILE\common-lisp\
 - cmd: 'C:\cygwin64\bin\bash.exe -lc "/cygdrive/c/projects/yadfa/ci/build-ccl.sh /cygdrive/c/cache/ccl-1.11.6"'
-- cmd: '"%CACHE%\ccl-1.11.6\wx86cl64.exe" -b -l "%CACHE%\quicklisp.lisp" -e "(quicklisp-quickstart:install)" -e "(uiop:quit)"'
+- cmd: '"%CACHE%\ccl-1.11.6\wx86cl64.exe" -b -l "%CACHE%\quicklisp.lisp" -e "(quicklisp-quickstart:install)" -e "(ql:quickload (list :fiveam :fiveam-asdf))" -e "(uiop:quit)"'
 - ps: Copy-Item ci\ccl-init.lisp -Destination $env:USERPROFILE\ccl-init.lisp
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\yadfa -ItemType SymbolicLink -Value $pwd
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\sly -ItemType SymbolicLink -Value $env:CACHE\sly-master
@@ -50,9 +50,9 @@ build_script:
 #- cmd: '"C:\Program Files\Steel Bank Common Lisp\2.0.1\sbcl" --script "appveyor-build-docs.lisp" texi'
 #- cmd: 'C:\cygwin64\bin\bash.exe -lc "cd /cygdrive/c/projects/yadfa/docs/reference;make -j4 all"'
 - cmd: '"%CACHE%\ccl-1.11.6\wx86cl64.exe" -b -l appveyor-build.lisp -- immutable'
-- cmd: '"%CACHE%\ccl-1.11.6\wx86cl64.exe" -b -e "(ql:quickload :fiveam)" -e "(uiop:quit)"'
 - ps: cp chocolatey/yadfa.nuspec yadfa.nuspec # for some reason Chocolatey seems to expect the package build file to be in the same directory as the source directory
 - ps: choco pack yadfa.nuspec --version $(Get-Date -UFormat "0.9.%s")
+- ps: ./yadfa test
 artifacts:
 - path: yadfa*.nupkg
   name: NuPKG
@@ -60,7 +60,6 @@ test_script:
 - ps: |
     If(!(test-path C:\projects\yadfa\yadfa.exe )) { echo "yadfa.exe was not built";exit 1; }
     Else { echo "yadfa.exe was built"; }
-    ./yadfa test
     #If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.html )) { echo "yadfa-reference.html was not built";exit 1; }
     #Else { echo "yadfa-reference.html was built"; }
     #If(!(test-path C:\projects\yadfa\docs\reference\yadfa-reference.pdf )) { echo "yadfa-reference.pdf was not built";exit 1; }
