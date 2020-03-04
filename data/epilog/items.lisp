@@ -27,7 +27,7 @@
            (process-potty-dance-of target) nil)
 
      (push target (contained-enemies-of item))
-     (when (getf (special-actions-of item) :take-items)
+     (unless (getf (special-actions-of item) :take-items)
        (setf (getf (special-actions-of item) :take-items)
              '(lambda (item user &key &allow-other-keys)
                (declare (ignore user))
@@ -40,7 +40,7 @@
                           (setf (inventory-of enemy) nil
                                 (wear-of enemy) nil))
                  (inventory-of (player-of *game*)))))))
-     (when (getf (special-actions-of item) :adopt-enemies)
+     (unless (getf (special-actions-of item) :adopt-enemies)
        (setf (getf (special-actions-of item) :adopt-enemies)
              '(lambda (item user &allow-other-keys :enemies enemies)
                (if (iter (for i in (contained-enemies-of item))
