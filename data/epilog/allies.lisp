@@ -1,7 +1,8 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-allies"; coding: utf-8-unix; -*-
 (in-package :yadfa-allies)
-(defunassert (yadfa-world-commands:disown-adopted-enemies (&optional allies))
-    (enemies (or list type-specifier))
+(defunassert (yadfa-world-commands:disown-adopted-enemies (&optional allies count))
+    (allies (or list type-specifier)
+            count (or null unsigned-byte))
   (setf allies
         (typecase allies
           (null (accept-with-effective-frame
@@ -13,6 +14,9 @@
                                  :stream *query-io*
                                  :view clim:+check-box-view+))))
           (type-specifier (iter (for enemy in (allies-of *game*))
+                            (for i upfrom 0)
+                            (when (and count (>= count i))
+                              (finish))
                             (when (typep enemy `(and ,allies adopted-enemy))
                               (collect enemy))))
           (list (iter
