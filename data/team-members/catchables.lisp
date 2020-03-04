@@ -17,7 +17,7 @@
    :species "Kobold"
    :male (random-elt '(t nil))
    :bladder/contents (random 500)
-   :bowels/contents (random 7000)
+   :bowels/contents (random 700)
    :inventory (iter (for i from 0 to (random 10))
                 (collect (make-instance 'yadfa-items:cloth-diaper)))
    :moves (list (make-instance 'yadfa-moves:watersport)
