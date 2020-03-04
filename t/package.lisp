@@ -1,5 +1,5 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "common-lisp-user"; coding: utf-8-unix; -*-
-(defpackage #:yadfa-tests
+(uiop:define-package #:yadfa-tests
   (:use #:cl #:fiveam #:iterate)
   (:export #:all-tests
            #:initialization-tests

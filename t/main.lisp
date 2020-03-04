@@ -9,7 +9,7 @@
        (let ((result (handler-case (class-of (make-instance class))
                        (error (c) c))))
          (is (eq result (find-class class nil))
-             "Class ~s failed to initialize:~%~a" class result)))))
+             "Class ~s failed to initialize:~%~8t~a" class result)))))
 (test initialize-items
   (test-initialize-package :yadfa-items))
 (test initialize-enemies

@@ -42,7 +42,7 @@
   (when (find "test" (uiop:command-line-arguments) :test #'string=)
     (handler-case (progn (asdf:test-system :yadfa)
                          (uiop:quit))
-      (asdf/interface::fiveam-test-fail () (uiop:quit 1))))
+      (error () (uiop:quit 1))))
   (when (find "texi" (uiop:command-line-arguments) :test #'string=)
     (build-texi)
     (uiop:quit))
