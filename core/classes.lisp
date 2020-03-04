@@ -1257,7 +1257,7 @@
   (incf (time-of *game*)))
 (defclass game (yadfa-class)
   ((zones
-    :initform (make-hash-table :test #'equal)
+    :initform (make-hash-table :test #'equal :size 500)
     :type hash-table
     :documentation "Hash table of zones in the game")
    (enemy-spawn-list
