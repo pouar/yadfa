@@ -114,6 +114,7 @@
    #:status-condition
    #:stats-view
    #:base-character
+   #:potty-character
    #:npc
    #:team-member
    #:potty-trained-team-member

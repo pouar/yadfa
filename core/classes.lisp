@@ -155,78 +155,6 @@
     :accessor last-process-potty-time-of
     :type real
     :documentation "Last time process-potty was processed")
-   (bladder/contents
-    :initarg :bladder/contents
-    :initform 0
-    :type (real 0)
-    :accessor bladder/contents-of
-    :documentation "Amount in ml that the character is holding in in ml.")
-   (bladder/fill-rate
-    :initarg :bladder/fill-rate
-    :initform (* (/ 2000 24 60) 0)
-    :type real
-    :accessor bladder/fill-rate-of
-    :documentation "Amount in ml that the character's bladder fills each turn.")
-   (bladder/need-to-potty-limit
-    :initarg :bladder/need-to-potty-limit
-    :initform 300
-    :type (real 0)
-    :accessor bladder/need-to-potty-limit-of
-    :documentation "How full the bladder needs to be before the character needs to go")
-   (bladder/potty-dance-limit
-    :initarg :bladder/potty-dance-limit
-    :initform 450
-    :type (real 0)
-    :accessor bladder/potty-dance-limit-of
-    :documentation "How full the character's bladder needs to be before the character starts doing a potty dance")
-   (bladder/potty-desperate-limit
-    :initarg :bladder/potty-desperate-limit
-    :initform 525
-    :type (real 0)
-    :accessor bladder/potty-desperate-limit-of
-    :documentation "How full the character's bladder needs to be before the character starts begging to be taken to the bathroom")
-   (bladder/maximum-limit
-    :initarg :bladder/maximum-limit
-    :initform 600
-    :type (real 0)
-    :accessor bladder/maximum-limit-of
-    :documentation "When the character's bladder gets this full, @{s,he@} wets @{him,her@}self")
-   (bowels/contents
-    :initarg :bowels/contents
-    :initform 0
-    :type (real 0)
-    :accessor bowels/contents-of
-    :documentation "Amount in grams that the character is holding in")
-   (bowels/fill-rate
-    :initarg :bowels/fill-rate
-    :initform (* (/ 400 24 60) 0)
-    :type (real 0)
-    :accessor bowels/fill-rate-of
-    :documentation "Amount in grams that the character's bowels fills each turn")
-   (bowels/need-to-potty-limit
-    :initarg :bowels/need-to-potty-limit
-    :initform 400
-    :type (real 0)
-    :accessor bowels/need-to-potty-limit-of
-    :documentation "How full the bowels need to be before the character needs to go")
-   (bowels/potty-dance-limit
-    :initarg :bowels/potty-dance-limit
-    :initform 600
-    :type (real 0)
-    :accessor bowels/potty-dance-limit-of
-    :documentation "How full the character's bowels need to be before the character starts doing a potty dance")
-   (bowels/potty-desperate-limit
-    :initarg :bowels/potty-desperate-limit
-    :initform 700
-    :type (real 0)
-    :accessor bowels/potty-desperate-limit-of
-    :documentation "How full the character's bowels needs to be before the character starts begging to be taken to the bathroom")
-   (bowels/maximum-limit
-    :initarg :bowels/maximum-limit
-    :initform 800
-    :type (real 0)
-    :accessor bowels/maximum-limit-of
-    :documentation "When the character's bowels gets this full, @{he,she@} messes @{him,her@}self")
    (moves
     :initarg :moves
     :initform ()
@@ -303,6 +231,96 @@
       (mess :messer character)
       (set-status-condition 'yadfa-status-conditions:messing character))
     t))
+(macro-level `(progn ,@(iter (for i in '("BLADDER" "BOWELS"))
+                         (appending (iter (for j in '("CONTENTS-OF" "FILL-RATE-OF"))
+                                      (collect `(defmethod ,(format-symbol :yadfa "~a/~a" i j) ((object base-character))
+                                                  0))))
+                         (appending (iter (for j in '("NEED-TO-POTTY-LIMIT-OF" "POTTY-DANCE-LIMIT-OF" "POTTY-DESPERATE-LIMIT-OF" "MAXIMUM-LIMIT-OF"))
+                                      (collect `(defmethod ,(format-symbol :yadfa "~a/~a" i j) ((object base-character))
+                                                  1))))
+                         (appending (iter (for j in '("CONTENTS-OF" "FILL-RATE-OF" "NEED-TO-POTTY-LIMIT-OF"
+                                                      "POTTY-DANCE-LIMIT-OF" "POTTY-DESPERATE-LIMIT-OF" "MAXIMUM-LIMIT-OF"))
+                                      (collect `(defmethod ,(format-symbol :yadfa "SET-~a/~a" i j) ((object base-character) newval)
+                                                  (setf (values) newval))))))))
+(defclass potty-character (base-character)
+  ((bladder/contents
+    :initarg :bladder/contents
+    :initform 0
+    :type (real 0)
+    :accessor bladder/contents-of
+    :documentation "Amount in ml that the character is holding in in ml.")
+   (bladder/fill-rate
+    :initarg :bladder/fill-rate
+    :initform (* (/ 2000 24 60) 0)
+    :type real
+    :accessor bladder/fill-rate-of
+    :documentation "Amount in ml that the character's bladder fills each turn.")
+   (bladder/need-to-potty-limit
+    :initarg :bladder/need-to-potty-limit
+    :initform 300
+    :type (real 0)
+    :accessor bladder/need-to-potty-limit-of
+    :documentation "How full the bladder needs to be before the character needs to go")
+   (bladder/potty-dance-limit
+    :initarg :bladder/potty-dance-limit
+    :initform 450
+    :type (real 0)
+    :accessor bladder/potty-dance-limit-of
+    :documentation "How full the character's bladder needs to be before the character starts doing a potty dance")
+   (bladder/potty-desperate-limit
+    :initarg :bladder/potty-desperate-limit
+    :initform 525
+    :type (real 0)
+    :accessor bladder/potty-desperate-limit-of
+    :documentation "How full the character's bladder needs to be before the character starts begging to be taken to the bathroom")
+   (bladder/maximum-limit
+    :initarg :bladder/maximum-limit
+    :initform 600
+    :type (real 0)
+    :accessor bladder/maximum-limit-of
+    :documentation "When the character's bladder gets this full, @{s,he@} wets @{him,her@}self")
+   (bowels/contents
+    :initarg :bowels/contents
+    :initform 0
+    :type (real 0)
+    :accessor bowels/contents-of
+    :documentation "Amount in grams that the character is holding in")
+   (bowels/fill-rate
+    :initarg :bowels/fill-rate
+    :initform (* (/ 400 24 60) 0)
+    :type (real 0)
+    :accessor bowels/fill-rate-of
+    :documentation "Amount in grams that the character's bowels fills each turn")
+   (bowels/need-to-potty-limit
+    :initarg :bowels/need-to-potty-limit
+    :initform 400
+    :type (real 0)
+    :accessor bowels/need-to-potty-limit-of
+    :documentation "How full the bowels need to be before the character needs to go")
+   (bowels/potty-dance-limit
+    :initarg :bowels/potty-dance-limit
+    :initform 600
+    :type (real 0)
+    :accessor bowels/potty-dance-limit-of
+    :documentation "How full the character's bowels need to be before the character starts doing a potty dance")
+   (bowels/potty-desperate-limit
+    :initarg :bowels/potty-desperate-limit
+    :initform 700
+    :type (real 0)
+    :accessor bowels/potty-desperate-limit-of
+    :documentation "How full the character's bowels needs to be before the character starts begging to be taken to the bathroom")
+   (bowels/maximum-limit
+    :initarg :bowels/maximum-limit
+    :initform 800
+    :type (real 0)
+    :accessor bowels/maximum-limit-of
+    :documentation "When the character's bowels gets this full, @{he,she@} messes @{him,her@}self")))
+(macro-level `(progn ,@(iter (for i in '("BLADDER" "BOWELS"))
+                         (appending (iter (for j in '("CONTENTS-OF" "FILL-RATE-OF" "NEED-TO-POTTY-LIMIT-OF"
+                                                      "POTTY-DANCE-LIMIT-OF" "POTTY-DESPERATE-LIMIT-OF" "MAXIMUM-LIMIT-OF"))
+                                      (collect `(defmethod ,(format-symbol :yadfa "SET-~a/~a" i j) ((object potty-character) newval)
+                                                  (setf (,(format-symbol :yadfa "~a/~a" i j) object) newval)))
+                                      (collect `(defsetf ,(format-symbol :yadfa "~a/~a" i j) ,(format-symbol :yadfa "SET-~a/~a" i j) )))))))
 (defclass team-member (base-character)
   ((skin
     :initarg :skin
@@ -323,7 +341,7 @@
     :accessor wings-of
     :documentation "list of attributes for the character's wings. current supported elements are @code{:SCALES}, @code{:FUR}, and @code{:FEATHERS}"))
   (:documentation "Either the player or an ally inherits this class"))
-(defclass potty-trained-team-member (team-member) ())
+(defclass potty-trained-team-member (team-member potty-character) ())
 (defclass ally (team-member)
   ((learned-moves
     :initarg :learned-moves
@@ -341,7 +359,7 @@
    :bowels/fill-rate (* (/ 400 24 60) 2)
    :wear (list (make-instance 'yadfa-items:diaper))
    :moves (list (make-instance 'yadfa-moves:watersport) (make-instance 'yadfa-moves:mudsport))))
-(defclass ally-no-potty-training (ally) ())
+(defclass ally-no-potty-training (ally potty-character) ())
 (defmethod process-battle-accident-method ((character ally-no-potty-training) attack item reload selected-target)
   (declare (ignore attack item reload selected-target))
   (when (>= (bladder/contents-of character) (bladder/need-to-potty-limit-of character))
@@ -354,7 +372,7 @@
       (format t "~a messed ~aself~%" (name-of character) (if (malep character) "him" "her"))
       (when (> (getf mess-status :leak-amount) 0))
       (format t "~a has a blowout and leaves a mess~%" (name-of character)))))
-(defclass ally-rebel-potty-training (ally) ())
+(defclass ally-rebel-potty-training (ally potty-character) ())
 (defmethod process-battle-accident-method ((character ally-rebel-potty-training) attack item reload selected-target)
   (declare (ignore item reload))
   (cond ((and (not (typep (get-move attack character)
@@ -1192,7 +1210,7 @@
           (t (write "Female" :stream stream)))
     (write-string " " stream)
     (print-slot obj 'species stream)))
-(defclass potty-enemy (enemy) ()
+(defclass potty-enemy (enemy potty-character) ()
   (:default-initargs
    :bladder/fill-rate (* (/ 2000 24 60) 2)
    :bowels/fill-rate (* (/ 12000 24 60) 2))
