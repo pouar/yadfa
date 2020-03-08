@@ -88,7 +88,7 @@
    :description "Flood your diapers, but enchants the diaper so it all teleports into someone else's diaper."
    :attack '(lambda (target user self)
              (format t "~a used ~a~%" (name-of user) (name-of self))
-             (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
+             (if (< (bladder/contents-of user) (bladder/need-to-potty-limit-of user))
               (format t "But it failed~%")
               (progn (wet :wetter user :clothes (wear-of target))
                      (format t "~a gets a freaked expression on ~a face as ~a floods ~a's pamps~%" (name-of target) (if (malep target) "his" "her")

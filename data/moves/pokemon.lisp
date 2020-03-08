@@ -35,25 +35,28 @@
                      (format t "~a messed ~a~%"
                              (name-of user)
                              (if (malep user) "himself" "herself")))))))
+(defmethod mudbomb% (target (user potty-character) self)
+  (format t "~a used ~a~%" (name-of user) (name-of self))
+  (mess :force-fill-amount (if (< (* 30 24 (bowels/fill-rate-of user)) (bowels/maximum-limit-of user))
+                               (bowels/maximum-limit-of user)
+                               (* 30 24 (bowels/fill-rate-of user))) :messer user)
+  (format t "~a messed ~a massively~%"
+          (name-of user)
+          (if (malep user) "himself" "herself"))
+  (iter (for i in (if (typep user 'team-member)
+                      (enemies-of *battle*)
+                      (team-of *game*)))
+    (set-status-condition 'yadfa-status-conditions:skunked i)
+    (format t "~a is grossed out by the smell~%" (name-of i))))
+(defmethod mudbomb% (target (user base-character) self)
+  (format t "~a used ~a~%" (name-of user) (name-of self))
+  (write-line "But it failed."))
 (defclass mudbomb (stat/move) ()
   (:default-initargs
    :name "Mud Bomb"
    :description "massively mess your diapers, never fails"
    :energy-cost 5
-   :attack '(lambda (target user self)
-             (declare (ignore target))
-             (format t "~a used ~a~%" (name-of user) (name-of self))
-             (mess :force-fill-amount (if (< (* 30 24 (bowels/fill-rate-of user)) (bowels/maximum-limit-of user))
-                                       (bowels/maximum-limit-of user)
-                                       (* 30 24 (bowels/fill-rate-of user))) :messer user)
-             (format t "~a messed ~a massively~%"
-              (name-of user)
-              (if (malep user) "himself" "herself"))
-             (iter (for i in (if (typep user 'team-member)
-                                 (enemies-of *battle*)
-                                 (team-of *game*)))
-               (set-status-condition 'yadfa-status-conditions:skunked i)
-               (format t "~a is grossed out by the smell~%" (name-of i))))))
+   :attack 'mudbomb%))
 (defclass tickle (stat/move) ()
   (:default-initargs
    :name "Tickle"
