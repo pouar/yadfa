@@ -534,7 +534,7 @@
                                                (type symbol m))
                                       `(,@(mapcar #'+ (list x y z) delta) ,m)))
                   (current-zone (get-zone current-position))
-                  (stairs (not (getf (stairs-of current-zone) direction))))
+                  (stairs (and current-zone (not (getf (stairs-of current-zone) direction)))))
              (when (and current-zone
                         (not (hiddenp current-zone))
                         (or (and (member direction '(:up :down)) stairs)
