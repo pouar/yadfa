@@ -64,8 +64,9 @@
                        (format t "Shopkeeper: Bad ~a, no going potty inside~%" (species-of user)))
                      (when (or (getf (car had-accident) :popped)
                                (getf (cdr had-accident) :popped))
-                       (format t "*The shopkeeper falls over laughing with his diaper clearly exposed from under his tunic, then gets an embarrassed look on his face when he floods his diaper from the laughter, which is incredibly obvious from the wetness indicator changing color*~%~%")
-                       (format t "*A random raccoon in the shop records the shopkeeper flooding his pamps then uploads it to the internet*~%~%")
+                       (write-string #.(with-output-to-string (s)
+                                         (format s "*The shopkeeper falls over laughing with his diaper clearly exposed from under his tunic, then gets an embarrassed look on his face when he floods his diaper from the laughter, which is incredibly obvious from the wetness indicator changing color*~%~%")
+                                         (format s "*A random raccoon in the shop records the shopkeeper flooding his pamps then uploads it to the internet*~%~%")))
                        (trigger-event 'yadfa-events:shopkeeper-floods-himself-1))
                      (when (> (getf (car had-accident) :leak-amount) 0)
                        (format t "*The shopkeeper laughs at ~a's misfortune*~%" (name-of user))
@@ -99,7 +100,14 @@
                                                                 :lambda '(lambda
                                                                           (prop &rest keys &key &allow-other-keys)
                                                                           (declare (ignore prop keys))
-                                                                          (format t "Diapered Raccoon Bandit Shop Owner: Sorry, only I'm allowed in there. Everyone else can just use their diapers. Isn't that right mushbutt?~%~%*The Shop Owner slaps the back of the Rookie's diaper*~%~%*Rookie yelps then grabs the back of his diaper and struggles to unmush it*~%~%*The Shop Owner laughs*~%~%Rookie Raccoon: Can I please get a diaper change now?~%~%Shop Owner: Keep asking me that and I'll make you sit in it in timeout again.~%~%Rookie Raccoon: NO! PLEASE! I'LL BE GOOD!~%~%")))
+                                                                          (write-string #.(with-output-to-string (s)
+                                                                                          (format s "Diapered Raccoon Bandit Shop Owner: Sorry, only I'm allowed in there. Everyone else can just use their diapers. Isn't that right mushbutt?~%~%")
+                                                                                          (format s "*The Shop Owner slaps the back of the Rookie's diaper*~%~%")
+                                                                                          (format s "*Rookie yelps then grabs the back of his diaper and struggles to unmush it*~%~%")
+                                                                                          (format s "*The Shop Owner laughs*~%~%")
+                                                                                          (format s "Rookie Raccoon: Can I please get a diaper change now?~%~%")
+                                                                                          (format s "Shop Owner: Keep asking me that and I'll make you sit in it in timeout again.~%~%")
+                                                                                          (format s "Rookie Raccoon: NO! PLEASE! I'LL BE GOOD!~%~%")))))
                                                    :ask-why-youre-allowed-to-shop (make-action :documentation "Ask the raccoons why you're allowed to shop here without the gang attacking you"
                                                                                                :lambda '(lambda
                                                                                                          (prop &rest keys &key &allow-other-keys)

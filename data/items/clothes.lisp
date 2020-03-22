@@ -304,7 +304,7 @@
    :name "Watertight Fursuit"
    :value 25000
    :sogginess-capacity 5000
-   :messiness-capacity 50000
+   :messiness-capacity 4000
    :waterproof t
    :description "So you're fursuiting, but then all of a sudden you gotta go, but then don't make it, and then end up in a smelly soggy fursuit, and then no one wants to touch you cause you're soggy and smelly. Well with this baby, all those nasty smells and waste stay inside your suit, usually. Now the only one who has to suffer is you. Isn't that great?"
    :wear-wet-text '(400 "Even though no one else can tell, you're drenched in your own bodily fluids from the waist down."
@@ -366,3 +366,20 @@
    :name "Shortalls"
    :plural-name "Shortalls"
    :description "Denim shortalls with snaps on the front"))
+(defclass rubber-suit (closed-full-outfit) ()
+  (:default-initargs
+   :name "Rubber Suit"
+   :value 500
+   :sogginess-capacity 5000
+   :messiness-capacity 4000
+   :thickness-capacity 400
+   :waterproof t
+   :leakproof t
+   :description "Completely covers your body from the neck down. Is completely leakproof. If you think you're too big for pamps, you can wear these instead."
+   :wear-wet-text '(400 "Even though no one else can tell, you're drenched in your own bodily fluids from the waist down."
+                    100 "You're wet and smelly underneath, but at least no one else will notice."
+                    10 "Well it's not noticeable"
+                    0 "It's clean")
+   :wear-mess-text '(400 "There's a big lump on the back of your seat"
+                    10 "Well it's not noticeable"
+                    0 "It's clean")))

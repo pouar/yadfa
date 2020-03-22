@@ -103,6 +103,9 @@
                                                    (make-instance 'yadfa-items:bandit-female-diaper
                                                                   :sogginess (random 1000)
                                                                   :messiness (random 6000))))))))
+             'haunted-forest '((:chance 1/5
+                                :enemies ((yadfa-enemies:ghost .
+                                           `(:level ,(random-from-range 3 8))))))
              'rpgmaker-dungeon '((:chance 1/20
                                   :enemies ((yadfa-enemies:rookie-diapered-raccoon-bandit .
                                              `(:level ,(random-from-range 2 5)))))

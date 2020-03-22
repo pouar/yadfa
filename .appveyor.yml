@@ -45,7 +45,7 @@ install:
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\declt -ItemType SymbolicLink -Value $env:CACHE\declt-master
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\McCLIM -ItemType SymbolicLink -Value $env:CACHE\McCLIM-master
 - ps: New-Item -Path $env:USERPROFILE\quicklisp\local-projects\illogical-pathnames -ItemType SymbolicLink -Value $env:CACHE\illogical-pathnames-pouar
-
+- cmd: 'C:\cygwin64\bin\bash.exe -lc "patch -d /c/cache/McCLIM-master -p1 -i /c/projects/yadfa/flatpak/0001-Listener-remove-cl-fad-dependency.patch"'
 build_script:
 #- cmd: '"C:\Program Files\Steel Bank Common Lisp\2.0.1\sbcl" --script "appveyor-build-docs.lisp" texi'
 #- cmd: 'C:\cygwin64\bin\bash.exe -lc "cd /cygdrive/c/projects/yadfa/docs/reference;make -j4 all"'

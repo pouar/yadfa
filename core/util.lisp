@@ -13,7 +13,8 @@
 (defmethod lambda-list ((lambda-exp function))
   (swank-backend:arglist lambda-exp))
 (defmacro do-push (item &rest places)
-  `(progn ,@(loop for place in places collect `(push ,item ,place))))
+  (once-only (item)
+    `(progn ,@(loop for place in places collect `(push ,item ,place)))))
 (defun remove-nth (n sequence)
   (remove-if (constantly t) sequence :start n :count 1))
 (defun insert (list value n)
@@ -71,6 +72,10 @@ the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYW
 (defmacro append* (&rest args)
   "Variant of @code{APPEND} that also makes a copy of its last argument"
   `(append ,@args nil))
+(defmacro lappendf (list &rest args)
+  "Modify macro that appends @var{ARGS} at the beginning of @var{LIST} instead of the end. Might be faster."
+  (once-only (list)
+    `(setf ,list (append ,@args ,list))))
 (define-modify-macro appendf* (&rest lists) append*
   "Modify-macro for APPEND*. Appends LISTS to the place designated by the first
 argument.")

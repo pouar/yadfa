@@ -23,7 +23,8 @@
    #:in*
    #:sum*
    #:out
-   #:defunassert)
+   #:defunassert
+   #:lappendf)
   (:documentation "Utility functions that aren't really part of the game's API"))
 (uiop:define-package :yadfa
   (:use #:cl :yadfa-util :ugly-tiny-infix-macro :alexandria :global-vars)
@@ -436,6 +437,7 @@
    #:cloth-diaper-corset
    #:rubber-diaper-corset
    #:collar
+   #:rubber-suit
    #:magic-diaper-key
    #:ak47
    #:7.62×39mm
@@ -484,6 +486,7 @@
    #:magikarp
    #:egg-pawn
    #:diapered-raccoon-bandit
+   #:catchable-raccoon-bandit
    #:rookie-diapered-raccoon-bandit
    #:female-diapered-raccoon-bandit
    #:giant-diapered-raccoon-bandit
@@ -615,7 +618,9 @@
    #:furry
    #:raptor
    #:diapered-kobold
-   #:adopted-enemy)
+   #:adopted-enemy
+   #:diapered-raccoon-bandit
+   #:found-raccoon-bandit)
   (:documentation "Contains all the allies in the game"))
 (uiop:define-package :yadfa-user
   (:use :cl :yadfa :yadfa-util :ugly-tiny-infix-macro :alexandria)

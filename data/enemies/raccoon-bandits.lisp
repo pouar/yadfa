@@ -116,3 +116,5 @@
    :name "Giant Diapered Raccoon Bandit"
    :description "Basically we just took a Diapered Raccoon Bandit and made him bigger. Aren't we so creative at designing bosses?"
    :bitcoins-per-level 200))
+(defclass catchable-raccoon-bandit (diapered-raccoon-bandit catchable-enemy) ())
+(setf (get 'catchable-raccoon-bandit 'change-class-target) 'yadfa-allies:diapered-raccoon-bandit)
