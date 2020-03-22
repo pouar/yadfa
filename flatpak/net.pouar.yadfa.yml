@@ -100,11 +100,11 @@ modules:
         dest: illogical-pathnames
         branch: pouar
         url: https://gitlab.com/pouar/illogical-pathnames.git
-      - type: patch
+      - type: file
         path: 0001-Listener-remove-cl-fad-dependency.patch
-        paths:
-          - McCLIM
-        use-git: true
+      - type: shell
+        commands:
+          - patch -d McCLIM -p1 -i ../0001-Listener-remove-cl-fad-dependency.patch
   - name: yadfa-cache
     buildsystem: simple
     build-commands:
