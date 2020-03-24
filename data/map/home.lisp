@@ -37,10 +37,10 @@
   :name "Pool area"
   :description "A pool to go swimming in"
   :enter-text "You enter the pool area"
-  :stairs (list :down t))
+  :stairs (list :down))
 (ensure-zone (0 2 -1 home)
   :name "Pool"
   :description "A pool"
   :enter-text "You dive in the pool"
-  :stairs (list :up t)
+  :stairs (list :up)
   :underwater t)

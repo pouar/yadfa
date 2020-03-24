@@ -205,9 +205,11 @@ You can also specify multiple directions, for example @code{(move :south :south)
                           (type symbol map))
                  (let ((position `(,@(mapcar #'+ (list x y z) delta) ,map)))
                    (when (and (get-zone position)
+                              (get-zone (get-destination direction position))
+                              (not (getf-direction position direction :hidden))
                               (not (hiddenp (get-zone position)))
-                              (or (and (member direction '(:up :down)) (not (getf (stairs-of (get-zone position)) direction)))
-                                  (and (not (member direction '(:up :down))) (not (getf (stairs-of (get-zone position)) direction)))))
+                              (or (and (member direction '(:up :down)) (member direction (stairs-of (get-zone position))))
+                                  (and (not (member direction '(:up :down))))))
                      (format t "~s ~a~%"
                              direction
                              (name-of (get-zone position))))))))

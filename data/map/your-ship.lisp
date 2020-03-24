@@ -28,23 +28,15 @@
          (collect `(ensure-zone (-2 ,i 0 your-ship)
                      :name "Emacs"
                      :description "The port of your ship"
-                     :direction-attributes (list :east (list :hidden ,(not (= i 6)))
-                                                 :down (list :hidden t)
-                                                 :up (list :hidden t))))
+                     :direction-attributes (list :east (list :hidden ,(not (= i 6))))))
          (collect `(ensure-zone (2 ,i 0 your-ship)
                      :name "Emacs"
                      :description "The starboard of your ship"
-                     :direction-attributes (list :west (list :hidden ,(not (= i 6)))
-                                                 :down (list :hidden t)
-                                                 :up (list :hidden t))))
+                     :direction-attributes (list :west (list :hidden ,(not (= i 6))))))
          (collect `(ensure-zone (0 ,i 0 your-ship)
                      :name "Passage Way"
                      :description "The passage way of your ship"
-                     :direction-attributes ,(if
-                                             (= i 3)
-                                             ()
-                                             '(list :down (list :hidden t)
-                                               :up (list :hidden t))))))))
+                     ,@(when (= i 3) '(:stairs (list :up :down))))))))
 (ensure-zone (0 3 1 your-ship)
   :name "Bridge"
   :description "You can steer your ship from here"
@@ -108,9 +100,7 @@
                        :name "Passage Way"
                        :description "The passage way of your ship"
                        :direction-attributes (list :north (list :hidden t)
-                                                   :south (list :hidden t)
-                                                   :down (list :hidden t)
-                                                   :up (list :hidden t))
+                                                   :south (list :hidden t))
                        :warp-points ,(if (= i -1)
                                          '(list :exit '(0 21 0 silver-cape))
                                          ())))))))
@@ -119,89 +109,70 @@
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :west (list :hidden t)
-                              :down (list :hidden t)
-                              :up (list :hidden t)))
+                              :west (list :hidden t)))
 (ensure-zone (1 5 0 your-ship)
   :name "Cabin"
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :east (list :hidden t)
-                              :down (list :hidden t)
-                              :up (list :hidden t)))
+                              :east (list :hidden t)))
 (ensure-zone (-1 6 0 your-ship)
   :name "Cabin"
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :west (list :hidden t)
-                              :down (list :hidden t)
-                              :up (list :hidden t)))
+                              :west (list :hidden t)))
 (ensure-zone (1 6 0 your-ship)
   :name "Galley"
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :east (list :hidden t)
-                              :down (list :hidden t)
-                              :up (list :hidden t)))
+                              :east (list :hidden t)))
 (ensure-zone (-1 7 0 your-ship)
   :name "Cabin"
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :west (list :hidden t)
-                              :down (list :hidden t)
-                              :up (list :hidden t)))
+                              :west (list :hidden t)))
 (ensure-zone (1 7 0 your-ship)
   :name "Cabin"
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :east (list :hidden t)
-                              :down (list :hidden t)))
+                              :east (list :hidden t)))
 (ensure-zone (-1 8 0 your-ship)
   :name "Cabin"
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :west (list :hidden t)
-                              :down (list :hidden t)
-                              :up (list :hidden t)))
+                              :west (list :hidden t)))
 (ensure-zone (1 8 0 your-ship)
   :name "Cabin"
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :east (list :hidden t)
-                              :down (list :hidden t)))
+                              :east (list :hidden t)))
 (ensure-zone (-1 9 0 your-ship)
   :name "Cabin"
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :west (list :hidden t)
-                              :down (list :hidden t)))
+                              :west (list :hidden t)))
 (ensure-zone (1 9 0 your-ship)
   :name "Cabin"
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :east (list :hidden t)
-                              :down (list :hidden t)))
+                              :east (list :hidden t)))
 (ensure-zone (-1 10 0 your-ship)
   :name "Cabin"
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :west (list :hidden t)
-                              :down (list :hidden t)))
+                              :west (list :hidden t)))
 (ensure-zone (1 10 0 your-ship)
   :name "Cabin"
   :description "A Cabin of your ship"
   :direction-attributes (list :north (list :hidden t)
                               :south (list :hidden t)
-                              :east (list :hidden t)
-                              :down (list :hidden t)
-                              :up (list :hidden t)))
+                              :east (list :hidden t)))

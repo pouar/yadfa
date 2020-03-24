@@ -387,7 +387,7 @@
       (return-from get-path-end (values nil (format nil "Pick a direction the game knows about~%"))))
     (when (or (hiddenp (get-zone destination)) (and position direction (getf-direction position direction :hidden)))
       (return-from get-path-end (values nil (format nil "Pick a direction the game knows about~%"))))
-    (when (and direction (member direction '(:up :down)) (not (getf (stairs-of (get-zone (or position (position-of player)))) direction)))
+    (when (and direction (member direction '(:up :down)) (not (member direction (stairs-of (get-zone (or position (position-of player)))))))
       (return-from get-path-end (values nil (format nil "There are no stairs there~%"))))
     (when (or (and (lockedp (get-zone destination))
                    (not (member-if (lambda (a)
@@ -431,8 +431,8 @@
        (get-zone position)
        (not (getf-direction position direction :hidden))
        (not (hiddenp (get-zone (get-destination direction position))))
-       (or (and (member direction '(:up :down)) (not (getf (stairs-of (get-zone position)) direction)))
-           (and (not (member direction '(:up :down))) (not (getf (stairs-of (get-zone position)) direction))))))
+       (or (and (member direction '(:up :down)) (member direction (stairs-of (get-zone position))))
+           (and (not (member direction '(:up :down)))))))
 (defun print-map (position)
   (labels ((a (position)
              (let ((b 0)
@@ -475,7 +475,8 @@
           (clim:updating-output (t)
             ;; position needs to be bound inside of clim:updating-output and not outside
             ;; for the presentation to notice when the floor the player is on changes
-            (let ((position (if (eq position t)
+            (let* ((player-position (position-of (player-of *game*)))
+                   (position (if (eq position t)
                                 player-position
                                 position)))
               (destructuring-bind (posx posy posz posm) position
@@ -534,7 +535,7 @@
                                                (type symbol m))
                                       `(,@(mapcar #'+ (list x y z) delta) ,m)))
                   (current-zone (get-zone current-position))
-                  (stairs (and current-zone (not (getf (stairs-of current-zone) direction)))))
+                  (stairs (and current-zone (not (member direction (stairs-of current-zone))))))
              (when (and current-zone
                         (not (hiddenp current-zone))
                         (or (and (member direction '(:up :down)) stairs)
@@ -622,8 +623,8 @@
            (return ()))
       (iter
         (for i in list)
-        (let* ((thickness-capacity (thickness-capacity-of i))
-               (thickness-capacity-threshold (thickness-capacity-threshold-of i))
+        (let* ((thickness-capacity (and (typep i 'bottoms) (thickness-capacity-of i)))
+               (thickness-capacity-threshold (and (typep i 'bottoms) (thickness-capacity-threshold-of i)))
                (total-thickness (if (and (typep i 'bottoms)
                                          thickness-capacity
                                          thickness-capacity-threshold)

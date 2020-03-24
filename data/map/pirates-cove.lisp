@@ -40,10 +40,10 @@
                      :enter-text "You're inside Pirate's Cove"
                      :stairs (list ,@(typecase i
                                        ((eql 0)
-                                        '(:up t))
+                                        '(:up))
                                        ((eql 10)
-                                        '(:down t))
-                                       (t '(:up t :down t))))
+                                        '(:down))
+                                       (t '(:up :down))))
                      :enemy-spawn-list '((:chance 1/8
                                           :enemies ((yadfa-enemies:diaper-pirate .
                                                      (list :level (random-from-range 4 8))))))

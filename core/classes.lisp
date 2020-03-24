@@ -553,7 +553,7 @@
     :initform '()
     :accessor stairs-of
     :type list
-    :documentation "plist with the @code{:UP} and @code{:DOWN} directions as keys, is true if there are stairs there.")
+    :documentation "list containing the directions of stairs. Contains @code{:UP} if there are stairs going up and @code{:DOWN} if there are stairs going down.")
    (direction-attributes
     :initarg :direction-attributes
     :initform ()
