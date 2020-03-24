@@ -58,24 +58,27 @@
     (setf (logical-pathname-translations "YADFA")
           (list (list "yadfa:data;**;*.*.*" (uiop:merge-pathnames*
                                              (make-pathname
-                                              :directory '(:relative "yadfa" :wild-inferiors)
+                                              :directory '(:relative "YADFA" :wild-inferiors)
                                               :name :wild
                                               :type :wild
-                                              :version :wild)
+                                              :version :wild
+                                              :case :common)
                                              (uiop:xdg-data-home)))
                 (list "yadfa:config;**;*.*.*" (uiop:merge-pathnames*
                                                (make-pathname
-                                                :directory '(:relative "yadfa" :wild-inferiors)
+                                                :directory '(:relative "YADFA" :wild-inferiors)
                                                 :name :wild
                                                 :type :wild
-                                                :version :wild)
+                                                :version :wild
+                                                :case :common)
                                                (uiop:xdg-config-home)))
                 (list "yadfa:home;**;*.*.*" (uiop:merge-pathnames*
                                              (make-pathname
                                               :directory '(:relative :wild-inferiors)
                                               :type :wild
                                               :name :wild
-                                              :version :wild)
+                                              :version :wild
+                                              :case :common)
                                              (if uiop:*image-dumped-p*
                                                  (make-pathname
                                                   :device (pathname-device (truename (uiop:argv0)))
@@ -83,11 +86,13 @@
                                                  (asdf:component-pathname (asdf:find-system "yadfa")))))))
     (ipath:define-illogical-host :yadfa.data (uiop:merge-pathnames*
                                               (make-pathname
-                                               :directory '(:relative "yadfa"))
+                                               :directory '(:relative "YADFA")
+                                               :case :common)
                                               (uiop:xdg-data-home)))
     (ipath:define-illogical-host :yadfa.config (uiop:merge-pathnames*
                                                 (make-pathname
-                                                 :directory '(:relative "yadfa"))
+                                                 :directory '(:relative "YADFA")
+                                                 :case :common)
                                                 (uiop:xdg-config-home)))
     (ipath:define-illogical-host :yadfa.home (if uiop:*image-dumped-p*
                                                  (make-pathname
