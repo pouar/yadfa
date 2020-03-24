@@ -461,6 +461,9 @@
     (let* ((player (player-of *game*))
            (player-position (position-of player))
            (player-zone (get-zone player-position)))
+      (declare (type player player)
+               (type list player-position)
+               (type (or null zone) player-zone))
       (updating-present-with-effective-frame (*query-io* :unique-id `(map% ,position)
                                                          :id-test #'equal
                                                          :cache-value (sxhash (list player-position
@@ -479,6 +482,7 @@
                    (position (if (eq position t)
                                 player-position
                                 position)))
+              (declare (type list position player-position))
               (destructuring-bind (posx posy posz posm) position
                 (declare (type integer posx posy posz)
                          (type symbol posm))
@@ -623,12 +627,13 @@
            (return ()))
       (iter
         (for i in list)
-        (let* ((thickness-capacity (and (typep i 'bottoms) (thickness-capacity-of i)))
-               (thickness-capacity-threshold (and (typep i 'bottoms) (thickness-capacity-threshold-of i)))
+        (let* ((thickness-capacity (if (typep i 'bottoms) (thickness-capacity-of i)))
+               (thickness-capacity-threshold (if (typep i 'bottoms) (thickness-capacity-threshold-of i)))
                (total-thickness (if (and (typep i 'bottoms)
                                          thickness-capacity
                                          thickness-capacity-threshold)
                                     (fast-thickness list i))))
+          (declare (type (or null (real 0)) thickness-capacity thickness-capacity-threshold total-thickness))
           (when
               (and (not (eq i last))
                    total-thickness
