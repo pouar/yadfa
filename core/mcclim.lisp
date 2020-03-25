@@ -119,7 +119,7 @@
   (when *battle*
     (write-string "Conditions: " stream)
     (iter (for i in (getf (status-conditions-of *battle*) object))
-      (format stream "`~a' " (name-of i)))
+      (format stream "“~a” " (name-of i)))
     (write-char #\Newline stream))
   (format stream "Stats: ~a~%Base-Stats: ~a~%"
           (let ((wield-stats (calculate-wield-stats object))

@@ -365,7 +365,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
            (format t "INVENTORY isn't a valid item ~%")
            (return-from yadfa-bin:wear))
           ((< wear-length wear)
-           (format t "`:WEAR ~d' doesn't refer to a valid position as it can't go past the items you're current wearing which is currently ~d"
+           (format t "“:WEAR ~d” doesn't refer to a valid position as it can't go past the items you're current wearing which is currently ~d"
                    wear
                    wear-length)
            (return-from yadfa-bin:wear))
@@ -430,7 +430,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
            (format t "WEAR isn't a valid item ~%")
            (return-from yadfa-bin:unwear))
           ((< inventory-length inventory)
-           (format t "`:INVENTORY ~d' doesn't refer to a valid position as it can't go past the items you currently have in your inventory which is currently ~d~%" inventory inventory-length)
+           (format t "“:INVENTORY ~d” doesn't refer to a valid position as it can't go past the items you currently have in your inventory which is currently ~d~%" inventory inventory-length)
            (return-from yadfa-bin:unwear))
           ((and
             (not (eq (player-of *game*) selected-user))

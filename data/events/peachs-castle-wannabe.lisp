@@ -56,7 +56,7 @@
             (out "Eggman: Bowser has paid me a ton of money to protect this shine star, So I'm going to use the same robot I used in Sonic Heroes since it worked so beautifully, an Egg Pawn with an Egg Spear that simply charges at you." :% :%)
             (set-new-battle '((yadfa-enemies:egg-pawn . (list :level 1 :wield (make-instance 'yadfa-items:egg-spear))))
                             :continuable t
-                            :enter-battle-text "Eggman sends out a Egg Pawn wielding a Lance^[^?\"Egg Spear\""
+                            :enter-battle-text "Eggman sends out a Egg Pawn wielding a L̶a̶n̶c̶e̶ \"Egg Spear\""
                             :win-events '(win-eggman-area-1))))
 (defevent win-eggman-area-1
   :lambda (lambda (self)

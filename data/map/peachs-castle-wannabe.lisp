@@ -16,7 +16,7 @@
   :props (list
           :princess (make-instance
                      'prop
-                     :name "Princess Toadstool^[^?Daisy^[^?Peach"
+                     :name "Princess T̶o̶a̶d̶s̶t̶o̶o̶l̶ D̶a̶i̶s̶y̶ Peach"
                      :description "The princess of this castle"
                      :actions (list
                                :talk (make-action

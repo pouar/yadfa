@@ -84,7 +84,7 @@
    :description "'Cause it looks cute on the character"))
 (defclass egg-spear (weapon) ()
   (:default-initargs
-   :name "Lance^[^?\"Egg Spear\""
+   :name "L̶a̶n̶c̶e̶ \"Egg Spear\""
    :value 1000
    :power 40
    :description "Used by egg pawns, for some reason, it does the exact same amount of damage as an egg pawn without one"))

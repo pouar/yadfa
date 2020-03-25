@@ -59,7 +59,7 @@
             (declare (ignorable self))
             (if (< (random 15) 1)
                 (progn
-                  (format t "You found a treasure chest, use `(interact :chest :take :all)' to take all the treasure from it~%")
+                  (format t "You found a treasure chest, use “(interact :chest :take :all)” to take all the treasure from it~%")
                   (setf (getf (get-props-from-zone '(6 24 -2 "bandits-domain")) :chest)
                         (make-instance 'prop
                                        :name "Treasure Chest"
@@ -219,7 +219,7 @@
                   (b nil))
               (out "*You enter the kennel and in 2 of the cages you see 2 orange foxes in heavily used diapers.*" :% :%
                    "Vixen: Hey! someone has entered the kennel for once!!!" :% :%
-                   "Fox: Could you let us out? We're the town's `pets' but they seemed to have forgotten about us." :% :%
+                   "Fox: Could you let us out? We're the town's “pets” but they seemed to have forgotten about us." :% :%
                    "Fox: and while you're at it, could you give us... umm... you know.... *blushes heavily*" :% :%
                    (name-of (player-of *game*)) ": A diaper change?" :% :%
                    "*the fox nods with a blush on his face*" :% :%

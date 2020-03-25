@@ -30,7 +30,7 @@
    :name "Pocket Map Machine"
    :tossable nil
    :sellable nil
-   :description "So you're playing Pokémon and you're making your secret base. Then you're like `Damn, I wish I could take this awesome base with me' or `I wish I could create my own decorations for this base instead of only being able to use what Nintendo provides me'. While Pouar can't do anything about Pokémon, he can create a similar feature for this game without these limitations. So here it is, the Pocket Map Machine"
+   :description "So you're playing Pokémon and you're making your secret base. Then you're like “Damn, I wish I could take this awesome base with me” or “I wish I could create my own decorations for this base instead of only being able to use what Nintendo provides me”. While Pouar can't do anything about Pokémon, he can create a similar feature for this game without these limitations. So here it is, the Pocket Map Machine"
    :use-script '(lambda (item user)
                  (declare (ignore user))
                  (move-to-pocket-map item))))

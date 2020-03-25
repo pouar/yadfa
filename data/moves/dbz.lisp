@@ -3,7 +3,7 @@
 (defclass kamehameha (stat/move) ()
   (:default-initargs
    :name "Kamehameha Wave"
-   :description "Say `Kamehameha!!!' and fire a huge burst of energy"
+   :description "Say “Kamehameha!!!” and fire a huge burst of energy"
    :energy-cost 12
    :power 200
    :attack '(lambda (target user self)
