@@ -15,9 +15,9 @@
                                  (handler-case
                                      (sb-alien:load-shared-object pathname :dont-save t)
                                    (error (e) (declare (ignore e)) nil)))
-                             #-(or win32 darwin) '("libgmp.so" "libgmp.so.10" "libgmp.so.3")
-                             #+darwin '("libgmp.dylib" "libgmp.10.dylib" "libgmp.3.dylib")
-                             #+win32 '("libgmp.dll" "libgmp-10.dll" "libgmp-3.dll"))
+                             #-(or os-windows os-macosx) '("libgmp.so" "libgmp.so.10" "libgmp.so.3")
+                             #+os-macosx '("libgmp.dylib" "libgmp.10.dylib" "libgmp.3.dylib")
+                             #+os-windows '("libgmp.dll" "libgmp-10.dll" "libgmp-3.dll"))
                    '(asdf:load-system :sb-gmp)))))
   (a))
 #+sb-gmp (sb-gmp:install-gmp-funs)
