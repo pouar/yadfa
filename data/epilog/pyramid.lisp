@@ -126,7 +126,7 @@
                                 ("South" :south)
                                 ("West" :west)
                                 ("East" :east)))
-                :prompt "[[North | South | East | West]]"))
+                :prompt "<North> | <South> | <East> | <West>"))
   (locally (declare (type keyword direction))
     (if (funcall (case direction
                    (:north 'northp)

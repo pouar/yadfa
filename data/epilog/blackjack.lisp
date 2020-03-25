@@ -241,7 +241,7 @@
 (define-command (com-give-up :name t :command-table playing-commands)
     ((go-potty '(member-alist (("Run to the toilet" :toilet)
                                ("Flood your pamps" :pamps)))
-               :default :pamps :prompt "[[Run to the toilet | Flood your pamps]]?: ")
+               :default :pamps :prompt "<Run to the toilet> | <Flood your pamps>")
      (put-on-old-clothes boolean :default nil :prompt "Put on old clothes?: "))
   (locally (declare (type boolean put-on-old-clothes)
                     (type keyword go-potty))
@@ -268,7 +268,7 @@
       (fresh-line *query-io*)
       (setf go-potty (accept '(member-alist (("Run to the toilet" :toilet)
                                              ("Flood your pamps" :pamps)))
-                             :prompt "[[Run to the toilet | Flood your pamps]]? "
+                             :prompt "<Run to the toilet> | <Flood your pamps>"
                              :default :pamps :stream *query-io* :view +option-pane-view+))
       (fresh-line *query-io*)
       (setf put-on-old-clothes (accept 'boolean
