@@ -83,12 +83,6 @@
             (dolist (walker pslots)
               (setq outlist (nconc outlist (list walker (marshal (slot-value object walker) circle-hash))))))))
     outlist))
-(in-package :clim-clx)
-(defun helpfully-automagic-clx-server-path (port-type)
-  (restart-case (automagic-clx-server-path port-type)
-    (use-localhost ()
-      :report "Use local unix display"
-      (parse-clx-server-path `(,port-type :host #-windows "" #+windows "localhost" :protocol #-windows :unix #+windows :internet)))))
 (in-package :climi)
 
 ;;; the patch I added that makes the FreeType renderer pick the right defaults seems to make it a lot slower
