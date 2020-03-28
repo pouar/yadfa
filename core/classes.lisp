@@ -324,7 +324,11 @@
                                                       "POTTY-DANCE-LIMIT-OF" "POTTY-DESPERATE-LIMIT-OF" "MAXIMUM-LIMIT-OF"))
                                       (collect `(defmethod ,(format-symbol :yadfa "SET-~a/~a" i j) ((object potty-character) newval)
                                                   (setf (,(format-symbol :yadfa "~a/~a" i j) object) newval)))
-                                      (collect `(defsetf ,(format-symbol :yadfa "~a/~a" i j) ,(format-symbol :yadfa "SET-~a/~a" i j) )))))))
+                                      (collect `(unless (multiple-value-bind (vars vals store setter getter)
+                                                            (get-setf-expansion '(,(format-symbol :yadfa "~a/~a" i j) a))
+                                                          (declare (ignore vars vals store getter))
+                                                          (eq ',(format-symbol :yadfa "SET-~a/~a" i j) (car setter)))
+                                                  (defsetf ,(format-symbol :yadfa "~a/~a" i j) ,(format-symbol :yadfa "SET-~a/~a" i j) ))))))))
 (defclass team-member (base-character)
   ((skin
     :initarg :skin
