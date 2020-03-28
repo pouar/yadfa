@@ -22,13 +22,13 @@
   :name "Elevator"
   :description "An elevator to the upper deck"
   :enter-text "You enter the elevator"
-  :stairs (list :up t)
+  :stairs (list :up)
   :direction-attributes (list :up (list :exit-text "Going up")))
 (ensure-zone (0 -18 1 candle-carnival)
   :name "Elevator"
   :description "An elevator to the upper deck"
   :enter-text "You enter the elevator"
-  :stairs (list :down t)
+  :stairs (list :down)
   :direction-attributes (list :down (list :exit-text "Going down")))
 (macro-level
   `(progn
@@ -175,7 +175,7 @@
   :name "Star City Hotel Lobby"
   :description "A luxurious hotel"
   :enter-text "you're in the hotel lobby"
-  :stairs (list :up t))
+  :stairs (list :up))
 (macro-level
   `(progn
      ,@(iter (for x from -3 downto -7)
@@ -221,7 +221,7 @@
   :name "Star City Hotel Hallway"
   :description "A luxurious hotel"
   :enter-text "you're in the hall"
-  :stairs (list :up t :down t))
+  :stairs (list :up :down))
 (macro-level
   `(progn
      ,@(iter (for x from -1 downto -5)

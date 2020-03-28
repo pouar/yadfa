@@ -5,7 +5,7 @@
   :description "You're at a entrance of a haunted house"
   :enter-text "You walk to the entrance of the haunted house"
   :direction-attributes (list 'haunted-forest (list :exit-text "You exit the haunted house"))
-  :warp-points (list 'rpgmaker-dungeon '(6 -2 0 haunted-forest)))
+  :warp-points (list 'haunted-forest '(6 -2 0 haunted-forest)))
 (ensure-zone (1 0 0 haunted-house)
   :name "Haunted House Hallway"
   :description "You're in a spooky haunted house."
