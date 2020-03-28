@@ -458,9 +458,7 @@
    :bowels/fill-rate (* (/ 400 24 60) 2)
    :wear (list (make-instance 'yadfa-items:diaper))
    :moves (list (make-instance 'yadfa-moves:watersport)
-                (make-instance 'yadfa-moves:mudsport)
-                (make-instance 'yadfa-moves:mush)
-                (make-instance 'yadfa-moves:tickle))
+                (make-instance 'yadfa-moves:mudsport))
    :tail '(:medium :fur)
    :skin '(:fur)))
 (defmethod initialize-instance :after

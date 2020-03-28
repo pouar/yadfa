@@ -127,21 +127,26 @@
 (defunassert (finished-events (events))
     (events (or list symbol))
   (iter (for event in (ensure-list events))
-    (check-type event (or list symbol))
-    (unless (gethash (ensure-list event) (finished-events-of *game*))
-      (leave))
-    (finally (return t))))
+    (locally (declare (type symbol event))
+      #-(or sbcl ccl)
+      (check-type event (or list symbol))
+      (unless (gethash (ensure-list event) (finished-events-of *game*))
+        (leave))
+      (finally (return t)))))
 (defunassert (unfinished-events (events))
     (events (or list symbol))
   (iter (for event in (ensure-list events))
-    (check-type event (or list symbol))
-    (when (gethash (ensure-list event) (finished-events-of *game*))
-      (leave))
-    (finally (return t))))
+    (locally (declare (type symbol event))
+      #-(or sbcl ccl)
+      (check-type event (or list symbol))
+      (when (gethash (ensure-list event) (finished-events-of *game*))
+        (leave))
+      (finally (return t)))))
 (defunassert (finish-events (events))
     (events (or list symbol))
   (iter (for event in (ensure-list events))
     (locally (declare (type symbol event))
+      #-(or sbcl ccl)
       (check-type event symbol)
       (remhash event (current-events-of *game*))
       (setf (gethash `(,event) (finished-events-of *game*)) t))))
@@ -356,12 +361,14 @@
 (defunassert (get-warp-point (direction position))
     (direction symbol position list)
   (getf (warp-points-of (get-zone position))
-        (if (typep direction 'keyword)
-            (find direction (warp-points-of (get-zone position))
-                  :test (lambda (a b)
-                          (when (typep b 'symbol)
-                            (string= a b))))
-            direction)))
+        (typecase direction
+          ((member :north :south :east :west :up :down)
+           direction)
+          (keyword
+           (iter (for (k v) on (warp-points-of (get-zone position)) by 'cddr)
+             (when (and (string= k direction) v)
+               (leave k))))
+          (symbol direction))))
 (defunassert (get-destination (direction position))
     (direction symbol position list)
   (macrolet ((a (pos x y z)
@@ -534,10 +541,11 @@
                          (typecase old-direction
                            ((member :north :south :east :west :up :down)
                             old-direction)
-                           (symbol
+                           (keyword
                             (iter (for (k v) on (warp-points-of (get-zone old-position)) by 'cddr)
                               (when (and (string= k old-direction) v)
-                                (leave k))))))))
+                                (leave k))))
+                           (symbol old-direction)))))
     (format t "~a~%" (get-zone-text (if (and old-position old-direction (getf-direction old-position old-direction :exit-text))
                                         (getf-direction old-position old-direction :exit-text)
                                         (enter-text-of (get-zone position))))))
@@ -757,8 +765,8 @@
 
 ~a, ~a, ~a."
             (xref defzone :macro) (xref defzone* :macro) (xref ensure-zone* :macro))
-  #+sbcl (declare (type list position))
-  (check-type position list)
+  (declare (type list position))
+  #-(or sbcl ccl) (check-type position list)
   `(progn (unless (get-zone ',position)
             (setf (get-zone ',position)
                   (make-instance 'zone ,@body)))
@@ -769,7 +777,8 @@
 
 ~a, ~a, ~a, ~a."
             (xref defzone* :macro) (xref ensure-zone :macro) (xref ensure-zone* :macro) (xref trigger-event :function))
-  #+sbcl (declare (type list position))
+  (declare (type list position))
+  #-(or sbcl ccl)
   (check-type position list)
   `(progn
      (setf (get-zone ',position)
@@ -781,7 +790,8 @@
 
 ~a, ~a, ~a."
             (xref defzone :macro) (xref defzone* :macro) (xref ensure-zone :macro))
-  #+sbcl (declare (type list position))
+  (declare (type list position))
+  #-(or sbcl ccl)
   (check-type position list)
   `(progn (unless (get-zone ,position)
             (setf (get-zone ,position)
@@ -793,7 +803,8 @@
 
 ~a, ~a, ~a."
             (xref defzone :macro) (xref ensure-zone :macro) (xref ensure-zone* :macro))
-  #+sbcl (declare (type list position))
+  (declare (type list position))
+  #-(or sbcl ccl)
   (check-type position list)
   `(progn
      (setf (get-zone ,position)
@@ -802,7 +813,8 @@
      (get-zone ,position)))
 (defmacro make-pocket-zone (position &body body)
   "defines the classes of the zones and adds an instance of them to the game's map hash table if it's not already there"
-  #+sbcl (declare (type list position))
+  (declare (type list position))
+  #-(or sbcl ccl)
   (check-type position list)
   `(setf (get-zone '(,@position :pocket-map))
          (make-instance 'zone ,@body)))
@@ -884,12 +896,11 @@
   (when *battle*
     (write-line "To avoid breaking the game due to a few assumptions made in this function, please don't run this in a battle~%")
     (return-from move-to-secret-underground))
-  (unless (get-path-end '(0 0 0 yadfa-zones:secret-underground))
-    (format t "~a" (second
-                    (multiple-value-list
-                     (get-path-end '(0 0 0 yadfa-zones:secret-underground)))))
-    (return-from move-to-secret-underground))
-  (move-to-zone '(0 0 0 yadfa-zones:secret-underground) :ignore-lock t))
+  (multiple-value-bind (destination error) (get-path-end '(0 0 0 yadfa-zones:secret-underground))
+    (unless destination
+      (format t "~a" error)
+      (return-from move-to-secret-underground))
+    (move-to-zone '(0 0 0 yadfa-zones:secret-underground) :ignore-lock t)))
 (defun move-to-pocket-map (item)
   (when *battle*
     (write-line "To avoid breaking the game due to a few assumptions made in this function, please don't run this in a battle~%")
@@ -1662,10 +1673,10 @@
                                 "You fall to your knees holding your crotch struggling to keep your pants dry and flood yourself")))))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
     (format stream "~a~%"
-            (random-elt `(,(format nil "Bad ~a! No going potty in the house!" (if (random 2) (species-of user) (name-of user)))
+            (random-elt `(,(format nil "Bad ~a! No going potty in the house!" (if (= (random 2) 0) (species-of user) (name-of user)))
                           ,(format nil "Heh, baby wet ~a pants" (if (malep user) "his" "her"))
                           ,(format nil "Bad ~a! Look what you did to your pants!"
-                                   (if (random 2) (species-of user) (name-of user)))
+                                   (if (= (random 2) 0) (species-of user) (name-of user)))
                           "Maybe you should start wearing diapers"
                           "A puddle appears on the floor"
                           "There goes the carpet"
@@ -1689,7 +1700,7 @@
             (random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
     (format stream "~a~%"
-            (random-elt `(,(format nil "Bad ~a! No going potty in the house!" (if (random 2) (species-of user) (name-of user)))
+            (random-elt `(,(format nil "Bad ~a! No going potty in the house!" (if (= (random 2) 0) (species-of user) (name-of user)))
                           "Maybe you should start wearing diapers"
                           "A puddle appears on the floor"
                           "There goes the carpet"
@@ -1771,9 +1782,9 @@
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
     (format stream "~a~%"
             (random-elt `(,(format nil "Bad ~a! No going potty in the house!"
-                                   (if (random 2) (species-of user) (name-of user)))
+                                   (if (= (random 2) 0) (species-of user) (name-of user)))
                           ,(format nil "Heh, baby messed ~a pants" (if (malep user) "his" "her"))
-                          ,(format nil "Bad ~a! Look what you did to your pants!" (if (random 2) (species-of user) (name-of user)))
+                          ,(format nil "Bad ~a! Look what you did to your pants!" (if (= (random 2) 0) (species-of user) (name-of user)))
                           "Maybe you should start wearing diapers"
                           "There goes the carpet"
                           "Heh, baby made a mess"
@@ -1791,7 +1802,7 @@
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
     (format stream "~a~%"
             (random-elt `(,(format nil "Bad ~a! No going potty in the house!"
-                                   (if (random 2) (species-of user) (name-of user)))
+                                   (if (= (random 2) 0) (species-of user) (name-of user)))
                           "Maybe you should start wearing diapers"
                           "There goes the carpet"
                           "Heh, baby made a mess")))))
@@ -2448,7 +2459,7 @@
     (format stream "~a~%"
             (random-elt (list (format nil "*~a's face turns red as ~a leak everywhere*"
                                       user-name
-                                      (if hisher "he" "she"))
+                                      (if male "he" "she"))
                               (format nil "*~a leaves a puddle then starts waddling around with ~a legs spread apart leaving a trail like a 5 year old who didn't make it*"
                                       user-name
                                       (if male "he" "she"))
@@ -3118,7 +3129,7 @@
   (pushnew (make-instance move*) (moves-of user)
            :test (lambda (a b)
                    (eq (class-name (class-of a)) (class-name (class-of b))))))
-(declaim (ftype (function (symbol base-character) (values stat/move &optional)) get-move))
+(declaim (ftype (function (symbol base-character) (values (or stat/move null) &optional)) get-move))
 (defun get-move (move* user)
   (find move* (moves-of user)
         :test (lambda (a b)
@@ -3325,60 +3336,60 @@ randomrange is @code{(random-from-range 85 100)}")
                        (if male "he" "she")
                        (name-of (get-zone position))
                        position)
-               (iter (for i in (cons player (allies-of *game*)))
-                 (setf (health-of i) (calculate-stat i :health))
-                 (setf (energy-of i) (calculate-stat i :energy))
-                 (let ((exp-gained (/ (iter (for i in enemies)
-                                        (with j = 0)
-                                        (incf j (calculate-exp-yield i))
-                                        (finally (return j)))
-                                      2)))
-                   (iter (for k in team)
-                     (incf (exp-of k) exp-gained)
-                     (let ((old-level (level-of k)))
-                       (iter (while (>= (exp-of k) (calculate-level-to-exp (+ (level-of k) 1))))
-                         (incf (level-of k)))
-                       (when (> (level-of k) old-level)
-                         (format t "~a level-uped to ~d~%" (name-of k) (level-of k))
-                         (iter (for i from (1+ old-level) to (level-of k))
-                           (iter (for j in (learned-moves-of k))
-                             (when (= (car j) i)
-                               (unless (get-move (cdr j) k)
-                                 (pushnewmove (cdr j) k)
-                                 (format t "~a learned ~a~%" (name-of k) (name-of (get-move (cdr j) k))))))))))
-                   (setf *battle* nil)))
-               (iter (for i in team)
-                 (wet :force-fill-amount (bladder/maximum-limit-of i))
-                 (mess :force-fill-amount (bowels/maximum-limit-of i))))
+               (iter (for user in (cons player (allies-of *game*)))
+                 (setf (health-of user) (calculate-stat user :health))
+                 (setf (energy-of user) (calculate-stat user :energy)))
+               (let ((exp-gained (/ (iter (for enemy in enemies)
+                                      (with j = 0)
+                                      (incf j (calculate-exp-yield enemy))
+                                      (finally (return j)))
+                                    2)))
+                 (iter (for team-member in team)
+                   (incf (exp-of team-member) exp-gained)
+                   (let ((old-level (level-of team-member)))
+                     (iter (while (>= (exp-of team-member) (calculate-level-to-exp (+ (level-of team-member) 1))))
+                       (incf (level-of team-member)))
+                     (when (> (level-of team-member) old-level)
+                       (format t "~a level-uped to ~d~%" (name-of team-member) (level-of team-member))
+                       (iter (for level from (1+ old-level) to (level-of team-member))
+                         (iter (for learned-move in (learned-moves-of team-member))
+                           (when (= (car learned-move) level)
+                             (unless (get-move (cdr learned-move) team-member)
+                               (pushnewmove (cdr learned-move) team-member)
+                               (format t "~a learned ~a~%" (name-of team-member) (name-of (get-move (cdr learned-move) team-member))))))))))
+                 (setf *battle* nil))
+               (iter (for team-member in team)
+                 (wet :force-fill-amount (bladder/maximum-limit-of team-member))
+                 (mess :force-fill-amount (bowels/maximum-limit-of team-member))))
         (progn (format t "~a won the battle~%~%" name)
-               (let ((items-looted (iter (for i in enemies)
+               (let ((items-looted (iter (for enemy in enemies)
                                      (with j = ())
-                                     (setf j (append* j (inventory-of i) (wear-of i)))
-                                     (setf (inventory-of i) nil
-                                           (wear-of i) nil)
+                                     (setf j (append* j (inventory-of enemy) (wear-of enemy)))
+                                     (setf (inventory-of enemy) nil
+                                           (wear-of enemy) nil)
                                      (finally (return j))))
-                     (bitcoins-looted (iter (for i in enemies)
+                     (bitcoins-looted (iter (for enemy in enemies)
                                         (with j = 0)
-                                        (incf j (if (bitcoins-per-level-of i) (* (bitcoins-per-level-of i) (level-of i)) (bitcoins-of i)))
+                                        (incf j (if (bitcoins-per-level-of enemy) (* (bitcoins-per-level-of enemy) (level-of enemy)) (bitcoins-of enemy)))
                                         (finally (return j))))
-                     (exp-gained (iter (for i in enemies)
+                     (exp-gained (iter (for enemy in enemies)
                                    (with j = 0)
-                                   (incf j (calculate-exp-yield i))
+                                   (incf j (calculate-exp-yield enemy))
                                    (finally (return j))))
                      (win-events (win-events-of *battle*)))
-                 (iter (for k in team)
-                   (incf (exp-of k) exp-gained)
-                   (let ((old-level (level-of k)))
-                     (iter (while (>= (exp-of k) (calculate-level-to-exp (+ (level-of k) 1))))
-                       (incf (level-of k)))
-                     (when (> (level-of k) old-level)
-                       (format t "~a level-uped to ~d~%" (name-of k) (level-of k))
-                       (iter (for i from (1+ old-level) to (level-of k))
-                         (iter (for j in (learned-moves-of k))
-                           (when (= (car j) i)
-                             (unless (get-move (cdr j) k)
-                               (pushnewmove (cdr j) k)
-                               (format t "~a learned ~a~%" (name-of k) (name-of (get-move (cdr j) k))))))))))
+                 (iter (for team-member in team)
+                   (incf (exp-of team-member) exp-gained)
+                   (let ((old-level (level-of team-member)))
+                     (iter (while (>= (exp-of team-member) (calculate-level-to-exp (+ (level-of team-member) 1))))
+                       (incf (level-of team-member)))
+                     (when (> (level-of team-member) old-level)
+                       (format t "~a level-uped to ~d~%" (name-of team-member) (level-of team-member))
+                       (iter (for level from (1+ old-level) to (level-of team-member))
+                         (iter (for learned-move in (learned-moves-of team-member))
+                           (when (= (car learned-move) level)
+                             (unless (get-move (cdr learned-move) team-member)
+                               (pushnewmove (cdr learned-move) team-member)
+                               (format t "~a learned ~a~%" (name-of team-member) (name-of (get-move (cdr learned-move) team-member))))))))))
                  (cond ((and items-looted (> bitcoins-looted 0))
                         (format t "~a loots ~d bitcoins and ~d ~a from the enemies~%"
                                 name

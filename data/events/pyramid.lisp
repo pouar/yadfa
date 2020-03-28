@@ -28,7 +28,7 @@
                                                    ((= bladder-time bowels-time) 'both-fill)
                                                    ((< bladder-time bowels-time) 'bladder-fill)
                                                    (t 'bowels-fill)))
-                              (diapers (member wear '(yadfa-items:cursed-diaper yadfa-items:temple-pullups)
+                              (diapers (find wear '(yadfa-items:cursed-diaper yadfa-items:temple-pullups)
                                                :test (lambda (o e)
                                                        (filter-items o e)))))
                          (unless result

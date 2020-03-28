@@ -64,16 +64,16 @@
                         (make-instance 'prop
                                        :name "Treasure Chest"
                                        :description "A treasure chest"
-                                       :items (cond ((< (random 10))
+                                       :items (cond ((= (random 10) 0)
                                                      (list (make-instance 'yadfa-items:gold-collar
                                                                           :value (random-from-range 25000 50000))))
-                                                    ((< (random 10))
+                                                    ((= (random 10) 0)
                                                      (list (make-instance 'yadfa-items:gold-pacifier
                                                                           :value (random-from-range 10000 20000))))
-                                                    ((< (random 10))
+                                                    ((= (random 10) 0)
                                                      (list (make-instance 'yadfa-items:gem
                                                                           :value (random-from-range 25000 50000))))
-                                                    ((< (random 20))
+                                                    ((= (random 20) 0)
                                                      (list (make-instance 'yadfa-items:gold-bar
                                                                           :value (random-from-range 50000 100000)))))
                                        :bitcoins (random-from-range 12500 25000))))
