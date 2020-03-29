@@ -236,17 +236,17 @@
                                       (collect `(defmethod ,(format-symbol :yadfa "~a/~a" i j) ((object base-character))
                                                   (declare (ignore object))
                                                   0))
-                                      (collect `(defmethod ,(format-symbol :yadfa "SET-~a/~a" i j) ((object base-character) newval)
+                                      (collect `(defmethod (setf ,(format-symbol :yadfa "~a/~a" i j)) (newval (object base-character))
                                                   (declare (ignore object newval))
                                                   0))))
                          (appending (iter (for j in '("NEED-TO-POTTY-LIMIT-OF" "POTTY-DANCE-LIMIT-OF" "POTTY-DESPERATE-LIMIT-OF" "MAXIMUM-LIMIT-OF"))
                                       (collect `(defmethod ,(format-symbol :yadfa "~a/~a" i j) ((object base-character))
                                                   (declare (ignore object))
                                                   1))
-                                      (collect `(defmethod ,(format-symbol :yadfa "SET-~a/~a" i j) ((object base-character) newval)
+                                      (collect `(defmethod (setf ,(format-symbol :yadfa "~a/~a" i j)) (newval (object base-character))
                                                   (declare (ignore object newval))
                                                   1)))))))
-(defclass potty-character (base-character)
+(defclass bladder-character (base-character)
   ((bladder/contents
     :initarg :bladder/contents
     :initform 0
@@ -282,8 +282,9 @@
     :initform 600
     :type (real 0)
     :accessor bladder/maximum-limit-of
-    :documentation "When the character's bladder gets this full, @{s,he@} wets @{him,her@}self")
-   (bowels/contents
+    :documentation "When the character's bladder gets this full, @{s,he@} wets @{him,her@}self")))
+(defclass bowels-character (base-character)
+  ((bowels/contents
     :initarg :bowels/contents
     :initform 0
     :type (real 0)
@@ -319,16 +320,14 @@
     :type (real 0)
     :accessor bowels/maximum-limit-of
     :documentation "When the character's bowels gets this full, @{he,she@} messes @{him,her@}self")))
+(defclass potty-character (bladder-character bowels-character)
+  ())
 (macro-level `(progn ,@(iter (for i in '("BLADDER" "BOWELS"))
-                         (appending (iter (for j in '("CONTENTS-OF" "FILL-RATE-OF" "NEED-TO-POTTY-LIMIT-OF"
-                                                      "POTTY-DANCE-LIMIT-OF" "POTTY-DESPERATE-LIMIT-OF" "MAXIMUM-LIMIT-OF"))
-                                      (collect `(defmethod ,(format-symbol :yadfa "SET-~a/~a" i j) ((object potty-character) newval)
-                                                  (setf (,(format-symbol :yadfa "~a/~a" i j) object) newval)))
-                                      (collect `(unless (multiple-value-bind (vars vals store setter getter)
-                                                            (get-setf-expansion '(,(format-symbol :yadfa "~a/~a" i j) a))
-                                                          (declare (ignore vars vals store getter))
-                                                          (eq ',(format-symbol :yadfa "SET-~a/~a" i j) (car setter)))
-                                                  (defsetf ,(format-symbol :yadfa "~a/~a" i j) ,(format-symbol :yadfa "SET-~a/~a" i j) ))))))))
+                         (appending (iter (for j in '("CONTENTS" "FILL-RATE" "NEED-TO-POTTY-LIMIT"
+                                                      "POTTY-DANCE-LIMIT" "POTTY-DESPERATE-LIMIT" "MAXIMUM-LIMIT"))
+                                      (collect `(defmethod (setf ,(format-symbol :yadfa "~a/~a-OF" i j))
+                                                    (newval (object ,(format-symbol :yadfa "~a-CHARACTER" i)))
+                                                  (setf (slot-value object ',(format-symbol :yadfa "~a/~a" i j)) newval))))))))
 (defclass team-member (base-character)
   ((skin
     :initarg :skin
@@ -1216,10 +1215,11 @@
           (t (write "Female" :stream stream)))
     (write-string " " stream)
     (print-slot obj 'species stream)))
-(defclass potty-enemy (enemy potty-character) ()
-  (:default-initargs
-   :bladder/fill-rate (* (/ 2000 24 60) 2)
-   :bowels/fill-rate (* (/ 12000 24 60) 2))
+(defclass bladder-enemy (enemy bladder-character) ()
+  (:documentation "Class for an enemy with a bladder fill rate. This enemy may @{wet,mess@} @{him,her@}self in battle."))
+(defclass bowels-enemy (enemy bowels-character) ()
+  (:documentation "Class for an enemy with a bowels fill rate. This enemy may @{wet,mess@} @{him,her@}self in battle."))
+(defclass potty-enemy (bladder-enemy bowels-enemy) ()
   (:documentation "Class for an enemy with a bladder and bowels fill rate. This enemy may @{wet,mess@} @{him,her@}self in battle."))
 (defclass pantsable-character (base-character) ())
 (defclass battle (yadfa-class)

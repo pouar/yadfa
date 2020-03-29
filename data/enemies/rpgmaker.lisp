@@ -177,9 +177,9 @@
 (defclass diapered-dragon (potty-enemy) ()
   (:default-initargs
    :name "Diapered Dragon"
-   :description "Keeps kobolds as pets. Waits until the last minute because \"he's not some hatchling that has to use the potty all the time\""
+   :description "Keeps kobolds as pets. Waits until the last minute because \{,s}he's not some hatchling that has to use the potty all the time\""
    :species "Dragon"
-   :male t
+   :male (random-elt '(t nil))
    :bladder/contents (random 500)
    :bowels/contents (random 700)
    :bitcoins-per-level 100
@@ -195,10 +195,25 @@
                 (make-instance 'yadfa-moves:fire-breath))))
 (defclass diapered-dragon* (diapered-dragon pantsable-character) ()
   (:default-initargs
-   :description "Keeps kobolds as pets. Wears pants to hide his padding. Waits until the last minute because \"he's not some hatchling that has to use the potty all the time\""
+   :description "Keeps kobolds as pets. Wears pants to hide {his,her} padding. Waits until the last minute because \"{,s}he's not some hatchling that has to use the potty all the time\""
    :wear (list (make-instance 'yadfa-items:black-leather-jacket)
                (make-instance 'yadfa-items:baggy-jeans)
                (make-instance 'yadfa-items:high-capacity-diaper))))
+(defclass dergy (bladder-enemy) ()
+  (:default-initargs
+   :name "Dergy"
+   :description "An alien dragon like species that liquefies its food, so he lacks bowels as everything goes through its bladder. But since all that mass is forced through its bladder now, it fills up much quicker, so they have to go more often and can't hold it in for as long."
+   :species "Dergy"
+   :malep (random-elt '(t nil))
+   :bitcoins-per-level 100
+   :bladder/fill-rate (* (/ 14000 24 60) 2)
+   :wear (list (make-instance 'yadfa-items:kurikia-thick-rubber-diaper))
+   :inventory (iter (for i from 0 to (random 20))
+                (collect (make-instance 'yadfa-items:kurikia-thick-rubber-diaper)))
+   :moves (list (make-instance 'yadfa-moves:tickle)
+                (make-instance 'yadfa-moves:roar)
+                (make-instance 'yadfa-moves:mush)
+                (make-instance 'yadfa-moves:fire-breath))))
 
 ;;; Raptors would most likely not have bladders irl, but I already threw
 ;;; scientific accuracy out the window when I gave them scales instead of feathers.

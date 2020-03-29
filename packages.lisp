@@ -115,6 +115,8 @@
    #:status-condition
    #:stats-view
    #:base-character
+   #:bladder-character
+   #:bowels-character
    #:potty-character
    #:npc
    #:team-member
@@ -158,6 +160,8 @@
    #:shirt
    #:pants
    #:enemy
+   #:bladder-enemy
+   #:bowels-enemy
    #:potty-enemy
    #:battle
    #:pantsable-character
@@ -501,6 +505,7 @@
    #:fursuiter-servant
    #:diapered-dragon*
    #:diapered-dragon
+   #:dergy
    #:ghost
    #:catchable-enemy
    #:catch-chance-of
