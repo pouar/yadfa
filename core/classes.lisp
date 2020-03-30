@@ -322,12 +322,6 @@
     :documentation "When the character's bowels gets this full, @{he,she@} messes @{him,her@}self")))
 (defclass potty-character (bladder-character bowels-character)
   ())
-(macro-level `(progn ,@(iter (for i in '("BLADDER" "BOWELS"))
-                         (appending (iter (for j in '("CONTENTS" "FILL-RATE" "NEED-TO-POTTY-LIMIT"
-                                                      "POTTY-DANCE-LIMIT" "POTTY-DESPERATE-LIMIT" "MAXIMUM-LIMIT"))
-                                      (collect `(defmethod (setf ,(format-symbol :yadfa "~a/~a-OF" i j))
-                                                    (newval (object ,(format-symbol :yadfa "~a-CHARACTER" i)))
-                                                  (setf (slot-value object ',(format-symbol :yadfa "~a/~a" i j)) newval))))))))
 (defclass team-member (base-character)
   ((skin
     :initarg :skin
