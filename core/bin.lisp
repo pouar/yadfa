@@ -289,7 +289,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (when inventory
       (describe-item inventory))
     (when wear
-      (describe-item (member wear (wear-of selected-user))))
+      (describe-item (find wear (wear-of selected-user)) t))
     (when attack
       (format t "Name:~a~%Description~a~%Energy Cost: ~f~%~%"
               (name-of (get-move attack selected-user))

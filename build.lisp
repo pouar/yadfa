@@ -1,6 +1,7 @@
 ;; -*- mode: common-lisp; -*-
 #+sbcl
-(declaim (sb-ext:muffle-conditions sb-kernel:redefinition-warning))
+(declaim (sb-ext:muffle-conditions sb-kernel:redefinition-warning)
+         (optimize sb-c::recognize-self-calls))
 (declaim (optimize speed))
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
