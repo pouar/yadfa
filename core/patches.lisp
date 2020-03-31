@@ -313,6 +313,26 @@
              ((eq f :bold) '((:style . "Bold")))
              ((eq f :italic) '((:style . "Italic")))
              (t nil))))
+(in-package :asdf/output-translations)
+
+;;; https://gitlab.common-lisp.net/asdf/asdf/issues/28
+(defun wrapping-output-translations ()
+    `(:output-translations
+    ;; Some implementations have precompiled ASDF systems,
+    ;; so we must disable translations for implementation paths.
+      #+(or clasp #|clozure|# ecl mkcl)
+      ,@(let ((h (resolve-symlinks* (lisp-implementation-directory))))
+          (when h `(((,h ,*wild-path*) ()))))
+      #+sbcl ,@(let ((h (resolve-symlinks* (lisp-implementation-directory))))
+                 (when (and h (not (eq uiop:*image-dumped-p* :executable))) `(((,h ,*wild-path*) ()))))
+      #+mkcl (,(translate-logical-pathname "CONTRIB:") ())
+      ;; All-import, here is where we want user stuff to be:
+      :inherit-configuration
+      ;; These are for convenience, and can be overridden by the user:
+      #+abcl (#p"/___jar___file___root___/**/*.*" (:user-cache #p"**/*.*"))
+      #+abcl (#p"jar:file:/**/*.jar!/**/*.*" (:function translate-jar-pathname))
+      ;; We enable the user cache by default, and here is the place we do:
+      :enable-user-cache))
 (in-package :yadfa)
 (define-condition uwu (simple-error) ()
   (:report (lambda (condition stream)
