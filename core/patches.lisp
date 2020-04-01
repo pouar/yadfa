@@ -114,6 +114,8 @@
    (text-style :initform nil :initarg :text-style)
    (width :initform nil :initarg :width)
    (height :initform nil :initarg :height)
+   (initially-select-p
+    :initform nil :initarg :initially-select-p)
    (initially-select-query-identifier
     :initform nil :initarg :initially-select-query-identifier)
    (resynchronize-every-pass :initform nil :initarg :resynchronize-every-pass)
@@ -157,7 +159,7 @@
          (body (slot-value frame 'body))
          (label (slot-value frame 'label))
          (initially-select-query-identifier (slot-value frame 'initially-select-query-identifier))
-         (initially-select-p (slot-value frame 'initially-select-query-identifier))
+         (initially-select-p (slot-value frame 'initially-select-p))
          (resynchronize-every-pass (slot-value frame 'resynchronize-every-pass))
          (select-first-query (slot-value frame 'select-first-query))
          (own-window (slot-value frame 'own-window))
@@ -280,6 +282,7 @@
                               :calling-frame *application-frame*
                               :stream stream
                               :body body
+                              :initially-select-p initially-select-p
                               args)))
 #+mcclim-ffi-freetype
 (in-package :clim-freetype)
