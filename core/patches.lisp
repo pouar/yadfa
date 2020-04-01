@@ -316,16 +316,7 @@
              ((eq f :bold) '((:style . "Bold")))
              ((eq f :italic) '((:style . "Italic")))
              (t nil))))
-#+sbcl (in-package :asdf/output-translations)
 
-;;; https://gitlab.common-lisp.net/asdf/asdf/issues/28
-#+sbcl
-(defun wrapping-output-translations ()
-    `(:output-translations
-      ,@(let ((h (resolve-symlinks* (lisp-implementation-directory))))
-                 (when (and h (not (eq uiop:*image-dumped-p* :executable))) `(((,h ,*wild-path*) ()))))
-      :inherit-configuration
-      :enable-user-cache))
 (in-package :yadfa)
 (define-condition uwu (simple-error) ()
   (:report (lambda (condition stream)
