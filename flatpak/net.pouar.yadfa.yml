@@ -76,10 +76,22 @@ modules:
       - type: file
         url: https://github.com/sbcl/sbcl/commit/cebb7efd200f070913ef510d468853d7d8f24645.patch
         sha256: 99d666c883b3ad28f1375e53a17ea68c60ab996a10d86713bd532082e62c8362
+      - type: file
+        url: https://github.com/sbcl/sbcl/commit/f5e5687e335e260a203bf60817e4ec4d03a80df6.patch
+        sha256: 8c0fc2eb2aa8b453a3fd09fb8e7a846e7410acd5b90c8baacb91fb22d5f4b4c4
+      - type: file
+        url: https://github.com/sbcl/sbcl/commit/71f7507fc119b4c88b428d71e7aaf0ded918558e.patch
+        sha256: 13b7bb6d302d847b3d070d0d38907fb6d1443ed9b59b5fde0c8eb1283553ec71
+      - type: file
+        url: https://github.com/sbcl/sbcl/commit/7464a809f01f279eddc185335f9cdc16ad9bf2ad.patch
+        sha256: ae696836a0c60fa5e96f86127d32f64e9ae60321698dcfadcc458ec83ae7dfb9
       - type: shell
         commands:
           - patch -p1 -i 797ef919277238136eaa274776019d52d0353f7d.patch
           - patch -p1 -i cebb7efd200f070913ef510d468853d7d8f24645.patch
+          - patch -p1 -i f5e5687e335e260a203bf60817e4ec4d03a80df6.patch
+          - patch -p1 -i 71f7507fc119b4c88b428d71e7aaf0ded918558e.patch
+          - patch -p1 -i 7464a809f01f279eddc185335f9cdc16ad9bf2ad.patch
   - name: yadfa-deps
     buildsystem: simple
     build-commands:
