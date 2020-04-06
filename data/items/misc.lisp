@@ -95,7 +95,7 @@
     :documentation "How many times it can fail to catch the enemy before it gets destroyed. @code{T} means it never gets destroyed")
    (max-device-health
     :initarg :device-health
-    :accessor device-health-of
+    :accessor max-device-health-of
     :initform 1
     :type (or unsigned-byte null)
     :documentation "The maximum amount of @var{DEVICE-HEALTH} this item has. @code{T} means it never gets destroyed"))
