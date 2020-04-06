@@ -94,7 +94,7 @@
     :type (or unsigned-byte null)
     :documentation "How many times it can fail to catch the enemy before it gets destroyed. @code{T} means it never gets destroyed")
    (max-device-health
-    :initarg :device-health
+    :initarg :max-device-health
     :accessor max-device-health-of
     :initform 1
     :type (or unsigned-byte null)
