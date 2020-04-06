@@ -69,6 +69,7 @@
             (name-of user) (if (malep user) "his" "her") (if (malep user) "his" "her"))
     (when (trigger-event 'yadfa-events:get-diaper-locked-1)
       (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%" (name-of user)))))
+#+ecl (named-readtables:in-readtable :fare-quasiquote)
 (defevent initialize-enemy-spawn-and-wear-lists
   :lambda (lambda (self)
             (declare (ignore self))
@@ -186,4 +187,5 @@
                           (declare (ignore user))
                           (write-line "You can't wear those here.")
                           nil)))))
+#+ecl (named-readtables:in-readtable :standard)
 (trigger-event 'initialize-enemy-spawn-and-wear-lists)
