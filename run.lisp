@@ -4,6 +4,9 @@
                                        (user-homedir-pathname))))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
+
+#-ecl (declaim (optimize speed))
+#+ecl (declaim (optimize (debug 2) safety))
 #+ccl (ccl:set-current-compiler-policy (ccl:new-compiler-policy :trust-declarations (lambda (env)
                                                                                       (declare (ignore env)) nil)))
 (macrolet ((a ()

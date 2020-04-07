@@ -2,7 +2,8 @@
 #+sbcl
 (declaim (sb-ext:muffle-conditions sb-kernel:redefinition-warning)
          (optimize sb-c::recognize-self-calls))
-(declaim (optimize speed))
+#-ecl (declaim (optimize speed))
+#+ecl (declaim (optimize (debug 2) safety))
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
                                        (user-homedir-pathname))))
