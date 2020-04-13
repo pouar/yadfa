@@ -123,7 +123,13 @@
                                                                                                             (declare (ignore prop keys))
                                                                                                             (format t "~a: So what the hell do you do with all the random crap we sell you~%~%"
                                                                                                              (name-of (player-of *game*)))
-                                                                                                            (format t "Shop Owner: We dump it all on ~a's garbage collector. Yes, I know, buying all this crap only to throw it out is dumb. Blame Pouar for designing it this way." (lisp-implementation-type)))))
+                                                                                                            (format t "Shop Owner: We dump it all on ~a's garbage collector. Yes, I know, buying all this crap only to throw it out is dumb. Blame Pouar for designing it this way." (lisp-implementation-type))))
+                                                   :ask-why-this-shop-exists (make-action :documentation "Ask the raccoons why they need to sell items for profit instead of just stealing everything."
+                                                                                                  :lambda '(lambda (prop &rest keys &key &allow-other-keys)
+                                                                                                            (declare (ignore prop keys))
+                                                                                                            (format t "~a: So why do you even need this shop? Why not just steal everything?~%~%"
+                                                                                                             (name-of (player-of *game*)))
+                                                                                                            (write-line "Shop Owner: In case you haven't noticed, being stealthy enough to steal everything isn't all that easy when your diaper crinkles with each and every step you take. *crinkles and blushes*"))))
                                     :items-for-sale '((yadfa-items:gold-pacifier)
                                                       (yadfa-items:recovering-pacifier)
                                                       (yadfa-items:healing-pacifier)

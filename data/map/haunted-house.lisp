@@ -14,6 +14,18 @@
   :name "Haunted House Hallway"
   :description "You're in a spooky haunted house."
   :enter-text "You're wandering around the haunted house")
+(ensure-zone (-1 -1 0 haunted-house)
+  :name "Haunted House Stairwell"
+  :description "You're in a spooky haunted house."
+  :enter-text "You're wandering around the haunted house"
+  :stairs (list :up)
+  :direction-attributes (list :up (list :exit-text "You head down the stairs")))
+(ensure-zone (-1 -1 1 haunted-house)
+  :name "Haunted House Stairwell"
+  :description "You're in a spooky haunted house."
+  :enter-text "You're wandering around the haunted house"
+  :stairs (list :down)
+  :direction-attributes (list :down (list :exit-text "You head up the stairs")))
 (ensure-zone (1 -1 0 haunted-house)
   :name "Haunted Kitchen"
   :description "You're in a spooky haunted house."
