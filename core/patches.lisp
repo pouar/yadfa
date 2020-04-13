@@ -275,7 +275,7 @@
           (frame-class 'accept-values))
   (declare (ignore own-window exit-boxes modify-initial-query
                    resize-frame scroll-bars x-position y-position width height
-                   initially-select-query-identifier initially-select-p
+                   initially-select-query-identifier
                    select-first-query resynchronize-every-pass align-prompts
                    label command-table))
   (run-frame-top-level (apply #'make-application-frame frame-class
