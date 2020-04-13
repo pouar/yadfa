@@ -5,15 +5,12 @@
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
 
-#-ecl (declaim (optimize speed))
 #+ecl (declaim (optimize (debug 2) safety))
 #+ccl (ccl:set-current-compiler-policy (ccl:new-compiler-policy :trust-declarations (lambda (env)
                                                                                       (declare (ignore env)) nil)))
+#+(and sbcl (not sb-gmp))
 (macrolet ((a ()
              `(progn
-                ,(when (position "debug" (uiop:command-line-arguments) :test #'string=)
-                   '(declaim (optimize (debug 3))))
-                #+(and sbcl (not sb-gmp))
                 ,(when (some #'(lambda (pathname)
                                  (handler-case
                                      (sb-alien:load-shared-object pathname :dont-save t)
@@ -37,7 +34,7 @@
 (ql:quickload (loop for i in (asdf:system-depends-on (asdf:find-system :yadfa))
                     when (stringp i) collect i
                     when (and (listp i) (eq (first i) :feature) (uiop:featurep (second i))) collect (third i)))
-(declaim (optimize (debug 2) safety))
+(declaim (optimize (debug 2)))
 (setf *read-default-float-format* 'long-float)
 (ql:quickload :yadfa)
 (in-package :yadfa)
