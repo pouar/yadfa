@@ -99,7 +99,7 @@ modules:
       - cp -R asdf-*/ /app/tmp/home/common-lisp/asdf/
       - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --load "quicklisp.lisp" --eval "(quicklisp-quickstart:install)"
       - mkdir -p /app/tmp/home/quicklisp/local-projects
-      - cp -R declt McCLIM sly illogical-pathnames /app/tmp/home/quicklisp/local-projects
+      - cp -R declt McCLIM sly illogical-pathnames iterate /app/tmp/home/quicklisp/local-projects
     sources:
       - type: file
         url: https://beta.quicklisp.org/quicklisp.lisp
@@ -122,6 +122,10 @@ modules:
         dest: illogical-pathnames
         branch: pouar
         url: https://gitlab.com/pouar/illogical-pathnames.git
+      - type: git
+        dest: iterate
+        branch: pouar
+        url: https://gitlab.com/pouar/iterate.git
       - type: file
         path: 0001-Listener-remove-cl-fad-dependency.patch
       - type: shell
