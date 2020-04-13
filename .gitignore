@@ -30,6 +30,7 @@ yadfa
 docs/*/dir
 docs/reference/yadfa-reference.*
 docs/guide/yadfa-guide-figures/**
+docs/guide/references.texi
 docs/*/*.toc
 docs/*/*.aux
 docs/*/*.log
