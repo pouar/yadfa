@@ -1572,9 +1572,8 @@
          :potty-dance)
         ((>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
          :need-to-potty)))
-(defmethod output-process-potty-text (user padding type (action (eql nil)) had-accident &key (stream *standard-output*))
-  (declare (ignore stream))
-  nil)
+(defmethod output-process-potty-text (user padding type action had-accident &key (stream *standard-output*))
+  (declare (ignore user padding type action had-accident stream)))
 (defmethod output-process-potty-text ((user player) padding (type (eql :wet)) (action (eql :potty-dance)) had-accident &key (stream *standard-output*))
   (format stream "~a~%"
           (random-elt '("You feel like your bladder is going to explode"
