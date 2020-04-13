@@ -15,6 +15,8 @@ infodir := $(datarootdir)/info
 SHELL := /bin/sh
 all: $(OBJS) maketex
 
+$(SRC):
+	cd ../..; ./yadfa texi
 yadfa-reference.info: $(SRC)
 	$(MAKEINFO) --no-split $<
 
