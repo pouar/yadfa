@@ -45,7 +45,7 @@ modules:
         url: https://github.com/yihui/tinytex/archive/v0.21.tar.gz
       - type: file
         path: pkgs-custom.txt
-        sha256: 4df05412b8e72e5b34b0a34384c36b31e47bdf0242f5ca4341a08151d7c209fd
+        sha256: 03a78d417c605e5dbbf22e467a45ad808a1ed02c168d109eaefed33344ba40a4
     post-install:
       - rm -rf /app/bin
   - name: sbcl-bin
