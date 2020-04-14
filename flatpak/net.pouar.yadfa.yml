@@ -46,6 +46,13 @@ modules:
       - type: file
         path: pkgs-custom.txt
         sha256: 03a78d417c605e5dbbf22e467a45ad808a1ed02c168d109eaefed33344ba40a4
+      # https://github.com/yihui/tinytex/pull/195
+      - type: file
+        url: https://github.com/yihui/tinytex/commit/f415be422bbaaefca2d86de8a620e82f070cef33.patch
+        sha256: 28d21198f8f9675ef0c0d99796e5cc9c8b7a7bc8d01509e7aa9a97658147f7cb
+      - type: shell
+        commands:
+          - patch -p1 -i f415be422bbaaefca2d86de8a620e82f070cef33.patch
     post-install:
       - rm -rf /app/bin
   - name: sbcl-bin
