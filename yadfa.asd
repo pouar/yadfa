@@ -30,105 +30,45 @@
                 :depends-on ("core")
                 :components ((:module "moves"
                               :depends-on ("prolog")
-                              :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
-                                                    (directory-files
-                                                     (pathname-directory-pathname
-                                                      (uiop/lisp-build:current-lisp-file-pathname))
-                                                     (make-pathname
-                                                      :directory '(:relative "data" "moves")
-                                                      :name :wild
-                                                      :type "lisp"))))
+                              :components ((:file "dbz") (:file "haunted") (:file "pokemon") (:file "regular")))
                              (:module "items"
                               :depends-on ("moves" "prolog")
-                              :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
-                                                    (directory-files
-                                                     (pathname-directory-pathname
-                                                      (uiop/lisp-build:current-lisp-file-pathname))
-                                                     (make-pathname
-                                                      :directory '(:relative "data" "items")
-                                                      :name :wild
-                                                      :type "lisp"))))
+                              :components ((:file "abdl") (:file "armor") (:file "clothes") (:file "consumable")
+                                           (:file "debug") (:file "diaper") (:file "misc") (:file "weapons")))
                              (:module "prolog"
-                              :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
-                                                    (directory-files
-                                                     (pathname-directory-pathname
-                                                      (uiop/lisp-build:current-lisp-file-pathname))
-                                                     (make-pathname
-                                                      :directory '(:relative "data" "prolog")
-                                                      :name :wild
-                                                      :type "lisp"))))
+                              :components ((:file "allies") (:file "enemies") (:file "map") (:file "moves")))
                              (:module "enemies"
                               :depends-on ("moves" "items" "prolog")
-                              :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
-                                                    (directory-files
-                                                     (pathname-directory-pathname
-                                                      (uiop/lisp-build:current-lisp-file-pathname))
-                                                     (make-pathname
-                                                      :directory '(:relative "data" "enemies")
-                                                      :name :wild
-                                                      :type "lisp"))))
+                              :components ((:file "eggbots") (:file "fursuiters") (:file "haunted") (:file "navy")
+                                           (:file "pirates") (:file "pokemon") (:file "raccoon-bandits")
+                                           (:file "rpgmaker")))
                              (:module "team-members"
                               :depends-on ("moves" "items" "prolog")
-                              :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
-                                                    (directory-files
-                                                     (pathname-directory-pathname
-                                                      (uiop/lisp-build:current-lisp-file-pathname))
-                                                     (make-pathname
-                                                      :directory '(:relative "data" "team-members")
-                                                      :name :wild
-                                                      :type "lisp"))))
+                              :components ((:file "allies") (:file "catchables")))
                              (:module "props"
                               :depends-on ("items" "enemies" "team-members" "prolog")
-                              :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
-                                                    (directory-files
-                                                     (pathname-directory-pathname
-                                                      (uiop/lisp-build:current-lisp-file-pathname))
-                                                     (make-pathname
-                                                      :directory '(:relative "data" "props")
-                                                      :name :wild
-                                                      :type "lisp"))))
+                              :components ((:file "base") (:file "toilets") (:file "washers")))
                              (:module "events"
                               :depends-on ("moves" "items" "enemies" "team-members" "props" "prolog")
-                              :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
-                                                    (directory-files
-                                                     (pathname-directory-pathname
-                                                      (uiop/lisp-build:current-lisp-file-pathname))
-                                                     (make-pathname
-                                                      :directory '(:relative "data" "events")
-                                                      :name :wild
-                                                      :type "lisp"))))
+                              :components ((:file "bandits-domain") (:file "base") (:file "debug") (:file "dirty-chasm")
+                                           (:file "ironside") (:file "lukurbo") (:file "peachs-castle-wannabe")
+                                           (:file "pirates-cove") (:file "pyramid") (:file "secret-underground")
+                                           (:file "silver-cape")))
                              (:module "map"
                               :depends-on ( "moves" "items" "enemies" "team-members" "props" "events" "prolog")
-                              :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
-                                                    (directory-files
-                                                     (pathname-directory-pathname
-                                                      (uiop/lisp-build:current-lisp-file-pathname))
-                                                     (make-pathname
-                                                      :directory '(:relative "data" "map")
-                                                      :name :wild
-                                                      :type "lisp"))))
+                              :components ((:file "bandits-domain") (:file "debug-map") (:file "dirty-chasm")
+                                           (:file "haunted-forest") (:file "haunted-house") (:file "home")
+                                           (:file "ironside") (:file "lukurbo") (:file "peachs-castle-wannabe")
+                                           (:file "pirates-cove") (:file "pyramid") (:file "rpgmaker-dungeon")
+                                           (:file "secret-underground") (:file "silver-cape") (:file "sky")
+                                           (:file "your-ship")))
                              (:module "status-conditions"
                               :depends-on ("prolog")
-                              :components #.(mapcar (lambda (p) (list :file (pathname-name p)))
-                                                    (directory-files
-                                                     (pathname-directory-pathname
-                                                      (uiop/lisp-build:current-lisp-file-pathname))
-                                                     (make-pathname
-                                                      :directory '(:relative "data" "status-conditions")
-                                                      :name :wild
-                                                      :type "lisp"))))
+                              :components ((:file "abdl") (:file "misc")))
                              (:module "epilog"
                               :depends-on ("prolog" "enemies" "events" "items" "map" "moves" "props" "status-conditions" "team-members")
-                              :components #.(mapcar (lambda (p) `(:file ,(pathname-name p)
-                                                                        ,@(when (string= (pathname-name p) "puzzle")
-                                                                            '(:depends-on ("pyramid")))))
-                                                    (directory-files
-                                                     (pathname-directory-pathname
-                                                      (uiop/lisp-build:current-lisp-file-pathname))
-                                                     (make-pathname
-                                                      :directory '(:relative "data" "epilog")
-                                                      :name :wild
-                                                      :type "lisp"))))))))
+                              :components ((:file "allies") (:file "blackjack") (:file "enemies") (:file "items")
+                                           (:file "puzzle" :depends-on ("pyramid")) (:file "pyramid")))))))
 (defsystem "yadfa/docs"
   :depends-on ("net.didierverna.declt")
   :description "Used for building the docs. Contains patches to Declt for using Texinfo commands in docstrings"
