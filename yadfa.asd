@@ -130,8 +130,7 @@
                                                       :name :wild
                                                       :type "lisp"))))))))
 (defsystem "yadfa/docs"
-  :depends-on ("net.didierverna.declt" "bibtex" "cl-date-time-parser" "local-time" "iterate" "uiop")
+  :depends-on ("net.didierverna.declt")
   :description "Used for building the docs. Contains patches to Declt for using Texinfo commands in docstrings"
   :components ((:module "core"
-                :components ((:file "declt-patches")
-                             (:file "bibtex")))))
+                :components ((:file "declt-patches")))))

@@ -1,13 +1,5 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package #:yadfa)
-(defun build-texi ()
-  (if (asdf:component-loaded-p "yadfa/docs")
-      (uiop:symbol-call '#:net.didierverna.declt '#:declt :yadfa
-                        :license :gpl
-                        :texi-name "yadfa-reference"
-                        :texi-directory (translate-logical-pathname "yadfa:home;docs;reference;")
-                        :introduction "Yadfa is yet another diaperfur game, written in Common Lisp. This here is the reference manual for it which is generated automatically")
-      (format *error-output* "Can't build texi file on ~a~%" (lisp-implementation-type))))
 (defun main ()
   (proclaim '(optimize safety (debug 2)))
   (when yadfa::*immutable*
@@ -43,12 +35,6 @@
     (handler-case (progn (asdf:test-system :yadfa)
                          (uiop:quit))
       (error () (uiop:quit 1))))
-  (when (find "texi" (uiop:command-line-arguments) :test #'string=)
-    (build-texi)
-    (uiop:quit))
-  (when (find "bibtex" (uiop:command-line-arguments) :test #'string=)
-    (uiop:symbol-call :yadfa-bibtex '#:generate-bibtex)
-    (uiop:quit))
   (when (featurep :mcclim-ffi-freetype)
     (setf (symbol-value (uiop:find-symbol* '#:*library* '#:freetype2))
           (uiop:symbol-call '#:freetype2 '#:make-freetype)))
