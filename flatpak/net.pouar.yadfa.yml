@@ -153,7 +153,7 @@ modules:
       - install -Dm755 yadfa /app/lib/yadfa/
       - rm /app/tmp/home/quicklisp/local-projects/yadfa
       - mkdir -p /app/bin /app/share/icons/hicolor/scalable/apps /app/share/applications /app/share/metainfo /app/lib
-      - make -C docs/reference prefix=/app -C install-docs install-texi
+      - make -C docs/reference prefix=/app install-docs install-texi
       - install -Dm644 flatpak/net.pouar.yadfa.svg /app/share/icons/hicolor/scalable/apps/net.pouar.yadfa.svg
       - install -Dm644 flatpak/net.pouar.yadfa.appdata.xml /app/share/metainfo/net.pouar.yadfa.appdata.xml
       - install -Dm644 flatpak/net.pouar.yadfa.appdata.xml.lisp /app/share/metainfo/net.pouar.yadfa.appdata.xml.lisp
