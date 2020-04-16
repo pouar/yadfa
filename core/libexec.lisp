@@ -87,17 +87,17 @@
                                           :device (pathname-device (truename (uiop:argv0)))
                                           :directory (pathname-directory (truename (uiop:argv0))))
                                          (asdf:component-pathname (asdf:find-system "yadfa")))))))
-    (ipath:define-illogical-host :yadfa.data (uiop:merge-pathnames*
+    (illogical-pathnames:define-illogical-host :yadfa.data (uiop:merge-pathnames*
                                               (make-pathname
                                                :directory '(:relative "YADFA")
                                                :case :common)
                                               (uiop:xdg-data-home)))
-    (ipath:define-illogical-host :yadfa.config (uiop:merge-pathnames*
+    (illogical-pathnames:define-illogical-host :yadfa.config (uiop:merge-pathnames*
                                                 (make-pathname
                                                  :directory '(:relative "YADFA")
                                                  :case :common)
                                                 (uiop:xdg-config-home)))
-    (ipath:define-illogical-host :yadfa.home (if uiop:*image-dumped-p*
+    (illogical-pathnames:define-illogical-host :yadfa.home (if uiop:*image-dumped-p*
                                                  (make-pathname
                                                   :device (pathname-device (truename (uiop:argv0)))
                                                   :directory (pathname-directory (truename (uiop:argv0))))
