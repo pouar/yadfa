@@ -4,8 +4,8 @@
   (:default-initargs
    :name "Navy Officer"
    :description "The Navy is mainly made up of aquatic creatures. They're all toilet trained but may use their pullups if they don't want to hold it any longer."
-   :species (random-elt '("Dolphin" "Orca" "Shark"))
-   :male (random-elt '(t nil))
+   :species (a:random-elt '("Dolphin" "Orca" "Shark"))
+   :male (a:random-elt '(t nil))
    :watersport-chance 3
    :mudsport-chance 3
    :bladder/contents (random 500)
@@ -115,8 +115,8 @@
   (unless (iter (for (a b) on args)
             (when (eq a :watersport-limit)
               (leave t)))
-    (setf (watersport-limit-of c) (- (bladder/maximum-limit-of c) (random-elt (list (bladder/potty-dance-limit-of c) (bladder/need-to-potty-limit-of c))))))
+    (setf (watersport-limit-of c) (- (bladder/maximum-limit-of c) (a:random-elt (list (bladder/potty-dance-limit-of c) (bladder/need-to-potty-limit-of c))))))
   (unless (iter (for (a b) on args)
             (when (eq a :mudsport-limit)
               (leave t)))
-    (setf (mudsport-limit-of c) (- (bowels/maximum-limit-of c) (random-elt (list (bowels/potty-dance-limit-of c) (bowels/need-to-potty-limit-of c)))))))
+    (setf (mudsport-limit-of c) (- (bowels/maximum-limit-of c) (a:random-elt (list (bowels/potty-dance-limit-of c) (bowels/need-to-potty-limit-of c)))))))

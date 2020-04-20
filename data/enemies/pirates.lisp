@@ -4,8 +4,8 @@
   (:default-initargs
    :name "Diaper Pirate"
    :description "A generic pirate that has forgone toilets and will never try to hold it."
-   :species (random-elt '("Dolphin" "Orca" "Shark"))
-   :male (random-elt '(t nil))
+   :species (a:random-elt '("Dolphin" "Orca" "Shark"))
+   :male (a:random-elt '(t nil))
    :bladder/contents (random 500)
    :bowels/contents (random 700)
    :watersport-limit 300
@@ -37,9 +37,9 @@
             (when (eq a :wear)
               (leave t)))
     (setf (wear-of c) nil)
-    (appendf (wear-of c)
-             (iter (for i in '(yadfa-items:thick-rubber-diaper yadfa-items:cloth-diaper yadfa-items:incontinence-pad))
-               (collect (make-instance i))))
+    (a:appendf (wear-of c)
+               (iter (for i in '(yadfa-items:thick-rubber-diaper yadfa-items:cloth-diaper yadfa-items:incontinence-pad))
+                 (collect (make-instance i))))
     (unless (malep c)
       (push (make-instance 'yadfa-items:bra) (wear-of c)))
     (push (make-instance 'yadfa-items:pirate-shirt) (wear-of c))))

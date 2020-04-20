@@ -180,9 +180,9 @@
   :description "You're in a strange forest. Spooky sounds and scary eyes all around."
   :enter-text "You're wondering around the haunted forest"
   :enemy-spawn-list 'haunted-forest)
-(macro-level `(progn ,@(iter (for i from 3 to 7)
-                         (collect `(ensure-zone (,i -5 0 haunted-forest)
-                                     :name "Haunted Forest"
-                                     :description "You're in a strange forest. Spooky sounds and scary eyes all around."
-                                     :enter-text "You're wondering around the haunted forest"
-                                     :enemy-spawn-list 'haunted-forest)))))
+(m:macro-level `(progn ,@(iter (for i from 3 to 7)
+                           (collect `(ensure-zone (,i -5 0 haunted-forest)
+                                       :name "Haunted Forest"
+                                       :description "You're in a strange forest. Spooky sounds and scary eyes all around."
+                                       :enter-text "You're wondering around the haunted forest"
+                                       :enemy-spawn-list 'haunted-forest)))))

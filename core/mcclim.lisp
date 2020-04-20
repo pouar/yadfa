@@ -1,38 +1,38 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-clim"; coding: utf-8-unix; -*-
 (in-package :yadfa-clim)
-(define-command-table yadfa-world-commands)
-(define-command-table yadfa-battle-commands)
-(define-command-table yadfa-bin-commands)
-(define-command-table yadfa-menu-commands)
-(define-command-table application-commands)
-(define-command (com-clear-output :name "Clear Output History"
-                                  :command-table application-commands
-                                  :menu t
-                                  :provide-output-destination-keyword nil)
+(c:define-command-table yadfa-world-commands)
+(c:define-command-table yadfa-battle-commands)
+(c:define-command-table yadfa-bin-commands)
+(c:define-command-table yadfa-menu-commands)
+(c:define-command-table application-commands)
+(c:define-command (com-clear-output :name "Clear Output History"
+                                    :command-table application-commands
+                                    :menu t
+                                    :provide-output-destination-keyword nil)
     ()
-  (window-clear *standard-output*)
+  (c:window-clear *standard-output*)
   (setf *records* nil))
-(map-over-command-table-names (lambda (name command)
-                                (unless (eq command 'clim-listener::com-clear-output)
-                                  (add-command-to-command-table command (find-command-table 'application-commands) :errorp nil)
-                                  (add-menu-item-to-command-table (find-command-table 'application-commands) name :command command :errorp nil)))
-                              (find-command-table 'clim-listener::application-commands)
-                              :inherited nil)
-(define-conditional-application-frame yadfa-listener (clim-listener::listener)
+(c:map-over-command-table-names (lambda (name command)
+                                  (unless (eq command 'clim-listener::com-clear-output)
+                                    (c:add-command-to-command-table command (c:find-command-table 'application-commands) :errorp nil)
+                                    (c:add-menu-item-to-command-table (c:find-command-table 'application-commands) name :command command :errorp nil)))
+                                (c:find-command-table 'clim-listener::application-commands)
+                                :inherited nil)
+(cc:define-conditional-application-frame yadfa-listener (clim-listener::listener)
   (:enable-commands '(yadfa-bin-commands yadfa-world-commands)
    :disable-commands '(yadfa-world-commands))
   ()
   (:panes (clim-listener::interactor-container
-           (make-clim-stream-pane
+           (c:make-clim-stream-pane
             :type 'clim-listener::listener-interactor-pane
             :name 'clim-listener::interactor :scroll-bars t
             :default-view clim-listener::+listener-view+
             :end-of-line-action :wrap*))
           (clim-listener::doc :pointer-documentation :default-view clim-listener::+listener-pointer-documentation-view+)
-          (clim-listener::wholine (make-pane 'clim-listener::wholine-pane
-                                             :display-function 'clim-listener::display-wholine :scroll-bars nil
-                                             :display-time :command-loop :end-of-line-action :allow)))
-  (:top-level (default-frame-top-level :prompt 'clim-listener::print-listener-prompt))
+          (clim-listener::wholine (c:make-pane 'clim-listener::wholine-pane
+                                               :display-function 'clim-listener::display-wholine :scroll-bars nil
+                                               :display-time :command-loop :end-of-line-action :allow)))
+  (:top-level (c:default-frame-top-level :prompt 'clim-listener::print-listener-prompt))
   (:command-table (yadfa-listener
                    :inherit-from (
                                   clim-listener::listener
@@ -49,44 +49,44 @@
   (:disabled-commands clim-listener::com-clear-output)
   (:menu-bar t)
   (:layouts (default
-             (vertically ()
+             (c:vertically ()
                clim-listener::interactor-container
                clim-listener::doc
                clim-listener::wholine))))
-(define-command (yadfa-set-eol-action :command-table yadfa-menu-commands :menu "Set EOL Action")
+(c:define-command (yadfa-set-eol-action :command-table yadfa-menu-commands :menu "Set EOL Action")
     ((keyword '(member :scroll :allow :wrap :wrap*)
               :prompt "Keyword"))
-  (setf (stream-end-of-line-action *query-io*) keyword))
-(define-command (yadfa-gc :command-table yadfa-menu-commands :menu "GC")
+  (setf (c:stream-end-of-line-action *query-io*) keyword))
+(c:define-command (yadfa-gc :command-table yadfa-menu-commands :menu "GC")
     ()
   (trivial-garbage:gc :full t))
-(define-conditional-command (com-enable-world)
+(cc:define-conditional-command (com-enable-world)
     (yadfa-listener :enable-commands (yadfa-world-commands yadfa-bin-commands)
                     :disable-commands (yadfa-battle-commands))
     ())
-(define-conditional-command (com-enable-battle)
+(cc:define-conditional-command (com-enable-battle)
     (yadfa-listener :enable-commands (yadfa-battle-commands yadfa-bin-commands)
                     :disable-commands (yadfa-world-commands))
     ())
-(define-command
-    (com-inspect :command-table global-command-table :name "Inspect")
-    ((obj 'expression
+(c:define-command
+    (com-inspect :command-table c:global-command-table :name "Inspect")
+    ((obj 'c:expression
           :prompt "object"
           :gesture :inspect))
   (clouseau:inspect obj :new-process t))
 (defmacro draw-bar (medium stat &rest colors)
-  `(multiple-value-bind (x y) (stream-cursor-position ,medium)
-     (draw-rectangle* ,medium x y (+ x (* ,stat 400)) (+ y 15)
-                      :ink (cond ,@(iter (for i in colors)
-                                     (collect `(,(car i) ,(intern (format nil "+~a+"
-                                                                          (if (typep (car (last i)) 'cons)
-                                                                              (caar (last i))
-                                                                              (car (last i))))
-                                                                  "CLIM"))))))
-     (draw-rectangle* ,medium x y (+ x 400) (+ y 15)
-                      :filled nil)
-     (stream-set-cursor-position ,medium (+ x 400) y)))
-(define-presentation-method present (object (type base-character) stream (view stat-view) &key)
+  `(multiple-value-bind (x y) (c:stream-cursor-position ,medium)
+     (c:draw-rectangle* ,medium x y (+ x (* ,stat 400)) (+ y 15)
+                        :ink (cond ,@(iter (for i in colors)
+                                       (collect `(,(car i) ,(intern (format nil "+~a+"
+                                                                            (if (typep (car (last i)) 'cons)
+                                                                                (caar (last i))
+                                                                                (car (last i))))
+                                                                    "CLIM"))))))
+     (c:draw-rectangle* ,medium x y (+ x 400) (+ y 15)
+                        :filled nil)
+     (c:stream-set-cursor-position ,medium (+ x 400) y)))
+(c:define-presentation-method c:present (object (type base-character) stream (view stat-view) &key)
   (format stream "Name: ~a~%" (name-of object))
   (format stream "Sex: ~a~%" (if (malep object) "Male" "Female"))
   (format stream "Species: ~a~%" (species-of object))
@@ -184,7 +184,7 @@
             ((>= (bowels/contents-of object) (bowels/need-to-potty-limit-of object)) :yellow)
             (t :green))
   (terpri stream))
-(define-command (com-yadfa-move :command-table yadfa-world-commands :menu t :name "Move")
+(c:define-command (com-yadfa-move :command-table yadfa-world-commands :menu t :name "Move")
     ((zone '(or zone form)))
   (cond ((typep zone 'zone)
          (block nil
@@ -212,10 +212,10 @@
                          (return))))))))
         (t
          (apply 'yadfa-world:move zone))))
-(define-command (com-yadfa-describe-zone :command-table yadfa-bin-commands :menu t :name "Describe Zone")
+(c:define-command (com-yadfa-describe-zone :command-table yadfa-bin-commands :menu t :name "Describe Zone")
     ((zone zone))
   (yadfa-bin:lst :describe-zone zone))
-(define-presentation-to-command-translator com-yadfa-move-translator
+(c:define-presentation-to-command-translator com-yadfa-move-translator
     (zone com-yadfa-move yadfa-world-commands
      :documentation "Move"
      :pointer-documentation "Move Here"
@@ -227,7 +227,7 @@
                                                                               (and (= old-x new-x) (/= old-y new-y))))))))
     (object)
   (list object))
-(define-presentation-to-command-translator com-yadfa-move-translator-up
+(c:define-presentation-to-command-translator com-yadfa-move-translator-up
     (zone com-yadfa-move yadfa-world-commands
      :documentation "Move Up"
      :pointer-documentation "Move Up"
@@ -239,7 +239,7 @@
                             (yadfa::travelablep (position-of (player-of *game*)) :up))))
     (object)
   '((:up)))
-(define-presentation-to-command-translator com-yadfa-move-translator-down
+(c:define-presentation-to-command-translator com-yadfa-move-translator-down
     (zone com-yadfa-move yadfa-world-commands
      :documentation "Move Down"
      :pointer-documentation "Move Down"
@@ -251,7 +251,7 @@
                             (yadfa::travelablep (position-of (player-of *game*)) :down))))
     (object)
   '((:down)))
-(define-presentation-to-command-translator com-yadfa-move-translator-warp
+(c:define-presentation-to-command-translator com-yadfa-move-translator-warp
     (zone com-yadfa-move yadfa-world-commands
      :documentation "Move To Waypoint"
      :pointer-documentation "Move To Waypoint"
@@ -262,12 +262,12 @@
                               (unless (yadfa::travelablep (position-of (player-of *game*)) point)
                                 (collect point))))))
     (object)
-  `((,(let ((*query-io* (frame-query-io (find-application-frame 'yadfa-listener))))
-        (accepting-values (*query-io* :resynchronize-every-pass t)
-          (accept `(member-alist ,(iter (for (key position) on (warp-points-of (get-zone (position-of object))) by 'cddr)
-                                    (unless (yadfa::travelablep (position-of (player-of *game*)) key)
-                                      (collect (cons (write-to-string key) key))))) :view clim:+radio-box-view+ :stream *query-io*))))))
-(define-presentation-to-command-translator com-yadfa-describe-zone-translator
+  `((,(let ((*query-io* (c:frame-query-io (c:find-application-frame 'yadfa-listener))))
+        (c:accepting-values (*query-io* :resynchronize-every-pass t)
+          (c:accept `(member-alist ,(iter (for (key position) on (warp-points-of (get-zone (position-of object))) by 'cddr)
+                                      (unless (yadfa::travelablep (position-of (player-of *game*)) key)
+                                        (collect (cons (write-to-string key) key))))) :view clim:+radio-box-view+ :stream *query-io*))))))
+(c:define-presentation-to-command-translator com-yadfa-describe-zone-translator
     (zone com-yadfa-describe-zone yadfa-bin-commands
      :documentation "Describe Zone"
      :pointer-documentation "Print Zone Description"
@@ -275,7 +275,7 @@
      :menu t)
     (object)
   (list object))
-(define-application-frame emacs-frame (standard-application-frame)
+(c:define-application-frame emacs-frame (c:standard-application-frame)
   ((lambda :accessor emacs-frame-lambda
      :initarg :emacs-frame-lambda
      :initform (lambda (frame)
@@ -285,41 +285,41 @@
   (:layouts
    (default int)))
 (defmethod default-frame-top-level :around ((frame emacs-frame)
-                                            &key (command-parser 'command-line-command-parser)
-                                                 (command-unparser 'command-line-command-unparser)
+                                            &key (command-parser 'c:command-line-command-parser)
+                                                 (command-unparser 'c:command-line-command-unparser)
                                                  (partial-command-parser
-                                                  'command-line-read-remaining-arguments-for-partial-command)
+                                                  'c:command-line-read-remaining-arguments-for-partial-command)
                                                  (prompt "Command: "))
   (declare (ignore prompt))
-  (let* ((frame-query-io (frame-query-io frame))
-         (interactorp (typep frame-query-io 'interactor-pane))
-         (*standard-input*  (or (frame-standard-input frame)  *standard-input*))
-         (*standard-output* (or (frame-standard-output frame) *standard-output*))
+  (let* ((frame-query-io (c:frame-query-io frame))
+         (interactorp (typep frame-query-io 'c:interactor-pane))
+         (*standard-input*  (or (c:frame-standard-input frame)  *standard-input*))
+         (*standard-output* (or (c:frame-standard-output frame) *standard-output*))
          (*query-io* (or frame-query-io *query-io*))
          ;; during development, don't alter *error-output*
          ;; (*error-output* (frame-error-output frame))
-         (*pointer-documentation-output* (frame-pointer-documentation-output frame))
-         (*command-parser* command-parser)
-         (*command-unparser* command-unparser)
-         (*partial-command-parser* partial-command-parser))
+         (c:*pointer-documentation-output* (c:frame-pointer-documentation-output frame))
+         (c:*command-parser* command-parser)
+         (c:*command-unparser* command-unparser)
+         (c:*partial-command-parser* partial-command-parser))
     (restart-case
         (progn
-          (redisplay-frame-panes frame :force-p t)
+          (c:redisplay-frame-panes frame :force-p t)
           (when interactorp
-            (setf (cursor-visibility (stream-text-cursor frame-query-io)) nil))
+            (setf (c:cursor-visibility (c:stream-text-cursor frame-query-io)) nil))
           (funcall (emacs-frame-lambda frame) frame))
       (abort ()
         :report "Return to application command loop."
         (if interactorp
             (format frame-query-io "~&Command aborted.~&")
-            (beep))))))
+            (c:beep))))))
 ;;; add init function
-(defmethod default-frame-top-level
+(defmethod c:default-frame-top-level
     ((frame yadfa-listener)
-     &key (command-parser 'command-line-command-parser)
-          (command-unparser 'command-line-command-unparser)
+     &key (command-parser 'c:command-line-command-parser)
+          (command-unparser 'c:command-line-command-unparser)
           (partial-command-parser
-           'command-line-read-remaining-arguments-for-partial-command)
+           'c:command-line-read-remaining-arguments-for-partial-command)
           (prompt "Command: "))
   ;; Give each pane a fresh start first time through.
   (let ((needs-redisplay t)
@@ -331,26 +331,26 @@
       ;; We rebind *QUERY-IO* ensuring variable is always a stream,
       ;; but we use FRAME-QUERY-IO for our own actions and to decide
       ;; whenever frame has the query IO stream associated with it..
-      (let* ((frame-query-io (frame-query-io frame))
-             (interactorp (typep frame-query-io 'interactor-pane))
-             (*standard-input*  (or (frame-standard-input frame)  *standard-input*))
-             (*standard-output* (or (frame-standard-output frame) *standard-output*))
+      (let* ((frame-query-io (c:frame-query-io frame))
+             (interactorp (typep frame-query-io 'c:interactor-pane))
+             (*standard-input*  (or (c:frame-standard-input frame)  *standard-input*))
+             (*standard-output* (or (c:frame-standard-output frame) *standard-output*))
              (*query-io* (or frame-query-io *query-io*))
              ;; during development, don't alter *error-output*
              ;; (*error-output* (frame-error-output frame))
-             (*pointer-documentation-output* (frame-pointer-documentation-output frame))
-             (*command-parser* command-parser)
-             (*command-unparser* command-unparser)
-             (*partial-command-parser* partial-command-parser))
+             (c:*pointer-documentation-output* (c:frame-pointer-documentation-output frame))
+             (c:*command-parser* command-parser)
+             (c:*command-unparser* command-unparser)
+             (c:*partial-command-parser* partial-command-parser))
         (restart-case
             (flet ((execute-command ()
-                     (alexandria:when-let ((command (read-frame-command frame :stream frame-query-io)))
+                     (a:when-let ((command (c:read-frame-command frame :stream frame-query-io)))
                        (setq needs-redisplay t)
-                       (serapeum:run-hooks 'yadfa:*cheat-hooks*)
-                       (execute-frame-command frame command))))
+                       (s:run-hooks 'yadfa:*cheat-hooks*)
+                       (c:execute-frame-command frame command))))
               (when needs-redisplay
-                (dolist (i yadfa-clim::*records*) do (redisplay i *standard-output*))
-                (redisplay-frame-panes frame :force-p first-time)
+                (dolist (i yadfa-clim::*records*) do (c:redisplay i *standard-output*))
+                (c:redisplay-frame-panes frame :force-p first-time)
                 (when first-time
                   (yadfa::switch-user-packages)
                   (yadfa:intro-function))
@@ -359,9 +359,9 @@
                   (setf cl:*random-state* (make-random-state t)
                         yadfa::*last-rng-update* (yadfa:time-of yadfa:*game*))))
               (when interactorp
-                (setf (cursor-visibility (stream-text-cursor frame-query-io)) nil)
+                (setf (c:cursor-visibility (c:stream-text-cursor frame-query-io)) nil)
                 (when prompt
-                  (with-text-style (frame-query-io climi::+default-prompt-style+)
+                  (c:with-text-style (frame-query-io climi::+default-prompt-style+)
                     (if (stringp prompt)
                         (write-string prompt frame-query-io)
                         (funcall prompt frame-query-io frame))
@@ -373,12 +373,12 @@
             :report "Return to application command loop."
             (if interactorp
                 (format frame-query-io "~&Command aborted.~&")
-                (beep))))))))
+                (c:beep))))))))
 (define-condition emm386-memory-manager-error (serious-condition) ()
   (:report (lambda (condition stream)
              (declare (ignore condition))
              (write-line "Thank you for playing Wing Commander!" stream))))
-(defmethod frame-exit ((frame yadfa-listener))
+(defmethod c:frame-exit ((frame yadfa-listener))
   (unwind-protect (error 'emm386-memory-manager-error)
     (call-next-method)))
 (defun run-listener (&key (new-process nil)
@@ -389,18 +389,18 @@
                           frame-manager
                           (process-name "Yadfa")
                           (package :yadfa-user))
-  (let* ((fm (or frame-manager (find-frame-manager :port (or port (find-port)))))
-         (frame (make-application-frame 'yadfa-listener
-                                        :frame-manager fm
-                                        :width width
-                                        :height height)))
+  (let* ((fm (or frame-manager (c:find-frame-manager :port (or port (c:find-port)))))
+         (frame (c:make-application-frame 'yadfa-listener
+                                          :frame-manager fm
+                                          :width width
+                                          :height height)))
     (flet ((run ()
              (let ((*package* (find-package package)))
                (unwind-protect
                     (if debugger
-                        (clim-debugger:with-debugger () (run-frame-top-level frame))
-                        (run-frame-top-level frame))
-                 (disown-frame fm frame)))))
+                        (clim-debugger:with-debugger () (c:run-frame-top-level frame))
+                        (c:run-frame-top-level frame))
+                 (c:disown-frame fm frame)))))
       (if new-process
           (values (bt:make-thread 'run :name process-name)
                   frame)

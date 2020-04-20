@@ -9,7 +9,7 @@
   :description "The entrance to the pool"
   :enter-text "You're swimming in the pool"
   :underwater t)
-(macro-level
+(m:macro-level
   `(progn
      ,@(iter (for x from -10 to 10)
          (iter (for y from -2 downto -17)
@@ -30,7 +30,7 @@
   :enter-text "You enter the elevator"
   :stairs (list :down)
   :direction-attributes (list :down (list :exit-text "Going down")))
-(macro-level
+(m:macro-level
   `(progn
      ,@(iter (for i from -17 to -2)
          (collect `(ensure-zone (0 i 1 candle-carnival)
@@ -38,7 +38,7 @@
                      :description "A catwalk over the pool"
                      :enter-text "You're swimming in the pool"
                      :warp-points '(dive (0 ,i 0 candle-carnival)))))))
-(macro-level
+(m:macro-level
   `(progn
      ,@(iter (for i from -10 to 10)
          (unless (= i -10)
@@ -102,7 +102,7 @@
    #:mansion
    #:launch-pad)
   (:documentation "Contains symbols for the sky base"))
-(macro-level
+(m:macro-level
   (let ((syms '(sky-base:landing-pad
                 sky-base:living-quarters
                 sky-base:main-office
@@ -157,7 +157,7 @@
   :description "A city orbiting the planet on a giant platform"
   :enter-text "You're on the part of the pathway that acts as the city's gangway"
   :events '(yadfa-events:secret-underground-pipe-star-city))
-(macro-level
+(m:macro-level
   `(progn
      ,@(iter
          (with a = ())
@@ -176,7 +176,7 @@
   :description "A luxurious hotel"
   :enter-text "you're in the hotel lobby"
   :stairs (list :up))
-(macro-level
+(m:macro-level
   `(progn
      ,@(iter (for x from -3 downto -7)
          (collect `(ensure-zone (,x 3 0 star-city)
@@ -222,7 +222,7 @@
   :description "A luxurious hotel"
   :enter-text "you're in the hall"
   :stairs (list :up :down))
-(macro-level
+(m:macro-level
   `(progn
      ,@(iter (for x from -1 downto -5)
          (collect `(ensure-zone (,x 3 1 star-city)

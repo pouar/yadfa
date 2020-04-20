@@ -31,7 +31,7 @@
   :enter-text "You're inside Pirate's Cove"
   :enemy-spawn-list (list '(:chance 1/8
                             :enemies ((yadfa-enemies:diaper-pirate . (list :level (random-from-range 4 8)))))))
-(macro-level
+(m:macro-level
   `(progn
      ,@(iter (for i from 0 to 10)
          (collect `(ensure-zone (1 0 ,i pirates-cove)

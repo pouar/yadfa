@@ -35,7 +35,7 @@
     (handler-case (progn (asdf:test-system :yadfa)
                          (uiop:quit))
       (error () (uiop:quit 1))))
-  (when (featurep :mcclim-ffi-freetype)
+  (when (uiop:featurep :mcclim-ffi-freetype)
     (setf (symbol-value (uiop:find-symbol* '#:*library* '#:freetype2))
           (uiop:symbol-call '#:freetype2 '#:make-freetype)))
   (yadfa-clim:run-listener))

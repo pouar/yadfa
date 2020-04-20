@@ -13,7 +13,7 @@
 (defmethod lambda-list ((lambda-exp function))
   (swank-backend:arglist lambda-exp))
 (defmacro do-push (item &rest places)
-  (once-only (item)
+  (a:once-only (item)
     `(progn ,@(loop for place in places collect `(push ,item ,place)))))
 (defun remove-nth (n sequence)
   (remove-if (constantly t) sequence :start n :count 1))
@@ -74,24 +74,18 @@ the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYW
   `(append ,@args nil))
 (defmacro lappendf (list &rest args)
   "Modify macro that appends @var{ARGS} at the beginning of @var{LIST} instead of the end. Might be faster."
-  (once-only (list)
+  (a:once-only (list)
     `(setf ,list (append ,@args ,list))))
 (define-modify-macro appendf* (&rest lists) append*
   "Modify-macro for APPEND*. Appends LISTS to the place designated by the first
 argument.")
-
-;;; create aliases for functions and macros in serapeum so that they don't conflict with iterate
-(setf (macro-function 'summing*) (macro-function 'serapeum:summing))
-(setf (macro-function 'collecting*) (macro-function 'serapeum:collecting))
-(setf (fdefinition 'sum*) #'serapeum:sum)
-(setf (fdefinition 'in*) #'serapeum:in)
 (defmacro out (&rest strings)
   (check-type strings list)
   (alexandria:with-gensyms (element)
     `(dolist (,element (list ,@(substitute #\Newline :% strings :test #'eq)))
        (princ ,element))))
 (declaim (inline list-length-< list-length-<=))
-(eval-always
+(s:eval-always
   (defun list-length-<= (length list)
     (declare (type list list)
              (type integer length))
@@ -109,10 +103,10 @@ argument.")
                     (typep (car (last name-args-declares)) 'list)
                     (eq (caar (last name-args-declares)) 'declare)))
          (types (multiple-value-bind (req op rest key allow aux keyp)
-                    (parse-ordinary-lambda-list (second name-args-declares))
+                    (a:parse-ordinary-lambda-list (second name-args-declares))
                   (declare (ignore rest allow aux keyp))
                   (iter (for i in (append req (mapcar 'car op) (mapcar 'cadar key)))
-                    (when (member i (plist-keys asserts))
+                    (when (member i (s:plist-keys asserts))
                       (collect `(type ,(getf asserts i) ,i)))))))
     `(defun
          ,@(if declarep

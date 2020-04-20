@@ -16,16 +16,16 @@
 
 ~a."
             (xref yadfa-bin:disable-mods :function))
-  (let ((systems (iter (for i in (ensure-list systems))
+  (let ((systems (iter (for i in (a:ensure-list systems))
                    (collect (asdf:coerce-name i)))))
     (dolist (system (remove-duplicates systems :test #'string=))
       (asdf:find-system system))
     (dolist (system systems)
       (pushnew system *mods* :test #'string=)
       (asdf:load-system system))
-    (with-output-to-file (stream #P"yadfa:config;mods.conf"
-                                 :if-exists :supersede
-                                 :external-format :utf-8)
+    (a:with-output-to-file (stream #P"yadfa:config;mods.conf"
+                                   :if-exists :supersede
+                                   :external-format :utf-8)
       (write *mods* :stream stream)))
   systems)
 (defun yadfa-bin:disable-mods (systems)
@@ -33,14 +33,14 @@
 
 ~a."
             (xref yadfa-bin:enable-mods :function))
-  (let ((systems (delete-duplicates (iter (for i in (ensure-list systems))
+  (let ((systems (delete-duplicates (iter (for i in (a:ensure-list systems))
                                       (collect (asdf:coerce-name i)))
                                     :test #'string=)))
-    (deletef *mods* systems :test (lambda (o e)
-                                    (member e o :test #'string=)))
-    (with-output-to-file (stream #P"yadfa:config;mods.conf"
-                                 :if-exists :supersede
-                                 :external-format :utf-8)
+    (a:deletef *mods* systems :test (lambda (o e)
+                                      (member e o :test #'string=)))
+    (a:with-output-to-file (stream #P"yadfa:config;mods.conf"
+                                   :if-exists :supersede
+                                   :external-format :utf-8)
       (write *mods* :stream stream)))
   systems)
 (defunassert (yadfa-world:save-game (path)
@@ -50,7 +50,7 @@
                                               (xref yadfa-world:load-game :function)))
     (path (or simple-string pathname))
   (ensure-directories-exist (make-pathname :host (pathname-host path) :device (pathname-device path) :directory (pathname-directory path)))
-  (with-output-to-file (s path :if-exists :supersede :external-format :utf-8)
+  (a:with-output-to-file (s path :if-exists :supersede :external-format :utf-8)
     (write-string (write-to-string (ms:marshal *game*)) s))
   (typecase path
     (logical-pathname (translate-logical-pathname path))
@@ -64,7 +64,7 @@
 ~a."
                                               (xref yadfa-world:save-game :function)))
     (path (or simple-string pathname))
-  (with-input-from-file (stream path)
+  (a:with-input-from-file (stream path)
     (setf *game* (ms:unmarshal (read stream))))
   (typecase path
     (logical-pathname (translate-logical-pathname path))
@@ -411,7 +411,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
                          (if (list-length-< 1 (enemies-of *battle*)) "enemies" "enemy")
                          (name-of item)))
                (format t "~a puts on ~a ~a~%" (name-of selected-user) (if (malep selected-user) "his" "her") (name-of item))
-               (deletef (inventory-of (player-of *game*)) item :count 1)
+               (a:deletef (inventory-of (player-of *game*)) item :count 1)
                (setf (wear-of selected-user) a)))))
 (defunassert (yadfa-bin:unwear (&key (inventory 0) (wear 0) user)
                                #.(format nil "Unwear an item you're wearing. @var{INVENTORY} is the index you want to place this item. @var{WEAR} is the index of the item you're wearing that you want to remove. You can also set @var{WEAR} to a type specifier for the outer most clothing of that type. @var{USER} is a integer referring to the index of an ally. Leave at @code{NIL} to refer to yourself
@@ -471,7 +471,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
                   "enemy")
               (name-of item)))
     (format t "~a takes off ~a ~a~%" (name-of selected-user) (if (malep selected-user) "his" "her") (name-of item))
-    (deletef (wear-of (player-of *game*)) item :count 1)
+    (a:deletef (wear-of (player-of *game*)) item :count 1)
     (insertf (inventory-of (player-of *game*)) item inventory)))
 (defunassert (yadfa-bin:change (&key (inventory 0) (wear 0) user)
                                #.(format nil "Change one of the clothes you're wearing with one in your inventory. @var{WEAR} is the index of the clothing you want to replace. Smaller index refers to outer clothing. @var{INVENTORY} is an index in your inventory of the item you want to replace it with. You can also give @var{INVENTORY} and @var{WEAR} a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. @var{USER} is an index of an ally. Leave this at @code{NIL} to refer to yourself.
@@ -723,9 +723,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
         (return-from yadfa-bin:toss)))
     (iter (for i in items)
       (format t "You send ~a straight to /dev/null~%" (name-of i)))
-    (deletef (inventory-of (player-of *game*)) items
-             :test (lambda (o e)
-                     (member e o)))))
+    (a:deletef (inventory-of (player-of *game*)) items
+               :test (lambda (o e)
+                       (member e o)))))
 (defunassert (yadfa-world:place (prop &rest items)
                                 "Store items in a prop. @var{ITEMS} is a list of indexes of the items in your inventory. @var{PROP} is a keyword")
     (items list
@@ -757,9 +757,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (iter (for i in items)
       (format t "You place your ~a on the ~a~%" (name-of i) (name-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)))
       (push i (get-items-from-prop prop (position-of (player-of *game*)))))
-    (deletef (inventory-of (player-of *game*)) items
-             :test (lambda (o e)
-                     (member e o)))))
+    (a:deletef (inventory-of (player-of *game*)) items
+               :test (lambda (o e)
+                       (member e o)))))
 (defun yadfa-battle:run ()
   "Run away from a battle like a coward"
   (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
@@ -793,7 +793,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
          (mess))
         (t
          (format t "~a ran away like a coward~%" (name-of (player-of *game*)))))
-  (nix *battle*)
+  (s:nix *battle*)
   (switch-user-packages))
 (defunassert (yadfa-world:use-item (item &rest keys &key user action &allow-other-keys)
                                    "Uses an item. @var{ITEM} is an index of an item in your inventory. @var{USER} is an index of an ally. Setting this to @code{NIL} will use it on yourself. @var{ACTION} is a keyword when specified will perform a special action with the item, all the other keys specified in this function will be passed to that action. @var{ACTION} doesn't work in battle."
@@ -927,7 +927,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
         (leave t))
       (when (and (typep item ammo-type) (typep item (ammo-type-of (wield-of user))))
         (push item (ammo-of (wield-of user)))
-        (deletef item (inventory-of (player-of *game*)) :count 1)))))
+        (a:deletef item (inventory-of (player-of *game*)) :count 1)))))
 (defunassert (yadfa-bin:wield (&key user inventory)
                               "Wield an item. Set @var{INVENTORY} to the index or a type specifier of an item in your inventory to wield that item. Set @var{USER} to the index of an ally to have them to equip it or leave it @code{NIL} for the player.")
     (user (or unsigned-byte null)
@@ -953,7 +953,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
             (name-of selected-user)
             (if (malep selected-user) "his" "her")
             (name-of item))
-    (deletef (inventory-of (player-of *game*)) item :count 1)
+    (a:deletef (inventory-of (player-of *game*)) item :count 1)
     (when (wield-of selected-user)
       (push (wield-of selected-user) (inventory-of (player-of *game*))))
     (setf (wield-of selected-user) item)))
