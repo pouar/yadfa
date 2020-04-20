@@ -6,16 +6,16 @@
    :actions (list :use (make-action
                         :documentation "Use the toilet. if WET or MESS is T, the player will empty his bladder/bowels completely. If a real is given, the player will empty his bladder by that amount, however the player will mess completely no matter what number you give it if you provide a number. If ALLY number is specified, that ALLY uses the toilet, otherwise it's the player"
                         :lambda '(lambda (prop &rest keys &key wet mess pull-pants-down ally &allow-other-keys)
-                                  (declare (type prop prop)
-                                   (type boolean pull-pants-down)
-                                   (type (or integer null) ally)
-                                   (type (or boolean real) wet mess)
+                                  (declare #+sbcl (type prop prop)
+                                   #+sbcl (type boolean pull-pants-down)
+                                   #+sbcl (type (or integer null) ally)
+                                   #+sbcl (type (or boolean real) wet mess)
                                    (ignore keys))
-                                  (check-type prop prop)
-                                  (check-type pull-pants-down boolean)
-                                  (check-type ally (or integer null))
-                                  (check-type wet (or boolean real))
-                                  (check-type mess (or boolean real))
+                                  #-sbcl (check-type prop prop)
+                                  #-sbcl (check-type pull-pants-down boolean)
+                                  #-sbcl (check-type ally (or integer null))
+                                  #-sbcl (check-type wet (or boolean real))
+                                  #-sbcl (check-type mess (or boolean real))
                                   (block nil
                                     (when (and ally (>= ally (list-length (allies-of *game*))))
                                       (format t "That ally doesn't exist~%")
@@ -36,8 +36,8 @@
                         :documentation "Wash your clothes in this"
                         :lambda '(lambda
                                   (prop &rest keys &key &allow-other-keys)
-                                  (declare (type prop prop) (ignore keys))
-                                  (check-type prop prop)
+                                  (declare #+sbcl (type prop prop) (ignore keys))
+                                  #-sbcl (check-type prop prop)
                                   (yadfa-world:wash-all-in prop)))))
   (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 
@@ -48,9 +48,9 @@
    :actions (list :use (make-action
                         :documentation "Turn it on"
                         :lambda '(lambda (prop &rest keys &key &allow-other-keys)
-                                  (declare (type prop prop)
+                                  (declare #+sbcl (type prop prop)
                                    (ignore keys))
-                                  (check-type prop prop)
+                                  #-sbcl (check-type prop prop)
                                   (iter (for j in (append (list (player-of *game*)) (allies-of *game*)))
                                     (let ((a (calculate-diaper-usage j)))
                                       (when (and
@@ -94,6 +94,7 @@
                                                          (declare
                                                           #+sbcl (type prop prop)
                                                           (ignore keys prop))
+                                                         #-sbcl (check-type prop prop)
                                                          (setf (warp-on-death-point-of (player-of *game*)) (position-of (player-of *game*)))
                                                          (format t "You will now teleport here when you black out")))))
   (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
@@ -114,23 +115,23 @@
   (a:appendf (actions-of c)
              (list :list-items-for-sale (make-action :documentation "List items for sale"
                                                      :lambda '(lambda (prop &rest keys &key &allow-other-keys)
-                                                               (declare (type prop prop)
+                                                               (declare #+sbcl (type prop prop)
                                                                 (ignore keys))
-                                                               (check-type prop prop)
+                                                               #-sbcl (check-type prop prop)
                                                                (shopfun (items-for-sale-of prop) :format-items t)))
                    :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY). If ITEMS is not specified, you will be prompted for what items to buy"
                                            :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
-                                                     (declare (type prop prop) (type list items) (ignore keys))
-                                                     (check-type prop prop)
-                                                     (check-type items list)
+                                                     (declare #+sbcl (type prop prop) #+sbcl (type list items) (ignore keys))
+                                                     #-sbcl (check-type prop prop)
+                                                     #-sbcl (check-type items list)
                                                      (shopfun (items-for-sale-of prop)
                                                       :items-to-buy (or items t)
                                                       :user (player-of *game*))))
                    :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory. If ITEMS is not specified, you will be prompted for what items to sell"
                                             :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
-                                                      (declare (type prop prop) (type list items) (ignore keys))
-                                                      (check-type prop prop)
-                                                      (check-type items list)
+                                                      (declare #+sbcl (type prop prop) #+sbcl (type list items) (ignore keys))
+                                                      #-sbcl (check-type prop prop)
+                                                      #-sbcl (check-type items list)
                                                       (shopfun (items-for-sale-of prop)
                                                        :items-to-sell (or items t)
                                                        :user (player-of *game*)))))))
