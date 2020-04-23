@@ -24,11 +24,9 @@
    #:out
    #:defunassert
    #:lappendf)
-  (:documentation "Utility functions that aren't really part of the game's API"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-util))
+  (:documentation "Utility functions that aren't really part of the game's API")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa
   (:use #:cl :yadfa-util :iterate)
   (:export
@@ -299,10 +297,9 @@
    #:action-p
    #:fainted-of
    #:persistentp)
-  (:documentation "Yet Another Diaperfur Adventure"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands) :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa))
+  (:documentation "Yet Another Diaperfur Adventure")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-bin
   (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mods #:disable-mods #:reload-files #:get-inventory-of-type)
   (:documentation "Commands that the player can run anytime"))
@@ -335,11 +332,9 @@
    #:bite
    #:teleporting-flood
    #:teleporting-mess)
-  (:documentation "Contains all the moves in the game"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-moves))
+  (:documentation "Contains all the moves in the game")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-items
   (:shadow #:dress #:onesie #:diaper #:onesie/opened #:onesie/closed #:skirt)
   (:use :yadfa :yadfa-util :cl :iterate)
@@ -475,30 +470,24 @@
    #:contained-enemies-max-length-of
    #:catch-chance-multiplier-of
    #:catch-chance-delta-of)
-  (:documentation "Contains all the items in the game"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-items))
+  (:documentation "Contains all the items in the game")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-battle-commands
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
    #:catch-enemy)
-  (:documentation "convenience functions for battle"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-battle-commands))
+  (:documentation "convenience functions for battle")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-world-commands
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
    #:loot-caught-enemies
    #:disown-adopted-enemies)
-  (:documentation "convenience functions for battle"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-world-commands))
+  (:documentation "convenience functions for battle")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-enemies
   (:use :cl :yadfa :yadfa-util :iterate)
   (:export
@@ -528,11 +517,9 @@
    #:change-class-target
    #:change-class-text
    #:adoptable-enemy)
-  (:documentation "Contains all the enemies in the game"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-enemies))
+  (:documentation "Contains all the enemies in the game")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-props
   (:use :cl :yadfa :yadfa-util :iterate)
   (:export
@@ -545,11 +532,9 @@
    #:debug-shop
    #:bed
    #:items-for-sale-of)
-  (:documentation "Contains all the enemies in the game"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-props))
+  (:documentation "Contains all the enemies in the game")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-status-conditions
   (:use :cl :yadfa :yadfa-util :iterate)
   (:export
@@ -559,11 +544,9 @@
    #:laughing
    #:skunked
    #:pantsed)
-  (:documentation "Contains all the status conditions in the game"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-status-conditions))
+  (:documentation "Contains all the status conditions in the game")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-zones
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
@@ -595,11 +578,9 @@
    #:rocket
    #:rainbow-slide
    #:pyramid)
-  (:documentation "Contains all the zone definitions in the game"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-zones))
+  (:documentation "Contains all the zone definitions in the game")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-events
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
@@ -641,11 +622,9 @@
    #:get-diaper-locked-1
    #:pyramid-puzzle-1
    #:infinity-diaper-obtained-1)
-  (:documentation "Contains all the event definitions in the game"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-events))
+  (:documentation "Contains all the event definitions in the game")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-allies
   (:use :yadfa :yadfa-util :cl :iterate)
   (:export
@@ -658,42 +637,32 @@
    #:adopted-enemy
    #:diapered-raccoon-bandit
    #:found-raccoon-bandit)
-  (:documentation "Contains all the allies in the game"))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-allies))
+  (:documentation "Contains all the allies in the game")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-user
   (:use :cl :yadfa :yadfa-util :iterate)
   (:documentation "The package that the player typically executes commands from"))
 (uiop:define-package :yadfa-clim
   (:use :iterate :yadfa-util :yadfa :clim-lisp)
   (:documentation "CLIM related stuff")
-  (:export #:stat-view #:+stat-view+ #:draw-bar #:run-listener))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-clim))
+  (:export #:stat-view #:+stat-view+ #:draw-bar #:run-listener)
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-blackjack
   (:use :iterate :yadfa-util :yadfa :clim-lisp)
-  (:export #:run-game))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-blackjack))
+  (:export #:run-game)
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-pyramid
   (:use :iterate :yadfa-util :yadfa :clim-lisp)
   (:export #:run-game #:stat-view #:+stat-view+ #:process-potty)
-  (:shadow #:area))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-pyramid))
+  (:shadow #:area)
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-puzzle
   (:use :iterate :yadfa-util :yadfa :clim-lisp :yadfa-pyramid)
   (:export #:run-game)
-  (:shadow #:run-game))
-(loop :for (name package) :on '(:s :serapeum :a :alexandria :u :ugly-tiny-infix-macro :g :global-vars
-                                :m :macro-level :c :clim :ce :clim-extensions :cc :conditional-commands)
-      :by #'cddr
-      :do (trivial-package-local-nicknames:add-package-local-nickname name package :yadfa-puzzle))
+  (:shadow #:run-game)
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:m :macro-level) (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))

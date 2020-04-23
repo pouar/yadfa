@@ -96,7 +96,7 @@ modules:
     buildsystem: simple
     build-commands:
       - mkdir -p /app/tmp/home/common-lisp
-      - cp -R asdf-*/ /app/tmp/home/common-lisp/asdf/
+      - cp -R asdf /app/tmp/home/common-lisp/
       - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --load "quicklisp.lisp" --eval "(quicklisp-quickstart:install)"
       - mkdir -p /app/tmp/home/quicklisp/local-projects
       - cp -R declt McCLIM sly illogical-pathnames iterate /app/tmp/home/quicklisp/local-projects
@@ -104,11 +104,10 @@ modules:
       - type: file
         url: https://beta.quicklisp.org/quicklisp.lisp
         sha256: 4a7a5c2aebe0716417047854267397e24a44d0cce096127411e9ce9ccfeb2c17
-      - type: archive
-        url: https://gitlab.common-lisp.net/asdf/asdf/-/archive/3.3.4/asdf-3.3.4.tar.gz
-        strip-components: 0
-        dest-filename: asdf.tar.gz
-        sha256: f29cd59f52d95ac3e5ac8a9162e5772f608973bf340bdbc82673962f9e35d7bd
+      - type: git
+        url: https://gitlab.common-lisp.net/asdf/asdf.git
+        branch: master
+        dest: asdf
       - type: git
         url: https://github.com/didierverna/declt.git
         dest: declt
@@ -134,7 +133,7 @@ modules:
   - name: yadfa-cache
     buildsystem: simple
     build-commands:
-      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --eval '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' --eval "(progn (ql:update-client :prompt nil) (ql:update-all-dists :prompt nil) (pushnew :mcclim-ffi-freetype *features*) (ql:quickload '(:swank :mcclim :marshal :iterate :ugly-tiny-infix-macro :closer-mop :trivial-features :clim-listener :mcclim-raster-image :trivial-garbage :macro-level :cl-ansi-text :alexandria :plump-sexp :net.didierverna.declt :sb-aclrepl :serapeum :global-vars :float-features :illogical-pathnames :fiveam :bibtex :cl-date-time-parser :local-time :trivial-package-local-nicknames)))"
+      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --eval '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' --eval "(progn (ql:update-client :prompt nil) (ql:update-all-dists :prompt nil) (pushnew :mcclim-ffi-freetype *features*) (ql:quickload '(:swank :mcclim :marshal :iterate :ugly-tiny-infix-macro :closer-mop :trivial-features :clim-listener :mcclim-raster-image :trivial-garbage :macro-level :cl-ansi-text :alexandria :plump-sexp :net.didierverna.declt :sb-aclrepl :serapeum :global-vars :float-features :illogical-pathnames :fiveam :bibtex :cl-date-time-parser :local-time)))"
   - name: yadfa
     buildsystem: simple
     build-commands:
