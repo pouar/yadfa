@@ -18,7 +18,8 @@ Note, there is a bug in CCL on Windows that prevents the game from starting, a w
 
 [[https://trac.clozure.com/ccl/ticket/1370][https://trac.clozure.com/ccl/ticket/1370]]
 
-I think the minimum version of ASDF required for this game is 3.3.2.4. You can download the latest version here (only needed for compiling)
+I think the minimum version of ASDF required for this game is 3.3.2.4. Although the minimum version of UIOP needed is 3.3.4.1. You
+can download the latest version here (only needed for compiling)
 
 [[https://gitlab.common-lisp.net/asdf/asdf/tags][https://gitlab.common-lisp.net/asdf/asdf/tags]]
 
@@ -34,23 +35,35 @@ After which, either place this repo in either =~/common-lisp=, =~/quicklisp/loca
 (:tree "$PATH_TO_THIS_REPOSITORY")
 #+END_SRC
 
-I've patched the FreeType renderer to obey fontconfig's defaults, instead of trying to guess the font which ends up picking =UnifrakturCook Bold= for ~:fix :bold~ on my system. if you want to change this, there's a config file in [[file:flatpak/99-mcclim.conf][flatpak/99-mcclim.conf]] as an example, which is what the flatpak uses
+I've also patched illogical-pathnames and iterate which now contains extra functionality my game relies on.
+You can download them here from gitlab and extract them into =~/quicklisp/local-projects=
 
-In Windows, ~$XDG_CONFIG_HOME~ is set to =C:/Users/$User/AppData/Local/=. Also, when setting the pathname, you need to use what the rest of the world uses as the directory separator, which is =/=, Not what Windows uses, which is =\=.
+[[https://gitlab.com/pouar/iterate][https://gitlab.com/pouar/iterate]]
 
-After which, either run ~sbcl --script build.lisp mods~ or ~ccl -l build.lisp -- mods~ to build
+[[https://gitlab.com/pouar/illogical-pathnames][https://gitlab.com/pouar/illogical-pathnames]]
 
-To generate the docs, run
-#+BEGIN_SRC shell
-sbcl --script run.lisp mods texi;makeinfo --css-include=style-common.css --css-include=style-single.css --html --no-split yadfa.texi;makeinfo --pdf --no-split yadfa.texi;makeinfo --no-split yadfa.texi
+I've patched the FreeType renderer to obey fontconfig's defaults, instead of trying to guess the font which ends up
+picking =UnifrakturCook Bold= for ~:fix :bold~ on my system. if you want to change this, there's a config file in
+[[file:flatpak/99-mcclim.conf][flatpak/99-mcclim.conf]] as an example, which is what the flatpak uses. pass ~ft~ to the build script to build with
+FreeType support
+
+In Windows, ~$XDG_CONFIG_HOME~ is set to =C:/Users/$User/AppData/Local/=. Also, when setting the pathname, you need to use
+what the rest of the world uses as the directory separator, which is =/=, Not what Windows uses, which is =\=.
+
+After which, either run ~sbcl --script build.lisp~ or ~ccl -l build.lisp --~ to build
+
+To generate the docs, run this inside the game. So far I only got this to work in UNIX and Cygwin as it calls GNU Make
+#+BEGIN_SRC lisp
+(ql:quickload :yadfa-reference)
 #+END_SRC
-The game uses Declt for generating the docs, which only works in SBCL so far Right now the version in Quicklisp is too old, so you gotta get that here and put it in =~/quicklisp/local-projects=
+The game uses Declt for generating the docs, which only works in SBCL so far Right now the version in Quicklisp is too old,
+so you gotta get that here and put it in =~/quicklisp/local-projects=
 
 [[https://github.com/didierverna/declt.git][https://github.com/didierverna/declt.git]]
 
-To build with SLIME/SWANK support, run ~sbcl --script build.lisp mods swank~ or ~ccl -l build.lisp -- mods swank~, then run ~./yadfa swank~ to launch the game
+To build with SLIME/SWANK support, pass ~swank~ to the build script, then run ~./yadfa swank~ to launch the game
 
-To build with Sly/Slynk support, run ~sbcl --script build.lisp mods slynk~ or ~ccl -l build.lisp -- mods slynk~, then run ~./yadfa slynk~ to launch the game
+To build with Sly/Slynk support, pass ~slynk~ to the build script, then run ~./yadfa slynk~ to launch the game
 
 To run, just run ./yadfa (or yadfa.exe in Windows)
 
