@@ -52,7 +52,7 @@ what the rest of the world uses as the directory separator, which is =/=, Not wh
 
 After which, either run ~sbcl --script build.lisp~ or ~ccl -l build.lisp --~ to build
 
-To generate the docs, run this inside the game. So far I only got this to work in UNIX and Cygwin as it calls GNU Make
+To generate the docs, run this inside the game. So far I only got this to work in UNIX and Cygwin as it calls GNU Make and makeinfo
 #+BEGIN_SRC lisp
 (ql:quickload :yadfa-reference)
 #+END_SRC
