@@ -10,7 +10,7 @@
    :bowels/contents (random 700)
    :wear (list (make-instance 'yadfa-items:fursuit)
                (make-instance 'yadfa-items:kurikia-thick-diaper))))
-(defmethod process-battle-accident-method ((character padded-fursuiter-servant) attack item reload selected-target)
+(defmethod process-battle-accident ((character padded-fursuiter-servant) attack (item item) reload (selected-target base-character))
   (declare (ignore attack item reload selected-target))
   (let* ((male (malep character))
          (heshe (if male "he" "she"))

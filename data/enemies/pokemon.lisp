@@ -6,9 +6,9 @@
    :description "The world's weakest Pokémon until it evolves, but when it does evolve, HOLY SHIT!!!!!!"
    :species "Magikarp"
    :male (a:random-elt '(t nil))
-   :default-attack (lambda (target user)
-                     (declare (ignore target))
-                     (format t "~a uses Splash, obviously it had no effect. What did you think was going to happen?" (name-of user)))
-   :battle-script-of (lambda (self target)
-                       (funcall (coerce (default-attack-of self) 'function) target self))
    :bitcoins-per-level 10))
+(defmethod default-attack ((target team-member) (user magikarp))
+  (declare (ignore target))
+  (format t "~a uses Splash, obviously it had no effect. What did you think was going to happen?" (name-of user)))
+(defmethod battle-script ((self magikarp) (target base-character))
+  (dispatch-default-attack (default-attack-of self) target self))

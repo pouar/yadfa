@@ -101,13 +101,28 @@
    #:get-move
    #:process-potty-dance-check
    #:clear-configuration-hook
+   #:dispatch-attack
+   #:dispatch-default-attack
+   #:dispatch-battle-script
+   #:dispatch-process-battle-accident
+   #:dispatch-process-potty-dance
+   #:dispatch-use-script
+   #:dispatch-wear-script
+   #:dispatch-wield-script
    ;;methods
    #:get-process-potty-action-type
    #:output-process-potty-text
    #:get-babyish-padding
    #:resolve-enemy-spawn-list
-   #:process-battle-accident-method
+   #:process-battle-accident
+   #:process-potty-dance
    #:event-attributes
+   #:battle-script
+   #:attack
+   #:default-attack
+   #:use-script
+   #:wear-script
+   #:wield-script
    ;;constructors
    #:make-action
    ;;classes
@@ -401,6 +416,8 @@
    #:high-capacity-diaper
    #:black-diaper
    #:cloth-diaper
+   #:diaper-package-mixin
+   #:ammo-box-mixin
    #:diaper-package
    #:midnight-diaper
    #:midnight-diaper-package
@@ -465,7 +482,6 @@
    #:itemfinder
    #:enemy-catcher
    #:ghost-catcher
-   #:catch-method
    #:contained-enemies-of
    #:contained-enemies-max-length-of
    #:catch-chance-multiplier-of

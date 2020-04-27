@@ -15,76 +15,8 @@
     :type list
     :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots"))
   (:documentation "All the classes that are part of the game's core inherit this class"))
-(defclass status-condition (yadfa-class)
-  ((name
-    :initarg :name
-    :initform nil
-    :type (or string null)
-    :accessor name-of
-    :documentation "name of status condition")
-   (description
-    :initarg :description
-    :initform nil
-    :type (or string null)
-    :accessor description-of
-    :documentation "description of status conditions")
-   (target
-    :initarg :target
-    :initform nil
-    :accessor target-of
-    :documentation "Enemy target that the battle script affects")
-   (accumulative
-    :initarg :accumulative
-    :initform 1
-    :accessor accumulative-of
-    :type (or unsigned-byte (eql t))
-    :documentation "how many of these the user can have at a time, @code{T} if infinite")
-   (battle-script
-    :initarg :battle-script
-    :initform (lambda (target user self)
-                (declare (ignorable target user self))
-                nil)
-    :accessor battle-script-of
-    :type coerced-function
-    :documentation "function that runs at the beginning of the user's turn. @var{USER} is the user with the condition. @var{TARGET} is the enemy of said user, and @var{SELF} is the condition itself")
-   (blocks-turn
-    :initarg :blocks-turn
-    :initform nil
-    :type boolean
-    :accessor blocks-turn-of
-    :documentation "If @code{T} this condition prevents the player from moving")
-   (duration
-    :initarg :duration
-    :initform t
-    :accessor duration-of
-    :type (or unsigned-byte (eql t))
-    :documentation "How many turns this condition lasts. @code{T} means it lasts indefinitely.")
-   (stat-delta
-    :initarg :stat-delta
-    :initform '()
-    :accessor stat-delta-of
-    :type list
-    :documentation "Plist containing the status modifiers in the form of deltas")
-   (stat-multiplier
-    :initarg :stat-multiplier
-    :initform '()
-    :type list
-    :accessor stat-multiplier-of
-    :documentation "Plist containing the status modifiers in the form of multipliers")
-   (priority
-    :initarg :priority
-    :initform 0
-    :type unsigned-byte
-    :accessor priority-of
-    :documentation "Unsigned integer that specifies How important this condition is to cure. Used for the AI. Lower value means more important")
-   (persistent
-    :initarg :persistent
-    :initform nil
-    :type boolean
-    :accessor persistentp
-    :documentation "Whether items or moves that cure statuses cure this"))
-  (:documentation "Base class for all the status conditions "))
-(defgeneric process-battle-accident-method (character attack item reload selected-target))
+(defclass battle-script-mixin () ())
+(defclass attack-mixin () ())
 (defclass base-character (yadfa-class)
   ((name
     :initarg :name
@@ -117,13 +49,8 @@
    (default-attack
     :initarg :default-attack
     :accessor default-attack-of
-    :initform '(lambda (target user)
-                (let ((a (calculate-damage target user (default-attack-power-of user))))
-                  (format t "~a attacks ~a~%" (name-of user) (name-of target))
-                  (decf (health-of target) a)
-                  (format t "~a received ~a damage~%" (name-of target) a)
-                  a))
-    :type coerced-function
+    :initform nil
+    :type (or null coerced-function)
     :documentation "The default attack when no attack is selected and no weapon is equipped")
    (level
     :initarg :level
@@ -199,20 +126,242 @@
     :documentation "Item the character is wielding as a weapon")
    (process-battle-accident
     :initarg :process-battle-accident
-    :initform 'process-battle-accident-method
-    :type coerced-function
-    :accessor process-battle-accident-of)
+    :type (or null coerced-function)
+    :accessor process-battle-accident-of
+    :initform nil)
    (process-potty-dance
     :initarg :process-potty-dance
-    :initform '(lambda (character attack item reload selected-target)
-                (declare (ignore item reload selected-target))
-                (when (process-potty-dance-check character attack)
-                  (format t "~a is too busy doing a potty dance to fight~%" (name-of character))
-                  t))
-    :type coerced-function
+    :initform nil
+    :type (or null coerced-function)
     :accessor process-potty-dance-of))
   (:documentation "Base class for the characters in the game"))
-(defmethod process-battle-accident-method ((character base-character) attack item reload selected-target)
+(defclass item (yadfa-class attack-mixin)
+  ((description
+    :initarg :description
+    :initform :?
+    :accessor description-of
+    :type (or keyword string)
+    :documentation "item description")
+   (name
+    :initarg :name
+    :initform :teru-sama
+    :accessor name-of
+    :type (or keyword string)
+    :documentation "item description")
+   (plural-name
+    :initarg :plural-name
+    :initform nil
+    :accessor plural-name-of
+    :type (or null string)
+    :documentation "The plural name of item")
+   (consumable
+    :initarg :consumable
+    :initform nil
+    :accessor consumablep
+    :type boolean
+    :documentation "Whether this item goes away when you use it")
+   (tossable
+    :initarg :tossable
+    :initform t
+    :accessor tossablep
+    :type boolean
+    :documentation "Whether you can throw this item away or not")
+   (sellable
+    :initarg :sellable
+    :initform t
+    :accessor sellablep
+    :type boolean
+    :documentation "Whether you can sell this item or not")
+   (value
+    :initarg :value
+    :initform 0
+    :accessor value-of
+    :type (real 0)
+    :documentation "Value of item in bitcoins")
+   (ai-flags
+    :initarg :ai-flags
+    :initform ()
+    :accessor ai-flags-of
+    :type list
+    :documentation "List of flags that affect the AI")
+   (power
+    :initarg :power
+    :initform 40
+    :accessor power-of
+    :type real
+    :documentation "Attack base when used as a melee weapon")
+   (cant-use-predicate
+    :initarg :cant-use-predicate
+    :initform '(lambda (item user &rest keys &key target action &allow-other-keys)
+                (declare (ignorable item user keys target action))
+                nil)
+    :accessor cant-use-predicate-of
+    :type coerced-function
+    :documentation "Function that is used to determine if the player can use this item")
+   (attack-script
+    :initarg :attack-script
+    :initform nil
+    :accessor attack-script-of
+    :type (or null coerced-function)
+    :documentation "Script that runs when attacking with this weapon")
+   (wear-stats
+    :initarg :wear-stats
+    :initform ()
+    :accessor wear-stats-of
+    :type list
+    :documentation "stat boost when wearing this item. Is a plist in the form of @code{(list :attack attack :defense defense :health health :energy energy :speed speed)}")
+   (wield-stats
+    :initarg :wield-stats
+    :initform ()
+    :accessor wield-stats-of
+    :type list
+    :documentation "stat boost when wielding this item. Is a plist in the form of @code{(list :attack attack :defense defense :health health :energy energy :speed speed)}")
+   (special-actions
+    :initarg :special-actions
+    :initform ()
+    :accessor special-actions-of
+    :type list
+    :documentation "Plist of actions that the player sees as actions with a lambda with the lambda-list @code{(item user &key &allow-other-keys)} they can perform with the item, @var{ITEM} is the instance that this slot belongs to, @var{USER} is the user using the item")
+   (use-script
+    :initarg :use-script
+    :initform nil
+    :accessor use-script-of
+    :type (or null coerced-function)
+    :documentation "Function that runs when @var{ITEM} is used on @var{USER}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on.")
+   (wield-script
+    :initarg :wield-script
+    :initform nil
+    :type (or null coerced-function)
+    :accessor wield-script-of
+    :documentation "Function that runs when @var{USER} is wielding @var{ITEM}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on.")
+   (wear-script
+    :initarg :wear-script
+    :initform nil
+    :type (or null coerced-function)
+    :accessor wear-script-of
+    :documentation "Function that runs when @var{USER} is wearing @var{ITEM}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on."))
+  (:documentation "Something you can store in your inventory and use"))
+(define-condition unusable-item ()
+  ((item :initarg :item
+         :initform nil))
+  (:report (lambda (condition stream)
+             (format stream "~s has no ~s method defined" (slot-value condition 'item) 'use-script))))
+(defmethod use-script ((item item) (user base-character))
+  (error 'unusable-item :item item))
+(defmethod wield-script ((item item) (user base-character)))
+(defmethod wear-script ((item item) (user base-character)))
+(defclass status-condition (yadfa-class battle-script-mixin)
+  ((name
+    :initarg :name
+    :initform nil
+    :type (or string null)
+    :accessor name-of
+    :documentation "name of status condition")
+   (description
+    :initarg :description
+    :initform nil
+    :type (or string null)
+    :accessor description-of
+    :documentation "description of status conditions")
+   (target
+    :initarg :target
+    :initform nil
+    :accessor target-of
+    :documentation "Enemy target that the battle script affects")
+   (accumulative
+    :initarg :accumulative
+    :initform 1
+    :accessor accumulative-of
+    :type (or unsigned-byte (eql t))
+    :documentation "how many of these the user can have at a time, @code{T} if infinite")
+   (battle-script
+    :initarg :battle-script
+    :initform nil
+    :accessor battle-script-of
+    :type (or null coerced-function)
+    :documentation "function that runs at the beginning of the user's turn. @var{USER} is the user with the condition. @var{TARGET} is the enemy of said user, and @var{SELF} is the condition itself")
+   (blocks-turn
+    :initarg :blocks-turn
+    :initform nil
+    :type boolean
+    :accessor blocks-turn-of
+    :documentation "If @code{T} this condition prevents the player from moving")
+   (duration
+    :initarg :duration
+    :initform t
+    :accessor duration-of
+    :type (or unsigned-byte (eql t))
+    :documentation "How many turns this condition lasts. @code{T} means it lasts indefinitely.")
+   (stat-delta
+    :initarg :stat-delta
+    :initform '()
+    :accessor stat-delta-of
+    :type list
+    :documentation "Plist containing the status modifiers in the form of deltas")
+   (stat-multiplier
+    :initarg :stat-multiplier
+    :initform '()
+    :type list
+    :accessor stat-multiplier-of
+    :documentation "Plist containing the status modifiers in the form of multipliers")
+   (priority
+    :initarg :priority
+    :initform 0
+    :type unsigned-byte
+    :accessor priority-of
+    :documentation "Unsigned integer that specifies How important this condition is to cure. Used for the AI. Lower value means more important")
+   (persistent
+    :initarg :persistent
+    :initform nil
+    :type boolean
+    :accessor persistentp
+    :documentation "Whether items or moves that cure statuses cure this"))
+  (:documentation "Base class for all the status conditions "))
+(defclass stat/move (yadfa-class attack-mixin)
+  ((name
+    :initarg :name
+    :initform :-
+    :accessor name-of
+    :type (or keyword string)
+    :documentation "name of move")
+   (description
+    :initarg :description
+    :initform :-
+    :type (or keyword string)
+    :accessor description-of
+    :documentation "Description of move")
+   (energy-cost
+    :initarg :energy-cost
+    :initform 0
+    :type real
+    :accessor energy-cost-of
+    :documentation "How much energy this move costs")
+   (power
+    :initarg :power
+    :initform 40
+    :type real
+    :accessor power-of
+    :documentation "Number used to determine the damage of this attack")
+   (ai-flags
+    :initarg :ai-flags
+    :initform ()
+    :accessor ai-flags-of
+    :type list
+    :documentation "list containing flags that affect the behavior of the AI.")
+   (attack
+    :initarg :attack
+    :initform nil
+    :type (or null coerced-function)
+    :accessor attack-of
+    :documentation "function that performs the move. @var{TARGET} is the enemy that is being attacked and @var{USER} is the one doing the attacking, @var{SELF} is the move itself"))
+  (:documentation "base class of moves used in battle"))
+(declaim (ftype (function (t t) (values &rest list)) ))
+(defmethod process-potty-dance ((character base-character) attack (item item) reload (selected-target base-character))
+  (declare (ignore item reload selected-target))
+  (when (process-potty-dance-check character attack)
+    (format t "~a is too busy doing a potty dance to fight~%" (name-of character))
+    t))
+(defmethod process-battle-accident ((character base-character) attack item reload selected-target)
   (declare (ignore attack item reload selected-target))
   (when (or (>= (bladder/contents-of character) (bladder/maximum-limit-of character))
             (>= (bowels/contents-of character) (bowels/maximum-limit-of character)))
@@ -232,20 +381,20 @@
       (set-status-condition 'yadfa-status-conditions:messing character))
     t))
 (m:macro-level `(progn ,@(iter (for i in '("BLADDER" "BOWELS"))
-                         (appending (iter (for j in '("CONTENTS-OF" "FILL-RATE-OF"))
-                                      (collect `(defmethod ,(a:format-symbol :yadfa "~a/~a" i j) ((object base-character))
-                                                  (declare (ignore object))
-                                                  0))
-                                      (collect `(defmethod (setf ,(a:format-symbol :yadfa "~a/~a" i j)) (newval (object base-character))
-                                                  (declare (ignore object newval))
-                                                  0))))
-                         (appending (iter (for j in '("NEED-TO-POTTY-LIMIT-OF" "POTTY-DANCE-LIMIT-OF" "POTTY-DESPERATE-LIMIT-OF" "MAXIMUM-LIMIT-OF"))
-                                      (collect `(defmethod ,(a:format-symbol :yadfa "~a/~a" i j) ((object base-character))
-                                                  (declare (ignore object))
-                                                  1))
-                                      (collect `(defmethod (setf ,(a:format-symbol :yadfa "~a/~a" i j)) (newval (object base-character))
-                                                  (declare (ignore object newval))
-                                                  1)))))))
+                           (appending (iter (for j in '("CONTENTS-OF" "FILL-RATE-OF"))
+                                        (collect `(defmethod ,(a:format-symbol :yadfa "~a/~a" i j) ((object base-character))
+                                                    (declare (ignore object))
+                                                    0))
+                                        (collect `(defmethod (setf ,(a:format-symbol :yadfa "~a/~a" i j)) (newval (object base-character))
+                                                    (declare (ignore object newval))
+                                                    0))))
+                           (appending (iter (for j in '("NEED-TO-POTTY-LIMIT-OF" "POTTY-DANCE-LIMIT-OF" "POTTY-DESPERATE-LIMIT-OF" "MAXIMUM-LIMIT-OF"))
+                                        (collect `(defmethod ,(a:format-symbol :yadfa "~a/~a" i j) ((object base-character))
+                                                    (declare (ignore object))
+                                                    1))
+                                        (collect `(defmethod (setf ,(a:format-symbol :yadfa "~a/~a" i j)) (newval (object base-character))
+                                                    (declare (ignore object newval))
+                                                    1)))))))
 (defclass bladder-character (base-character)
   ((bladder/contents
     :initarg :bladder/contents
@@ -361,7 +510,7 @@
    :wear (list (make-instance 'yadfa-items:diaper))
    :moves (list (make-instance 'yadfa-moves:watersport) (make-instance 'yadfa-moves:mudsport))))
 (defclass ally-no-potty-training (ally potty-character) ())
-(defmethod process-battle-accident-method ((character ally-no-potty-training) attack item reload selected-target)
+(defmethod process-battle-accident ((character ally-no-potty-training) attack (item item) reload (selected-target base-character))
   (declare (ignore attack item reload selected-target))
   (when (>= (bladder/contents-of character) (bladder/need-to-potty-limit-of character))
     (let ((wet-status (wet :wetter character)))
@@ -374,7 +523,7 @@
       (when (> (getf mess-status :leak-amount) 0))
       (format t "~a has a blowout and leaves a mess~%" (name-of character)))))
 (defclass ally-rebel-potty-training (ally potty-character) ())
-(defmethod process-battle-accident-method ((character ally-rebel-potty-training) attack item reload selected-target)
+(defmethod process-battle-accident ((character ally-rebel-potty-training) attack (item item) reload (selected-target ally-rebel-potty-training))
   (declare (ignore item reload))
   (cond ((and (not (typep (get-move attack character)
                           'yadfa-moves:watersport))
@@ -382,14 +531,14 @@
          (let ((a (make-instance 'yadfa-moves:watersport)))
            (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of character))
            (format t "*~a uses ~a instead*~%~%" (name-of character) (name-of a))
-           (funcall (coerce (attack-of a) 'function) selected-target character a))
+           (dispatch-attack (attack-of a) selected-target character a))
          t)
         ((and (not (typep (get-move attack character) 'yadfa-moves:mudsport))
               (>= (bowels/contents-of character) (bowels/need-to-potty-limit-of character)))
          (let ((a (make-instance 'yadfa-moves:mudsport)))
            (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of character))
            (format t "*~a uses ~a instead*~%~%" (name-of character) (name-of a))
-           (funcall (coerce (attack-of a) 'function) selected-target character a))
+           (dispatch-attack (attack-of a) selected-target character a))
          t)))
 (defclass ally-silent-potty-training (ally potty-trained-team-member) ())
 (defclass ally-last-minute-potty-training (ally potty-trained-team-member) ())
@@ -633,49 +782,6 @@
     (print-slot obj 'position stream)
     (write-string " " stream)
     (print-slot obj 'name stream)))
-(defclass stat/move (yadfa-class)
-  ((name
-    :initarg :name
-    :initform :-
-    :accessor name-of
-    :type (or keyword string)
-    :documentation "name of move")
-   (description
-    :initarg :description
-    :initform :-
-    :type (or keyword string)
-    :accessor description-of
-    :documentation "Description of move")
-   (energy-cost
-    :initarg :energy-cost
-    :initform 0
-    :type real
-    :accessor energy-cost-of
-    :documentation "How much energy this move costs")
-   (power
-    :initarg :power
-    :initform 40
-    :type real
-    :accessor power-of
-    :documentation "Number used to determine the damage of this attack")
-   (ai-flags
-    :initarg :ai-flags
-    :initform ()
-    :accessor ai-flags-of
-    :type list
-    :documentation "list containing flags that affect the behavior of the AI.")
-   (attack
-    :initarg :attack
-    :initform '(lambda (target user self)
-                (let ((a (calculate-damage target user (power-of self))))
-                  (format t "~a used ~a~%" (name-of user) (name-of self))
-                  (decf (health-of target) a)
-                  (format t "~a received ~a damage~%" (name-of target) a)
-                  a))
-    :type coerced-function
-    :accessor attack-of
-    :documentation "function that performs the move. @var{TARGET} is the enemy that is being attacked and @var{USER} is the one doing the attacking, @var{SELF} is the move itself"))
-  (:documentation "base class of moves used in battle"))
 (defclass prop (yadfa-class)
   ((description
     :initarg :description
@@ -717,26 +823,19 @@
 (defmethod print-object ((obj prop) stream)
   (print-unreadable-object (obj stream :type t :identity t)
     (print-slot obj 'name stream)))
-(defclass item (yadfa-class)
-  ((description
-    :initarg :description
-    :initform :?
-    :accessor description-of
-    :type (or keyword string)
-    :documentation "item description")
-   (name
-    :initarg :name
-    :initform :teru-sama
-    :accessor name-of
-    :type (or keyword string)
-    :documentation "item description")
-   (plural-name
-    :initarg :plural-name
-    :initform nil
-    :accessor plural-name-of
-    :type (or null string)
-    :documentation "The plural name of item")
-   (ammo-type
+(defclass consumable (item)
+  ()
+  (:documentation "Doesn't actually cause items to be consumable, but is there to make filtering easier"))
+(defclass ammo (item)
+  ((ammo-power
+    :initarg :ammo-power
+    :initform 0
+    :accessor ammo-power-of
+    :type real
+    :documentation "Attack base when using this as ammo."))
+  (:documentation "Ammo is typically inherited by this class, but nothing in the code actually enforces this and is meant to make filtering easier"))
+(defclass weapon (item)
+  ((ammo-type
     :initarg :ammo-type
     :initform nil
     :accessor ammo-type-of
@@ -748,12 +847,6 @@
     :accessor ammo-of
     :type list
     :documentation "List of ammo this item has")
-   (ammo-power
-    :initarg :ammo-power
-    :initform 0
-    :accessor ammo-power-of
-    :type real
-    :documentation "Attack base when using this as ammo.")
    (reload-count
     :initarg :reload-count
     :initform nil
@@ -765,114 +858,7 @@
     :initform 0
     :type unsigned-byte
     :accessor ammo-capacity-of
-    :documentation "How much ammo this thing can hold")
-   (consumable
-    :initarg :consumable
-    :initform nil
-    :accessor consumablep
-    :type boolean
-    :documentation "Whether this item goes away when you use it")
-   (tossable
-    :initarg :tossable
-    :initform t
-    :accessor tossablep
-    :type boolean
-    :documentation "Whether you can throw this item away or not")
-   (sellable
-    :initarg :sellable
-    :initform t
-    :accessor sellablep
-    :type boolean
-    :documentation "Whether you can sell this item or not")
-   (value
-    :initarg :value
-    :initform 0
-    :accessor value-of
-    :type (real 0)
-    :documentation "Value of item in bitcoins")
-   (ai-flags
-    :initarg :ai-flags
-    :initform ()
-    :accessor ai-flags-of
-    :type list
-    :documentation "List of flags that affect the AI")
-   (power
-    :initarg :power
-    :initform 40
-    :accessor power-of
-    :type real
-    :documentation "Attack base when used as a melee weapon")
-   (cant-use-predicate
-    :initarg :cant-use-predicate
-    :initform '(lambda (item user &rest keys &key target action &allow-other-keys)
-                (declare (ignorable item user keys target action))
-                nil)
-    :accessor cant-use-predicate-of
-    :type coerced-function
-    :documentation "Function that is used to determine if the player can use this item")
-   (attack-script
-    :initarg :attack-script
-    :initform '(lambda (target user self)
-                (declare (ignorable target user self))
-                (let ((a (calculate-damage target user
-                                           (if (first (ammo-of self))
-                                               (ammo-power-of (first (ammo-of self)))
-                                               (power-of self)))))
-                  (format t "~a whacks ~a with ~a ~a~%"
-                          (name-of user)
-                          (name-of target)
-                          (if (malep user) "his" "her")
-                          (name-of self))
-                  (decf (health-of target) a)
-                  (format t "~a received ~a damage~%" (name-of target) a)))
-    :accessor attack-script-of
-    :type coerced-function
-    :documentation "Script that runs when attacking with this weapon")
-   (wear-stats
-    :initarg :wear-stats
-    :initform ()
-    :accessor wear-stats-of
-    :type list
-    :documentation "stat boost when wearing this item. Is a plist in the form of @code{(list :attack attack :defense defense :health health :energy energy :speed speed)}")
-   (wield-stats
-    :initarg :wield-stats
-    :initform ()
-    :accessor wield-stats-of
-    :type list
-    :documentation "stat boost when wielding this item. Is a plist in the form of @code{(list :attack attack :defense defense :health health :energy energy :speed speed)}")
-   (special-actions
-    :initarg :special-actions
-    :initform ()
-    :accessor special-actions-of
-    :type list
-    :documentation "Plist of actions that the player sees as actions with a lambda with the lambda-list @code{(item user &key &allow-other-keys)} they can perform with the item, @var{ITEM} is the instance that this slot belongs to, @var{USER} is the user using the item")
-   (use-script
-    :initarg :use-script
-    :initform '()
-    :accessor use-script-of
-    :type (or null coerced-function)
-    :documentation "Function that runs when @var{ITEM} is used on @var{USER}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on.")
-   (wield-script
-    :initarg :wield-script
-    :initform '()
-    :type (or null coerced-function)
-    :accessor wield-script-of
-    :documentation "Function that runs when @var{USER} is wielding @var{ITEM}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on.")
-   (wear-script
-    :initarg :wear-script
-    :initform '()
-    :type (or null coerced-function)
-    :accessor wear-script-of
-    :documentation "Function that runs when @var{USER} is wearing @var{ITEM}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on."))
-  (:documentation "Something you can store in your inventory and use"))
-(defclass consumable (item)
-  ()
-  (:documentation "Doesn't actually cause items to be consumable, but is there to make filtering easier"))
-(defclass ammo (item)
-  ()
-  (:documentation "Ammo is typically inherited by this class, but nothing in the code actually enforces this and is meant to make filtering easier"))
-(defclass weapon (item)
-  ()
+    :documentation "How much ammo this thing can hold"))
   (:documentation "Weapons typically inherited this class, but nothing in the code actually enforces this and is meant to make filtering easier"))
 (defclass clothing (item)
   ())
@@ -1111,30 +1097,8 @@
     :documentation "when @var{MUDSPORT-LIMIT} is reached, there is a 1 in @var{MUDSPORT-CHANCE} he'll voluntarily mess himself")
    (battle-script
     :initarg :battle-script
-    :type coerced-function
-    :initform (lambda (self target)
-                (let ((moves-with-health
-                        (iter (for i in (moves-of self))
-                          (when (and (>= (energy-of self) (energy-cost-of i)) (position :ai-health-inc (ai-flags-of i)))
-                            (collect i))))
-                      (moves-can-use (iter (for i in (moves-of self))
-                                       (when (>= (energy-of self) (energy-cost-of i))
-                                         (collect i))))
-                      (move-to-use nil))
-                  (cond
-                    ((and (<= (health-of self) (/ (calculate-stat self :health) 4)) moves-with-health)
-                     (setf move-to-use (a:random-elt moves-with-health))
-                     (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use))
-                    (t
-                     (when moves-can-use
-                       (setf move-to-use (a:random-elt moves-can-use)))
-                     (cond ((and moves-can-use (= (random 2) 0))
-                            (funcall (coerce (attack-of move-to-use) 'function) target self move-to-use)
-                            (decf (energy-of self) (energy-cost-of move-to-use)))
-                           ((wield-of self)
-                            (funcall (coerce (attack-script-of (wield-of self)) 'function) target self (wield-of self)))
-                           (t
-                            (funcall (coerce (default-attack-of self) 'function) target self)))))))
+    :type (or null coerced-function)
+    :initform nil
     :accessor battle-script-of
     :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack")))
 (defclass enemy (npc)
@@ -1159,7 +1123,7 @@
    :bitcoins 0
    :level (random-from-range 2 5))
   (:documentation "Class for enemies"))
-(defmethod process-battle-accident-method ((character enemy) attack item reload selected-target)
+(defmethod process-battle-accident ((character enemy) attack (item item) reload (selected-target base-character))
   (declare (ignore attack item reload selected-target))
   (let* ((male (malep character))
          (heshe (if male "he" "she"))
@@ -1192,13 +1156,13 @@
                 (<= (- bladder/maximum-limit (bladder/contents-of character)) watersport-limit)
                 (< (random (watersport-chance-of character)) 1))
            (let ((a (make-instance 'yadfa-moves:watersport)))
-             (funcall (coerce (attack-of a) 'function) (player-of *game*) character a))
+             (dispatch-attack (attack-of a) (player-of *game*) character a))
            t)
           ((and mudsport-limit
                 (<= (- bowels/maximum-limit (bowels/contents-of character)) mudsport-limit)
                 (< (random (mudsport-chance-of character)) 1))
            (let ((a (make-instance 'yadfa-moves:mudsport)))
-             (funcall (coerce (attack-of a) 'function) (player-of *game*) character a))
+             (dispatch-attack (attack-of a) (player-of *game*) character a))
            t))))
 (defmethod print-object ((obj enemy) stream)
   (print-unreadable-object (obj stream :type t :identity t)

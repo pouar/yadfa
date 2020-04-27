@@ -14,35 +14,35 @@
   (:default-initargs
    :name "Recovering Pacifier"
    :description "A pacifier you can suck on. Recovers your health and energy when you suck on it"
-   :value 5000
-   :wear-script '(lambda (item user)
-                  (declare (ignorable item))
-                  (incf (health-of user) (/ (calculate-stat user :health) 16))
-                  (incf (health-of user) (/ (calculate-stat user :energy) 16))
-                  (when (> (health-of user) (calculate-stat user :health))
-                    (setf (health-of user) (calculate-stat user :health)))
-                  (when (> (energy-of user) (calculate-stat user :energy))
-                    (setf (energy-of user) (calculate-stat user :energy))))))
+   :value 5000))
+(defmethod wear-script ((item recovering-pacifier) (user base-character))
+  (declare (ignorable item))
+  (incf (health-of user) (/ (calculate-stat user :health) 16))
+  (incf (health-of user) (/ (calculate-stat user :energy) 16))
+  (when (> (health-of user) (calculate-stat user :health))
+    (setf (health-of user) (calculate-stat user :health)))
+  (when (> (energy-of user) (calculate-stat user :energy))
+    (setf (energy-of user) (calculate-stat user :energy))))
 (defclass healing-pacifier (headpiece ab-clothing) ()
   (:default-initargs
    :name "Healing Pacifier"
    :description "A pacifier you can suck on. Recovers your health when you suck on it"
-   :value 2500
-   :wear-script '(lambda (item user)
-                  (declare (ignorable item))
-                  (incf (health-of user) (/ (calculate-stat user :health) 16))
-                  (when (> (health-of user) (calculate-stat user :health))
-                    (setf (health-of user) (calculate-stat user :health))))))
+   :value 2500))
+(defmethod wear-script ((item healing-pacifier) (user base-character))
+  (declare (ignorable item))
+  (incf (health-of user) (/ (calculate-stat user :health) 16))
+  (when (> (health-of user) (calculate-stat user :health))
+    (setf (health-of user) (calculate-stat user :health))))
 (defclass energizing-pacifier (headpiece ab-clothing) ()
   (:default-initargs
    :name "Energizing Pacifier"
    :description "A pacifier you can suck on. Recovers your energy when you suck on it"
-   :value 2500
-   :wear-script '(lambda (item user)
-                  (declare (ignorable item))
-                  (incf (health-of user) (/ (calculate-stat user :energy) 16))
-                  (when (> (energy-of user) (calculate-stat user :energy))
-                    (setf (energy-of user) (calculate-stat user :energy))))))
+   :value 2500))
+(defmethod wear-script ((item energizing-pacifier) (user base-character))
+  (declare (ignorable item))
+  (incf (health-of user) (/ (calculate-stat user :energy) 16))
+  (when (> (energy-of user) (calculate-stat user :energy))
+    (setf (energy-of user) (calculate-stat user :energy))))
 (defclass blanket (item) ()
   (:default-initargs
    :name "Blanket"

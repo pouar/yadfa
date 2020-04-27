@@ -39,6 +39,13 @@
                      850 "The back is clearly stained brown"
                      425 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
+(defclass diaper-package-mixin (item)
+  ((diaper :type symbol
+           :initarg :diaper)))
+(defmethod use-script ((item diaper-package-mixin) (user base-character))
+  (format t "You tear open the package and dump all the diapers out of it.~%")
+  (iter (for i from 1 to 20)
+    (push (make-instance (slot-value item 'diaper)) (inventory-of user))))
 (defclass generic-diapers (yadfa:diaper undies) ()
   (:default-initargs
    :sogginess-capacity 100
@@ -51,18 +58,14 @@
    :wear-mess-text '(20 "This was never designed to hold a mess, and the mess leaking down the leg guards show it"
                      1 "You can feel a slight mess back there")
    :description "These are our new Super Absorbent Briefs!!! Built to the top American standards of adult diapers, meaning they're neither super, nor absorbent."))
-(defclass generic-diapers-package (item) ()
+(defclass generic-diapers-package (diaper-package-mixin) ()
   (:default-initargs
    :name "Package of Store Brand Diapers"
    :plural-name "Packages of Store Brand Diapers"
    :description "These are our new Super Absorbent Briefs!!! Built to the top American standards of adult diapers, meaning they're neither super, nor absorbent."
    :consumable t
    :value 200
-   :use-script '(lambda (item user)
-                 (declare (ignore item))
-                 (format t "You tear open the package and dump all the diapers out of it.~%")
-                 (iter (for i from 1 to 20)
-                   (push (make-instance 'yadfa-items:generic-diapers) (inventory-of user))))))
+   :diaper 'generic-diapers))
 (defclass generic-pullons (pullup undies) ()
   (:default-initargs
    :sogginess-capacity 100
@@ -75,18 +78,14 @@
    :wear-mess-text '(20 "This was never designed to hold a mess, and the mess leaking down the leg guards show it"
                      1 "You can feel a slight mess back there")
    :description "Our new Super Absorbent Briefs in Pullon form!!! They look just like real underwear!!! And is about as absorbent as real underwear too!!!!"))
-(defclass generic-pullons-package (item) ()
+(defclass generic-pullons-package (diaper-package-mixin) ()
   (:default-initargs
    :name "Package of Store Brand Pullons"
    :plural-name "Packages of Store Brand Pullons"
    :description "Our new Super Absorbent Briefs in Pullon form!!! They look just like real underwear!!! And is about as absorbent as real underwear too!!!!"
    :consumable t
    :value 200
-   :use-script '(lambda (item user)
-                 (declare (ignore item))
-                 (format t "You tear open the package and dump all the diapers out of it.~%")
-                 (iter (for i from 1 to 20)
-                   (push (make-instance 'yadfa-items:generic-pullons) (inventory-of user))))))
+   :diaper 'generic-pullons))
 (defclass incontinence-pad (stuffer) ()
   (:default-initargs
    :sogginess-capacity 1000
@@ -100,18 +99,14 @@
                      25 "The mess is about to fall out"
                      1 "You can feel a slight mess back there")
    :description "For when you think you're too old for real padding, or if you just want your existing padding to last longer"))
-(defclass incontinence-pad-package (item) ()
+(defclass incontinence-pad-package (diaper-package-mixin) ()
   (:default-initargs
    :name "Package of Incontinence Pads"
    :plural-name "Packages of Incontinence Pads"
    :description "For when you think you're too old for real padding, or if you just want your existing padding to last longer"
    :consumable t
    :value 200
-   :use-script '(lambda (item user)
-                 (declare (ignore item))
-                 (format t "You tear open the package and dump all the diapers out of it.~%")
-                 (iter (for i from 1 to 20)
-                   (push (make-instance 'yadfa-items:incontinence-pad) (inventory-of user))))))
+   :diaper 'incontinence-pad))
 (defclass cloth-incontinence-pad (cloth-mixin stuffer) ()
   (:default-initargs
    :sogginess-capacity 1000
@@ -182,29 +177,22 @@
   (:default-initargs
    :name "Midnight Diaper"
    :description "A thick black diaper with blue landing zone, blue leg guards, and red tapes"))
-(defclass thick-diaper-package (item) ()
+(defclass thick-diaper-package (diaper-package-mixin) ()
   (:default-initargs
    :name "Package of Thick Diapers"
    :plural-name "Packages of Thick Diapers"
    :description "A package of A thick diapers that can hold more than an normal diapers"
    :consumable t
    :value 250
-   :use-script '(lambda (item user)
-                 (declare (ignore item))
-                 (format t "You tear open the package and dump all the diapers out of it.~%")
-                 (loop for i from 1 to 20 do (push (make-instance 'yadfa-items:thick-diaper) (inventory-of user))))))
-(defclass midnight-diaper-package (item) ()
+   :diaper 'thick-diaper))
+(defclass midnight-diaper-package (diaper-package-mixin) ()
   (:default-initargs
    :name "Package of Midnight Diapers"
    :plural-name "Packages of Midnight Diapers"
    :description "A package of thick black diapers with blue landing zone, blue leg guards, and red tapes"
    :consumable t
    :value 250
-   :use-script '(lambda (item user)
-                 (declare (ignore item))
-                 (format t "You tear open the package and dump all the diapers out of it.~%")
-                 (iter (for i from 1 to 20)
-                   (push (make-instance 'yadfa-items:midnight-diaper) (inventory-of user))))))
+   :diaper 'midnight-diaper))
 (defclass cloth-diaper (cloth-mixin yadfa:diaper undies) ()
   (:default-initargs
    :value 200
@@ -275,30 +263,22 @@
    :wear-mess-text '(1000 "Poo is leaking out of the leg guards"
                      250 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
-(defclass disposable-swim-diaper-package (item) ()
+(defclass disposable-swim-diaper-package (diaper-package-mixin) ()
   (:default-initargs
    :name "Package of Disposable Swim Diapers"
    :plural-name "Packages of Disposable Swim Diapers"
    :description "A package of swim diapers. Unlike most swim diapers, they absorb your waste without absorbing all the water in the pool."
    :consumable t
    :value 300
-   :use-script '(lambda (item user)
-                 (declare (ignore item))
-                 (format t "You tear open the package and dump all the diapers out of it.~%")
-                 (iter (for i from 1 to 20)
-                   (push (make-instance 'yadfa-items:disposable-swim-diaper) (inventory-of user))))))
-(defclass diaper-package (item) ()
+   :diaper 'disposable-swim-diaper))
+(defclass diaper-package (diaper-package-mixin) ()
   (:default-initargs
    :name "Package of Diapers"
    :plural-name "Packages of Diapers"
    :description "A package of poofy diapers that can hold an accident."
    :consumable t
    :value 250
-   :use-script '(lambda (item user)
-                 (declare (ignore item))
-                 (format t "You tear open the package and dump all the diapers out of it.~%")
-                 (iter (for i from 1 to 20)
-                   (push (make-instance 'yadfa-items:diaper) (inventory-of user))))))
+   :diaper 'diaper))
 (defclass kurikia-thick-diaper (yadfa:diaper) ()
   (:default-initargs
    :sogginess-capacity 10000
@@ -379,18 +359,14 @@
    :wear-mess-text '(1000 "Poo is leaking out of the pullup"
                      250 "There is a slight bulge in the back and it smells, but you'll be fine as long as you don't need to sit down"
                      1 "You can feel a slight mess back there")))
-(defclass pullups-package (item) ()
+(defclass pullups-package (diaper-package-mixin) ()
   (:default-initargs
    :name "Package of Pullups"
    :plural-name "Packages of Pullups"
    :description "Wear these and pretend to be a big kid."
    :consumable t
    :value 250
-   :use-script '(lambda (item user)
-                 (declare (ignore item))
-                 (format t "You tear open the package and dump all the pullups out of it.~%")
-                 (iter (for i from 1 to 20)
-                   (push (make-instance 'yadfa-items:pullups) (inventory-of user))))))
+   :diaper 'pullups))
 (defclass cloth-pullups (pullup cloth-mixin undies) ()
   (:default-initargs
    :value 200

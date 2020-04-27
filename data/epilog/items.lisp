@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-items"; coding: utf-8-unix; -*-
 (in-package :yadfa-items)
-(defmethod catch-method ((item enemy-catcher) (target yadfa-enemies:catchable-enemy))
+(defmethod use-script ((item enemy-catcher) (target yadfa-enemies:catchable-enemy))
   (cond
     ((>= (list-length (contained-enemies-of item)) (contained-enemies-max-length-of item))
      (out (name-of item) " can't hold anymore enemies" :% :%))
@@ -77,13 +77,13 @@
                                                            (write-line (yadfa-enemies:change-class-text i))
                                                            (collect (change-class i (get (class-name i) 'yadfa-enemies:change-class-target))))))
                 (format t "No enemies in there to adopt"))))))))
-(defmethod catch-method ((item enemy-catcher) (target yadfa-enemies:ghost))
+(defmethod use-script ((item enemy-catcher) (target yadfa-enemies:ghost))
   (out "You failed to catch " (name-of target) :% :%)
   (cond ((eq (device-health-of item) t) nil)
         ((<= (device-health-of item) 1)
          (alexandria:deletef (inventory-of (player-of *game*)) item :count 1))
         (t (decf (device-health-of item)))))
-(defmethod catch-method ((item ghost-catcher) (target yadfa-enemies:ghost))
+(defmethod use-script ((item ghost-catcher) (target yadfa-enemies:ghost))
   (cond
     ((>= (list-length (contained-enemies-of item)) (contained-enemies-max-length-of item))
      (out (name-of item) " can't hold anymore enemies" :% :%))

@@ -38,7 +38,7 @@
                       when (and (listp i) (eq (first i) :feature) (uiop:featurep (second i))) collect (third i)))
   (declaim (optimize (debug 2) safety))
   (setf *read-default-float-format* 'long-float)
-  (ql:quickload :yadfa))
+  (asdf:load-system :yadfa))
 (when (find "immutable" (uiop:command-line-arguments) :test #'string=)
   (setf yadfa::*immutable* t))
 (when (find "docs" (uiop:command-line-arguments) :test #'string=)

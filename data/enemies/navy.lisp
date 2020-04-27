@@ -12,7 +12,7 @@
    :bowels/contents (random 700)
    :inventory (iter (for i from 0 to (random 5)) (collect (make-instance 'yadfa-items:navy-pullups)))
    :bitcoins-per-level 60))
-(defmethod process-battle-accident-method ((character navy-officer) attack item reload selected-target)
+(defmethod process-battle-accident ((character navy-officer) attack (item item) reload (selected-target base-character))
   (declare (ignore attack item reload selected-target))
   (let* ((male (malep character))
          (pamps (iter (for i in (wear-of character))
