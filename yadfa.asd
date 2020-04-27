@@ -1,5 +1,5 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "asdf-user"; coding: utf-8-unix; -*-
-(defsystem "yadfa"
+(defsystem :yadfa
   :name "YADFA"
   :version "0.9"
   :author "Pouar"
@@ -8,11 +8,12 @@
   :description "Yet Another Diaperfur Adventure"
   :long-description "Yet Another Diaperfur Adventure"
   :build-operation :program-op
-  :in-order-to ((test-op (test-op "yadfa-tests")))
+  :in-order-to ((test-op (test-op :yadfa-tests)))
   :build-pathname "yadfa"
   :entry-point "yadfa::main"
-  :depends-on ("marshal" "iterate" "ugly-tiny-infix-macro" "closer-mop" "clim-listener" "mcclim-raster-image" "trivial-garbage" "macro-level" "cl-ansi-text" "alexandria" "serapeum" "global-vars" (:feature :sbcl "yadfa/docs") "float-features" "illogical-pathnames" (:feature :ecl "fare-quasiquote-extras")
-                         "asdf" "uiop")
+  :depends-on (:marshal :iterate :ugly-tiny-infix-macro :closer-mop :clim-listener :mcclim-raster-image :trivial-garbage :macro-level
+               :cl-ansi-text :alexandria :serapeum :global-vars :float-features :asdf :uiop :illogical-pathnames
+               (:feature :sbcl :yadfa/docs) (:feature :ecl :fare-quasiquote-extras))
   :components ((:file "packages")
                (:file "main" :depends-on ("packages" "core"))
                (:module "core"
@@ -69,8 +70,8 @@
                               :depends-on ("prolog" "enemies" "events" "items" "map" "moves" "props" "status-conditions" "team-members")
                               :components ((:file "allies") (:file "blackjack") (:file "enemies") (:file "items")
                                            (:file "puzzle" :depends-on ("pyramid")) (:file "pyramid")))))))
-(defsystem "yadfa/docs"
-  :depends-on ("net.didierverna.declt")
+(defsystem :yadfa/docs
+  :depends-on (:net.didierverna.declt)
   :description "Used for building the docs. Contains patches to Declt for using Texinfo commands in docstrings"
   :components ((:module "core"
                 :components ((:file "declt-patches")))))
