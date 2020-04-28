@@ -125,3 +125,8 @@ argument.")
                                                                    (getf asserts i)
                                                                    t))))))
              ,@body))))
+(defmacro with-standard-io-syntax* (&body body)
+  "Like with-standard-io-syntax, but use a readtable that isn't readonly, because apparently some implementations forgot to prevent you from changing this readonly structure causing undefined behavior."
+  `(with-standard-io-syntax
+     (let ((*readtable* (copy-readtable *readtable*)))
+       ,@body)))

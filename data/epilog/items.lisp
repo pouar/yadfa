@@ -4,7 +4,7 @@
   (cond
     ((>= (list-length (contained-enemies-of item)) (contained-enemies-max-length-of item))
      (out (name-of item) " can't hold anymore enemies" :% :%))
-    ((not (< (random 1.0) (* (catch-chance-multiplier-of item) (+ (catch-chance-delta-of item) (yadfa-enemies:catch-chance-of target)))))
+    ((not (< (random 1.0l0) (* (catch-chance-multiplier-of item) (+ (catch-chance-delta-of item) (yadfa-enemies:catch-chance-of target)))))
      (out "You failed to catch the " (name-of target) :% :%)
      (cond ((eq (device-health-of item) t) nil)
            ((<= (device-health-of item) 1)
@@ -87,7 +87,7 @@
   (cond
     ((>= (list-length (contained-enemies-of item)) (contained-enemies-max-length-of item))
      (out (name-of item) " can't hold anymore enemies" :% :%))
-    ((not (< (random 1.0) (* (catch-chance-multiplier-of item) (+ (catch-chance-delta-of item) (yadfa-enemies:catch-chance-of target)))))
+    ((not (< (random 1.0l0) (* (catch-chance-multiplier-of item) (+ (catch-chance-delta-of item) (yadfa-enemies:catch-chance-of target)))))
      (out "You failed to catch the " (name-of target) :% :%)
      (cond ((eq (device-health-of item) t) nil)
            ((<= (device-health-of item) 1)

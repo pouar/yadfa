@@ -7,41 +7,44 @@
   (get-positions-of-type type (inventory-of (player-of *game*))))
 (defun yadfa-bin:reload-files (&rest keys &key compiler-verbose &allow-other-keys)
   "Intended for developers. Use this to recompile the game without having to close it. Accepts the same keyword arguments as @code{ASDF:LOAD-SYSTEM} and @code{ASDF:OPERATE}. Set @var{COMPILER-VERBOSE} to @code{T} to print the compiling messages. setting @var{LOAD-SOURCE} to @code{T} will avoid creating fasls"
-  (let ((*compile-verbose* compiler-verbose) (*compile-print* compiler-verbose))
-    (apply #'asdf:load-system :yadfa :allow-other-keys t keys)
-    (apply #'load-mods :allow-other-keys t keys))
+  (with-standard-io-syntax*
+    (let ((*compile-verbose* compiler-verbose) (*compile-print* compiler-verbose))
+      (apply #'asdf:load-system :yadfa :allow-other-keys t keys)
+      (apply #'load-mods :allow-other-keys t keys)))
   (switch-user-packages))
 (defun yadfa-bin:enable-mods (systems)
   #.(format nil "Enable a mod, the modding system is mostly just asdf, @var{SYSTEM} is a keyword which is the name of the system you want to enable
 
 ~a."
             (xref yadfa-bin:disable-mods :function))
-  (let ((systems (iter (for i in (a:ensure-list systems))
-                   (collect (asdf:coerce-name i)))))
-    (dolist (system (remove-duplicates systems :test #'string=))
-      (asdf:find-system system))
-    (dolist (system systems)
-      (pushnew system *mods* :test #'string=)
-      (asdf:load-system system))
-    (a:with-output-to-file (stream #P"yadfa:config;mods.conf"
-                                   :if-exists :supersede
-                                   :external-format :utf-8)
-      (write *mods* :stream stream)))
+  (with-standard-io-syntax*
+    (let ((systems (iter (for i in (a:ensure-list systems))
+                     (collect (asdf:coerce-name i)))))
+      (dolist (system (remove-duplicates systems :test #'string=))
+        (asdf:find-system system))
+      (dolist (system systems)
+        (pushnew system *mods* :test #'string=)
+        (asdf:load-system system))))
+  (a:with-output-to-file (stream #P"yadfa:config;mods.conf"
+                                 :if-exists :supersede
+                                 :external-format :utf-8)
+    (write *mods* :stream stream))
   systems)
 (defun yadfa-bin:disable-mods (systems)
   #.(format nil "Disable a mod, the modding system is mostly just asdf, @var{SYSTEM} is a keyword which is the name of the system you want to enable
 
 ~a."
             (xref yadfa-bin:enable-mods :function))
-  (let ((systems (delete-duplicates (iter (for i in (a:ensure-list systems))
-                                      (collect (asdf:coerce-name i)))
-                                    :test #'string=)))
-    (a:deletef *mods* systems :test (lambda (o e)
-                                      (member e o :test #'string=)))
-    (a:with-output-to-file (stream #P"yadfa:config;mods.conf"
-                                   :if-exists :supersede
-                                   :external-format :utf-8)
-      (write *mods* :stream stream)))
+  (with-standard-io-syntax*
+    (let ((systems (delete-duplicates (iter (for i in (a:ensure-list systems))
+                                        (collect (asdf:coerce-name i)))
+                                      :test #'string=)))
+      (a:deletef *mods* systems :test (lambda (o e)
+                                        (member e o :test #'string=)))
+      (a:with-output-to-file (stream #P"yadfa:config;mods.conf"
+                                     :if-exists :supersede
+                                     :external-format :utf-8)
+        (write *mods* :stream stream))))
   systems)
 (defunassert (yadfa-world:save-game (path)
                                     #.(format nil "This function saves current game to @var{PATH}

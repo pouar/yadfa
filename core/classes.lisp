@@ -875,7 +875,7 @@
     :documentation "A list of pairs containing the different text that describes the appearance that your diapers have on your pants based on the thickness, first one is the minimum thickness needed for the second text. the text for thicker padding must be listed first")
    (thickness-capacity
     :initarg :thickness-capacity
-    :initform (* (expt 6.0 1/3) (+ 25 2/5))
+    :initform (* (expt 6.0l0 1/3) (+ 25 2/5))
     :accessor thickness-capacity-of
     :type (or (real 0) null)
     :documentation "The maximum thickness of your diaper that this can fit over. @code{NIL} means infinite")

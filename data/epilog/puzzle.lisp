@@ -136,7 +136,7 @@
             (c:draw-design pane (apply #'aref *patterns* (cdr (aref *puzzle* y x)))
                            :transformation (let ((translate (c:make-translation-transformation (* x px) (* y px))))
                                              (if (or (equal *swap-1* `(,y ,x)) (equal *swap-2* `(,y ,x)))
-                                                 (c:compose-transformations translate (c:make-scaling-transformation 0.9 0.9 (c:make-point (/ px 2) (/ px 2))))
+                                                 (c:compose-transformations translate (c:make-scaling-transformation 0.9l0 0.9l0 (c:make-point (/ px 2) (/ px 2))))
                                                  translate)))))))
     (setf (c:stream-cursor-position pane) (values 20 pw))
     (c:formatting-item-list (pane)
