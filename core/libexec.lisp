@@ -224,10 +224,9 @@
           (write-line "The configuration file containing the list of enabled mods isn't valid, ignoring")))
     (let ((*compile-verbose* compiler-verbose)
           (*compile-print* compiler-verbose))
-      (with-standard-io-syntax*
-        (iter (for i in *mods*)
-          (when (asdf:find-system i nil)
-            (apply #'asdf:load-system i :allow-other-keys t keys)))))))
+      (iter (for i in *mods*)
+        (when (asdf:find-system i nil)
+          (apply #'asdf:load-system i :allow-other-keys t keys))))))
 (defun (setf getf-direction) (new-value position direction attribute)
   (setf (getf (getf (direction-attributes-of (get-zone position)) direction) attribute) new-value))
 (defun getf-direction (position direction attribute)
