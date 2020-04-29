@@ -37,7 +37,7 @@
                               :components ((:file "abdl") (:file "armor") (:file "clothes") (:file "consumable")
                                            (:file "debug") (:file "diaper") (:file "misc") (:file "weapons")))
                              (:module "prolog"
-                              :components ((:file "allies") (:file "enemies") (:file "map") (:file "moves")))
+                              :components ((:file "allies") (:file "enemies") (:file "map")))
                              (:module "enemies"
                               :depends-on ("moves" "items" "prolog")
                               :components ((:file "eggbots") (:file "fursuiters") (:file "haunted") (:file "navy")
