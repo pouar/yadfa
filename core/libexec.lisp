@@ -121,7 +121,7 @@
           1)
        (or (eq attack t) (not (typep (get-move attack character) '(or yadfa-moves:watersport yadfa-moves:mudsport))))))
 (defunassert (get-positions-of-type (type list))
-    (type (or null (and symbol (not keyword)) list class)
+    (type type-specifier
           list list)
   (iter (for i in list)
     (for j upfrom 0)
