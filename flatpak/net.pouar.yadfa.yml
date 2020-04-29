@@ -77,7 +77,7 @@ modules:
       - cp -R asdf /app/tmp/home/common-lisp/
       - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --load "quicklisp.lisp" --eval "(quicklisp-quickstart:install)"
       - mkdir -p /app/tmp/home/quicklisp/local-projects
-      - cp -R declt McCLIM sly illogical-pathnames iterate /app/tmp/home/quicklisp/local-projects
+      - cp -R declt McCLIM sly illogical-pathnames iterate flexi-streams /app/tmp/home/quicklisp/local-projects
     sources:
       - type: file
         url: https://beta.quicklisp.org/quicklisp.lisp
@@ -95,6 +95,9 @@ modules:
       - type: git
         dest: sly
         url: https://github.com/joaotavora/sly.git
+      - type: git
+        dest: flexi-stream
+        url: https://github.com/edicl/flexi-streams.git
       - type: git
         dest: illogical-pathnames
         branch: pouar
