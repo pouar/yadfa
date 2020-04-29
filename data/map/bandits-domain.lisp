@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-zones"; coding: utf-8-unix; -*-
 (in-package :yadfa-zones)
-(m:macro-level
+(macro-level
   `(progn
      ,@(iter (for i from 10 to 20)
          (collect
@@ -11,7 +11,7 @@
                 :warp-points ,(when (= i 10) '(list 'ironside '(2 0 0 ironside)))
                 :enemy-spawn-list 'bandits-way)))))
 
-(m:macro-level
+(macro-level
   `(progn
      ,@(iter (for i from -1 downto -10)
          (collect
@@ -169,7 +169,7 @@
   :enter-text "You're at the entrance of Bandit Town"
   :warp-points (list 'home '(0 1 0 home))
   :events '(yadfa-events:enter-bandits-village-1))
-(m:macro-level
+(macro-level
   `(progn
      ,@(iter (for i from 22 to 30)
          (collect
@@ -188,7 +188,7 @@
   :name "Bandit's Cove Dock"
   :description "The dock of Bandit's Cove"
   :enter-text "You're at a dock")
-(m:macro-level
+(macro-level
   `(progn
      ,@(let ((a ()))
          (iter (for y from 19 to 23)

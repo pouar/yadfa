@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-zones"; coding: utf-8-unix; -*-
 (in-package :yadfa-zones)
-(m:macro-level
+(macro-level
   `(progn
      ,@(iter (for y from 0 to 2)
          (iter (for x from (- y) to y)
@@ -13,7 +13,7 @@
                                                                      (= y 2)))
                                                    :down (list :hidden t)
                                                    :up (list :hidden t))))))))
-(m:macro-level
+(macro-level
   `(progn
      ,@(iter (for i from -2 to 2)
          (collect `(ensure-zone (,i 11 0 your-ship)
@@ -22,7 +22,7 @@
                      :direction-attributes (list :north (list :hidden ,(or (= i 1) (= i -1)))
                                                  :down (list :hidden t)
                                                  :up (list :hidden t)))))))
-(m:macro-level
+(macro-level
   `(progn
      ,@(iter (for i from 3 to 10)
          (collect `(ensure-zone (-2 ,i 0 your-ship)
@@ -92,7 +92,7 @@
                                 :name "Chest"
                                 :description "Place all your crap here"
                                 :placeable t)))
-(m:macro-level
+(macro-level
   `(progn
      ,@(iter (for i from -1 to 1)
          (unless (= i 0)

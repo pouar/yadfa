@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-zones"; coding: utf-8-unix; -*-
 (in-package :yadfa-zones)
-(m:macro-level
+(macro-level
   `(progn
      ,@(iter (for i from 0 to 20)
          (collect
@@ -12,7 +12,7 @@
                 ,@(cond ((= i 7)
                          '(:direction-attributes (list :east (list :hidden t)))))
                 ,@(when (= i 0) '(:events '(yadfa-events:enter-silver-cape-1 yadfa-events:secret-underground-pipe-silver-cape))))))))
-(m:macro-level
+(macro-level
   `(progn
      ,@(iter (for i from -10 to 10)
          (unless (= i 0)

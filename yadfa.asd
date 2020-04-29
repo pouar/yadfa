@@ -11,8 +11,8 @@
   :in-order-to ((test-op (test-op :yadfa-tests)))
   :build-pathname "yadfa"
   :entry-point "yadfa::main"
-  :depends-on (:marshal :iterate :ugly-tiny-infix-macro :closer-mop :clim-listener :mcclim-raster-image :trivial-garbage :macro-level
-               :cl-ansi-text :alexandria :serapeum :global-vars :float-features :asdf :uiop :illogical-pathnames
+  :depends-on (:marshal :iterate :ugly-tiny-infix-macro :closer-mop :clim-listener :mcclim-raster-image :trivial-garbage :cl-ansi-text
+               :alexandria :serapeum :global-vars :float-features :asdf :uiop :illogical-pathnames
                (:feature :sbcl :yadfa/docs) (:feature :ecl :fare-quasiquote-extras))
   :components ((:file "packages")
                (:file "main" :depends-on ("packages" "core"))
