@@ -124,7 +124,7 @@
     (type type-specifier
           list list)
   (iter (for i in list)
-    (for j upfrom 0)
+    (declaring fixnum for j upfrom 0)
     (when (typep i type)
       (collect j))))
 (defunassert (finished-events (events))
@@ -540,7 +540,7 @@
                            #P"e.xpm"
                            #P"dot.xpm")))
                (iter (for direction in '(:east :west :south :north))
-                 (for byte-position upfrom 0)
+                 (declaring fixnum for byte-position upfrom 0)
                  (unless (travelablep position direction)
                    (setf (ldb (byte 1 byte-position) b) 1)))
                (aref array b))))
@@ -575,17 +575,17 @@
                 (iter (for y
                            from (- posy 15)
                            to (+ posy 15))
-                  (for y-pos
-                       from (second start-position)
-                       to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
-                       by (clim:pattern-height pattern))
+                  (declaring fixnum for y-pos
+                             from (second start-position)
+                             to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
+                             by (clim:pattern-height pattern))
                   (iter (for x
                              from (- posx 15)
                              to (+ posx 15))
-                    (for x-pos
-                         from (first start-position)
-                         to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
-                         by (clim:pattern-width pattern))
+                    (declaring fixnum for x-pos
+                               from (first start-position)
+                               to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
+                               by (clim:pattern-width pattern))
                     (let* ((current-position `(,x ,y ,posz ,posm))
                            (current-zone (get-zone current-position))
                            (char (cons (if (or (and current-zone (hiddenp current-zone)) (not current-zone))
@@ -3765,7 +3765,7 @@ randomrange is @code{(random-from-range 85 100)}")
         (let ((items (sort (remove-duplicates items-to-sell) #'<)))
           (setf items (iter (generate i in items)
                         (for j in (inventory-of user))
-                        (for k upfrom 0)
+                        (declaring fixnum for k upfrom 0)
                         (when (first-iteration-p)
                           (next i))
                         (when (= k i)
@@ -3789,7 +3789,7 @@ randomrange is @code{(random-from-range 85 100)}")
   (when format-items
     (format t "~10a~40a~10@a~%" "Index" "Item" "Price")
     (iter (for i in items-for-sale)
-      (for j from 0)
+      (declaring fixnum for j upfrom 0)
       (let ((item (apply #'make-instance (car i) (eval (cdr i)))))
         (format t "~10a~40a~10@a~%" j (name-of item) (value-of item))))))
 (declaim (ftype (function (list symbol symbol) (values action &optional)) getf-action-from-prop))
