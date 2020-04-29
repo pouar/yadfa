@@ -56,8 +56,8 @@ modules:
       - chmod +x /app/tmp/sbcl-bin/bin/hostname
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.3/sbcl-2.0.3-x86-64-linux-binary.tar.bz2
-        sha256: 8cbf09bf915c07866a0b856eff4bde31bd4151473589fa97773eabcc0bd82696
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.4/sbcl-2.0.4-x86-64-linux-binary.tar.bz2
+        sha256: e984e46c0e6de11962a35768d2ff8bd41083dfe69459b6e585e9698aca123d65
   - name: sbcl
     build-options:
       strip: true
@@ -68,30 +68,8 @@ modules:
       - INSTALL_ROOT="/app/tmp/sbcl" HOME="/app/tmp/home/" sh install.sh
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.3/sbcl-2.0.3-source.tar.bz2
-        sha256: b5543f123214b2023ff5fc32dfd00b6cfeabd92c8edb33ad208842c4fd642f00
-      - type: file
-        url: https://github.com/sbcl/sbcl/commit/797ef919277238136eaa274776019d52d0353f7d.patch
-        sha256: dc966ac7fa63d19d96e3a54fd52da5b6e1a70fff26d05c35dd36e1a9984d4cc8
-      - type: file
-        url: https://github.com/sbcl/sbcl/commit/cebb7efd200f070913ef510d468853d7d8f24645.patch
-        sha256: 99d666c883b3ad28f1375e53a17ea68c60ab996a10d86713bd532082e62c8362
-      - type: file
-        url: https://github.com/sbcl/sbcl/commit/f5e5687e335e260a203bf60817e4ec4d03a80df6.patch
-        sha256: 8c0fc2eb2aa8b453a3fd09fb8e7a846e7410acd5b90c8baacb91fb22d5f4b4c4
-      - type: file
-        url: https://github.com/sbcl/sbcl/commit/71f7507fc119b4c88b428d71e7aaf0ded918558e.patch
-        sha256: 13b7bb6d302d847b3d070d0d38907fb6d1443ed9b59b5fde0c8eb1283553ec71
-      - type: file
-        url: https://github.com/sbcl/sbcl/commit/7464a809f01f279eddc185335f9cdc16ad9bf2ad.patch
-        sha256: ae696836a0c60fa5e96f86127d32f64e9ae60321698dcfadcc458ec83ae7dfb9
-      - type: shell
-        commands:
-          - patch -p1 -i 797ef919277238136eaa274776019d52d0353f7d.patch
-          - patch -p1 -i cebb7efd200f070913ef510d468853d7d8f24645.patch
-          - patch -p1 -i f5e5687e335e260a203bf60817e4ec4d03a80df6.patch
-          - patch -p1 -i 71f7507fc119b4c88b428d71e7aaf0ded918558e.patch
-          - patch -p1 -i 7464a809f01f279eddc185335f9cdc16ad9bf2ad.patch
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.4/sbcl-2.0.4-source.tar.bz2
+        sha256: 122b4641766be8fde87ea4464cf706ddc161a1c05f48dbebf2cdcd80318982d1
   - name: yadfa-deps
     buildsystem: simple
     build-commands:
