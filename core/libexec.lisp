@@ -23,7 +23,7 @@
 (declaim (ftype (function () (values (eql t) &optional)) switch-user-packages))
 (defun switch-user-packages ()
   (use-package *command-packages* :yadfa-user)
-  (let ((clim:*application-frame* (clim:find-application-frame 'clim-listener::listener :create nil)))
+  (let ((clim:*application-frame* (clim:find-application-frame 'yadfa-clim::yadfa-listener :create nil)))
     (declare (special clim:*application-frame*))
     (if *battle*
         (progn
