@@ -96,7 +96,7 @@ modules:
         dest: sly
         url: https://github.com/joaotavora/sly.git
       - type: git
-        dest: flexi-stream
+        dest: flexi-streams
         url: https://github.com/edicl/flexi-streams.git
       - type: git
         dest: illogical-pathnames
