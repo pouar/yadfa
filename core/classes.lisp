@@ -1014,7 +1014,6 @@
 (defmethod update-instance-for-different-class :after ((old onesie/closed) (new onesie/opened) &key)
   (setf (thickness-capacity-of new) (cdr (slot-value old 'onesie-thickness-capacity)))
   (setf (thickness-capacity-threshold-of new) (cdr (slot-value old 'onesie-thickness-capacity-threshold)))
-  (setf (waterproofp new) nil)
   (setf (bulge-text-of new) (cdr (slot-value old 'onesie-bulge-text))))
 (defmethod initialize-instance :after
     ((c onesie/opened) &rest initargs &key &allow-other-keys)

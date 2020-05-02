@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-allies"; coding: utf-8-unix; -*-
 (in-package :yadfa-allies)
-(defunassert (yadfa-world-commands:disown-adopted-enemies (&optional allies count))
+(defunassert yadfa-world-commands:disown-adopted-enemies (&optional allies count)
     (allies (or list type-specifier)
             count (or null unsigned-byte))
   (setf allies

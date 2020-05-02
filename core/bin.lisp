@@ -2,7 +2,7 @@
 ;;;;this file contains functions the player can enter in the REPL
 
 (in-package :yadfa)
-(defunassert (yadfa-bin:get-inventory-of-type (type))
+(defunassert yadfa-bin:get-inventory-of-type (type)
     (type type-specifier)
   (get-positions-of-type type (inventory-of (player-of *game*))))
 (defun yadfa-bin:reload-files (&rest keys &key compiler-verbose &allow-other-keys)
@@ -43,12 +43,12 @@
                                    :external-format :utf-8)
       (write *mods* :stream stream)))
   systems)
-(defunassert (yadfa-world:save-game (path)
-                                    #.(format nil "This function saves current game to @var{PATH}
+(defunassert yadfa-world:save-game (path)
+  (path (or simple-string pathname))
+  #.(format nil "This function saves current game to @var{PATH}
 
 ~a."
-                                              (xref yadfa-world:load-game :function)))
-    (path (or simple-string pathname))
+            (xref yadfa-world:load-game :function))
   (ensure-directories-exist (make-pathname :host (pathname-host path) :device (pathname-device path) :directory (pathname-directory path)))
   (a:with-output-to-file (s path :if-exists :supersede :external-format :utf-8)
     (write-string (write-to-string (ms:marshal *game*)) s))
@@ -58,12 +58,12 @@
     (simple-string (handler-case (translate-logical-pathname path)
                      (type-error () (parse-namestring path))
                      (file-error () nil)))))
-(defunassert (yadfa-world:load-game (path)
-                                    #.(format nil "This function loads a saved game from @var{PATH}
+(defunassert yadfa-world:load-game (path)
+  (path (or simple-string pathname))
+  #.(format nil "This function loads a saved game from @var{PATH}
 
 ~a."
-                                              (xref yadfa-world:save-game :function)))
-    (path (or simple-string pathname))
+            (xref yadfa-world:save-game :function))
   (a:with-input-from-file (stream path)
     (setf *game* (ms:unmarshal (read stream))))
   (typecase path
@@ -72,40 +72,45 @@
     (simple-string (handler-case (translate-logical-pathname path)
                      (type-error () (parse-namestring path))
                      (file-error () nil)))))
-(defunassert (yadfa-bin:toggle-onesie (&key wear user)
-                                      "Open or closes your onesie. @var{WEAR} is the index of a onesie. Leave @code{NIL} for the outermost onesie. @var{USER} is the index of an ally. Leave @code{NIL} to refer to yourself")
-    (wear (or unsigned-byte null) user (or unsigned-byte null))
-  (let* ((allies-length (list-length (allies-of *game*)))
-         (selected-ally (if user (nth user (allies-of *game*)))))
-    (cond (user
-           (cond ((< allies-length user)
-                  (format t "You only have ~d allies~%~%" allies-length))
-                 (wear (toggle-onesie%
-                        (nth wear (wear-of selected-ally))
-                        (nthcdr (1+ wear) (wear-of selected-ally))
-                        (nth user (allies-of *game*))))
-                 (t (iter (for i in (wear-of selected-ally))
-                      (with j = 1)
-                      (when (typep i 'onesie) (leave (toggle-onesie% i (nthcdr j (wear-of selected-ally)) selected-ally)))
-                      (incf j) (finally (write-line "You're not wearing a onesie"))))))))
-  (if wear
-      (toggle-onesie%
-       (nth wear (wear-of (player-of *game*)))
-       (nthcdr (1+ wear) (wear-of (player-of *game*)))
-       (player-of *game*))
-      (iter (for i in (wear-of (player-of *game*)))
-        (with j = 1)
-        (when (typep i 'onesie)
-          (leave (toggle-onesie% i (nthcdr j (wear-of (player-of *game*))) (player-of *game*))))
-        (incf j)
-        (finally (write-line "You're not wearing a onesie")))))
-(defunassert (yadfa-world:move (&rest directions)
-                               #.(format nil "type in the direction as a keyword to move in that direction, valid directions can be found with @code{(lst :directions t)}.
+(defunassert yadfa-bin:toggle-onesie (&key wear user)
+    (wear (or type-specifier unsigned-byte null) user (or type-specifier  unsigned-byte null))
+  "Open or closes your onesie. @var{WEAR} is the index of a onesie. Leave @code{NIL} for the outermost onesie. @var{USER} is the index of an ally. Leave @code{NIL} to refer to yourself"
+  (handle-user-input ((allies-length (list-length (allies-of *game*)))
+                      (inventory-length (list-length (wear-of (player-of *game*))))
+                      (selected-user (if user (if (numberp user)
+                                                  (nth user (allies-of *game*))
+                                                  (find user (allies-of *game*) :test (lambda (o e)
+                                                                                        (typep e o))))
+                                         (player-of *game*)))
+                      (selected-wear (when wear (if (numberp wear)
+                                                    (nthcdr wear (wear-of (player-of *game*)))
+                                                    (member wear (wear-of (player-of *game*)) :test (lambda (o e)
+                                                                                                           (typep e o)))))))
+      (*query-io* ((and user (numberp user) (>= user allies-length))
+                   (user (format nil "You only have ~d allies" allies-length))
+                   :prompt-text "Enter a different ally")
+                  ((and user (typep user 'type-specifier) (not selected-user))
+                   (user (format nil "Ally ~s doesn't exist" user))
+                   :prompt-text "Enter a different ally")
+                  ((and wear (numberp wear) (>= wear inventory-length))
+                   (wear (format nil "You're only wearing ~a items" inventory-length))
+                   :prompt-text "Enter a different item")
+                  ((and wear (typep wear 'type-specifier) (not selected-wear))
+                   (wear (format nil "You're not wearing that item"))
+                   :prompt-text "Enter a different item"))
+    (if wear
+        (toggle-onesie% selected-wear (cdr selected-wear) selected-user)
+        (iter (for item on (wear-of selected-user))
+          (when (typep (car item) 'onesie)
+            (leave (toggle-onesie% (car item) (cdr item) selected-user)))
+          (finally (format t "~a isn't wearing a onesie" (name-of selected-user)))))))
+(defunassert yadfa-world:move (&rest directions)
+  (directions list)
+  #.(format nil "type in the direction as a keyword to move in that direction, valid directions can be found with @code{(lst :directions t)}.
 You can also specify multiple directions, for example @code{(move :south :south)} will move 2 zones south. @code{(move :south :west :south)} will move south, then west, then south.
 
 ~a."
-                                         (xref yadfa-bin:lst :function)))
-    (directions list)
+            (xref yadfa-bin:lst :function))
   (iter (for direction in directions)
     (multiple-value-bind (new-position error) (get-path-end (get-destination direction (position-of (player-of *game*))) (position-of (player-of *game*)) direction)
       (let* ((old-position (position-of (player-of *game*))))
@@ -113,11 +118,11 @@ You can also specify multiple directions, for example @code{(move :south :south)
           (format t "~a" error)
           (return-from yadfa-world:move))
         (move-to-zone new-position :direction direction :old-position old-position)))))
-(defunassert (yadfa-bin:lst (&key inventory inventory-group props wear user directions moves position map descriptions describe-zone)
-                            "used to list various objects and properties, @var{INVENTORY} takes a type specifier for the items you want to list in your inventory. setting @var{INVENTORY} to @code{T} will list all the items. @var{INVENTORY-GROUP} is similar to @var{INVENTORY}, but will group the items by class name. @var{WEAR} is similar to @var{INVENTORY} but lists clothes you're wearing instead. setting @var{DIRECTIONS} to non-NIL will list the directions you can walk.setting @var{MOVES} to non-NIL will list the moves you know. setting @var{USER} to @code{T} will cause @var{MOVES} and @var{WEAR} to apply to the player, setting it to an integer will cause it to apply it to an ally. Leaving it at @code{NIL} will cause it to apply to everyone. setting @var{POSITION} to true will print your current position. Setting @var{MAP} to a number will print the map with the floor number set to @var{MAP}, setting @var{MAP} to @code{T} will print the map of the current floor you're on. When printing the map in McCLIM, red means there's a warp point, dark green is the zone with the player, blue means there are stairs. These 3 colors will blend with each other to make the final color")
-    (user (or unsigned-byte boolean)
-          map (or boolean integer)
-          inventory type-specifier)
+(defunassert yadfa-bin:lst (&key inventory inventory-group props wear user directions moves position map descriptions describe-zone)
+  (user (or unsigned-byte boolean)
+        map (or boolean integer)
+        inventory type-specifier)
+  "used to list various objects and properties, @var{INVENTORY} takes a type specifier for the items you want to list in your inventory. setting @var{INVENTORY} to @code{T} will list all the items. @var{INVENTORY-GROUP} is similar to @var{INVENTORY}, but will group the items by class name. @var{WEAR} is similar to @var{INVENTORY} but lists clothes you're wearing instead. setting @var{DIRECTIONS} to non-NIL will list the directions you can walk.setting @var{MOVES} to non-NIL will list the moves you know. setting @var{USER} to @code{T} will cause @var{MOVES} and @var{WEAR} to apply to the player, setting it to an integer will cause it to apply it to an ally. Leaving it at @code{NIL} will cause it to apply to everyone. setting @var{POSITION} to true will print your current position. Setting @var{MAP} to a number will print the map with the floor number set to @var{MAP}, setting @var{MAP} to @code{T} will print the map of the current floor you're on. When printing the map in McCLIM, red means there's a warp point, dark green is the zone with the player, blue means there are stairs. These 3 colors will blend with each other to make the final color"
   (let ((allies-length (list-length (allies-of *game*))))
     (flet ((format-items (list item &optional user)
              (format t "Number of items listed: ~a~%~%" (iter (with j = 0)
@@ -250,13 +255,13 @@ You can also specify multiple directions, for example @code{(move :south :south)
                (format-user (player-of *game*))
                (iter (for i in (allies-of *game*))
                  (format t "Name: ~a~%Species: ~a~%Description: ~a~%~%" (name-of i) (species-of i) (description-of i)))))))))
-(defunassert (yadfa-bin:get-stats (&key inventory wear prop item attack ally wield enemy)
-                                  "lists stats about various items in various places. @var{INVENTORY} is the index of an item in your inventory. @var{WEAR} is the index of what you or your ally is wearing. @var{PROP} is a keyword that refers to the prop you're selecting. @var{ITEM} is the index of an item that a prop has and is used to print information about that prop. @var{ATTACK} is a keyword referring to the move you or your ally has when showing that move. @var{ALLY} is the index of an ally on your team when selecting @var{INVENTORY} or @var{MOVE}, don't set @var{ALLY} if you want to select yourself.")
-    (ally (or null unsigned-byte type-specifier)
-          wear (or null unsigned-byte type-specifier)
-          inventory (or null unsigned-byte type-specifier)
-          enemy (or null unsigned-byte type-specifier)
-          prop (or null keyword))
+(defunassert yadfa-bin:get-stats (&key inventory wear prop item attack ally wield enemy)
+  (ally (or null unsigned-byte type-specifier)
+        wear (or null unsigned-byte type-specifier)
+        inventory (or null unsigned-byte type-specifier)
+        enemy (or null unsigned-byte type-specifier)
+        prop (or null keyword))
+  "lists stats about various items in various places. @var{INVENTORY} is the index of an item in your inventory. @var{WEAR} is the index of what you or your ally is wearing. @var{PROP} is a keyword that refers to the prop you're selecting. @var{ITEM} is the index of an item that a prop has and is used to print information about that prop. @var{ATTACK} is a keyword referring to the move you or your ally has when showing that move. @var{ALLY} is the index of an ally on your team when selecting @var{INVENTORY} or @var{MOVE}, don't set @var{ALLY} if you want to select yourself."
   (when (and ally (list-length-> ally (allies-of *game*)))
     (write-line "That ally doesn't exist")
     (return-from yadfa-bin:get-stats))
@@ -300,16 +305,16 @@ You can also specify multiple directions, for example @code{(move :south :south)
         (when item
           (let ((i (nth item (items-of j))))
             (describe-item i)))))))
-(defunassert (yadfa-world:interact (prop &rest keys &key list take action describe-action describe &allow-other-keys)
-                                   #.(format nil "interacts with @var{PROP}. @var{PROP} is a keyword, you can get these with @code{LST} with the @var{PROPS} parameter. setting @var{LIST} to non-NIL will list all the items and actions in the prop. you can take the items with the @var{TAKE} parameter. Setting this to an integer will take the item at that index, while setting it to @code{:ALL} will take all the items, setting it to @code{:BITCOINS} will take just the bitcoins. You can get this index with the @var{LIST} parameter. @var{ACTION} is a keyword referring to an action to perform, can also be found with the @var{LIST} parameter. You can also specify other keys when using @var{ACTION} and this function will pass those keys to that function. set @var{DESCRIBE-ACTION} to the keyword of the action to find out how to use it. Set @var{DESCRIBE} to @code{T} to print the prop's description.
+(defunassert yadfa-world:interact (prop &rest keys &key list take action describe-action describe &allow-other-keys)
+  (action (or keyword null)
+          describe-action (or keyword null)
+          prop symbol
+          describe boolean
+          take (or null keyword list))
+  #.(format nil "interacts with @var{PROP}. @var{PROP} is a keyword, you can get these with @code{LST} with the @var{PROPS} parameter. setting @var{LIST} to non-NIL will list all the items and actions in the prop. you can take the items with the @var{TAKE} parameter. Setting this to an integer will take the item at that index, while setting it to @code{:ALL} will take all the items, setting it to @code{:BITCOINS} will take just the bitcoins. You can get this index with the @var{LIST} parameter. @var{ACTION} is a keyword referring to an action to perform, can also be found with the @var{LIST} parameter. You can also specify other keys when using @var{ACTION} and this function will pass those keys to that function. set @var{DESCRIBE-ACTION} to the keyword of the action to find out how to use it. Set @var{DESCRIBE} to @code{T} to print the prop's description.
 
 ~a."
-                                             (xref yadfa-bin:lst :function)))
-    (action (or keyword null)
-            describe-action (or keyword null)
-            prop symbol
-            describe boolean
-            take (or null keyword list))
+            (xref yadfa-bin:lst :function))
   (when (typep take 'list) (loop for i in take do (check-type i unsigned-byte)))
   (when list
     (format t "Bitcoins: ~a~%~%" (get-bitcoins-from-prop prop (position-of (player-of *game*))))
@@ -347,14 +352,14 @@ You can also specify multiple directions, for example @code{(move :south :south)
                 (describe (action-lambda (getf-action-from-prop (position-of (player-of *game*)) prop describe-action)))))))
   (when describe
     (format t "~a~%" (description-of (getf (get-props-from-zone (position-of (player-of *game*))) prop)))))
-(defunassert (yadfa-bin:wear (&key (inventory 0) (wear 0) user)
-                             #.(format nil "Wear an item in your inventory. @var{WEAR} is the index you want to place this item. Smaller index refers to outer clothing. @var{INVENTORY} is an index in your inventory of the item you want to wear. You can also give it a type specifier which will pick the first item in your inventory of that type. @var{USER} is an index of an ally. Leave this at @code{NIL} to refer to yourself.
+(defunassert yadfa-bin:wear (&key (inventory 0) (wear 0) user)
+  (user (or null unsigned-byte)
+        wear unsigned-byte
+        inventory (or type-specifier unsigned-byte))
+  #.(format nil "Wear an item in your inventory. @var{WEAR} is the index you want to place this item. Smaller index refers to outer clothing. @var{INVENTORY} is an index in your inventory of the item you want to wear. You can also give it a type specifier which will pick the first item in your inventory of that type. @var{USER} is an index of an ally. Leave this at @code{NIL} to refer to yourself.
 
 ~a, ~a, and ~a."
-                                       (xref yadfa-bin:unwear :function) (xref yadfa-bin:change :function) (xref yadfa-bin:lst :function)))
-    (user (or null unsigned-byte)
-          wear unsigned-byte
-          inventory (or type-specifier unsigned-byte))
+            (xref yadfa-bin:unwear :function) (xref yadfa-bin:change :function) (xref yadfa-bin:lst :function))
   (let* ((selected-user (if user
                             (nth user (allies-of *game*))
                             (player-of *game*)))
@@ -413,14 +418,14 @@ You can also specify multiple directions, for example @code{(move :south :south)
                (format t "~a puts on ~a ~a~%" (name-of selected-user) (if (malep selected-user) "his" "her") (name-of item))
                (a:deletef (inventory-of (player-of *game*)) item :count 1)
                (setf (wear-of selected-user) a)))))
-(defunassert (yadfa-bin:unwear (&key (inventory 0) (wear 0) user)
-                               #.(format nil "Unwear an item you're wearing. @var{INVENTORY} is the index you want to place this item. @var{WEAR} is the index of the item you're wearing that you want to remove. You can also set @var{WEAR} to a type specifier for the outer most clothing of that type. @var{USER} is a integer referring to the index of an ally. Leave at @code{NIL} to refer to yourself
+(defunassert yadfa-bin:unwear (&key (inventory 0) (wear 0) user)
+  (user (or unsigned-byte null)
+        inventory unsigned-byte
+        wear (or type-specifier unsigned-byte))
+  #.(format nil "Unwear an item you're wearing. @var{INVENTORY} is the index you want to place this item. @var{WEAR} is the index of the item you're wearing that you want to remove. You can also set @var{WEAR} to a type specifier for the outer most clothing of that type. @var{USER} is a integer referring to the index of an ally. Leave at @code{NIL} to refer to yourself
 
 ~a, ~a, and ~a."
-                                         (xref yadfa-bin:wear :function) (xref yadfa-bin:change :function) (xref yadfa-bin:lst :function)))
-    (user (or unsigned-byte null)
-          inventory unsigned-byte
-          wear (or type-specifier unsigned-byte))
+            (xref yadfa-bin:wear :function) (xref yadfa-bin:change :function) (xref yadfa-bin:lst :function))
   (let* ((selected-user (if user
                             (nth user (allies-of *game*))
                             (player-of *game*)))
@@ -473,14 +478,14 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (format t "~a takes off ~a ~a~%" (name-of selected-user) (if (malep selected-user) "his" "her") (name-of item))
     (a:deletef (wear-of (player-of *game*)) item :count 1)
     (insertf (inventory-of (player-of *game*)) item inventory)))
-(defunassert (yadfa-bin:change (&key (inventory 0) (wear 0) user)
-                               #.(format nil "Change one of the clothes you're wearing with one in your inventory. @var{WEAR} is the index of the clothing you want to replace. Smaller index refers to outer clothing. @var{INVENTORY} is an index in your inventory of the item you want to replace it with. You can also give @var{INVENTORY} and @var{WEAR} a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. @var{USER} is an index of an ally. Leave this at @code{NIL} to refer to yourself.
+(defunassert yadfa-bin:change (&key (inventory 0) (wear 0) user)
+  (user (or null unsigned-byte)
+        inventory (or type-specifier unsigned-byte)
+        wear (or type-specifier unsigned-byte))
+  #.(format nil "Change one of the clothes you're wearing with one in your inventory. @var{WEAR} is the index of the clothing you want to replace. Smaller index refers to outer clothing. @var{INVENTORY} is an index in your inventory of the item you want to replace it with. You can also give @var{INVENTORY} and @var{WEAR} a quoted symbol which can act as a type specifier which will pick the first item in your inventory of that type. @var{USER} is an index of an ally. Leave this at @code{NIL} to refer to yourself.
 
 ~a, ~a, and ~a."
-                                         (xref yadfa-bin:unwear :function) (xref yadfa-bin:wear :function) (xref yadfa-bin:lst :function)))
-    (user (or null unsigned-byte)
-          inventory (or type-specifier unsigned-byte)
-          wear (or type-specifier unsigned-byte))
+            (xref yadfa-bin:unwear :function) (xref yadfa-bin:wear :function) (xref yadfa-bin:lst :function))
   (let* ((selected-user (if user
                             (nth user (allies-of *game*))
                             (player-of *game*)))
@@ -572,11 +577,11 @@ You can also specify multiple directions, for example @code{(move :south :south)
                        (name-of inventory))
                (substitutef (inventory-of selected-user) wear inventory :count 1)
                (setf (wear-of selected-user) a)))))
-(defunassert (yadfa-battle:fight (attack &key target friendly-target)
-                                 "Use a move on an enemy. @var{ATTACK} is either a keyword which is the indicator to select an attack that you know, or @code{T} for default. @var{TARGET} is the index or type specifier of the enemy you're attacking. @var{FRIENDLY-TARGET} is a member on your team you're using the move on instead. Only specify either a @var{FRIENDLY-TARGET} or @var{TARGET}. Setting both might make the game's code unhappy")
-    (target (or null unsigned-byte type-specifier)
-            friendly-target (or null unsigned-byte type-specifier)
-            attack (or symbol boolean))
+(defunassert yadfa-battle:fight (attack &key target friendly-target)
+  (target (or null unsigned-byte type-specifier)
+          friendly-target (or null unsigned-byte type-specifier)
+          attack (or symbol boolean))
+  "Use a move on an enemy. @var{ATTACK} is either a keyword which is the indicator to select an attack that you know, or @code{T} for default. @var{TARGET} is the index or type specifier of the enemy you're attacking. @var{FRIENDLY-TARGET} is a member on your team you're using the move on instead. Only specify either a @var{FRIENDLY-TARGET} or @var{TARGET}. Setting both might make the game's code unhappy"
   (let ((selected-target (cond (target
                                 (let ((a (typecase target
                                            (unsigned-byte (nth target (enemies-of *battle*)))
@@ -601,10 +606,10 @@ You can also specify multiple directions, for example @code{(move :south :south)
                                     (when (>= (health-of i) 0)
                                       (leave i)))))))
     (process-battle :attack attack :selected-target selected-target)))
-(defunassert (yadfa-battle:stats (&key user enemy)
-                                 "Prints the current stats in battle, essentially this game's equivalent of a health and energy bar in battle. @var{USER} is the index of the member in your team, @var{ENEMY} is the index of the enemy in battle. Set both to @code{NIL} to show the stats for everyone.")
-    (user (or unsigned-byte null)
-          enemy (or unsigned-byte null))
+(defunassert yadfa-battle:stats (&key user enemy)
+  (user (or unsigned-byte null)
+        enemy (or unsigned-byte null))
+  "Prints the current stats in battle, essentially this game's equivalent of a health and energy bar in battle. @var{USER} is the index of the member in your team, @var{ENEMY} is the index of the enemy in battle. Set both to @code{NIL} to show the stats for everyone."
   (cond (user
          (present-stats (nth user (team-of *game*))))
         (enemy
@@ -616,9 +621,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
          (format t "Their team:~%~%")
          (iter (for i in (enemies-of *battle*))
            (present-stats i)))))
-(defunassert (yadfa-world:stats (&optional user)
-                                "Prints the current stats, essentially this game's equivalent of a health and energy bar in battle. Set @var{USER} to the index of an ally to show that ally's stats or set it to @code{T} to show your stats, leave it at @code{NIL} to show everyone's stats")
-    (user (or unsigned-byte boolean))
+(defunassert yadfa-world:stats (&optional user)
+  (user (or unsigned-byte boolean))
+  "Prints the current stats, essentially this game's equivalent of a health and energy bar in battle. Set @var{USER} to the index of an ally to show that ally's stats or set it to @code{T} to show your stats, leave it at @code{NIL} to show everyone's stats"
   (cond ((eq user t)
          (present-stats (player-of *game*)))
         (user
@@ -626,12 +631,12 @@ You can also specify multiple directions, for example @code{(move :south :south)
         (t
          (iter (for i in (cons (player-of *game*) (allies-of *game*)))
            (present-stats i)))))
-(defunassert (yadfa-world:go-potty (&key prop wet mess pull-pants-down user)
-                                   "Go potty. @var{PROP} is a keyword identifying the prop you want to use. If it's a toilet, use the toilet like a big boy. if it's not. Go potty on it like an animal. If you want to wet yourself, leave @var{PROP} as @code{NIL}. @var{WET} is the amount you want to pee in ml. @var{MESS} is the amount in cg, set @var{WET} and/or @var{MESS} to @code{T} to empty yourself completely. set @var{PULL-PANTS-DOWN} to non-NIL to pull your pants down first. @var{USER} is the index value of an ALLY you have. Set this to @code{NIL} if you're referring to yourself")
-    (user (or null real)
-          prop (or null keyword)
-          wet (or boolean real)
-          mess (or boolean real))
+(defunassert yadfa-world:go-potty (&key prop wet mess pull-pants-down user)
+  (user (or null real)
+        prop (or null keyword)
+        wet (or boolean real)
+        mess (or boolean real))
+  "Go potty. @var{PROP} is a keyword identifying the prop you want to use. If it's a toilet, use the toilet like a big boy. if it's not. Go potty on it like an animal. If you want to wet yourself, leave @var{PROP} as @code{NIL}. @var{WET} is the amount you want to pee in ml. @var{MESS} is the amount in cg, set @var{WET} and/or @var{MESS} to @code{T} to empty yourself completely. set @var{PULL-PANTS-DOWN} to non-NIL to pull your pants down first. @var{USER} is the index value of an ALLY you have. Set this to @code{NIL} if you're referring to yourself"
   (let ((this-prop (getf (get-props-from-zone (position-of (player-of *game*))) prop))
         (selected-user (if user
                            (nth user (allies-of *game*))
@@ -652,9 +657,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
                               :mess (if user t mess)
                               :pants-down pull-pants-down
                               :user selected-user)))))
-(defunassert (yadfa-world:tickle (ally)
-                                 "Tickle an ally. @var{ALLY} is an integer that is the index of you allies")
-    (ally unsigned-byte)
+(defunassert yadfa-world:tickle (ally)
+  (ally unsigned-byte)
+  "Tickle an ally. @var{ALLY} is an integer that is the index of you allies"
   (when (list-length-> ally (allies-of *game*))
     (write-line "That ally doesn't exist")
     (return-from yadfa-world:tickle))
@@ -686,9 +691,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
            (format t "~a: Gah! No! Stop! *falls over and laughs while thrashing about for a few minutes until you get bored and stop*~%~%*~a slowly stands up exhausted from the tickling and grumbles*~%~%"
                    (name-of selected-ally)
                    (name-of selected-ally))))))
-(defunassert (yadfa-world:wash-all-in (&optional prop)
-                                      "washes your dirty diapers and all the clothes you've ruined. @var{PROP} is a keyword identifying the washer you want to put it in. If you're washing it in a body of water, leave @var{PROP} out.")
-    (prop (or keyword null))
+(defunassert yadfa-world:wash-all-in (&optional prop)
+  (prop (or keyword null))
+  "washes your dirty diapers and all the clothes you've ruined. @var{PROP} is a keyword identifying the washer you want to put it in. If you're washing it in a body of water, leave @var{PROP} out."
   (cond
     ((and prop (not (typep (getf (get-props-from-zone (position-of (player-of *game*))) prop) 'yadfa-props:washer)))
      (write-line "That's not a washer"))
@@ -697,9 +702,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
      (wash (inventory-of (player-of *game*)))
      (write-line "You washed all your soggy and messy clothing. Try not to wet and mess them next time"))
     (t (wash-in-washer (getf (get-props-from-zone (position-of (player-of *game*))) prop)))))
-(defunassert (yadfa-bin:toss (&rest items)
-                             "Throw an item in your inventory away. @var{ITEM} is the index of the item in your inventory")
-    (items list)
+(defunassert yadfa-bin:toss (&rest items)
+  (items list)
+  "Throw an item in your inventory away. @var{ITEM} is the index of the item in your inventory"
   (let ((value (iter (for i in items)
                  (unless (typep i 'unsigned-byte)
                    (leave i)))))
@@ -726,10 +731,10 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (a:deletef (inventory-of (player-of *game*)) items
                :test (lambda (o e)
                        (member e o)))))
-(defunassert (yadfa-world:place (prop &rest items)
-                                "Store items in a prop. @var{ITEMS} is a list of indexes of the items in your inventory. @var{PROP} is a keyword")
-    (items list
-           prop symbol)
+(defunassert yadfa-world:place (prop &rest items)
+  (items list
+         prop symbol)
+  "Store items in a prop. @var{ITEMS} is a list of indexes of the items in your inventory. @var{PROP} is a keyword"
   (let ((value (iter (for i in items)
                  (unless (typep i 'integer)
                    (leave i)))))
@@ -795,27 +800,27 @@ You can also specify multiple directions, for example @code{(move :south :south)
          (format t "~a ran away like a coward~%" (name-of (player-of *game*)))))
   (s:nix *battle*)
   (switch-user-packages))
-(defunassert (yadfa-world:use-item (item &rest keys &key user action &allow-other-keys)
-                                   "Uses an item. @var{ITEM} is an index of an item in your inventory. @var{USER} is an index of an ally. Setting this to @code{NIL} will use it on yourself. @var{ACTION} is a keyword when specified will perform a special action with the item, all the other keys specified in this function will be passed to that action. @var{ACTION} doesn't work in battle."
-                                   (declare (ignorable action)))
-    (item (or unsigned-byte type-specifier)
-          action (or null keyword)
-          user (or null unsigned-byte))
-  (let* ((selected-item (typecase item
-                          (unsigned-byte
-                           (nth item (inventory-of (player-of *game*))))
-                          (type-specifier
-                           (find item (inventory-of (player-of *game*))
-                                 :test #'(lambda (type-specifier obj)
-                                           (typep obj type-specifier))))))
-         ret
-         (allies-length (list-length (allies-of *game*))))
-    (unless selected-item
-      (format t "You don't have that item~%")
-      (return-from yadfa-world:use-item))
-    (when (and user (< allies-length user))
-      (format t "You only have ~d allies~%" allies-length)
-      (return-from yadfa-world:use-item))
+(defunassert yadfa-world:use-item (item &rest keys &key user action &allow-other-keys)
+  (item (or unsigned-byte type-specifier)
+        action (or null keyword)
+        user (or null unsigned-byte))
+  "Uses an item. @var{ITEM} is an index of an item in your inventory. @var{USER} is an index of an ally. Setting this to @code{NIL} will use it on yourself. @var{ACTION} is a keyword when specified will perform a special action with the item, all the other keys specified in this function will be passed to that action. @var{ACTION} doesn't work in battle."
+  (declare (ignorable action))
+  (handle-user-input ((selected-item (typecase item
+                                       (unsigned-byte
+                                        (nth item (inventory-of (player-of *game*))))
+                                       (type-specifier
+                                        (find item (inventory-of (player-of *game*))
+                                              :test #'(lambda (type-specifier obj)
+                                                        (typep obj type-specifier))))))
+                      ret
+                      (allies-length (list-length (allies-of *game*))))
+      (*query-io* ((null selected-item)
+                   (item (format nil "You only have ~a items" (length (inventory-of (player-of *game*)))))
+                   :prompt-text "Enter a different item")
+                  ((and user (< allies-length user))
+                   (user (format nil "You only have ~d allies" allies-length))
+                   :prompt-text "Enter a different user"))
     (incf (time-of *game*))
     (let ((this-user (if user (nth user (allies-of *game*)) (player-of *game*))))
       (setf ret (apply #'use-item% selected-item (player-of *game*)
@@ -825,11 +830,11 @@ You can also specify multiple directions, for example @code{(move :south :south)
       (iter (for i in (allies-of *game*))
         (process-potty i))
       ret)))
-(defunassert (yadfa-battle:use-item (item &key target enemy-target)
-                                    "Uses an item. @var{ITEM} is an index of an item in your inventory. @var{TARGET} is an index or type specifier of a character in your team. Setting this to 0 will use it on yourself. @var{ENEMY-TARGET} is an index or type specifier of an enemy in battle if you're using it on an enemy in battle. Only specify either a @var{TARGET} or @var{ENEMY-TARGET}. Setting both might make the game's code unhappy")
-    (item (or unsigned-byte type-specifier)
-          target (or null unsigned-byte type-specifier)
-          enemy-target (or null unsigned-byte type-specifier))
+(defunassert yadfa-battle:use-item (item &key target enemy-target)
+  (item (or unsigned-byte type-specifier)
+        target (or null unsigned-byte type-specifier)
+        enemy-target (or null unsigned-byte type-specifier))
+  "Uses an item. @var{ITEM} is an index of an item in your inventory. @var{TARGET} is an index or type specifier of a character in your team. Setting this to 0 will use it on yourself. @var{ENEMY-TARGET} is an index or type specifier of an enemy in battle if you're using it on an enemy in battle. Only specify either a @var{TARGET} or @var{ENEMY-TARGET}. Setting both might make the game's code unhappy"
   (let ((selected-item (typecase item
                          (unsigned-byte
                           (nth item (inventory-of (player-of *game*))))
@@ -869,8 +874,8 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (process-battle
      :item selected-item
      :selected-target selected-target)))
-(defunassert (yadfa-battle:reload (ammo-type))
-    (ammo-type (and (or list (and symbol (not keyword))) (not null)))
+(defunassert yadfa-battle:reload (ammo-type)
+  (ammo-type (and (or list (and symbol (not keyword))) (not null)))
   (unless (wield-of (first (turn-queue-of *battle*)))
     (format t "~a isn't carrying a weapon~%" (name-of (first (turn-queue-of *battle*))))
     (return-from yadfa-battle:reload))
@@ -894,9 +899,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
             (name-of (wield-of (first (turn-queue-of *battle*)))))
     (return-from yadfa-battle:reload))
   (process-battle :reload ammo-type))
-(defunassert (yadfa-world:reload (ammo-type &optional user))
-    (ammo-type (and (or list (and symbol (not keyword))) (not null))
-               user (or unsigned-byte null))
+(defunassert yadfa-world:reload (ammo-type &optional user)
+  (ammo-type (and (or list (and symbol (not keyword))) (not null))
+             user (or unsigned-byte null))
   (let ((user (if user
                   (nth user (allies-of *game*))
                   (player-of *game*))))
@@ -928,10 +933,10 @@ You can also specify multiple directions, for example @code{(move :south :south)
       (when (and (typep item ammo-type) (typep item (ammo-type-of (wield-of user))))
         (push item (ammo-of (wield-of user)))
         (a:deletef item (inventory-of (player-of *game*)) :count 1)))))
-(defunassert (yadfa-bin:wield (&key user inventory)
-                              "Wield an item. Set @var{INVENTORY} to the index or a type specifier of an item in your inventory to wield that item. Set @var{USER} to the index of an ally to have them to equip it or leave it @code{NIL} for the player.")
-    (user (or unsigned-byte null)
-          inventory (or (and symbol (not keyword)) list class null unsigned-byte))
+(defunassert yadfa-bin:wield (&key user inventory)
+  (user (or unsigned-byte null)
+        inventory (or (and symbol (not keyword)) list class null unsigned-byte))
+  "Wield an item. Set @var{INVENTORY} to the index or a type specifier of an item in your inventory to wield that item. Set @var{USER} to the index of an ally to have them to equip it or leave it @code{NIL} for the player."
   (let* ((selected-user (if user
                             (nth user (allies-of *game*))
                             (player-of *game*)))
@@ -957,9 +962,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (when (wield-of selected-user)
       (push (wield-of selected-user) (inventory-of (player-of *game*))))
     (setf (wield-of selected-user) item)))
-(defunassert (yadfa-bin:unwield (&key user)
-                                "Unwield an item. Set @var{USER} to the index of an ally to have them to unequip it or leave it @code{NIL} for the player.")
-    (user (or integer null))
+(defunassert yadfa-bin:unwield (&key user)
+  (user (or integer null))
+  "Unwield an item. Set @var{USER} to the index of an ally to have them to unequip it or leave it @code{NIL} for the player."
   (let ((selected-user
           (if user
               (nth user (allies-of *game*))
@@ -969,7 +974,8 @@ You can also specify multiple directions, for example @code{(move :south :south)
                      (inventory-of (player-of *game*)))
                (setf (wield-of selected-user) nil))
         (format t "~a hasn't equiped a weapon~%" (name-of selected-user)))))
-(defun yadfa-bin:pokedex (&optional enemy)
+(defunassert yadfa-bin:pokedex (&optional enemy)
+  (enemy symbol)
   "Browse enemies in your pokedex, @var{ENEMY} is a quoted symbol that is the same as the class name of the enemy you want to view. Leave it to @code{NIL} to list available entries"
   (if enemy
       (let ((a (if (member enemy (seen-enemies-of *game*))
@@ -981,9 +987,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
              (iter (for i in (seen-enemies-of *game*))
                (let ((a (make-instance i)))
                  (format t "~30a~30a~%" i (name-of a)))))))
-(defunassert (yadfa-world:add-ally-to-team (ally-index)
-                                           "Adds an ally to your battle team. @var{ALLY-INDEX} is the index of an ally in your list of allies")
-    (ally-index unsigned-byte)
+(defunassert yadfa-world:add-ally-to-team (ally-index)
+  (ally-index unsigned-byte)
+  "Adds an ally to your battle team. @var{ALLY-INDEX} is the index of an ally in your list of allies"
   (let ((allies-length (list-length (allies-of *game*))))
     (if (< allies-length ally-index)
         (format t "You only have ~d allies~%" allies-length)
@@ -994,9 +1000,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
                                (format t "~a is already on the battle team~%" (name-of ally))
                                (format t "~a has joined the battle team~%" (name-of ally)))
                            result))))))
-(defunassert (yadfa-world:remove-ally-from-team (team-index)
-                                                "Removes an ally to your battle team. @var{TEAM-INDEX} is the index of an ally in your battle team list")
-    (team-index unsigned-byte)
+(defunassert yadfa-world:remove-ally-from-team (team-index)
+  (team-index unsigned-byte)
+  "Removes an ally to your battle team. @var{TEAM-INDEX} is the index of an ally in your battle team list"
   (let ((team-length (list-length (team-of *game*))))
     (cond
       ((>= team-index team-length)
@@ -1006,10 +1012,10 @@ You can also specify multiple directions, for example @code{(move :south :south)
        (write-line "You can't remove the player from the team")
        (return-from yadfa-world:remove-ally-from-team))
       (t (setf (team-of *game*) (remove-nth team-index (team-of *game*)))))))
-(defunassert (yadfa-world:swap-team-member (team-index-1 team-index-2)
-                                           "swap the positions of 2 battle team members. @var{TEAM-INDEX-1} and @var{TEAM-INDEX-2} are the index numbers of these members in your battle team list")
-    (team-index-1 unsigned-byte
-                  team-index-2 unsigned-byte)
+(defunassert yadfa-world:swap-team-member (team-index-1 team-index-2)
+  (team-index-1 unsigned-byte
+                team-index-2 unsigned-byte)
+  "swap the positions of 2 battle team members. @var{TEAM-INDEX-1} and @var{TEAM-INDEX-2} are the index numbers of these members in your battle team list"
   (cond ((or (list-length-> team-index-1 (team-of *game*)) (list-length-> team-index-2 (team-of *game*)))
          (format t "You only have ~d members in your team~%" (list-length (team-of *game*)))
          (return-from yadfa-world:swap-team-member))
@@ -1017,11 +1023,11 @@ You can also specify multiple directions, for example @code{(move :south :south)
          (write-line "Those refer to the same team member")
          (return-from yadfa-world:swap-team-member))
         (t (rotatef (nth team-index-1 (team-of *game*)) (nth team-index-2 (team-of *game*))))))
-(defunassert (yadfa-bin:toggle-lock (wear key &optional user)
-                                    "Toggle the lock on one of the clothes a user is wearing. @var{WEAR} is the index of an item a user is wearing, @var{KEY} is the index of a key in your inventory, @var{USER} is a number that is the index of an ally, leave this to @code{NIL} to select the player.")
-    (wear unsigned-byte
-          key unsigned-byte
-          user (or unsigned-byte null))
+(defunassert yadfa-bin:toggle-lock (wear key &optional user)
+  (wear unsigned-byte
+        key unsigned-byte
+        user (or unsigned-byte null))
+  "Toggle the lock on one of the clothes a user is wearing. @var{WEAR} is the index of an item a user is wearing, @var{KEY} is the index of a key in your inventory, @var{USER} is a number that is the index of an ally, leave this to @code{NIL} to select the player."
   (let* ((selected-user (if user (nth user (allies-of *game*)) (player-of *game*)))
          (wear-length (list-length (wear-of selected-user)))
          (inventory-length (list-length (inventory-of (player-of *game*))))

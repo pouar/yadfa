@@ -658,7 +658,7 @@
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
 (uiop:define-package :yadfa-user
-  (:use :cl :yadfa :yadfa-util :iterate)
+  (:use :cl :iterate)
   (:documentation "The package that the player typically executes commands from"))
 (uiop:define-package :yadfa-clim
   (:use :iterate :yadfa-util :yadfa :clim-lisp)
