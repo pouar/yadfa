@@ -819,7 +819,7 @@
 (defgeneric toggle-onesie%% (onesie))
 (defgeneric toggle-onesie% (onesie underclothes user))
 (defmethod toggle-onesie% (onesie underclothes user)
-  (write-line "That's not a onesie"))
+  (error 'invalid-user-input :text "That's not a onesie"))
 (defmethod toggle-onesie% ((onesie onesie/opened) underclothes (user base-character))
   (if (and (car (onesie-thickness-capacity-of onesie))
            underclothes
