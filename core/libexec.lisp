@@ -49,7 +49,7 @@
                                                                             :prompt ,prompt-text)))
                                                    (progn
                                                      (format ,stream "~s: " ,prompt-text)
-                                                     (list (eval (read))))))
+                                                     (list (eval (read ,stream))))))
                                 :report ,prompt-text
                                 (setf ,set-value ,value)
                                 (go ,tag)))))))
