@@ -99,7 +99,7 @@
                    (wear (format nil "You're not wearing that item"))
                    :prompt-text "Enter a different item"))
     (if wear
-        (toggle-onesie% selected-wear (cdr selected-wear) selected-user)
+        (toggle-onesie% (car selected-wear) (cdr selected-wear) selected-user)
         (iter (for item on (wear-of selected-user))
           (when (typep (car item) 'onesie)
             (leave (toggle-onesie% (car item) (cdr item) selected-user)))
