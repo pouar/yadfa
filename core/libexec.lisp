@@ -34,25 +34,26 @@
         (let* ,bindings
           ,@(iter (for form in forms)
               (collect (a:with-gensyms (value)
-                         (destructuring-bind (case (set-value &optional (error-text "")) &key (prompt-text ""))
+                         (destructuring-bind (case (&optional set-value) &key (error-text "") (prompt-text ""))
                              form
                            `(restart-case (when ,case
                                             (error 'invalid-user-input :text ,error-text))
-                              (use-value (,value)
-                                :interactive (lambda ()
-                                               (if clim:*application-frame*
-                                                   ;; For some reason McCLIM does not echo when using CL:READ on the
-                                                   ;; Listener's standard input until CL:READ returns. CLIM:ACCEPT otoh
-                                                   ;; actually does, so let's use that with McCLIM instead.
-                                                   (list (eval (clim:accept 'clim:expression
-                                                                            :stream ,stream
-                                                                            :prompt ,prompt-text)))
-                                                   (progn
-                                                     (format ,stream "~s: " ,prompt-text)
-                                                     (list (eval (read ,stream))))))
-                                :report ,prompt-text
-                                (setf ,set-value ,value)
-                                (go ,tag)))))))
+                              ,@(when set-value
+                                  `((use-value (,value)
+                                               :interactive (lambda ()
+                                                              (if clim:*application-frame*
+                                                                  ;; For some reason McCLIM does not echo when using CL:READ on the
+                                                                  ;; Listener's standard input until CL:READ returns. CLIM:ACCEPT otoh
+                                                                  ;; actually does, so let's use that with McCLIM instead.
+                                                                  (list (eval (clim:accept 'clim:expression
+                                                                                           :stream ,stream
+                                                                                           :prompt ,prompt-text)))
+                                                                  (progn
+                                                                    (format ,stream "~s: " ,prompt-text)
+                                                                    (list (eval (read ,stream))))))
+                                               :report ,prompt-text
+                                               (setf ,set-value ,value)
+                                               (go ,tag)))))))))
           ,@body))))
 (declaim (ftype (function () (values (eql t) &optional)) switch-user-packages))
 (defun switch-user-packages ()
