@@ -349,7 +349,7 @@
         (when mission
           (setf (gethash event-id (current-events-of *game*)) t))
         (setf (gethash `(,event-id
-                         ,@(when (and mission (member accept '(:accepted :declined)))
+                         ,@(when (and mission (s:memq accept '(:accepted :declined)))
                              `(,accept)))
                        (finished-events-of *game*))
               t)
@@ -451,7 +451,7 @@
                keys))
   (format t "~a~%" (enter-battle-text-of *battle*))
   (iter (declaring symbol for j in (iter (for i in (enemies-of *battle*))
-                                     (unless (member (class-name (class-of i)) (seen-enemies-of *game*))
+                                     (unless (s:memq (class-name (class-of i)) (seen-enemies-of *game*))
                                        (format t "~a was added to your pokedex~%" (name-of i))
                                        (push (class-name (class-of i)) (seen-enemies-of *game*))
                                        (collect (class-name (class-of i))))))
@@ -506,7 +506,7 @@
       (return-from get-path-end (values nil (format nil "Pick a direction the game knows about~%"))))
     (when (or (hiddenp (get-zone destination)) (and position direction (getf-direction position direction :hidden)))
       (return-from get-path-end (values nil (format nil "Pick a direction the game knows about~%"))))
-    (when (and direction (member direction '(:up :down)) (not (member direction (stairs-of (get-zone (or position (position-of player)))))))
+    (when (and direction (s:memq direction '(:up :down)) (not (s:memq direction (stairs-of (get-zone (or position (position-of player)))))))
       (return-from get-path-end (values nil (format nil "There are no stairs there~%"))))
     (when (or (and (lockedp (get-zone destination))
                    (not (member-if (lambda (a)
@@ -551,8 +551,8 @@
        (get-zone position)
        (not (getf-direction position direction :hidden))
        (not (hiddenp (get-zone (get-destination direction position))))
-       (or (and (member direction '(:up :down)) (member direction (stairs-of (get-zone position))))
-           (and (not (member direction '(:up :down)))))
+       (or (and (s:memq direction '(:up :down)) (s:memq direction (stairs-of (get-zone position))))
+           (and (not (s:memq direction '(:up :down)))))
        t))
 (defun print-map (position)
   (labels ((a (position)
@@ -664,11 +664,11 @@
                                                (type symbol m))
                                       `(,@(mapcar #'+ (list x y z) delta) ,m)))
                   (current-zone (get-zone current-position))
-                  (stairs (and current-zone (member direction stairs))))
+                  (stairs (and current-zone (s:memq direction stairs))))
              (when (and current-zone
                         (not (hiddenp current-zone))
-                        (or (and (member direction '(:up :down)) stairs)
-                            (not (member direction '(:up :down)))))
+                        (or (and (s:memq direction '(:up :down)) stairs)
+                            (not (s:memq direction '(:up :down)))))
                (format t "To ~s is ~a. " direction (name-of current-zone))))))
     (let ((stairs (stairs-of (get-zone position))))
       (z '(-1 0 0) :west stairs)
@@ -1483,7 +1483,7 @@
                             both-list)
                       (push (format nil "~a squats down on all fours~a like an animal and messes ~a diapers"
                                     name
-                                    (if (member (car (tail-of user)) '(:medium :large))
+                                    (if (s:memq (car (tail-of user)) '(:medium :large))
                                         (format nil " with ~a tail raised"
                                                 hisher)
                                         "")
@@ -1508,7 +1508,7 @@
                           wet-list)
                     (push (format nil "~a squats down~a and fills ~a diapers"
                                   name
-                                  (if (member (car (tail-of user)) '(:medium :large))
+                                  (if (s:memq (car (tail-of user)) '(:medium :large))
                                       (format nil " with ~a tail raised"
                                               hisher)
                                       "")
@@ -1536,7 +1536,7 @@
                                     (name-of prop)
                                     hisher)
                             both-list)
-                      (when (member (car (tail-of user)) '(:medium :large))
+                      (when (s:memq (car (tail-of user)) '(:medium :large))
                         (push (format nil "~a squats down on all fours with ~a tail raised like an animal and messes ~a pullups"
                                       name
                                       hisher
@@ -1729,7 +1729,7 @@
                                       "You fall to your knees clutching the front of your diapers struggling to keep your diapers dry and flood yourself")))
                              (unless (malep user)
                                (push "You press your legs together while fidgeting and squirming until your flood your pamps like the baby girl you are" a))
-                             (when (member (car (tail-of user)) '(:medium :large :lizard) :test 'eq)
+                             (when (s:memq (car (tail-of user)) '(:medium :large :lizard))
                                "You clutch the front of your diaper with your legs crossed and your tail between your legs in vain as you flood your pamps")
                              a)))))
             (when (>= (getf (car had-accident) :wet-amount) 300)
@@ -1843,11 +1843,11 @@
                                       &key (stream *standard-output*))
   (format stream "~a~%"
           (let ((j `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
-                              (if (member (car (tail-of user)) '(:medium :large))
+                              (if (s:memq (car (tail-of user)) '(:medium :large))
                                   " with your tail up"
                                   ""))
                      ,(format nil "You instinctively squat down~a and mess your diapers, then hold the back of your diapers checking your load in embarrassment"
-                              (if (member (car (tail-of user)) '(:medium :large))
+                              (if (s:memq (car (tail-of user)) '(:medium :large))
                                   " with your tail up"
                                   ""))
                      ,(format nil "Heh, the baby blorted ~a pamps." (if (malep user) "his" "her"))
@@ -1870,7 +1870,7 @@
                                       &key (stream *standard-output*))
   (format stream "~a~%"
           (let ((j `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
-                              (if (member (car (tail-of user)) '(:medium :large))
+                              (if (s:memq (car (tail-of user)) '(:medium :large))
                                   " with your tail up"
                                   ""))
                      "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
@@ -1892,7 +1892,7 @@
                                       &key (stream *standard-output*))
   (format stream "~a~%"
           (a:random-elt `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
-                                   (if (member (car (tail-of user)) '(:medium :large))
+                                   (if (s:memq (car (tail-of user)) '(:medium :large))
                                        " with your tail up"
                                        ""))
                           "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
@@ -1913,7 +1913,7 @@
                                       &key (stream *standard-output*))
   (format stream "~a~%"
           (a:random-elt `(,(format nil "Reaching the breaking point, you instinctively squat down~a and mess"
-                                   (if (member (car (tail-of user)) '(:medium :large))
+                                   (if (s:memq (car (tail-of user)) '(:medium :large))
                                        " with your tail up"
                                        ""))
                           "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
@@ -1955,7 +1955,7 @@
                      (format s "*~a has an accident*~%~%" user-name)
                      (format s "~a: Aww, did the baby wet ~a diapers~%~%" player-name hisher)
                      (format s "~a: *heavily blushing* No *tries to hide it with ~a paws~a*~%~%" user-name male
-                             (if (member (car (tail-of user)) '(:medium :large :lizard))
+                             (if (s:memq (car (tail-of user)) '(:medium :large :lizard))
                                  " and tail"
                                  ""))
                      (format s "*~a squishes ~a's diaper*~%~%" player-name user-name)
@@ -1967,7 +1967,7 @@
                      (format s "~a: *heavily blushing* No *tries to hide it with ~a paws~a*~%~%"
                              user-name
                              hisher
-                             (if (member (car (tail-of user)) '(:medium :large :lizard))
+                             (if (s:memq (car (tail-of user)) '(:medium :large :lizard))
                                  " and tail"
                                  ""))
                      (format s "~a: Aww, the poor baby made puddles~%~%" player-name)
@@ -1979,7 +1979,7 @@
                              user-name hisher hisher hisher)
                      (format s "~a soggy padding, blushes heavily and quickly covers ~a soggy padding with ~a paws~a hoping no one will notice*~%~%"
                              hisher hisher hisher
-                             (if (member (car (tail-of user)) '(:medium :large :lizard))
+                             (if (s:memq (car (tail-of user)) '(:medium :large :lizard))
                                  " and tail"
                                  "")))
             normal)
@@ -1988,7 +1988,7 @@
                              user-name hisher hisher hisher)
                      (format s "~a padding is leaking, blushes heavily and quickly covers ~a soggy padding with ~a paws~a hoping no one will notice*~%~%"
                              hisher hisher hisher
-                             (if (member (car (tail-of user)) '(:medium :large :lizard))
+                             (if (s:memq (car (tail-of user)) '(:medium :large :lizard))
                                  " and tail"
                                  "")))
             leak)))
@@ -2031,13 +2031,13 @@
                      (if (filter-items (wear-of user) '(and pullup ab-clothing-mixin))
                          (format s "the pictures on ~a pullups have faded, blushes heavily and quickly covers ~a soggy pullups with ~a paws~a hoping no one will notice*~%~%"
                                  hisher hisher hisher
-                                 (if (member (car (tail-of user)) '(:medium :large :lizard))
+                                 (if (s:memq (car (tail-of user)) '(:medium :large :lizard))
                                      " and tail"
                                      ""))
                          (format s "that ~a wetted ~a pullups, blushes heavily and quickly covers ~a soggy pullups with ~a paws~a hoping no one will notice*~%~%"
                                  (if male "he" "she")
                                  hisher hisher hisher
-                                 (if (member (car (tail-of user)) '(:medium :large :lizard))
+                                 (if (s:memq (car (tail-of user)) '(:medium :large :lizard))
                                      " and tail"
                                      ""))))
             normal leak)
@@ -2081,7 +2081,7 @@
                      (let* ((male (if male "his" "her")))
                        (format s "*~a bounces up and down with ~a knees pressed together and paws pressed against ~a crotch, pauses when ~a bladder gives out looks down and notices ~a soggy padding, blushes heavily and quickly covers ~a soggy padding with ~a paws~a hoping no one will notice*~%~%"
                                user-name male male male male male male
-                               (if (member (car (tail-of user)) '(:medium :large :lizard))
+                               (if (s:memq (car (tail-of user)) '(:medium :large :lizard))
                                    (format nil " with ~a tail between ~a legs" male male)
                                    ""))))
             normal leak)))
@@ -2255,7 +2255,7 @@
                (format s "*~a has an accident*~%~%" user-name)
                (format s "~a: Aww, did the baby mess ~a diapers~%~%" player-name hisher)
                (format s "~a: *heavily blushing* No *tries to hide it with ~a paws~a*~%~%" user-name hisher
-                       (if (member (car (tail-of user)) '(:medium :large :lizard))
+                       (if (s:memq (car (tail-of user)) '(:medium :large :lizard))
                            " and tail"
                            ""))
                (format s "*~a pats the back of ~a's diaper causing ~a to scrunch ~a face*~%~%" player-name user-name user-name hisher)
@@ -2265,7 +2265,7 @@
                (format s "*~a has an accident*~%~%" user-name)
                (format s "~a: Aww, did the baby mess ~a diapers~%~%" player-name hisher)
                (format s "~a: *heavily blushing* No *tries to hide it with ~a paws~a*~%~%" user-name hisher
-                       (if (member (car (tail-of user)) '(:medium :large :lizard))
+                       (if (s:memq (car (tail-of user)) '(:medium :large :lizard))
                            " and tail"
                            ""))
                (format s "~a: Aww, the poor baby made a mess on the floor~%~%" player-name)
@@ -2735,7 +2735,7 @@
     (format stream "~{~a~}~%"
             (let ((a (list (a:random-elt (list (format nil "*~a instinctively squats down~a and mess ~a diapers*"
                                                        user-name hisher
-                                                       (if (member (car (tail-of user)) '(:medium :large))
+                                                       (if (s:memq (car (tail-of user)) '(:medium :large))
                                                            (format nil " with ~a tail up" hisher)
                                                            ""))
                                                (apply #'format nil
@@ -2746,7 +2746,7 @@
                                                           '("she" "her")))
                                                (format nil "*~a instinctively squats down~a and messes ~a diapers then holds the back of ~a diapers checking ~a load in embarrassment*~%~%"
                                                        user-name
-                                                       (if (member (car (tail-of user)) '(:medium :large))
+                                                       (if (s:memq (car (tail-of user)) '(:medium :large))
                                                            (format nil " with ~a tail up"
                                                                    hisher)
                                                            "")
@@ -2771,7 +2771,7 @@
     (format stream "~{~a~}~%"
             (let ((a (list (a:random-elt (list (format nil "*~a instinctively squats down~a and mess ~a pullups*"
                                                        user-name
-                                                       (if (member (car (tail-of user)) '(:medium :large))
+                                                       (if (s:memq (car (tail-of user)) '(:medium :large))
                                                            (format nil " with ~a tail up"
                                                                    hisher)
                                                            "")
@@ -2800,7 +2800,7 @@
     (format stream "*~a*~%"
             (a:random-elt (list (format nil "~a instinctively squats down~a and messes ~a pants"
                                         user-name
-                                        (if (member (car (tail-of user)) '(:medium :large))
+                                        (if (s:memq (car (tail-of user)) '(:medium :large))
                                             (format nil " with ~a tail up"
                                                     hisher)
                                             "")
@@ -2822,7 +2822,7 @@
     (format stream "*~a*~%"
             (a:random-elt (list (format nil "Reaching the breaking point, ~a instinctively squats down~a and messes"
                                         user-name
-                                        (if (member (car (tail-of user)) '(:medium :large))
+                                        (if (s:memq (car (tail-of user)) '(:medium :large))
                                             (format nil " with ~a tail up" (if (malep user) "his" "her"))
                                             ""))
                                 (format nil "~a has an accident and makes a mess on the floor" user-name))))
@@ -3092,7 +3092,7 @@
                                                        user-name
                                                        (if male
                                                            "his" "her")
-                                                       (if (member (car (tail-of user)) '(:medium :large))
+                                                       (if (s:memq (car (tail-of user)) '(:medium :large))
                                                            (format nil " with ~a tail up"
                                                                    hisher)
                                                            ""))
@@ -3119,7 +3119,7 @@
   (format stream "~{~a~}~%"
           (let ((a (list (a:random-elt (list (format nil "*~a instinctively squats down~a and mess ~a pullups*"
                                                      (name-of user)
-                                                     (if (member (car (tail-of user)) '(:medium :large))
+                                                     (if (s:memq (car (tail-of user)) '(:medium :large))
                                                          (format nil " with ~a tail up"
                                                                  (if (malep user)
                                                                      "his" "her"))
@@ -3152,7 +3152,7 @@
     (format stream "*~a*~%"
             (a:random-elt (list (format nil "~a instinctively squats down~a and messes ~a pants"
                                         user-name
-                                        (if (member (car (tail-of user)) '(:medium :large))
+                                        (if (s:memq (car (tail-of user)) '(:medium :large))
                                             (format nil " with ~a tail up"
                                                     hisher)
                                             "")
@@ -3180,7 +3180,7 @@
     (format stream "*~a*~%"
             (a:random-elt (list (format nil "Reaching the breaking point, ~a instinctively squats down~a and messes"
                                         user-name
-                                        (if (member (car (tail-of user)) '(:medium :large))
+                                        (if (s:memq (car (tail-of user)) '(:medium :large))
                                             (format nil " with ~a tail up"
                                                     (if (malep user)
                                                         "his" "her"))
@@ -3808,7 +3808,7 @@ randomrange is @code{(random-from-range 85 100)}"
                     (/ (value-of i) 2))
             (incf (bitcoins-of user) (/ (value-of i) 2)))
           (a:deletef (inventory-of user) items :test (lambda (o e)
-                                                       (member e o))))
+                                                       (s:memq e o))))
         (let ((items (sort (remove-duplicates items-to-sell) #'<)))
           (setf items (iter (generate i in items)
                         (for j in (inventory-of user))
@@ -3832,7 +3832,7 @@ randomrange is @code{(random-from-range 85 100)}"
             (incf (bitcoins-of user) (/ (value-of i) 2)))
           (a:deletef (inventory-of user) items
                      :test (lambda (o e)
-                             (member e o))))))
+                             (s:memq e o))))))
   (when format-items
     (format t "~10a~40a~10@a~%" "Index" "Item" "Price")
     (iter (for i in items-for-sale)
@@ -3861,7 +3861,7 @@ randomrange is @code{(random-from-range 85 100)}"
                 :key #'duration-of))
   (run-equip-effects character)
   (when (<= (health-of character) 0)
-    (unless (member character (fainted-of *battle*))
+    (unless (s:memq character (fainted-of *battle*))
       (format t "~a has fainted~%~%" (name-of character))
       (pushnew character (fainted-of *battle*)))
     (setf (health-of character) 0)
@@ -3920,7 +3920,7 @@ randomrange is @code{(random-from-range 85 100)}"
   (run-equip-effects character)
   (when (<= (health-of character) 0)
     (setf (health-of character) 0)
-    (unless (member character (fainted-of *battle*))
+    (unless (s:memq character (fainted-of *battle*))
       (format t "~a has fainted~%~%" (name-of character))
       (pushnew character (fainted-of *battle*)))
     (a:deletef (turn-queue-of *battle*) character)
@@ -3995,7 +3995,7 @@ randomrange is @code{(random-from-range 85 100)}"
              (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
                (if (<= (health-of i) 0)
                    (progn (setf (health-of i) 0)
-                          (unless (member i (fainted-of *battle*))
+                          (unless (s:memq i (fainted-of *battle*))
                             (format t "~a has fainted~%~%" (name-of i))
                             (pushnew i (fainted-of *battle*)))
                           (a:deletef (turn-queue-of *battle*) i))
@@ -4153,11 +4153,11 @@ randomrange is @code{(random-from-range 85 100)}"
                                                                       :faster 20/9)
                                                                     fill-rate)
                                             :wear (iter (for i in wear)
-                                                    (when (member i clothes :test #'eq)
+                                                    (when (s:memq i clothes)
                                                       (collect (make-instance i))))))
     (setf (team-of *game*) (list (player-of *game*)))
     (iter (for i in (iter (for i in '(yadfa-items:diaper yadfa-items:pullups yadfa-items:boxers yadfa-items:panties))
-                      (when (member i clothes :test #'eq)
+                      (when (s:memq i clothes)
                         (collect i))))
       (dotimes (j (random 20))
         (push (make-instance i)

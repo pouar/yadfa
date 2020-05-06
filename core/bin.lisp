@@ -226,8 +226,8 @@ You can also specify multiple directions, for example @code{(move :south :south)
                                   (get-zone player-position)
                                   (not (getf-direction player-position direction :hidden))
                                   (not (hiddenp (get-zone position)))
-                                  (or (and (member direction '(:up :down)) (member direction (stairs-of (get-zone player-position))))
-                                      (not (member direction '(:up :down)))))
+                                  (or (and (s:memq direction '(:up :down)) (s:memq direction (stairs-of (get-zone player-position))))
+                                      (not (s:memq direction '(:up :down)))))
                          (format t "~s ~a~%"
                                  direction
                                  (name-of (get-zone position)))))))
@@ -420,7 +420,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
           i (iter (for outer in (reverse (subseq a 0 (1+ wear))))
               (with b = (reverse a))
               (when (and (typep outer 'bottoms) (thickness-capacity-of outer) (> (fast-thickness b outer) (thickness-capacity-of outer)))
-                (leave (thickest (cdr (member outer a)))))))
+                (leave (thickest (cdr (s:memq outer a)))))))
     (if i
         (format t "~a struggles to fit ~a ~a over ~a ~a in a hilarious fashion but fail to do so.~%"
                 (name-of selected-user)
@@ -759,7 +759,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
       (format t "You send ~a straight to /dev/null~%" (name-of i)))
     (a:deletef (inventory-of (player-of *game*)) items
                :test (lambda (o e)
-                       (member e o)))))
+                       (s:memq e o)))))
 (defunassert yadfa-world:place (prop &rest items)
     (items list
            prop symbol)
@@ -793,7 +793,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
       (push i (get-items-from-prop prop (position-of (player-of *game*)))))
     (a:deletef (inventory-of (player-of *game*)) items
                :test (lambda (o e)
-                       (member e o)))))
+                       (s:memq e o)))))
 (defun yadfa-battle:run ()
   "Run away from a battle like a coward"
   (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
@@ -1029,7 +1029,7 @@ You can also specify multiple directions, for example @code{(move :south :south)
     (enemy symbol)
   "Browse enemies in your pokedex, @var{ENEMY} is a quoted symbol that is the same as the class name of the enemy you want to view. Leave it to @code{NIL} to list available entries"
   (if enemy
-      (let ((a (if (member enemy (seen-enemies-of *game*))
+      (let ((a (if (s:memq enemy (seen-enemies-of *game*))
                    (make-instance enemy)
                    (progn (write-line "That enemy isn't in your pokedex")
                           (return-from yadfa-bin:pokedex)))))
