@@ -40,6 +40,10 @@
    #:*command-packages*
    ;;structures
    #:event
+   ;;conditions
+   #:onesie-too-thick
+   #:onesie-locked
+   #:invalid-user-input
    ;;macros
    #:defevent
    #:ensure-zone
@@ -124,6 +128,7 @@
    #:use-script
    #:wear-script
    #:wield-script
+   #:toggle-onesie
    ;;constructors
    #:make-action
    ;;classes
@@ -222,6 +227,8 @@
    #:bowels/maximum-limit-of
    #:moves-of
    #:exp-of
+   #:user-of
+   #:clothes-of
    #:base-stats-of
    #:team-npcs-of
    #:iv-stats-of

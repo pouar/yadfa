@@ -102,13 +102,45 @@
                    (wear)
                    :prompt-text "Select a different clothing"
                    :error-text (format nil "You're not wearing that item"))
-                  ((progn (if wear
-                              (toggle-onesie% (car selected-wear) (cdr selected-wear) selected-user)
-                              (iter (for item on (wear-of selected-user))
-                                (when (typep (car item) 'onesie)
-                                  (leave (toggle-onesie% (car item) (cdr item) selected-user)))
-                                (finally (format t "~a isn't wearing a onesie" (name-of selected-user)))))
-                          nil)
+                  ((let ((selected-wear (if wear
+                                            selected-wear
+                                            (iter (for item on (wear-of selected-user))
+                                              (when (typep (car item) 'onesie)
+                                                (leave item))
+                                              (finally (format t "~a isn't wearing a onesie"
+                                                               (name-of selected-user)))))))
+                     (handler-case (progn (toggle-onesie (car selected-wear) selected-wear selected-user)
+                                          (let* ((male (malep selected-user))
+                                                 (hisher (if male "his" "her"))
+                                                 (onesie (car selected-wear)))
+                                            (if (typep (car selected-wear) 'onesie/closed)
+                                                (format t "~a snaps ~a ~a~%~%"
+                                                        (name-of selected-user)
+                                                        hisher
+                                                        (name-of onesie))
+                                                (format t "~a unsnaps ~a ~a~%~%"
+                                                        (name-of selected-user)
+                                                        hisher
+                                                        (name-of onesie)))))
+                       (onesie-too-thick (c)
+                         (let* ((user (user-of c))
+                                (clothes (clothes-of c))
+                                (male (malep user))
+                                (hisher (if male "his" "her")))
+                           (format t "~a struggles to snap the bottom of ~a ~a like a toddler who can't dress ~aself but ~a ~a is too thick~%~%"
+                                   (name-of user)
+                                   hisher
+                                   (name-of (car clothes))
+                                   (if male "him" "her")
+                                   hisher
+                                   (name-of (thickest (cdr clothes))))))
+                       (onesie-locked (c)
+                         (let ((user (user-of c)))
+                           (format t "~a can't unsnap ~a ~a as it's locked~%~%"
+                                   (name-of user)
+                                   (if (malep user) "his" "her")
+                                   (name-of (car (clothes-of c)))))))
+                     nil)
                    (wear)
                    :prompt-text "Select a different clothing"))))
 (defunassert yadfa-world:move (&rest directions)

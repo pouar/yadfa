@@ -1,4 +1,29 @@
 (in-package :yadfa-props)
+(defun change-the-baby (user &rest new-diaper)
+  (let ((b (apply #'make-instance new-diaper)))
+    (iter (for clothes on (wear-of user))
+      (when (typep (car clothes) 'bottoms)
+        (handler-case (toggle-onesie (car clothes) clothes user)
+          (onesie-locked (c)
+            (setf (lockedp (car (clothes-of c))) nil)
+            (toggle-onesie (car (clothes-of c)) (clothes-of c) (user-of c))))))
+    (setf (inventory-of (player-of *game*)) (append (inventory-of (player-of *game*)) (filter-items (wear-of user) 'closed-bottoms))
+          (wear-of user) (remove-if (lambda (a)
+                                      (typep a 'closed-bottoms))
+                                    (wear-of user)))
+    (if (wear-of user)
+        (push b (cdr (last (wear-of user))))
+        (push b (wear-of user)))
+    (iter (for clothes on (wear-of user))
+      (let ((nth (car clothes))
+            (nthcdr (cdr clothes)))
+        (when (or (and (typep nth 'bottoms) (thickness-capacity-of nth) nthcdr
+                       (> (total-thickness nthcdr) (thickness-capacity-of nth)))
+                  (and (typep nth 'closed-bottoms)
+                       (or (>= (sogginess-of nth) (/ (sogginess-capacity-of nth) 4))
+                           (>= (messiness-of nth) (/ (messiness-capacity-of nth) 4)))))
+          (push nth (inventory-of (player-of *game*)))
+          (setf (wear-of user) (s:delq nth (wear-of user))))))))
 (defclass toilet (prop) ()
   (:default-initargs
    :name "Toilet"
@@ -7,10 +32,10 @@
                         :documentation "Use the toilet. if WET or MESS is T, the player will empty his bladder/bowels completely. If a real is given, the player will empty his bladder by that amount, however the player will mess completely no matter what number you give it if you provide a number. If ALLY number is specified, that ALLY uses the toilet, otherwise it's the player"
                         :lambda '(lambda (prop &rest keys &key wet mess pull-pants-down ally &allow-other-keys)
                                   (declare #+sbcl (type prop prop)
-                                   #+sbcl (type boolean pull-pants-down)
-                                   #+sbcl (type (or integer null) ally)
-                                   #+sbcl (type (or boolean real) wet mess)
-                                   (ignore keys))
+                                           #+sbcl (type boolean pull-pants-down)
+                                           #+sbcl (type (or integer null) ally)
+                                           #+sbcl (type (or boolean real) wet mess)
+                                           (ignore keys))
                                   #-sbcl (check-type prop prop)
                                   #-sbcl (check-type pull-pants-down boolean)
                                   #-sbcl (check-type ally (or integer null))
@@ -21,12 +46,12 @@
                                       (format t "That ally doesn't exist~%")
                                       (return))
                                     (yadfa::potty-on-toilet prop
-                                                     :wet wet
-                                                     :mess mess
-                                                     :pants-down pull-pants-down
-                                                     :user (if ally
-                                                               (nth ally (allies-of *game*))
-                                                               (player-of *game*))))))))
+                                                            :wet wet
+                                                            :mess mess
+                                                            :pants-down pull-pants-down
+                                                            :user (if ally
+                                                                      (nth ally (allies-of *game*))
+                                                                      (player-of *game*))))))))
   (:documentation "Class for toilets. I'm pretty sure I don't need to tell you what these are for."))
 (defclass washer (prop) ()
   (:default-initargs
@@ -49,7 +74,7 @@
                         :documentation "Turn it on"
                         :lambda '(lambda (prop &rest keys &key &allow-other-keys)
                                   (declare #+sbcl (type prop prop)
-                                   (ignore keys))
+                                           (ignore keys))
                                   #-sbcl (check-type prop prop)
                                   (iter (for j in (append (list (player-of *game*)) (allies-of *game*)))
                                     (let ((a (calculate-diaper-usage j)))
@@ -73,7 +98,7 @@
                                             (progn
                                               (format t "~a: Hey!!! I don't need diapers!!! Stop!!!~%~%"
                                                       (name-of j))))
-                                        (yadfa::change-the-baby j 'yadfa-items:kurikia-thick-diaper :locked t)
+                                        (change-the-baby j 'yadfa-items:kurikia-thick-diaper :locked t)
                                         (format t "*The machine removes ~a's soggy clothing (and any clothing that doesn't fit over the new diaper) and puts a thick diaper on ~a, then locks it to prevent the baby from removing it.*~%~%"
                                                 (name-of j)
                                                 (if (malep j) "him" "her"))
@@ -116,7 +141,7 @@
              (list :list-items-for-sale (make-action :documentation "List items for sale"
                                                      :lambda '(lambda (prop &rest keys &key &allow-other-keys)
                                                                (declare #+sbcl (type prop prop)
-                                                                (ignore keys))
+                                                                        (ignore keys))
                                                                #-sbcl (check-type prop prop)
                                                                (shopfun (items-for-sale-of prop) :format-items t)))
                    :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY). If ITEMS is not specified, you will be prompted for what items to buy"

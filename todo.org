@@ -4,7 +4,7 @@
 * DONE add new move that pantses the enemy to embarrass them
 * DONE update ~FAST-THICKNESS~ to handle ~NIL~ at the end of the list as well as not have to pass 0 all the time
 * DONE create the ~YADFA-PROPS~ package and move props to it
-* TODO move the change-the-baby function outside the YADFA package, possibly creating a new package for it
+* DONE move the change-the-baby function outside the YADFA package, possibly creating a new package for it
 * TODO go through ~YADFA:HOME;CORE;BIN.LISP~ and add the option to specify type specifiers instead of just an ~UNSIGNED-BYTE~
 * DONE have ~YADFA::SET-LOGICAL-PATHNAMES~ run when ~ASDF:CLEAR-CONFIGURATION~ is done
 * DONE add generated maze
