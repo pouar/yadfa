@@ -588,49 +588,51 @@
                                                                                     (and player-zone
                                                                                          (warp-points-of player-zone)))))
         (let ((pattern (print-map-pattern-cache #P"blank.xpm"
-                                                (list clim:+background-ink+ clim:+foreground-ink+)))
-              (start-position (when c:*application-frame*
-                                (multiple-value-list (clim:stream-cursor-position *standard-output*)))))
-          (clim:updating-output (t)
-            ;; position needs to be bound inside of clim:updating-output and not outside
-            ;; for the presentation to notice when the floor the player is on changes
-            (let* ((player-position (position-of (player-of *game*)))
-                   (position (if (eq position t)
-                                 player-position
-                                 position)))
-              (declare (type list position player-position))
-              (destructuring-bind (posx posy posz posm) position
-                (declare (type integer posx posy posz)
-                         (type symbol posm))
-                (iter (for y
-                           from (- posy 15)
-                           to (+ posy 15))
-                  (for y-pos
-                       from (second start-position)
-                       to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
-                       by (clim:pattern-height pattern))
-                  (iter (for x
-                             from (- posx 15)
-                             to (+ posx 15))
-                    (for x-pos
-                         from (first start-position)
-                         to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
-                         by (clim:pattern-width pattern))
-                    (let* ((current-position `(,x ,y ,posz ,posm))
-                           (current-zone (get-zone current-position))
-                           (char (cons (if (or (and current-zone (hiddenp current-zone)) (not current-zone))
-                                           #P"blank.xpm"
-                                           (a current-position))
-                                       (clim:make-rgb-color (if (and current-zone (warp-points-of current-zone)) 1 0)
-                                                            (if (equal current-position player-position) 0.7l0 0)
-                                                            (if (or (travelablep current-position :up) (travelablep current-position :down)) 1 0)))))
-                      (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
-                      (when (get-zone current-position)
-                        (clim:with-output-as-presentation
-                            (*standard-output* (get-zone current-position) 'zone)
-                          (clim:draw-pattern* *standard-output* pattern x-pos y-pos)))))))))
-          (when c:*application-frame*
-            (clim:stream-set-cursor-position *standard-output* (first start-position) (+ (second start-position) (* 31 (clim:pattern-height pattern))))))))))
+                                                (list clim:+background-ink+ clim:+foreground-ink+))))
+          (multiple-value-bind (start-x start-y) (if c:*application-frame*
+                                                     (clim:stream-cursor-position *standard-output*)
+                                                     (values 0 0))
+            (declare (type real start-x start-y))
+            (clim:updating-output (t)
+              ;; position needs to be bound inside of clim:updating-output and not outside
+              ;; for the presentation to notice when the floor the player is on changes
+              (let* ((player-position (position-of (player-of *game*)))
+                     (position (if (eq position t)
+                                   player-position
+                                   position)))
+                (declare (type list position player-position))
+                (destructuring-bind (posx posy posz posm) position
+                  (declare (type integer posx posy posz)
+                           (type symbol posm))
+                  (iter (declaring integer for y
+                                   from (- posy 15)
+                                   to (+ posy 15))
+                    (for y-pos
+                         from start-y
+                         to (+ start-y (* 30 (the (unsigned-byte 32) (clim:pattern-height pattern))))
+                         by (the (unsigned-byte 32) (clim:pattern-height pattern)))
+                    (iter (declaring integer for x
+                                     from (- posx 15)
+                                     to (+ posx 15))
+                      (for x-pos
+                           from start-x
+                           to (+ start-x (* 30 (the (unsigned-byte 32) (clim:pattern-width pattern))))
+                           by (the (unsigned-byte 32) (clim:pattern-width pattern)))
+                      (let* ((current-position `(,x ,y ,posz ,posm))
+                             (current-zone (get-zone current-position))
+                             (char (cons (if (or (and current-zone (hiddenp current-zone)) (not current-zone))
+                                             #P"blank.xpm"
+                                             (a current-position))
+                                         (clim:make-rgb-color (if (and current-zone (warp-points-of current-zone)) 1 0)
+                                                              (if (equal current-position player-position) 0.7l0 0)
+                                                              (if (or (travelablep current-position :up) (travelablep current-position :down)) 1 0)))))
+                        (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
+                        (when (get-zone current-position)
+                          (clim:with-output-as-presentation
+                              (*standard-output* (get-zone current-position) 'zone)
+                            (clim:draw-pattern* *standard-output* pattern x-pos y-pos)))))))))
+            (when c:*application-frame*
+              (clim:stream-set-cursor-position *standard-output* start-x (+ start-y (* 31 (the (unsigned-byte 32) (clim:pattern-height pattern))))))))))))
 (declaim (ftype (function ((or string coerced-function)) (values string &optional)) get-zone-text))
 (defunassert get-zone-text (text)
     (text (or string coerced-function))
