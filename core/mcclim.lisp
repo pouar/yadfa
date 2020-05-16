@@ -284,12 +284,12 @@
   (:panes (int :interactor :height 400 :width 600))
   (:layouts
    (default int)))
-(defmethod default-frame-top-level :around ((frame emacs-frame)
-                                            &key (command-parser 'c:command-line-command-parser)
-                                                 (command-unparser 'c:command-line-command-unparser)
-                                                 (partial-command-parser
-                                                  'c:command-line-read-remaining-arguments-for-partial-command)
-                                                 (prompt "Command: "))
+(defmethod c:default-frame-top-level :around ((frame emacs-frame)
+                                              &key (command-parser 'c:command-line-command-parser)
+                                                   (command-unparser 'c:command-line-command-unparser)
+                                                   (partial-command-parser
+                                                    'c:command-line-read-remaining-arguments-for-partial-command)
+                                                   (prompt "Command: "))
   (declare (ignore prompt))
   (let* ((frame-query-io (c:frame-query-io frame))
          (interactorp (typep frame-query-io 'c:interactor-pane))
