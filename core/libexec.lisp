@@ -605,17 +605,17 @@
                 (iter (for y
                            from (- posy 15)
                            to (+ posy 15))
-                  (declaring fixnum for y-pos
-                             from (second start-position)
-                             to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
-                             by (clim:pattern-height pattern))
+                  (for y-pos
+                       from (second start-position)
+                       to (+ (second start-position) (* 30 (clim:pattern-height pattern)))
+                       by (clim:pattern-height pattern))
                   (iter (for x
                              from (- posx 15)
                              to (+ posx 15))
-                    (declaring fixnum for x-pos
-                               from (first start-position)
-                               to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
-                               by (clim:pattern-width pattern))
+                    (for x-pos
+                         from (first start-position)
+                         to (+ (first start-position) (* 30 (clim:pattern-width pattern)))
+                         by (clim:pattern-width pattern))
                     (let* ((current-position `(,x ,y ,posz ,posm))
                            (current-zone (get-zone current-position))
                            (char (cons (if (or (and current-zone (hiddenp current-zone)) (not current-zone))
