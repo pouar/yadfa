@@ -817,7 +817,7 @@
 (define-condition onesie-too-thick (simple-condition)
   ((clothes :type list :initarg :clothes)
    (user :type base-character :initarg :user))
-  (:documentation "Condition signaled by @code{TOGGLE-ONESIE} when the onesie @code{(CAR CLOTHES)} can't fit over the user @var{USER}'s @{(CDR CLOTHES)}")
+  (:documentation "Condition signaled by @code{TOGGLE-ONESIE} when the onesie @code{(CAR CLOTHES)} can't fit over the user @var{USER}'s @code{(CDR CLOTHES)}")
   (:report (lambda (c s)
              (format s "~s doesn't fit over pamps" (car (clothes-of c))))))
 (define-condition onesie-locked (simple-condition)
