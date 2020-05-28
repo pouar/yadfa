@@ -118,7 +118,7 @@ modules:
   - name: yadfa-cache
     buildsystem: simple
     build-commands:
-      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --eval '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' --eval "(progn (ql:update-client :prompt nil) (ql:update-all-dists :prompt nil) (pushnew :mcclim-ffi-freetype *features*) (ql:quickload '(:swank :mcclim :marshal :iterate :ugly-tiny-infix-macro :closer-mop :trivial-features :clim-listener :mcclim-raster-image :trivial-garbage :macro-level :cl-ansi-text :alexandria :plump-sexp :net.didierverna.declt :sb-aclrepl :serapeum :global-vars :float-features :illogical-pathnames :fiveam :bibtex :cl-date-time-parser :local-time)))"
+      - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --eval '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' --eval "(progn (ql:update-client :prompt nil) (ql:update-all-dists :prompt nil) (pushnew :mcclim-ffi-freetype *features*) (ql:quickload '(:swank :mcclim :iterate :ugly-tiny-infix-macro :closer-mop :trivial-features :clim-listener :mcclim-raster-image :trivial-garbage :macro-level :cl-ansi-text :alexandria :plump-sexp :net.didierverna.declt :sb-aclrepl :serapeum :global-vars :float-features :illogical-pathnames :fiveam :bibtex :cl-date-time-parser :local-time :fmt)))"
   - name: yadfa
     buildsystem: simple
     build-commands:
