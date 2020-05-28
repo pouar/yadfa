@@ -13,7 +13,7 @@
             (format t "But it had no effect!~%")
             (progn (format t "~a's diaper has been mushed~%" (name-of target))
                    (set-status-condition 'yadfa-status-conditions:mushed target))))
-      (out "it has no effect on " (name-of target) :%)))
+      (f:fmt t "it has no effect on " (name-of target) #\Newline)))
 (defclass pants (stat/move) ()
   (:default-initargs
    :name "Pants"
@@ -115,6 +115,24 @@
                (name-of user)))))
   (format t "~a is grossed out by the smell~%" (name-of target))
   (set-status-condition 'yadfa-status-conditions:skunked target))
+(defclass boop (stat/move) ()
+  (:default-initargs
+   :name "Boop"
+   :description "Boops da target on da snoot"
+   :energy-cost 5))
+(defmethod attack ((target base-character) (user base-character) (attack boop))
+  (let ((user-name (name-of user))
+        (target-name (name-of target)))
+    (f:fmt t target-name " blushes as " user-name " boops " target-name " on da snoot :3" #\Newline)))
+(defmethod attack ((target yadfa-enemies:skunk-boop-mixin) (user base-character) (attack boop))
+  (let* ((user-name (name-of user))
+         (target-name (name-of target))
+         (target-male-p (malep target)))
+    (f:fmt t target-name " blushes as " user-name " boops " target-name " on da snoot :3" #\Newline
+           target-name " immediately squats down and messes " (if target-male-p "his" "her") " pamps." #\Newline
+           "It's like a mess button." #\Newline)
+    (mess :force-fill-amount (bowels/maximum-limit-of target))
+    (set-status-condition 'yadfa-status-conditions:messing target)))
 (defclass fire-breath (stat/move) ()
   (:default-initargs
    :name "Fire Breath"

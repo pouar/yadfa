@@ -3,15 +3,15 @@
 (defmethod use-script ((item enemy-catcher) (target yadfa-enemies:catchable-enemy))
   (cond
     ((>= (list-length (contained-enemies-of item)) (contained-enemies-max-length-of item))
-     (out (name-of item) " can't hold anymore enemies" :% :%))
+     (f:fmt t (name-of item) " can't hold anymore enemies" #\Newline #\Newline))
     ((not (< (random 1.0l0) (* (catch-chance-multiplier-of item) (+ (catch-chance-delta-of item) (yadfa-enemies:catch-chance-of target)))))
-     (out "You failed to catch the " (name-of target) :% :%)
+     (f:fmt t "You failed to catch the " (name-of target) #\Newline #\Newline)
      (cond ((eq (device-health-of item) t) nil)
            ((<= (device-health-of item) 1)
             (alexandria:deletef (inventory-of (player-of *game*)) item :count 1))
            (t (decf (device-health-of item)))))
     (t
-     (out "You caught the " (name-of target) :% :%)
+     (f:fmt t "You caught the " (name-of target) #\Newline #\Newline)
 
      ;; prevent the enemy from going again during the battle
      (alexandria:deletef (enemies-of *battle*) target)
@@ -78,7 +78,7 @@
                                                            (collect (change-class i (get (class-name i) 'yadfa-enemies:change-class-target))))))
                 (format t "No enemies in there to adopt"))))))))
 (defmethod use-script ((item enemy-catcher) (target yadfa-enemies:ghost))
-  (out "You failed to catch " (name-of target) :% :%)
+  (f:fmt t "You failed to catch " (name-of target) #\Newline #\Newline)
   (cond ((eq (device-health-of item) t) nil)
         ((<= (device-health-of item) 1)
          (alexandria:deletef (inventory-of (player-of *game*)) item :count 1))
@@ -86,15 +86,15 @@
 (defmethod use-script ((item ghost-catcher) (target yadfa-enemies:ghost))
   (cond
     ((>= (list-length (contained-enemies-of item)) (contained-enemies-max-length-of item))
-     (out (name-of item) " can't hold anymore enemies" :% :%))
+     (f:fmt t (name-of item) " can't hold anymore enemies" #\Newline #\Newline))
     ((not (< (random 1.0l0) (* (catch-chance-multiplier-of item) (+ (catch-chance-delta-of item) (yadfa-enemies:catch-chance-of target)))))
-     (out "You failed to catch the " (name-of target) :% :%)
+     (f:fmt t "You failed to catch the " (name-of target) #\Newline #\Newline)
      (cond ((eq (device-health-of item) t) nil)
            ((<= (device-health-of item) 1)
             (alexandria:deletef (inventory-of (player-of *game*)) item :count 1))
            (t (decf (device-health-of item)))))
     (t
-     (out "You caught the " (name-of target) :% :%)
+     (f:fmt t "You caught the " (name-of target) #\Newline #\Newline)
 
      ;; prevent the enemy from going again during the battle
      (alexandria:deletef (enemies-of *battle*) target)
@@ -149,9 +149,9 @@
          (let* ((inventory-length (list-length (inventory-of (player-of *game*))))
                 (selected-item (and (< item inventory-length) (nth item (inventory-of (player-of *game*))))))
            (cond ((>= item inventory-length)
-                  (out "You only have " inventory-length " items" :%))
+                  (f:fmt t "You only have " inventory-length " items" #\Newline))
                  ((not (typep selected-item 'enemy-catcher))
-                  (out "That item isn't an enemy catcher" :%))
+                  (f:fmt t "That item isn't an enemy catcher" #\Newline))
                  (t (funcall (coerce (action-lambda (getf (special-actions-of selected-item) :take-items)) 'function)
                              selected-item (player-of *game*) :action :take-items)))))
         (t (let ((selected-item (find item (inventory-of *game*) :test (lambda (specifier item)
@@ -159,4 +159,4 @@
              (if selected-item
                  (funcall (coerce (action-lambda (getf (special-actions-of selected-item) :take-items)) 'function)
                           selected-item (player-of *game*) :action :take-items)
-                 (out "Either you don't have that item or it isn't an enemy catcher" :%))))))
+                 (f:fmt t "Either you don't have that item or it isn't an enemy catcher" #\Newline))))))

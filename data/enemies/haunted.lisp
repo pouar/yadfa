@@ -18,7 +18,7 @@
    :moves (list (make-instance 'yadfa-moves:ghost-tickle) (make-instance 'yadfa-moves:ghost-mush) (make-instance 'yadfa-moves:ghost-squish))))
 (defmethod default-attack ((target team-member) (user ghost))
   (declare (ignore target))
-  (out (name-of user) " Acts all scary" :%)
+  (f:fmt t (name-of user) " Acts all scary" #\Newline)
   (unless (and (<= (random 5) 0)
                (iter (for i in (if (typep user 'team-member)
                                    (enemies-of *battle*)

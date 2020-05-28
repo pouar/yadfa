@@ -3,7 +3,7 @@
 (defevent test-battle-1
   :lambda (lambda (self)
             (declare (ignore self))
-            (out "Time to battle" :%)
+            (f:fmt t "Time to battle" #\Newline)
             (set-new-battle
              '((enemy))
              :continuable t
@@ -11,11 +11,11 @@
 (defevent test-battle-3
   :lambda (lambda (self)
             (declare (ignore self))
-            (out "You won" :%)))
+            (f:fmt t  "You won" #\Newline)))
 (defevent test-battle-2
   :lambda (lambda (self)
             (declare (ignore self))
-            (out "Time to battle 2" :%)
+            (f:fmt t "Time to battle 2" #\Newline)
             (set-new-battle
              '((enemy) (enemy))
              :continuable t

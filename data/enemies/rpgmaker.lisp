@@ -23,7 +23,7 @@
             a)
           (wear-of c))
     (push (make-instance (if (malep c) 'yadfa-items:shendyt 'yadfa-items:kalasiris)) (wear-of c))))
-(defclass diapered-skunk (potty-enemy) ()
+(defclass diapered-skunk (potty-enemy skunk-boop-mixin) ()
   (:default-initargs
    :name "Diapered Skunk"
    :description "They spray their diapers when attacking. Their diapers reek of a smell of urine, feces, and skunk spray."
@@ -98,7 +98,7 @@
              (mess :messer character)
              (set-status-condition 'yadfa-status-conditions:messing character))
            t))))
-(defclass diapered-skunk* (potty-enemy) ()
+(defclass diapered-skunk* (potty-enemy skunk-boop-mixin) ()
   (:default-initargs
    :name "Diapered Skunk"
    :species "Skunk"

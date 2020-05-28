@@ -77,7 +77,7 @@ modules:
       - cp -R asdf /app/tmp/home/common-lisp/
       - SBCL_HOME="/app/tmp/sbcl/lib/sbcl" PATH="$PATH:/app/tmp/sbcl/bin" HOME="/app/tmp/home/" sbcl --quit --load "quicklisp.lisp" --eval "(quicklisp-quickstart:install)"
       - mkdir -p /app/tmp/home/quicklisp/local-projects
-      - cp -R declt McCLIM sly illogical-pathnames iterate flexi-streams /app/tmp/home/quicklisp/local-projects
+      - cp -R declt McCLIM sly illogical-pathnames iterate flexi-streams marshal /app/tmp/home/quicklisp/local-projects
     sources:
       - type: file
         url: https://beta.quicklisp.org/quicklisp.lisp
@@ -106,6 +106,10 @@ modules:
         dest: iterate
         branch: pouar
         url: https://gitlab.com/pouar/iterate.git
+      - type: git
+        dest: marshal
+        branch: pouar
+        url: https://github.com/pouar/cl-marshal.git
       - type: file
         path: 0001-Listener-remove-cl-fad-dependency.patch
       - type: shell

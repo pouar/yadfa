@@ -105,7 +105,7 @@
    :power 0
    :cant-use-predicate '(lambda (item user)
                          (unless (typep user 'yadfa-enemies:catchable-enemy)
-                           (out (name-of item) " can't be used on " (name-of user) :%)
+                           (f:fmt t  (name-of item) " can't be used on " (name-of user) #\Newline)
                            t))))
 (defclass ghost-catcher (enemy-catcher) ()
   (:default-initargs
@@ -113,5 +113,5 @@
    :description "Use this to catch ghosts"
    :cant-use-predicate '(lambda (user item)
                          (unless (typep user 'yadfa-enemies:ghost)
-                           (out (name-of item) " can't be used on " (name-of user) :%)
+                           (f:fmt t  (name-of item) " can't be used on " (name-of user) #\Newline)
                            t))))

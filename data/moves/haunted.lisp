@@ -7,7 +7,7 @@
   (format t "~a used ~a~%" (name-of user) (name-of attack))
   (if (getf (attributes-of target) :not-ticklish)
       (write-line "It has no effect")
-      (progn (out "A bunch of ghost hands come out and start tickling " (name-of target) :%)
+      (progn (f:fmt t "A bunch of ghost hands come out and start tickling " (name-of target) #\Newline)
              (set-status-condition 'yadfa-status-conditions:laughing target))))
 (defclass ghost-squish (stat/move) ()
   (:default-initargs
@@ -20,7 +20,7 @@
         (format t "a ghost hand comes out and squishes ~a's diaper!~%" (name-of target))
         (if (<= (getf (calculate-diaper-usage target) :sogginess) 0)
             (format t "But it had no effect!~%")))
-      (out "it has no effect on " (name-of target) :%)))
+      (f:fmt t "it has no effect on " (name-of target) #\Newline)))
 (defclass ghost-mush (mush) ()
   (:default-initargs
    :name "Ghost Mush"))
@@ -33,4 +33,4 @@
             (format t "But it had no effect!~%")
             (progn (format t "~a's diaper has been mushed~%" (name-of target))
                    (set-status-condition 'yadfa-status-conditions:mushed target))))
-      (out "it has no effect on " (name-of target) :%)))
+      (f:fmt t "it has no effect on " (name-of target) #\Newline)))

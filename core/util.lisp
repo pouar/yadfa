@@ -79,11 +79,6 @@ the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYW
 (define-modify-macro appendf* (&rest lists) append*
   "Modify-macro for APPEND*. Appends LISTS to the place designated by the first
 argument.")
-(defmacro out (&rest strings)
-  (check-type strings list)
-  (alexandria:with-gensyms (element)
-    `(dolist (,element (list ,@(substitute #\Newline :% strings :test #'eq)))
-       (princ ,element))))
 (declaim (inline list-length-< list-length-<=))
 (s:eval-always
   (defun list-length-<= (length list)
