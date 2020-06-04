@@ -9,7 +9,7 @@
       (write-line "It has no effect")
       (progn (f:fmt t "A bunch of ghost hands come out and start tickling " (name-of target) #\Newline)
              (set-status-condition 'yadfa-status-conditions:laughing target))))
-(defclass ghost-squish (stat/move) ()
+(defclass ghost-squish (move) ()
   (:default-initargs
    :name "Ghost Tickle"
    :description "Tickle the enemy"))

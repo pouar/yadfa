@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-moves"; coding: utf-8-unix; -*-
 (in-package :yadfa-moves)
-(defclass mush (stat/move) ()
+(defclass mush (move) ()
   (:default-initargs
    :name "Mush"
    :description "Mush the target's diaper"))
@@ -14,7 +14,7 @@
             (progn (format t "~a's diaper has been mushed~%" (name-of target))
                    (set-status-condition 'yadfa-status-conditions:mushed target))))
       (f:fmt t "it has no effect on " (name-of target) #\Newline)))
-(defclass pants (stat/move) ()
+(defclass pants (move) ()
   (:default-initargs
    :name "Pants"
    :description "Pants the enemy"))
@@ -83,7 +83,7 @@
         (progn
           (format t "~a tries to pants ~a~%" (name-of user) (name-of target))
           (format t "The attack has no effect on ~a~%" (name-of target))))))
-(defclass spray (stat/move) ()
+(defclass spray (move) ()
   (:default-initargs
    :name "Spray"
    :description "Spray the target with skunk spray. Also fills your pamps with skunk spray while you're at it."
@@ -115,7 +115,7 @@
                (name-of user)))))
   (format t "~a is grossed out by the smell~%" (name-of target))
   (set-status-condition 'yadfa-status-conditions:skunked target))
-(defclass boop (stat/move) ()
+(defclass boop (move) ()
   (:default-initargs
    :name "Boop"
    :description "Boops da target on da snoot"
@@ -133,7 +133,7 @@
            "It's like a mess button." #\Newline)
     (mess :force-fill-amount (bowels/maximum-limit-of target))
     (set-status-condition 'yadfa-status-conditions:messing target)))
-(defclass fire-breath (stat/move) ()
+(defclass fire-breath (move) ()
   (:default-initargs
    :name "Fire Breath"
    :energy-cost 5
@@ -144,7 +144,7 @@
     (format t "~a used ~a~%" (name-of user) (name-of self))
     (decf (health-of target) a)
     a))
-(defclass face-sit (stat/move) ()
+(defclass face-sit (move) ()
   (:default-initargs
    :name "Face Sit"
    :energy-cost 3
@@ -164,7 +164,7 @@
     (format t "~a is damaged by the impact~%" (name-of target))
     (decf (health-of target) a)
     a))
-(defclass teleporting-flood (stat/move) ()
+(defclass teleporting-flood (move) ()
   (:default-initargs
    :name "Teleporting Flood"
    :description "Flood your diapers, but enchants the diaper so it all teleports into someone else's diaper."))
@@ -175,7 +175,7 @@
       (progn (wet :wetter user :clothes (wear-of target))
              (format t "~a gets a freaked expression on ~a face as ~a floods ~a's pamps~%" (name-of target) (if (malep target) "his" "her")
                      (name-of user) (name-of target)))))
-(defclass teleporting-mess (stat/move) ()
+(defclass teleporting-mess (move) ()
   (:default-initargs
    :name "Teleporting Mess"
    :description "Mess your diapers, but enchants the diaper so it all teleports into someone else's diaper."))

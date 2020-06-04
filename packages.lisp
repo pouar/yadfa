@@ -150,7 +150,7 @@
    #:playable-ally
    #:player
    #:zone
-   #:stat/move
+   #:move
    #:prop
    #:item
    #:consumable

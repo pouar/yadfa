@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-moves"; coding: utf-8-unix; -*-
 (in-package :yadfa-moves)
-(defclass kamehameha (stat/move) ()
+(defclass kamehameha (move) ()
   (:default-initargs
    :name "Kamehameha Wave"
    :description "Say “Kamehameha!!!” and fire a huge burst of energy"

@@ -317,7 +317,7 @@
     :accessor persistentp
     :documentation "Whether items or moves that cure statuses cure this"))
   (:documentation "Base class for all the status conditions "))
-(defclass stat/move (yadfa-class attack-mixin)
+(defclass move (yadfa-class attack-mixin)
   ((name
     :initarg :name
     :initform :-

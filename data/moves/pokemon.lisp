@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-moves"; coding: utf-8-unix; -*-
 (in-package :yadfa-moves)
-(defclass superglitch (stat/move) ()
+(defclass superglitch (move) ()
   (:default-initargs
    :name "Superglitch"
    :description "Classic glitch move from the Pokémon games, but without the undefined behavior and unwanted side effects."))
@@ -11,7 +11,7 @@
           (name-of user)
           (name-of user))
   (setf (health-of target) 0))
-(defclass watersport (stat/move) ()
+(defclass watersport (move) ()
   (:default-initargs
    :name "Watersport"
    :description "Soak your diapers"))
@@ -22,7 +22,7 @@
       (format t "But it failed~%")
       (progn (wet :wetter user)
              (format t "~a wet ~a~%" (name-of user) (if (malep user) "himself" "herself")))))
-(defclass mudsport (stat/move) ()
+(defclass mudsport (move) ()
   (:default-initargs
    :name "Mudsport"
    :description "mess your diapers"))
@@ -35,7 +35,7 @@
              (format t "~a messed ~a~%"
                      (name-of user)
                      (if (malep user) "himself" "herself")))))
-(defclass mudbomb (stat/move) ()
+(defclass mudbomb (move) ()
   (:default-initargs
    :name "Mud Bomb"
    :description "massively mess your diapers, never fails"
@@ -56,7 +56,7 @@
                       (team-of *game*)))
     (set-status-condition 'yadfa-status-conditions:skunked i)
     (format t "~a is grossed out by the smell~%" (name-of i))))
-(defclass tickle (stat/move) ()
+(defclass tickle (move) ()
   (:default-initargs
    :name "Tickle"
    :description "Tickle the enemy"))
@@ -66,11 +66,11 @@
       (write-line "It has no effect")
       (progn (format t "~a starts laughing helplessly~%" (name-of target))
              (set-status-condition 'yadfa-status-conditions:laughing target))))
-(defclass tackle (stat/move) ()
+(defclass tackle (move) ()
   (:default-initargs
    :name "Tackle"
    :description "Tackles the enemy"))
-(defclass roar (stat/move) ()
+(defclass roar (move) ()
   (:default-initargs
    :name "Roar"
    :energy-cost 2
@@ -89,7 +89,7 @@
               (setf j t))
             (finally (return j)))
     (write-line "it had no effect")))
-(defclass bite (stat/move) ()
+(defclass bite (move) ()
   (:default-initargs
    :name "Bite"
    :description "Bites the enemy"

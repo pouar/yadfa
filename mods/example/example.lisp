@@ -17,7 +17,7 @@
                         (format t "Hello World~%"))))))
 (y:trigger-event 'test-5)
 (pushnew 'test-4 (y:events-of (y:get-zone '(0 0 -1 yz:debug-map))))
-(defclass celebrate (y:stat/move) ()
+(defclass celebrate (y:move) ()
   (:default-initargs
    :description "The Pokémon congratulates you on your special day!"
    :name "Celebrate"
