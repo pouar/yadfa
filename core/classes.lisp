@@ -727,7 +727,7 @@
                       t))
     :type (or cons symbol)
     :accessor must-wear-of
-    :documentation #.(format nil "Used to determine whether you can enter the zone based on what you're wearing. @var{USER} is a cons with the type specifier of what you must be wearing and a lambda expression or function that runs to determine if you can enter the zone. You can also use a symbol as key for one of the values in the hash table in the @code{MUST-WEAR} slot in ~a."
+    :documentation #.(format nil "Used to determine whether you can enter the zone based on what you're wearing. Is either a cons cell or a symbol. When a symbol it is used as key for one of the values in the hash table in the @code{MUST-WEAR} slot in ~a. When a cons cell, the car is a type specifier of what @var{USER} must wear and the cdr is a lambda expression or a function designator with a single @var{USER} argument which is the character that must be wearing the item. It returns a generalized boolean that returns true when you can enter the zone."
                              (ref game :class)))
    (must-wear*
     :initarg :must-wear*
@@ -745,7 +745,7 @@
                         t))
     :type (or cons symbol)
     :accessor must-not-wear-of
-    :documentation #.(format nil "Used to determine whether you can enter the zone based on what you're wearing. @var{USER} is a cons with the type specifier of what you must not be wearing and a lambda expression or function that runs to determine if you can enter the zone. You can also use a symbol as key for one of the values in the hash table in the @code{MUST-NOT-WEAR} slot in ~a."
+    :documentation #.(format nil "Used to determine whether you can enter the zone based on what you're wearing. Is either a cons cell or a symbol. When a symbol it is used as key for one of the values in the hash table in the @code{MUST-NOT-WEAR} slot in ~a. When a cons cell, the car is a type specifier of what @var{USER} must not be wearing wear and the cdr is a lambda expression or a function designator with a single @var{USER} argument which is the character that must be wearing the item. It returns a generalized boolean that returns true when you can enter the zone."
                              (ref game :class)))
    (must-not-wear*
     :initarg :must-not-wear*
