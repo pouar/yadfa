@@ -149,7 +149,7 @@
                        a)
                      '<))
           1)
-       (or (eq attack t) (not (typep (get-move attack character) '(or yadfa-moves:watersport yadfa-moves:mudsport))))))
+       (or (eq attack t) (not (typep (get-move attack character) '(or mess-move-mixin wet-move-mixin))))))
 (defunassert get-positions-of-type (type list)
     (type type-specifier
           list list)

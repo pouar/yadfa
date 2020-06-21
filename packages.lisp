@@ -151,6 +151,8 @@
    #:player
    #:zone
    #:move
+   #:mess-move-mixin
+   #:wet-move-mixin
    #:prop
    #:item
    #:consumable

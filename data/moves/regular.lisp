@@ -144,7 +144,7 @@
     (format t "~a used ~a~%" (name-of user) (name-of self))
     (decf (health-of target) a)
     a))
-(defclass face-sit (move) ()
+(defclass face-sit (mess-move-mixin) ()
   (:default-initargs
    :name "Face Sit"
    :energy-cost 3
@@ -164,7 +164,7 @@
     (format t "~a is damaged by the impact~%" (name-of target))
     (decf (health-of target) a)
     a))
-(defclass teleporting-flood (move) ()
+(defclass teleporting-flood (wet-move-mixin) ()
   (:default-initargs
    :name "Teleporting Flood"
    :description "Flood your diapers, but enchants the diaper so it all teleports into someone else's diaper."))
@@ -175,7 +175,7 @@
       (progn (wet :wetter user :clothes (wear-of target))
              (format t "~a gets a freaked expression on ~a face as ~a floods ~a's pamps~%" (name-of target) (if (malep target) "his" "her")
                      (name-of user) (name-of target)))))
-(defclass teleporting-mess (move) ()
+(defclass teleporting-mess (mess-move-mixin) ()
   (:default-initargs
    :name "Teleporting Mess"
    :description "Mess your diapers, but enchants the diaper so it all teleports into someone else's diaper."))
@@ -186,7 +186,7 @@
       (progn (mess :messer user :clothes (wear-of target))
              (format t "~a gets a freaked expression on ~a face as ~a messes ~a's pamps~%" (name-of target) (if (malep target) "his" "her")
                      (name-of user) (name-of target)))))
-(defclass fart (move) ()
+(defclass fart (mess-move-mixin) ()
   (:default-initargs
    :name "fart"
    :description "Grosses out the enemies with gas. If poisoned or if desperate, you may end up messing yourself instead."

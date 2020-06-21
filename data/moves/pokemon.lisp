@@ -11,7 +11,7 @@
           (name-of user)
           (name-of user))
   (setf (health-of target) 0))
-(defclass watersport (move) ()
+(defclass watersport (wet-move-mixin) ()
   (:default-initargs
    :name "Watersport"
    :description "Soak your diapers"))
@@ -22,7 +22,7 @@
       (format t "But it failed~%")
       (progn (wet :wetter user)
              (format t "~a wet ~a~%" (name-of user) (if (malep user) "himself" "herself")))))
-(defclass mudsport (move) ()
+(defclass mudsport (mess-move-mixin) ()
   (:default-initargs
    :name "Mudsport"
    :description "mess your diapers"))
@@ -35,7 +35,7 @@
              (format t "~a messed ~a~%"
                      (name-of user)
                      (if (malep user) "himself" "herself")))))
-(defclass mudbomb (move) ()
+(defclass mudbomb (mess-move-mixin) ()
   (:default-initargs
    :name "Mud Bomb"
    :description "massively mess your diapers, never fails"

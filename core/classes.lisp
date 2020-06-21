@@ -355,6 +355,10 @@
     :accessor attack-of
     :documentation "function that performs the move. @var{TARGET} is the enemy that is being attacked and @var{USER} is the one doing the attacking, @var{SELF} is the move itself"))
   (:documentation "base class of moves used in battle"))
+(defclass mess-move-mixin (move) ()
+  (:documentation "Basically any move that involves messing"))
+(defclass wet-move-mixin (move) ()
+  (:documentation "Basically any move that involves wetting"))
 (declaim (ftype (function (t t) (values &rest list)) ))
 (defmethod process-potty-dance ((character base-character) attack (item item) reload (selected-target base-character))
   (declare (ignore item reload selected-target))
