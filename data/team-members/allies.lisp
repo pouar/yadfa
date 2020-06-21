@@ -11,6 +11,8 @@
                  (make-instance 'yadfa-items:bandit-adjustable-diaper
                                 :sogginess (second (assoc :sogginess-capacity diaper))
                                 :messiness (second (assoc :messiness-capacity diaper)))))
+   :moves (loop for i in '(yadfa-moves:watersport yadfa-moves:mudsport yadfa-moves:tickle yadfa-moves:mush yadfa-moves:fart)
+                collect (make-instance i))
    :species "Raccoon"
    :tail '(:medium :fur)
    :skin '(:fur)
@@ -36,8 +38,8 @@
    :tail '(:medium :fur)
    :skin '(:fur)
    :description "An orange fox. has gotten accustomed to being treated like a pet and will typically wear nothing but a collar, refuses to be housebroken like a good fox so he must be diapered at all times."
-   :wear (list (make-instance 'yadfa-items:gold-collar)
-               (make-instance 'yadfa-items:bandit-diaper))))
+   :wear (loop for i in '(yadfa-items:gold-collar yadfa-items:bandit-diaper)
+               collect (make-instance i))))
 (defclass kristy (playable-ally ally-no-potty-training pantsable-character) ()
   (:default-initargs
    :name "Kristy"
@@ -46,8 +48,8 @@
    :tail '(:medium :fur)
    :skin '(:fur)
    :description "A beautiful orange vixen who has a personality that is more like a child than an adult. Loves wearing thick diapers, can't stand pants. Has gone without diapers for so long that she has become dependent on them."
-   :wear (list (make-instance 'yadfa-items:toddler-dress)
-               (make-instance 'yadfa-items:bandit-female-diaper))))
+   :wear (loop for i in '(yadfa-items:toddler-dress yadfa-items:bandit-female-diaper)
+               collect (make-instance i))))
 (defclass furry (playable-ally ally-silent-potty-training pantsable-character) ()
   (:default-initargs
    :name "Furry"
@@ -56,5 +58,5 @@
    :tail '(:medium :fur)
    :skin '(:fur)
    :description "A fox that likes to wear a fursuit. Doesn't talk much. The team got him as a pet, and as a plushie."
-   :wear (list (make-instance 'yadfa-items:watertight-fursuit)
-               (make-instance 'yadfa-items:kurikia-thick-cloth-diaper))))
+   :wear (loop for i in '(yadfa-items:watertight-fursuit yadfa-items:kurikia-thick-cloth-diaper)
+               collect (make-instance i))))

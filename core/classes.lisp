@@ -370,14 +370,18 @@
               (name-of character)
               (if (malep character) "he" "she")
               (if (malep character) "him" "her"))
-      (wet :wetter character)
+      (let ((wet (wet :wetter character)))
+        (when (> (getf wet :leak-amount) 0)
+          (f:fmt t "A puddle starts to form at " (name-of character) "'s feet" #\Newline)))
       (set-status-condition 'yadfa-status-conditions:wetting character))
     (when (>= (bladder/contents-of character) (bladder/maximum-limit-of character))
       (format t "~a instinctively squats down as ~a accidentally messes ~aself in battle~%"
               (name-of character)
               (if (malep character) "he" "she")
               (if (malep character) "him" "her"))
-      (mess :messer character)
+      (let ((mess (mess :messer character)))
+        (when (> (getf mess :leak-amount) 0)
+          (f:fmt t (name-of character) " starts to make a mess on the floor" #\Newline)))
       (set-status-condition 'yadfa-status-conditions:messing character))
     t))
 (macro-level `(progn ,@(iter (for i in '("BLADDER" "BOWELS"))
@@ -1140,14 +1144,18 @@
                      name
                      heshe
                      himher)
-             (wet :wetter character)
+             (let ((wet (wet :wetter character)))
+               (when (> (getf wet :leak-amount) 0)
+                 (f:fmt t "A puddle starts to form at " (name-of character) "'s feet" #\Newline)))
              (set-status-condition 'yadfa-status-conditions:wetting character))
            (when (>= bowels/contents bowels/maximum-limit)
              (format t "~a involuntarily squats down as ~a accidentally messes ~aself in battle~%"
                      name
                      heshe
                      himher)
-             (mess :messer character)
+             (let ((mess (mess :messer character)))
+               (when (> (getf mess :leak-amount) 0)
+                 (f:fmt t (name-of character) " starts to make a mess on the floor" #\Newline)))
              (set-status-condition 'yadfa-status-conditions:messing character))
            t)
           ((and watersport-limit

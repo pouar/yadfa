@@ -186,3 +186,80 @@
       (progn (mess :messer user :clothes (wear-of target))
              (format t "~a gets a freaked expression on ~a face as ~a messes ~a's pamps~%" (name-of target) (if (malep target) "his" "her")
                      (name-of user) (name-of target)))))
+(defclass fart (move) ()
+  (:default-initargs
+   :name "fart"
+   :description "Grosses out the enemies with gas. If poisoned or if desperate, you may end up messing yourself instead."
+   :energy-cost 10))
+(defmethod attack ((target base-character) (user base-character) (attack fart))
+  (format t "~a used ~a~%" (name-of user) (name-of attack))
+  (write-line "But it failed."))
+(defmethod attack ((target base-character) (user potty-character) (attack fart))
+  (format t "~a squats down and tries to use ~a~%" (name-of user) (name-of attack))
+  (cond
+    ((and (>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
+          (find 'yadfa-status-conditions:poisoned (getf (status-conditions-of *battle*) user)
+                :test (lambda (o e)
+                        (typep e o))))
+     (mess :messer user)
+     (let* ((padding (get-babyish-padding user))
+            (malep (malep user))
+            (name (name-of user))
+            (his/her (if malep "his" "her"))
+            (he/she (if malep "he" "she"))
+            (himherself (if malep "himself" "herself")))
+       (f:fmt t "*SPLORCH*" #\Newline
+              "*" name " grabs the back of " (case padding
+                                               (diaper (f:fmt nil his/her " diaper"))
+                                               (pullup (f:fmt nil his/her " pullups"))
+                                               (closed-bottoms (f:fmt nil his/her " pants"))
+                                               (t (f:fmt nil himherself)))
+              " with a bright red blush on " (if malep "his" "her") " face when " he/she " realized " he/she " just messed " himherself)
+       (iter (for i in (if (typep user 'team-member)
+                           (enemies-of *battle*)
+                           (team-of *game*)))
+         (set-status-condition 'yadfa-status-conditions:laughing i)
+         (f:fmt* t (name-of i) " is laughing at " name #\Newline))))
+    ((and (>= (bowels/contents-of user) (bowels/potty-desperate-limit-of user)))
+     (mess :messer user)
+     (let* ((padding (get-babyish-padding user))
+            (name (name-of user))
+            (malep (malep user))
+            (his/her (if malep "his" "her"))
+            (he/she (if malep "he" "she"))
+            (himherself (if malep "himself" "herself")))
+       (f:fmt t "*" name " grabs the back of " (case padding
+                                                 (diaper (f:fmt nil his/her " diaper"))
+                                                 (pullup (f:fmt nil his/her " pullups"))
+                                                 (closed-bottoms (f:fmt nil his/her " pants"))
+                                                 (t (f:fmt nil himherself)))
+              " with a bright red blush on " (if malep "his" "her") " face when " he/she " realized " he/she " just messed " himherself #\Newline)
+       (iter (for i in (if (typep user 'team-member)
+                           (enemies-of *battle*)
+                           (team-of *game*)))
+         (set-status-condition 'yadfa-status-conditions:laughing i)
+         (f:fmt* t (name-of i) " is laughing at " name #\Newline))))
+    ((>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
+     (f:fmt t "*FRRRT*" #\Newline
+            "*" (name-of user) " sighs with relief")
+     (iter (for i in (if (typep user 'team-member)
+                         (enemies-of *battle*)
+                         (team-of *game*)))
+       (set-status-condition 'yadfa-status-conditions:skunked i)
+       (f:fmt* t (name-of i) " is grossed out by the smell" #\Newline)))
+    (t (f:fmt t "Nothing happened" #\Newline))))
+(defclass spank (move) ()
+  (:default-initargs
+   :name "Spank"
+   :energy-cost 5
+   :power 10
+   :description "Breathes fire at the enemy"))
+(defmethod attack ((target base-character) (user base-character) (self spank))
+  (let ((a (calculate-damage target user (power-of self)))
+        (times (random 10)))
+    (f:fmt t
+           (name-of user) " bends " (name-of target) " over " (if (malep user) "his" "her") " knee and gives " (name-of target) " a spanking" #\Newline
+           (:times "whap " times) #\Newline
+           "Hit " times " times" #\Newline)
+    (decf (health-of target) (* a times))
+    a))

@@ -354,7 +354,9 @@
    #:bite
    #:teleporting-flood
    #:teleporting-mess
-   #:boop)
+   #:boop
+   #:fart
+   #:spank)
   (:documentation "Contains all the moves in the game")
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands) (:f :fmt)))
@@ -568,7 +570,8 @@
    #:mushed
    #:laughing
    #:skunked
-   #:pantsed)
+   #:pantsed
+   #:poisoned)
   (:documentation "Contains all the status conditions in the game")
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands) (:f :fmt)))
