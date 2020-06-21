@@ -192,10 +192,10 @@
    :description "Grosses out the enemies with gas. If poisoned or if desperate, you may end up messing yourself instead."
    :energy-cost 10))
 (defmethod attack ((target base-character) (user base-character) (attack fart))
-  (format t "~a used ~a~%" (name-of user) (name-of attack))
-  (write-line "But it failed."))
+  (f:fmt t (name-of user) " used " (name-of attack) #\Newline
+         "But it failed." #\Newline))
 (defmethod attack ((target base-character) (user potty-character) (attack fart))
-  (format t "~a squats down and tries to use ~a~%" (name-of user) (name-of attack))
+  (f:fmt t (name-of user) " squats down and tries to use " (name-of attack) #\Newline)
   (cond
     ((and (>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
           (find 'yadfa-status-conditions:poisoned (getf (status-conditions-of *battle*) user)
@@ -209,12 +209,12 @@
             (he/she (if malep "he" "she"))
             (himherself (if malep "himself" "herself")))
        (f:fmt t "*SPLORCH*" #\Newline
-              "*" name " grabs the back of " (case padding
+              name " grabs the back of " (case padding
                                                (diaper (f:fmt nil his/her " diaper"))
                                                (pullup (f:fmt nil his/her " pullups"))
                                                (closed-bottoms (f:fmt nil his/her " pants"))
                                                (t (f:fmt nil himherself)))
-              " with a bright red blush on " (if malep "his" "her") " face when " he/she " realized " he/she " just messed " himherself)
+              " with a bright red blush on " (if malep "his" "her") " face when " he/she " realized " he/she " just messed " himherself #\Newline)
        (iter (for i in (if (typep user 'team-member)
                            (enemies-of *battle*)
                            (team-of *game*)))
@@ -228,7 +228,7 @@
             (his/her (if malep "his" "her"))
             (he/she (if malep "he" "she"))
             (himherself (if malep "himself" "herself")))
-       (f:fmt t "*" name " grabs the back of " (case padding
+       (f:fmt t name " grabs the back of " (case padding
                                                  (diaper (f:fmt nil his/her " diaper"))
                                                  (pullup (f:fmt nil his/her " pullups"))
                                                  (closed-bottoms (f:fmt nil his/her " pants"))
@@ -240,8 +240,8 @@
          (set-status-condition 'yadfa-status-conditions:laughing i)
          (f:fmt* t (name-of i) " is laughing at " name #\Newline))))
     ((>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
-     (f:fmt t "*FRRRT*" #\Newline
-            "*" (name-of user) " sighs with relief")
+     (f:fmt t "FRRRT" #\Newline
+            (name-of user) " sighs with relief" #\Newline)
      (iter (for i in (if (typep user 'team-member)
                          (enemies-of *battle*)
                          (team-of *game*)))
