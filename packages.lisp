@@ -105,15 +105,9 @@
    #:get-move
    #:process-potty-dance-check
    #:clear-configuration-hook
-   #:dispatch-attack
-   #:dispatch-default-attack
-   #:dispatch-battle-script
-   #:dispatch-process-battle-accident
-   #:dispatch-process-potty-dance
-   #:dispatch-use-script
-   #:dispatch-wear-script
-   #:dispatch-wield-script
    ;;methods
+   #:describe-diaper-wear-usage
+   #:describe-diaper-inventory-usage
    #:get-process-potty-action-type
    #:output-process-potty-text
    #:get-babyish-padding
@@ -122,6 +116,7 @@
    #:process-potty-dance
    #:event-attributes
    #:battle-script
+   #:condition-script
    #:attack
    #:default-attack
    #:use-script
@@ -200,7 +195,6 @@
    #:last-process-potty-time-of
    #:process-battle-accident-of
    #:process-potty-dance-of
-   #:battle-script-of
    #:blocks-turn-of
    #:duration-of
    #:stat-delta-of
@@ -273,20 +267,15 @@
    #:ammo-of
    #:ammo-type-of
    #:ammo-capacity-of
-   #:cant-use-predicate-of
+   #:cant-use-p
    #:items-of
    #:actions-of
    #:plural-name-of
    #:value-of
-   #:attack-script-of
-   #:default-attack-of
    #:default-attack-power-of
    #:wear-stats-of
    #:wield-stats-of
    #:special-actions-of
-   #:use-script-of
-   #:wield-script-of
-   #:wear-script-of
    #:thickness-of
    #:thickness-capacity-of
    #:thickness-capacity-threshold-of
@@ -436,6 +425,7 @@
    #:kurikia-thick-diaper
    #:thick-cloth-diaper
    #:thick-diaper
+   #:gem-diaper
    #:infinity-diaper
    #:temple-diaper
    #:cursed-diaper

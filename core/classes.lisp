@@ -46,12 +46,6 @@
     :type real
     :accessor default-attack-power-of
     :documentation "The default attack base stat when no attack is selected and no weapon is equipped")
-   (default-attack
-    :initarg :default-attack
-    :accessor default-attack-of
-    :initform nil
-    :type (or null coerced-function)
-    :documentation "The default attack when no attack is selected and no weapon is equipped")
    (level
     :initarg :level
     :initform 2
@@ -123,17 +117,7 @@
     :initform nil
     :accessor wield-of
     :type (or null item)
-    :documentation "Item the character is wielding as a weapon")
-   (process-battle-accident
-    :initarg :process-battle-accident
-    :type (or null coerced-function)
-    :accessor process-battle-accident-of
-    :initform nil)
-   (process-potty-dance
-    :initarg :process-potty-dance
-    :initform nil
-    :type (or null coerced-function)
-    :accessor process-potty-dance-of))
+    :documentation "Item the character is wielding as a weapon"))
   (:documentation "Base class for the characters in the game"))
 (defclass item (yadfa-class attack-mixin)
   ((description
@@ -190,20 +174,6 @@
     :accessor power-of
     :type real
     :documentation "Attack base when used as a melee weapon")
-   (cant-use-predicate
-    :initarg :cant-use-predicate
-    :initform '(lambda (item user &rest keys &key target action &allow-other-keys)
-                (declare (ignorable item user keys target action))
-                nil)
-    :accessor cant-use-predicate-of
-    :type coerced-function
-    :documentation "Function that is used to determine if the player can use this item")
-   (attack-script
-    :initarg :attack-script
-    :initform nil
-    :accessor attack-script-of
-    :type (or null coerced-function)
-    :documentation "Script that runs when attacking with this weapon")
    (wear-stats
     :initarg :wear-stats
     :initform ()
@@ -221,35 +191,28 @@
     :initform ()
     :accessor special-actions-of
     :type list
-    :documentation "Plist of actions that the player sees as actions with a lambda with the lambda-list @code{(item user &key &allow-other-keys)} they can perform with the item, @var{ITEM} is the instance that this slot belongs to, @var{USER} is the user using the item")
-   (use-script
-    :initarg :use-script
-    :initform nil
-    :accessor use-script-of
-    :type (or null coerced-function)
-    :documentation "Function that runs when @var{ITEM} is used on @var{USER}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on.")
-   (wield-script
-    :initarg :wield-script
-    :initform nil
-    :type (or null coerced-function)
-    :accessor wield-script-of
-    :documentation "Function that runs when @var{USER} is wielding @var{ITEM}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on.")
-   (wear-script
-    :initarg :wear-script
-    :initform nil
-    :type (or null coerced-function)
-    :accessor wear-script-of
-    :documentation "Function that runs when @var{USER} is wearing @var{ITEM}. The lambda list is @code{(ITEM USER)} where @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on."))
+    :documentation "Plist of actions that the player sees as actions with a lambda with the lambda-list @code{(item user &key &allow-other-keys)} they can perform with the item, @var{ITEM} is the instance that this slot belongs to, @var{USER} is the user using the item"))
   (:documentation "Something you can store in your inventory and use"))
+(defgeneric cant-use-p (item user target action &rest keys &key &allow-other-keys)
+  (:documentation "Function that is used to determine if the player can use this item")
+  (:method (item user target action &rest keys &key &allow-other-keys)
+    (declare (ignorable item user keys target action))
+    nil))
 (define-condition unusable-item ()
   ((item :initarg :item
          :initform nil))
   (:report (lambda (condition stream)
              (format stream "~s has no ~s method defined" (slot-value condition 'item) 'use-script))))
-(defmethod use-script ((item item) (user base-character))
-  (error 'unusable-item :item item))
-(defmethod wield-script ((item item) (user base-character)))
-(defmethod wear-script ((item item) (user base-character)))
+(defgeneric use-script (item user)
+  (:documentation "Function that runs when @var{ITEM} is used on @var{USER}. @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on.")
+  (:method ((item item) (user base-character))
+    (error 'unusable-item :item item)))
+(defgeneric wield-script (item user)
+  (:documentation "Function that runs when @var{USER} is wielding @var{ITEM}. @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on.")
+  (:method ((item item) (user base-character))))
+(defgeneric wear-script (item user)
+  (:documentation "Function that runs when @var{USER} is wearing @var{ITEM}. @var{ITEM} is the instance of the item and @var{USER} is the user you're using it on.")
+  (:method ((item item) (user base-character))))
 (defclass status-condition (yadfa-class battle-script-mixin)
   ((name
     :initarg :name
@@ -274,12 +237,6 @@
     :accessor accumulative-of
     :type (or unsigned-byte (eql t))
     :documentation "how many of these the user can have at a time, @code{T} if infinite")
-   (battle-script
-    :initarg :battle-script
-    :initform nil
-    :accessor battle-script-of
-    :type (or null coerced-function)
-    :documentation "function that runs at the beginning of the user's turn. @var{USER} is the user with the condition. @var{TARGET} is the enemy of said user, and @var{SELF} is the condition itself")
    (blocks-turn
     :initarg :blocks-turn
     :initform nil
@@ -347,13 +304,7 @@
     :initform ()
     :accessor ai-flags-of
     :type list
-    :documentation "list containing flags that affect the behavior of the AI.")
-   (attack
-    :initarg :attack
-    :initform nil
-    :type (or null coerced-function)
-    :accessor attack-of
-    :documentation "function that performs the move. @var{TARGET} is the enemy that is being attacked and @var{USER} is the one doing the attacking, @var{SELF} is the move itself"))
+    :documentation "list containing flags that affect the behavior of the AI."))
   (:documentation "base class of moves used in battle"))
 (defclass mess-move-mixin (move) ()
   (:documentation "Basically any move that involves messing"))
@@ -539,14 +490,14 @@
          (let ((a (make-instance 'yadfa-moves:watersport)))
            (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of character))
            (format t "*~a uses ~a instead*~%~%" (name-of character) (name-of a))
-           (dispatch-attack (attack-of a) selected-target character a))
+           (attack selected-target character a))
          t)
         ((and (not (typep (get-move attack character) 'yadfa-moves:mudsport))
               (>= (bowels/contents-of character) (bowels/need-to-potty-limit-of character)))
          (let ((a (make-instance 'yadfa-moves:mudsport)))
            (format t "~a: YOU DON'T HAVE ENOUGH BADGES TO TRAIN ME!~%~%" (name-of character))
            (format t "*~a uses ~a instead*~%~%" (name-of character) (name-of a))
-           (dispatch-attack (attack-of a) selected-target character a))
+           (attack selected-target character a))
          t)))
 (defclass ally-silent-potty-training (ally potty-trained-team-member) ())
 (defclass ally-last-minute-potty-training (ally potty-trained-team-member) ())
@@ -1100,13 +1051,7 @@
     :initform 1
     :type (real 0)
     :accessor mudsport-chance-of
-    :documentation "when @var{MUDSPORT-LIMIT} is reached, there is a 1 in @var{MUDSPORT-CHANCE} he'll voluntarily mess himself")
-   (battle-script
-    :initarg :battle-script
-    :type (or null coerced-function)
-    :initform nil
-    :accessor battle-script-of
-    :documentation "function that runs when it's time for the enemy to attack and what the enemy does to attack")))
+    :documentation "when @var{MUDSPORT-LIMIT} is reached, there is a 1 in @var{MUDSPORT-CHANCE} he'll voluntarily mess himself")))
 (defclass enemy (npc)
   ((exp-yield
     :initarg :exp-yield
@@ -1166,13 +1111,13 @@
                 (<= (- bladder/maximum-limit (bladder/contents-of character)) watersport-limit)
                 (< (random (watersport-chance-of character)) 1))
            (let ((a (make-instance 'yadfa-moves:watersport)))
-             (dispatch-attack (attack-of a) (player-of *game*) character a))
+             (attack (player-of *game*) character a))
            t)
           ((and mudsport-limit
                 (<= (- bowels/maximum-limit (bowels/contents-of character)) mudsport-limit)
                 (< (random (mudsport-chance-of character)) 1))
            (let ((a (make-instance 'yadfa-moves:mudsport)))
-             (dispatch-attack (attack-of a) (player-of *game*) character a))
+             (attack (player-of *game*) character a))
            t))))
 (defmethod print-object ((obj enemy) stream)
   (print-unreadable-object (obj stream :type t :identity t)

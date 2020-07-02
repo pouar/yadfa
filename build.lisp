@@ -2,7 +2,6 @@
 #+sbcl
 (declaim (sb-ext:muffle-conditions sb-kernel:redefinition-warning)
          (optimize sb-c::recognize-self-calls))
-#+ecl (declaim (optimize (debug 2) safety))
 #-quicklisp
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
                                        (user-homedir-pathname))))
@@ -41,7 +40,9 @@
 (when (find "immutable" (uiop:command-line-arguments) :test #'string=)
   (setf yadfa::*immutable* t))
 (when (find "docs" (uiop:command-line-arguments) :test #'string=)
-  (ql:quickload :yadfa-reference))
+  (declaim (optimize (debug 1) (safety 1)))
+  (ql:quickload :yadfa-reference)
+  (declaim (optimize (debug 2) safety)))
 (when (probe-file (uiop:merge-pathnames* (make-pathname :name "yadfa") (asdf:component-pathname (asdf:find-system "yadfa"))))
   (delete-file (uiop:merge-pathnames* (make-pathname :name "yadfa") (asdf:component-pathname (asdf:find-system "yadfa")))))
 (asdf:make :yadfa :force (when (find "force" (uiop:command-line-arguments) :test #'string=) t))

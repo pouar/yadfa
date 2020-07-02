@@ -17,12 +17,12 @@
    :name "Monster Energy Drink"
    :description "WARNING! NOT MEANT FOR HUMAN (or furry) CONSUMPTION. Fills up your energy and your bladder."
    :value 100
-   :consumable t
-   :cant-use-predicate '(lambda (item user &rest keys &key target action &allow-other-keys)
-                         (declare (ignorable item user keys target action))
-                         (when (<= (health-of target) 0)
-                           (format t "Does ~a look conscious enough to use that?~%" (name-of target))
-                           t))))
+   :consumable t))
+(defmethod cant-use-p ((item monster-energy-drink) (user base-character) (target base-character) action &rest keys &key &allow-other-keys)
+  (declare (ignorable item user keys target action))
+  (when (<= (health-of target) 0)
+    (format t "Does ~a look conscious enough to use that?~%" (name-of target))
+    t))
 (defmethod use-script ((item monster-energy-drink) (user base-character))
   (declare (ignore item))
   (incf (bladder/contents-of user) 175)
@@ -44,20 +44,21 @@
         (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
             (- (bowels/maximum-limit-of user) (* (bowels/fill-rate-of user) 5))
             (+ (bowels/contents-of user) (bowels/potty-dance-limit-of user)))))
-(defclass potion (consumable) ()
+(defclass consious-mixin (item) ())
+(defmethod cant-use-p ((item consious-mixin) (user base-character) (target base-character) action &key &allow-other-keys)
+  (declare (ignorable item user keys action))
+  (when (<= (health-of target) 0)
+    (format t "Does ~a look conscious enough to use that?~%" (name-of target))
+    t)
+  (when (>= (health-of target) (calculate-stat target :health))
+    (format t "~a's health is already full~%" (name-of target))
+    t))
+(defclass potion (consious-mixin consumable) ()
   (:default-initargs
    :name "Potion"
    :description "Heals 20 HP"
    :value 50
-   :consumable t
-   :cant-use-predicate '(lambda (item user &rest keys &key target action &allow-other-keys)
-                         (declare (ignorable item user keys action))
-                         (when (<= (health-of target) 0)
-                           (format t "Does ~a look conscious enough to use that?~%" (name-of target))
-                           t)
-                         (when (>= (health-of target) (calculate-stat target :health))
-                           (format t "~a's health is already full~%" (name-of target))
-                           t))))
+   :consumable t))
 (defmethod use-script ((item potion) (user base-character))
   (declare (ignore item))
   (incf (health-of user) 20))
@@ -66,47 +67,31 @@
    :name "Revive"
    :description "Bring someone back from the dead with this"
    :value 500
-   :consumable t
-   :cant-use-predicate '(lambda (item user &rest keys &key target action &allow-other-keys)
-                         (declare (ignorable item user keys target action))
-                         (when (> (health-of target) 0)
-                           (format t "Does ~a look unconscious to you?~%" (name-of target))
-                           t))))
+   :consumable t))
+(defmethod cant-use-p ((item revive) (user base-character) (target base-character) action &key &allow-other-keys)
+  (declare (ignorable item user keys target action))
+  (when (> (health-of target) 0)
+    (format t "Does ~a look unconscious to you?~%" (name-of target))
+    t))
 (defmethod use-script ((item revive) (user base-character))
   (declare (ignore item))
   (incf (health-of user) 20))
-(defclass cannibal-corp-meat (consumable) ()
+(defclass cannibal-corp-meat (consious-mixin consumable) ()
   (:default-initargs
    :name "\"CANNIBAL CORP.\" Brand Meat"
    :description "Just like in the music video. Heals 50 HP."
    :value 75
-   :consumable t
-   :cant-use-predicate '(lambda (item user &rest keys &key target action &allow-other-keys)
-                         (declare (ignorable item user keys target action))
-                         (when (<= (health-of target) 0)
-                           (format t "Does ~a look conscious enough to use that?~%" (name-of target))
-                           t)
-                         (when (>= (health-of target) (calculate-stat target :health))
-                           (format t "~a's health is already full~%" (name-of target))
-                           t))))
+   :consumable t))
 (defmethod use-script ((item cannibal-corp-meat) (user base-character))
   (declare (ignore item))
   (incf (bowels/contents-of user) 50)
   (incf (health-of user) 50))
-(defclass maximum-tomato (consumable) ()
+(defclass maximum-tomato (consious-mixin consumable) ()
   (:default-initargs
    :name "Maximum Tomato"
    :description "Restores Full HP"
    :value 50
-   :consumable t
-   :cant-use-predicate '(lambda (item user &rest keys &key target action &allow-other-keys)
-                         (declare (ignorable item user keys target action))
-                         (when (<= (health-of target) 0)
-                           (format t "Does ~a look conscious enough to use that?~%" (name-of target))
-                           t)
-                         (when (>= (health-of target) (calculate-stat target :health))
-                           (format t "~a's health is already full~%" (name-of target))
-                           t))))
+   :consumable t))
 (defmethod use-script ((item maximum-tomato) (user base-character))
   (declare (ignore item))
   (setf (health-of user) (calculate-stat user :health)))
@@ -115,12 +100,12 @@
    :name "Holy Hand Grenade of Antioch"
    :description  "And Saint Attila raised the hand grenade up on high, saying, “O Lord, bless this thy hand grenade. That with it, thou mayest blow thine enemies to tiny bits, in thy mercy” And the Lord did grin, and the people did feast upon the lambs, and sloths, and carp, and anchovies, and orangutans, and breakfast cereals, and fruit bats, and..."
    :value 200
-   :consumable t
-   :cant-use-predicate '(lambda (item user &rest keys &key target action &allow-other-keys)
-                         (declare (ignorable item user keys target action))
-                         (unless *battle*
-                           (write-line "You can only use that in battle")
-                           t))))
+   :consumable t))
+(defmethod cant-use-p ((item holy-hand-grenade) (user base-character) (target base-character) action &key &allow-other-keys)
+  (declare (ignorable item user keys target action))
+  (unless *battle*
+    (write-line "You can only use that in battle")
+    t))
 (defmethod use-script ((item holy-hand-grenade) (user base-character))
   (declare (ignore item))
   (if (or (and (typep user 'team-member) (cdr (team-of *game*)))

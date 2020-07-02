@@ -13,3 +13,19 @@
 (defclass skunk-boop-mixin (base-character) ())
 (defmethod change-class-text ((class adoptable-enemy))
   (format nil "~a was adopted" (name-of class)))
+(defclass ghost (enemy) ()
+  (:default-initargs
+   :name "Ghost"
+   :description "Woooo, A Ghost"
+   :species "Ghost"
+   :male t
+   :attributes (list :not-ticklish t)
+   ;; the game can't tell the difference between ghosts and nonghosts when calculating the damage
+   ;; Unlike Pokemon, this game's engine doesn't hardcode special treatment like `(if (ghostp) (do-ghost-stuff) (do-normal-stuff))'
+   ;; so just give him infinity defense and health
+   :base-stats (list :health most-positive-fixnum
+                     :attack 0
+                     :defense float-features:long-float-positive-infinity
+                     :energy most-positive-fixnum
+                     :speed 120)
+   :moves (list (make-instance 'yadfa-moves:ghost-tickle) (make-instance 'yadfa-moves:ghost-mush) (make-instance 'yadfa-moves:ghost-squish))))

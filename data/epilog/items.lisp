@@ -20,11 +20,7 @@
 
      ;; these may break the save file since functions don't serialize very well
      ;; and they will never get called after the enemy is caught, so just delete these
-     (setf (yadfa-enemies:catch-chance-of target) nil
-           (battle-script-of target) nil
-           (default-attack-of target) nil
-           (process-battle-accident-of target) nil
-           (process-potty-dance-of target) nil)
+     (setf (yadfa-enemies:catch-chance-of target) nil)
 
      (push target (contained-enemies-of item))
      (unless (getf (special-actions-of item) :take-items)
@@ -103,11 +99,7 @@
 
      ;; these may break the save file since functions don't serialize very well
      ;; and they will never get called after the enemy is caught, so just delete these
-     (setf (yadfa-enemies:catch-chance-of target) nil
-           (battle-script-of target) nil
-           (default-attack-of target) nil
-           (process-battle-accident-of target) nil
-           (process-potty-dance-of target) nil)
+     (setf (yadfa-enemies:catch-chance-of target) nil)
 
      (push target (contained-enemies-of item)))))
 (defunassert yadfa-battle-commands:catch-enemy (&optional (target 'yadfa-enemies:catchable-enemy) (item 'enemy-catcher))

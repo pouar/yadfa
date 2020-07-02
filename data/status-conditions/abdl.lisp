@@ -7,7 +7,7 @@
    :description "User is currently wetting himself/herself"
    :duration 1
    :blocks-turn t))
-(defmethod battle-script ((user base-character) (self wetting))
+(defmethod condition-script ((user base-character) (self wetting))
   (declare (ignore self))
   (format t "~a is too busy wetting ~aself to fight~%" (name-of user) (if (malep user) "his" "her"))
   (setf (bladder/contents-of user) 0))
@@ -18,7 +18,7 @@
    :description "User is currently messing himself/herself"
    :duration 1
    :blocks-turn t))
-(defmethod battle-script ((user base-character) (self messing))
+(defmethod condition-script ((user base-character) (self messing))
   (declare (ignore self))
   (format t "~a is too busy messing ~aself to fight~%" (name-of user) (if (malep user) "his" "her"))
   (setf (bowels/contents-of user) 0))
@@ -30,7 +30,7 @@
    :duration t
    :stat-multiplier (list :speed 1/2)
    :blocks-turn t))
-(defmethod battle-script ((user base-character) (self mushed))
+(defmethod condition-script ((user base-character) (self mushed))
   (cond ((<= (getf (calculate-diaper-usage user) :messiness) 0)
          (setf (getf (status-conditions-of *battle*) user) (remove self (getf (status-conditions-of *battle*) user))))
         ((< (random 4) 1)
@@ -50,7 +50,7 @@
    :description "User is laughing"
    :duration 1
    :blocks-turn t))
-(defmethod battle-script ((user base-character) (self laughing))
+(defmethod condition-script ((user base-character) (self laughing))
   (declare (ignore self))
   (format t "~a is too busy laughing to fight~%" (name-of user))
   (when (or (>= (bladder/contents-of user) (bladder/potty-dance-limit-of user))

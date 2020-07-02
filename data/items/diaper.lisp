@@ -198,6 +198,71 @@
    :value 200
    :name "Cloth Diaper"
    :description "A poofy diaper that can hold an accident. Can be reused."))
+(defclass gem-diaper (yadfa:diaper undies) ()
+  (:default-initargs
+   :value 400
+   :sogginess-capacity 5000
+   :messiness-capacity 4000
+   :disposable nil
+   :sellable t
+   :name "Magic Gem Diaper"
+   :description "A diaper from the Spyro universe that has pictures of gems on it who's value represent how much it is used. It starts out with 4 magenta gems on the front and another 4 on the back. Every time it is used, the amount of gems go down, letting you know exactly how full it is."))
+(defun describe-gems (count)
+  (flet ((format-pair (pair)
+           (destructuring-bind (color value) pair
+             (f:fmt nil value " " color (:format " gem~P" value))))
+         (calculate-gems (amount)
+           (declare (type fixnum amount))
+           (iter (declaring simple-string for color in '("magneta" "yellow" "purple" "green" "red"))
+             (declaring fixnum for value in '(25 10 5 2 1))
+             (declaring fixnum with ret = 0)
+             (setf ret (iter (declaring fixnum with ret = 0)
+                         (while (>= amount value))
+                         (incf ret)
+                         (decf amount value)
+                         (finally (return ret))))
+             (when (> ret 0)
+               (collect (list color ret)))))
+         (text-length (text)
+           (s:nlet rec ((count 0)
+                        (text text))
+             (if (>= count 2)
+                 count
+                 (rec (1+ count) (cdr text))))))
+    (let* ((text (calculate-gems count))
+           (text-length (text-length text)))
+      (declare (type list text))
+      (f:fmt nil (:esc (case text-length
+                         (2
+                          (:fmt (:join (", " ", and ")
+                                       (iter (for i in text)
+                                         (collect (format-pair i))))))
+                         (1
+                          (:fmt (:join " and "
+                                       (iter (for i in text)
+                                         (collect (format-pair i))))))
+                         (0
+                          (:fmt (format-pair (car text))))))))))
+(defmethod describe-diaper-wear-usage ((item gem-diaper))
+  (let ((wet-gems (round (- 100 (* (/ (sogginess-of item) (sogginess-capacity-of item)) 100))))
+        (mess-gems (round (- 100 (* (/ (messiness-of item) (messiness-capacity-of item)) 100)))))
+    (declare (type fixnum wet-gems mess-gems))
+    (f:fmt t "The front of the diaper has a picture of " (describe-gems wet-gems) #\Newline
+           (:esc (when (>= (sogginess-of item) (sogginess-capacity-of item))
+                   (:fmt "Pee is dripping down your legs" #\Newline)))
+           "The back of the diaper has a picture of " (describe-gems mess-gems) #\Newline
+           (:esc (when (>= (messiness-of item) (messiness-capacity-of item))
+                   (:fmt "Poop is leaking down the leg guards" #\Newline))))))
+(defmethod describe-diaper-inventory-usage ((item gem-diaper))
+  (let ((wet-gems (round (- 100 (* (/ (sogginess-of item) (sogginess-capacity-of item)) 100))))
+        (mess-gems (round (- 100 (* (/ (messiness-of item) (messiness-capacity-of item)) 100)))))
+    (declare (type fixnum wet-gems mess-gems))
+    (f:fmt t "The front of the diaper has a picture of " (describe-gems wet-gems) #\Newline
+           (:esc (when (>= (sogginess-of item) (sogginess-capacity-of item))
+                   (:fmt "It is totally drenched" #\Newline)))
+           "The back of the diaper has a picture of " (describe-gems mess-gems) #\Newline
+           (:esc (when (>= (messiness-of item) (messiness-capacity-of item))
+                   (:fmt "Diaper is clearly full" #\Newline))))))
 (defclass temple-diaper (cloth-mixin yadfa:diaper) ()
   (:default-initargs
    :name "Temple Diaper"

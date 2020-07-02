@@ -7,8 +7,8 @@
    :species "Magikarp"
    :male (a:random-elt '(t nil))
    :bitcoins-per-level 10))
-(defmethod default-attack ((target team-member) (user magikarp))
-  (declare (ignore target))
+(defmethod attack ((target team-member) (user magikarp) (attack null))
+  (declare (ignore target attack))
   (format t "~a uses Splash, obviously it had no effect. What did you think was going to happen?" (name-of user)))
 (defmethod battle-script ((self magikarp) (target base-character))
-  (dispatch-default-attack (default-attack-of self) target self))
+  (attack target self nil))
