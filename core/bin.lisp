@@ -202,11 +202,10 @@ You can also specify multiple directions, for example @code{(move :south :south)
       (when inventory
         (format-items (inventory-of (player-of *game*)) inventory))
       (when describe-zone
-        (format t "~a~%" (get-zone-text (description-of (cond ((typep describe-zone 'zone)
-                                                               describe-zone)
-                                                              ((typep describe-zone 'list)
-                                                               (get-zone describe-zone))
-                                                              (t (position-of (player-of *game*))))))))
+        (format t "~a~%" (get-zone-text (description-of (typecase describe-zone
+                                                          (zone describe-zone)
+                                                          (list (get-zone describe-zone))
+                                                          (t (get-zone (position-of (player-of *game*)))))))))
       (when inventory-group
         (let ((a ()))
           (iter (for i in (inventory-of (player-of *game*)))
@@ -214,9 +213,9 @@ You can also specify multiple directions, for example @code{(move :south :south)
               (if (getf a (class-name (class-of i)))
                   (incf (second (getf a (class-name (class-of i)))))
                   (setf (getf a (class-name (class-of i))) (list (name-of (make-instance (class-name (class-of i)))) 1)))))
-          (format t "~30a~40a~10a" "Class Name" "Name" "Quantity")
+          (format t "~30a~40a~10a~%" "Class Name" "Name" "Quantity")
           (iter (for (key value) on a by #'cddr)
-            (apply #'format t "~30a~40a~10a" key value))))
+            (apply #'format t "~30a~40a~10a~%" key value))))
       (when wear
         (cond ((not user)
                (format-items (wear-of (player-of *game*)) wear (player-of *game*))
