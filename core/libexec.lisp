@@ -22,7 +22,9 @@
   (not (list-length-< length list)))
 (define-condition invalid-user-input (simple-condition) ()
   (:documentation "Condition that signals when the player enters an invalid value. Their fault."))
+;;; * TODO Come up with a better docstring instead of labeling a cat as a cat
 (defmacro handle-user-input (bindings (stream &rest forms) &body body)
+  "Macro used to prompt the user for input using restarts when the user enters the wrong input. @var{FORMS} is a list containing the lambda list @code{(case (&optional set-value) &key (error-text \"\") (prompt-text \"\"))}"
   (a:with-gensyms (tag)
     `(tagbody
         ,tag
