@@ -294,20 +294,32 @@
      (c:*application-frame*
       ,@body)
      (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame
+                                                               :width 1024 :height 768
                                                                :emacs-frame-lambda (lambda (frame)
                                                                                      (let ((*query-io* (clim:frame-query-io frame)))
                                                                                        ,@body)))))))
+(defmacro with-effective-frame (&body body)
+  `(cond
+     (c:*application-frame*
+      ,@body)
+     (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame
+                                                               :width 1024 :height 768
+                                                               :emacs-frame-lambda (lambda (frame)
+                                                                                     (let ((*query-io* (clim:frame-query-io frame)))
+                                                                                       ,@body
+                                                                                       (read-char *query-io*))))))))
 (defmacro present-with-effective-frame (&body body)
   `(cond
      (c:*application-frame*
       (push (clim:updating-output (*query-io*)
               ,@body)
             yadfa-clim::*records*))
-     (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame :width 1024 :height 768
-                                                                                        :emacs-frame-lambda (lambda (frame)
-                                                                                                              (let ((*query-io* (clim:frame-query-io frame)))
-                                                                                                                ,@body
-                                                                                                                (read-char *query-io*))))))))
+     (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame
+                                                               :width 1024 :height 768
+                                                               :emacs-frame-lambda (lambda (frame)
+                                                                                     (let ((*query-io* (clim:frame-query-io frame)))
+                                                                                       ,@body
+                                                                                       (read-char *query-io*))))))))
 (defmacro updating-present-with-effective-frame
     ((stream
       &key (unique-id nil unique-id-supplied-p) (id-test nil id-test-supplied-p)
@@ -327,11 +339,12 @@
                                    ,@(and record-type-supplied-p (and `(:record-type ,record-type))))
               ,@body)
             yadfa-clim::*records*))
-     (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame :width 1024 :height 768
-                                                                                        :emacs-frame-lambda (lambda (frame)
-                                                                                                              (let ((*query-io* (clim:frame-query-io frame)))
-                                                                                                                ,@body
-                                                                                                                (read-char *query-io*))))))))
+     (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame
+                                                               :width 1024 :height 768
+                                                               :emacs-frame-lambda (lambda (frame)
+                                                                                     (let ((*query-io* (clim:frame-query-io frame)))
+                                                                                       ,@body
+                                                                                       (read-char *query-io*))))))))
 (declaim (ftype (function ((or symbol list)) list) trigger-event))
 (defunassert trigger-event (event-ids)
     (event-ids (or symbol list))

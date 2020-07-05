@@ -52,6 +52,7 @@
    #:defonesie
    #:make-pocket-zone
    #:accept-with-effective-frame
+   #:with-effective-frame
    #:present-with-effective-frame
    #:updating-present-with-effective-frame
    ;;functions
