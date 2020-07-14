@@ -140,7 +140,7 @@
    :power 60
    :description "Breathes fire at the enemy"))
 (defmethod attack ((target base-character) (user base-character) (self fire-breath))
-  (let ((a (calculate-damage target user (power-of self))))
+  (let ((a (calculate-damage target user self)))
     (format t "~a used ~a~%" (name-of user) (name-of self))
     (decf (health-of target) a)
     a))
@@ -154,7 +154,7 @@
   (format t "~a used ~a~%" (name-of user) (name-of self))
   (let* ((m (mess :messer user))
          (c (calculate-diaper-usage user))
-         (a (calculate-damage target user (power-of self))))
+         (a (calculate-damage target user self)))
     (if (> (getf m :mess-amount) 0)
         (format t "~a sits on ~a's face and messes~%" (name-of user) (name-of target))
         (format t "~a sits on ~a's face~%" (name-of user) (name-of target)))
@@ -255,7 +255,7 @@
    :power 10
    :description "Breathes fire at the enemy"))
 (defmethod attack ((target base-character) (user base-character) (self spank))
-  (let ((a (calculate-damage target user (power-of self)))
+  (let ((a (calculate-damage target user self))
         (times (random 10)))
     (f:fmt t
            (name-of user) " bends " (name-of target) " over " (if (malep user) "his" "her") " knee and gives " (name-of target) " a spanking" #\Newline
