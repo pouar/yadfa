@@ -15,8 +15,10 @@
 (defmacro do-push (item &rest places)
   (a:once-only (item)
     `(progn ,@(loop for place in places collect `(push ,item ,place)))))
+(declaim (ftype (function (unsigned-byte sequence) sequence) remove-nth))
 (defun remove-nth (n sequence)
   (remove-if (constantly t) sequence :start n :count 1))
+(declaim (ftype (function (list t unsigned-byte) list)))
 (defun insert (list value n)
   (if (<= n 0)
       (cons value list)
@@ -35,6 +37,7 @@ the result of calling @code{SUSTITUTE} with @var{OLD}, @var{NEW}, place, and the
   remove-if/swapped-arguments
   "Modify-macro for @code{REMOVE-IF}. Sets place designated by the first argument to
 the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYWORD-ARGUMENTS}.")
+(declaim (ftype (function (real real) real) random-from-range))
 (defun random-from-range (start end)
   (+ start (random (+ 1 (- end start)))))
 (defun type-specifier-p (type-specifier)
@@ -60,6 +63,7 @@ the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYW
                                                              class))
                                                     (and (listp type-specifier)
                                                          (typep (car type-specifier) '(and symbol (not keyword))))))
+(declaim (ftype (function (t) (or null function)) coerced-function-p))
 (defun coerced-function-p (form)
   "checks whether the type is a lambda expression or function"
   (handler-case (coerce form 'function)

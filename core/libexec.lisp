@@ -185,6 +185,7 @@
     (declaring fixnum for j upfrom 0)
     (when (typep i type)
       (collect j))))
+(declaim (ftype (function ((or list symbol)) (values boolean &optional)) finished-events unfinished-events))
 (defunassert finished-events (events)
     (events (or list symbol))
   (iter (declaring (or list symbol) for event in (a:ensure-list events))
@@ -371,7 +372,7 @@
                                                                                      (let ((*query-io* (clim:frame-query-io frame)))
                                                                                        ,@body
                                                                                        (read-char *query-io*))))))))
-(declaim (ftype (function ((or symbol list)) list) trigger-event))
+(declaim (ftype (function ((or symbol list)) (values list &optional)) trigger-event))
 (defunassert trigger-event (event-ids)
     (event-ids (or symbol list))
   (iter (declaring symbol for event-id in (a:ensure-list event-ids))

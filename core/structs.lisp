@@ -1,10 +1,11 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa"; coding: utf-8-unix; -*-
 (in-package :yadfa)
+(declaim (inline make-action action-documentation action-lambda action-p))
 (defstruct action
   "An action for a prop or item"
   (documentation nil :type (or null simple-string))
   (lambda '(lambda (prop))
-    :type (or list symbol function)))
+    :type coerced-function))
 (defmethod documentation ((x action) (doc-type (eql t)))
   (action-documentation x))
 (defmethod describe-object ((object action) stream)
