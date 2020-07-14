@@ -17,7 +17,36 @@
   (:documentation "All the classes that are part of the game's core inherit this class"))
 (defclass battle-script-mixin () ())
 (defclass attack-mixin () ())
-(defclass base-character (yadfa-class)
+(defclass element-type-metaclass (standard-class) ((name :initform nil)))
+(defmethod name-of ((class element-type-metaclass))
+  (or (slot-value class 'name) (class-name class)))
+(defmethod c2mop:validate-superclass ((class element-type-metaclass) (superclass standard-class)) t)
+(defmethod c2mop:validate-superclass ((class standard-class) (superclass element-type-metaclass))
+  (error 'simple-error :format-control "Either you didn't use ~s to define ~s or you tried to inherit a class not defined with ~s" :format-arguments `(define-type ,(class-name class) define-type)))
+(defclass element-type () () (:metaclass element-type-metaclass))
+(defclass element-type-mixin () ((element-type :accessor element-type-of :initform nil :initarg :element-type)))
+(defmethod print-object ((o element-type) s)
+  (let ((class (slot-value (class-of o) 'name)))
+    (if class
+        (print-unreadable-object (o s :type t :identity t)
+          (write class :stream s))
+        (call-next-method))))
+(defgeneric coerce-element-type (element)
+  (:method ((element-type (eql nil)))
+    nil)
+  (:method ((element-type symbol))
+    (make-instance element-type))
+  (:method ((element-type element-type))
+    element-type))
+(defgeneric type-match (source target)
+  (:documentation "Used to determine the effectiveness of element type @var{SOURCE} against element type @var{TARGET}. Valid return values are @code{NIL}, @code{:SUPER-EFFECTIVE}, @code{:NOT-VERY-EFFECTIVE}, and @code{:NO-EFFECT}, which represent the effectiveness")
+  (:method (source target) (type-match (coerce-element-type source) (coerce-element-type target)))
+  (:method ((source element-type) (target element-type)) nil)
+  (:method ((source (eql nil)) target)
+    nil)
+  (:method (source (target (eql nil)))
+    nil))
+(defclass base-character (yadfa-class element-type-mixin)
   ((name
     :initarg :name
     :initform :missingno.
@@ -274,7 +303,7 @@
     :accessor persistentp
     :documentation "Whether items or moves that cure statuses cure this"))
   (:documentation "Base class for all the status conditions "))
-(defclass move (yadfa-class attack-mixin)
+(defclass move (yadfa-class attack-mixin element-type-mixin)
   ((name
     :initarg :name
     :initform :-

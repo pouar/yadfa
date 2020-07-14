@@ -55,6 +55,8 @@
    #:with-effective-frame
    #:present-with-effective-frame
    #:updating-present-with-effective-frame
+   #:defmatch
+   #:define-type
    ;;functions
    #:finished-events
    #:unfinished-events
@@ -124,6 +126,8 @@
    #:wear-script
    #:wield-script
    #:toggle-onesie
+   #:type-match
+   #:coerce-element-type
    ;;constructors
    #:make-action
    ;;classes
@@ -193,6 +197,7 @@
    #:skin-of
    #:config-of
    #:stairs-of
+   #:element-type-of
    #:last-process-potty-time-of
    #:process-battle-accident-of
    #:process-potty-dance-of

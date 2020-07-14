@@ -152,6 +152,32 @@
                      '<))
           1)
        (or (eq attack t) (not (typep (get-move attack character) '(or mess-move-mixin wet-move-mixin))))))
+(defmacro defmatch (source target &body return)
+  (flet ((arg (arg sym)
+           (if (typep arg '(and list (not null)))
+               arg
+               (list (a:make-gensym sym) arg))))
+    `(progn (defmethod type-match (,(arg source 'source)
+                                   ,(arg target 'target))
+              ,@return)
+            t)))
+(defmacro define-type (name (&rest superclasses) (&rest slot-specifiers) &rest class-options)
+  `(progn (defclass ,name (,@superclasses element-type) ,slot-specifiers
+            (:metaclass element-type-metaclass)
+            ,@(iter (for class-option in class-options)
+                (unless (s:memq (car class-option) '(:super-effective :not-very-effective :no-effect :element-name))
+                  (collect class-option))))
+          ,@(iter (for class-option in class-options)
+              (let ((option-name (car class-option)))
+                (when (s:memq option-name '(:super-effective :not-very-effective :no-effect))
+                  (appending (iter (for target in (cdr class-option))
+                               (collect `(unless (find-class ',target nil)
+                                           (defclass ,target (element-type) () (:metaclass element-type-metaclass))))
+                               (collect `(defmatch ,name ,target ,option-name)))))
+                (collect `(setf (slot-value (find-class ',name) 'name) ,(if (eq option-name :element-name)
+                                                                            (second class-option)
+                                                                            nil)))))
+          t))
 (defunassert get-positions-of-type (type list)
     (type type-specifier
           list list)
@@ -387,7 +413,7 @@
       (format t "~a received ~a damage~%" (name-of target) a)
       a))
   (:method ((target base-character) (user base-character) (attack move))
-    (let ((a (calculate-damage target user (power-of attack))))
+    (let ((a (calculate-damage target user attack)))
       (format t "~a used ~a~%" (name-of user) (name-of attack))
       (decf (health-of target) a)
       (format t "~a received ~a damage~%" (name-of target) a)
@@ -3314,11 +3340,7 @@
                             * (level-of user))
                        / 100)
                   + 5))))
-(declaim (ftype (function (base-character base-character real) (values real real &optional)) calculate-damage))
-(defunassert calculate-damage (target user attack-base)
-    (user base-character
-          target base-character
-          attack-base real)
+(defmethod calculate-damage ((target base-character) (user base-character) (attack real))
   "Figures out the damage dealt, we use the formula
 
  @mathjax{\\left({\\left({2 \\times level \\over 5}+2\\right) \\times attackbase \\times {attack \\over defense} \\over 50}+2\\right) \\times {randomrange \\over 100}}
@@ -3334,10 +3356,47 @@ attack is @code{(calculate-stat @var{user} :attack)}
 defense is @code{(calculate-stat @var{user} :defense)}
 
 randomrange is @code{(random-from-range 85 100)}"
-  (round (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ 2 * (level-of user)) / 5) + 2) * attack-base * (u:$ (calculate-stat user :attack) / (calculate-stat target :defense)))
+  (round (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ 2 * (level-of user)) / 5) + 2) * attack * (u:$ (calculate-stat user :attack) / (calculate-stat target :defense)))
                         / 50)
                    + 2)
               * (u:$ (random-from-range 85 100) / 100))))
+(defmethod calculate-damage ((target base-character) (user base-character) (attack move))
+  "Figures out the damage dealt, we use the formula
+
+ @mathjax{\\left({\\left({2 \\times level \\over 5}+2\\right) \\times attackbase \\times {attack \\over defense} \\over 50}+2\\right) \\times {randomrange \\over 100}}
+
+ which is the same as Pokèmon
+
+level is @code{(level-of @var{user})}
+
+attackbase is @var{attack-base}
+
+attack is @code{(calculate-stat @var{user} :attack)}
+
+defense is @code{(calculate-stat @var{user} :defense)}
+
+randomrange is @code{(random-from-range 85 100)}"
+  (let ((attack-element-type (element-type-of attack))
+        (target-element-types (element-type-of target))
+        (user-element-types (element-type-of user)))
+    (round (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ 2 * (level-of user)) / 5) + 2) * (power-of attack) * (u:$ (calculate-stat user :attack) / (calculate-stat target :defense)))
+                          / 50)
+                     + 2)
+                * (* (u:$ (random-from-range 85 100) / 100)
+                     (if (member :no-effect target-element-types
+                                 :test (lambda (o e)
+                                         (eq o (type-match attack-element-type e))))
+                         0
+                         (expt 2 (iter (with ret = 0) (for target-element-type in target-element-types)
+                                   (case (type-match attack-element-type target-element-type)
+                                     (:super-effective (incf ret))
+                                     (:not-very-effective (decf ret))
+                                     (:no-effect (error "This should not happen")))
+                                   (finally (return ret)))))
+                     (if (find attack-element-type user-element-types
+                                 :key 'coerce-element-type)
+                         1.5
+                         1))))))
 (defun present-stats (user)
   (updating-present-with-effective-frame (*query-io* :unique-id `(stats% ,user) :id-test #'equal)
     (clim:updating-output (*query-io*)
