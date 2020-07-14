@@ -46,7 +46,7 @@
             (+ (bowels/contents-of user) (bowels/potty-dance-limit-of user)))))
 (defclass consious-mixin (item) ())
 (defmethod cant-use-p ((item consious-mixin) (user base-character) (target base-character) action &key &allow-other-keys)
-  (declare (ignorable item user keys action))
+  (declare (ignorable item user action))
   (when (<= (health-of target) 0)
     (format t "Does ~a look conscious enough to use that?~%" (name-of target))
     t)
@@ -69,7 +69,7 @@
    :value 500
    :consumable t))
 (defmethod cant-use-p ((item revive) (user base-character) (target base-character) action &key &allow-other-keys)
-  (declare (ignorable item user keys target action))
+  (declare (ignorable item user target action))
   (when (> (health-of target) 0)
     (format t "Does ~a look unconscious to you?~%" (name-of target))
     t))
@@ -102,7 +102,7 @@
    :value 200
    :consumable t))
 (defmethod cant-use-p ((item holy-hand-grenade) (user base-character) (target base-character) action &key &allow-other-keys)
-  (declare (ignorable item user keys target action))
+  (declare (ignorable item user target action))
   (unless *battle*
     (write-line "You can only use that in battle")
     t))
