@@ -154,9 +154,12 @@
        (or (eq attack t) (not (typep (get-move attack character) '(or mess-move-mixin wet-move-mixin))))))
 (defmacro defmatch (source target &body return)
   (flet ((arg (arg sym)
-           (if (typep arg '(and list (not null)))
-               arg
-               (list (a:make-gensym sym) arg))))
+           (typecase arg
+             ((and list (not null)) arg)
+             (null (a:make-gensym sym))
+             ((eql t) `(,(a:make-gensym sym) element-type))
+             ((and symbol (not keyword)) `(,(a:make-gensym sym) ,arg))
+             (t (error 'simple-error :format-control "Invalid argument ~s" :format-arguments `(,arg))))))
     `(progn (defmethod type-match (,(arg source 'source)
                                    ,(arg target 'target))
               ,@return)
