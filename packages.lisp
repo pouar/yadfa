@@ -140,6 +140,7 @@
    #:npc
    #:team-member
    #:potty-trained-team-member
+   #:element-type
    #:ally
    #:ally-rebel
    #:ally-no-potty-training
