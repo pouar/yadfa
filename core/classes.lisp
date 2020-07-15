@@ -32,6 +32,13 @@
           (print-unreadable-object (o s :type t :identity t)
             (write class :stream s)))
         (call-next-method))))
+(defmethod print-object ((o element-type-class) s)
+  (let ((class (slot-value o 'name)))
+    (if class
+        (let ((*package* (find-package :keyword)))
+          (print-unreadable-object (o s :type t :identity nil)
+            (f:fmt s (:s class) " " (:s (class-name o)))))
+        (call-next-method))))
 (defgeneric coerce-element-type (element)
   (:method ((element-type (eql nil)))
     nil)
