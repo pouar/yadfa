@@ -203,7 +203,7 @@
                                                                         (next i))))
                                                         (unless items
                                                           (format t "Those items aren't valid")
-                                                          (return-from block))
+                                                          (return-from lambda))
                                                         (iter (for i in items)
                                                           (when (not (tossablep i))
                                                             (format t "To avoid breaking the game, we don't accept your ~a~%~%"
