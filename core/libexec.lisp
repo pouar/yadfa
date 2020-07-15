@@ -160,10 +160,9 @@
              ((eql t) `(,(a:make-gensym sym) element-type))
              ((and symbol (not keyword)) `(,(a:make-gensym sym) ,arg))
              (t (error 'simple-error :format-control "Invalid argument ~s" :format-arguments `(,arg))))))
-    `(progn (defmethod type-match (,(arg source 'source)
-                                   ,(arg target 'target))
-              ,@return)
-            t)))
+    `(defmethod type-match (,(arg source 'source)
+                            ,(arg target 'target))
+       ,@return)))
 (defmacro define-type (name (&rest superclasses) (&rest slot-specifiers) &rest class-options)
   `(progn (defclass ,name (,@superclasses element-type) ,slot-specifiers
             (:metaclass element-type-class)
@@ -180,7 +179,7 @@
                 (collect `(setf (slot-value (find-class ',name) 'name) ,(if (eq option-name :element-name)
                                                                             (second class-option)
                                                                             nil)))))
-          t))
+          (find-class ',name)))
 (defunassert get-positions-of-type (type list)
     (type type-specifier
           list list)
