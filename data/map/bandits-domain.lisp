@@ -1,7 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-zones"; coding: utf-8-unix; -*-
 (in-package :yadfa-zones)
-(macro-level
-  `(progn
+#.`(progn
      ,@(iter (for i from 10 to 20)
          (collect
              `(ensure-zone (0 ,i 0 bandits-domain)
@@ -9,10 +8,7 @@
                 :description "A path filled with bandits"
                 :enter-text "You follow the path"
                 :warp-points ,(when (= i 10) '(list 'ironside '(2 0 0 ironside)))
-                :enemy-spawn-list 'bandits-way)))))
-
-(macro-level
-  `(progn
+                :enemy-spawn-list 'bandits-way)))
      ,@(iter (for i from -1 downto -10)
          (collect
              `(ensure-zone (,i 21 0 bandits-domain)
@@ -20,7 +16,7 @@
                 :description "A town run by the Raccoon Bandits"
                 :enter-text "You're wander around Bandit's Town"
                 ,@(when (= i -3)
-                    '(:events '(yadfa-events:enter-bandits-shop-2))))))))
+                    '(:events '(yadfa-events:enter-bandits-shop-2)))))))
 (ensure-zone (-3 22 0 bandits-domain)
   :name "Bandit's Shop"
   :description "A local shop"
@@ -169,14 +165,13 @@
   :enter-text "You're at the entrance of Bandit Town"
   :warp-points (list 'home '(0 1 0 home))
   :events '(yadfa-events:enter-bandits-village-1))
-(macro-level
-  `(progn
+#.`(progn
      ,@(iter (for i from 22 to 30)
          (collect
              `(ensure-zone (0 ,i 0 bandits-domain)
                 :name "Bandit's Town"
                 :description "A town run by the Raccoon Bandits"
-                :enter-text "You're wander around Bandit's Town")))))
+                :enter-text "You're wander around Bandit's Town"))))
 (ensure-zone (0 31 0 bandits-domain)
   :name "Bandit's Town"
   :description "A town run by the Raccoon Bandits"
@@ -188,8 +183,7 @@
   :name "Bandit's Cove Dock"
   :description "The dock of Bandit's Cove"
   :enter-text "You're at a dock")
-(macro-level
-  `(progn
+#.`(progn
      ,@(let ((a ()))
          (iter (for y from 19 to 23)
            (alexandria:appendf a (iter (for x from 2 to 6)
@@ -198,7 +192,7 @@
                                                :description "A cove filled with bandits"
                                                :enter-text "You're at a cove run by bandits"
                                                :enemy-spawn-list 'bandits-cove)))))
-         a)))
+         a))
 (ensure-zone (6 24 0 bandits-domain)
   :name "Bandit's Cave Entrance"
   :description "A mysterious cave"

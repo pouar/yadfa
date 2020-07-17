@@ -1,7 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-zones"; coding: utf-8-unix; -*-
 (in-package :yadfa-zones)
-(macro-level
-  `(progn
+#.`(progn
      ,@(iter (for i from 0 to 20)
          (collect
              `(ensure-zone (0 ,i 0 silver-cape)
@@ -11,16 +10,14 @@
                 :warp-points ,(when (= i 0) '(list 'rpgmaker-dungeon '(0 5 0 rpgmaker-dungeon)))
                 ,@(cond ((= i 7)
                          '(:direction-attributes (list :east (list :hidden t)))))
-                ,@(when (= i 0) '(:events '(yadfa-events:enter-silver-cape-1 yadfa-events:secret-underground-pipe-silver-cape))))))))
-(macro-level
-  `(progn
+                ,@(when (= i 0) '(:events '(yadfa-events:enter-silver-cape-1 yadfa-events:secret-underground-pipe-silver-cape))))))
      ,@(iter (for i from -10 to 10)
          (unless (= i 0)
            (collect
                `(ensure-zone (,i 10 0 silver-cape)
                   :name "Silver Cape Street"
                   :description "A busy street with various furries moving back and forth"
-                  :enter-text "You enter the street"))))))
+                  :enter-text "You enter the street")))))
 (ensure-zone (-1 6 0 silver-cape)
   :name "Silver Cape Navy HQ Entrance"
   :description "The entrance to Navy HQ."

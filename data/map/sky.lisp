@@ -9,15 +9,14 @@
   :description "The entrance to the pool"
   :enter-text "You're swimming in the pool"
   :underwater t)
-(macro-level
-  `(progn
+#.`(progn
      ,@(iter (for x from -10 to 10)
          (iter (for y from -2 downto -17)
            (collect `(ensure-zone (,x ,y 0 candle-carnival)
                        :name "Candle Carnival Pool"
                        :description "This pool makes up most of this floor"
                        :enter-text "You're swimming in the pool"
-                       :underwater t))))))
+                       :underwater t)))))
 (ensure-zone (0 -18 0 candle-carnival)
   :name "Elevator"
   :description "An elevator to the upper deck"
@@ -30,23 +29,14 @@
   :enter-text "You enter the elevator"
   :stairs (list :down)
   :direction-attributes (list :down (list :exit-text "Going down")))
-(macro-level
-  `(progn
-     ,@(iter (for i from -17 to -2)
-         (collect `(ensure-zone (0 i 1 candle-carnival)
-                     :name "Catwalk"
-                     :description "A catwalk over the pool"
-                     :enter-text "You're swimming in the pool"
-                     :warp-points '(dive (0 ,i 0 candle-carnival)))))))
-(macro-level
-  `(progn
+#.`(progn
      ,@(iter (for i from -10 to 10)
          (unless (= i -10)
            (collect `(ensure-zone (i -10 1 candle-carnival)
                        :name "Catwalk"
                        :description "A catwalk over the pool"
                        :enter-text "You're swimming in the pool"
-                       :warp-points '(dive (i -10 0 candle-carnival))))))))
+                       :warp-points '(dive (i -10 0 candle-carnival)))))))
 (ensure-zone (-11 -10 1 candle-carnival)
   :name "Water slide"
   :description "A water slide that lets you slide to the bottom"
@@ -102,8 +92,7 @@
    #:mansion
    #:launch-pad)
   (:documentation "Contains symbols for the sky base"))
-(macro-level
-  (let ((syms '(sky-base:landing-pad
+#.(let ((syms '(sky-base:landing-pad
                 sky-base:living-quarters
                 sky-base:main-office
                 sky-base:shop
@@ -145,7 +134,7 @@
                                           (collect i)
                                           (collect `(0 0 0 ,i))))
                        ,@(when (eq sym 'sky-base:landing-pad)
-                           '(:events '(yadfa-events:secret-underground-pipe-sky-base)))))))))
+                           '(:events '(yadfa-events:secret-underground-pipe-sky-base))))))))
 (ensure-zone (0 -1 0 sky-base:launch-pad)
   :name "Rocket Pad"
   :description "A rocket pad"
@@ -157,8 +146,7 @@
   :description "A city orbiting the planet on a giant platform"
   :enter-text "You're on the part of the pathway that acts as the city's gangway"
   :events '(yadfa-events:secret-underground-pipe-star-city))
-(macro-level
-  `(progn
+#.`(progn
      ,@(iter
          (with a = ())
          (for y from 1 to 21)
@@ -170,19 +158,18 @@
                           :name "Star City"
                           :description "A city orbiting the planet on a giant platform"
                           :enter-text "You're wondering across the platform")))))
-         (finally (return a)))))
+         (finally (return a))))
 (ensure-zone (-2 3 0 star-city)
   :name "Star City Hotel Lobby"
   :description "A luxurious hotel"
   :enter-text "you're in the hotel lobby"
   :stairs (list :up))
-(macro-level
-  `(progn
+#.`(progn
      ,@(iter (for x from -3 downto -7)
          (collect `(ensure-zone (,x 3 0 star-city)
                      :name "Star City Hotel Hall"
                      :description "A luxurious hotel"
-                     :enter-text "you're in the hall")))))
+                     :enter-text "you're in the hall"))))
 (ensure-zone (-3 2 0 star-city)
   :name "Star City Hotel Diner"
   :description "A luxurious hotel"
@@ -222,13 +209,12 @@
   :description "A luxurious hotel"
   :enter-text "you're in the hall"
   :stairs (list :up :down))
-(macro-level
-  `(progn
+#.`(progn
      ,@(iter (for x from -1 downto -5)
          (collect `(ensure-zone (,x 3 1 star-city)
                      :name "Star City Hotel Hall"
                      :description "A luxurious hotel"
-                     :enter-text "you're in the hall")))))
+                     :enter-text "you're in the hall"))))
 (ensure-zone (0 22 0 star-city)
   :name "Star City"
   :description "A city orbiting the planet on a giant platform"

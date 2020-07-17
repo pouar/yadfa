@@ -1,7 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-zones"; coding: utf-8-unix; -*-
 (in-package :yadfa-zones)
-(macro-level
-  `(progn
+#.`(progn
      ,@(iter (for y from 0 to 2)
          (iter (for x from (- y) to y)
            (collect `(ensure-zone (,x ,y 0 your-ship)
@@ -12,18 +11,14 @@
                                                                      (or (= x 1) (= x -1))
                                                                      (= y 2)))
                                                    :down (list :hidden t)
-                                                   :up (list :hidden t))))))))
-(macro-level
-  `(progn
+                                                   :up (list :hidden t))))))
      ,@(iter (for i from -2 to 2)
          (collect `(ensure-zone (,i 11 0 your-ship)
                      :name "Emacs"
                      :description "The stern of your ship"
                      :direction-attributes (list :north (list :hidden ,(or (= i 1) (= i -1)))
                                                  :down (list :hidden t)
-                                                 :up (list :hidden t)))))))
-(macro-level
-  `(progn
+                                                 :up (list :hidden t)))))
      ,@(iter (for i from 3 to 10)
          (collect `(ensure-zone (-2 ,i 0 your-ship)
                      :name "Emacs"
@@ -36,7 +31,7 @@
          (collect `(ensure-zone (0 ,i 0 your-ship)
                      :name "Passage Way"
                      :description "The passage way of your ship"
-                     ,@(when (= i 3) '(:stairs (list :up :down))))))))
+                     ,@(when (= i 3) '(:stairs (list :up :down)))))))
 (ensure-zone (0 3 1 your-ship)
   :name "Bridge"
   :description "You can steer your ship from here"
@@ -92,8 +87,7 @@
                                 :name "Chest"
                                 :description "Place all your crap here"
                                 :placeable t)))
-(macro-level
-  `(progn
+#.`(progn
      ,@(iter (for i from -1 to 1)
          (unless (= i 0)
            (collect `(ensure-zone (,i 6 0 your-ship)
@@ -103,7 +97,7 @@
                                                    :south (list :hidden t))
                        :warp-points ,(if (= i -1)
                                          '(list :exit '(0 21 0 silver-cape))
-                                         ())))))))
+                                         ()))))))
 (ensure-zone (-1 5 0 your-ship)
   :name "Cabin"
   :description "A Cabin of your ship"
