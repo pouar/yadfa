@@ -65,7 +65,7 @@
                                                                     (:file "your-ship")))
                              (:module "status-conditions"
                               :depends-on ("prolog")
-                              :components ((:file "abdl") (:file "misc")))
+                              :components ((:file "abdl") (:file "misc") (:file "pokemon")))
                              (:module "epilog"
                               :depends-on ("prolog" "enemies" "events" "items" "map" "moves" "props" "status-conditions" "team-members")
                               :components ((:file "allies") (:file "blackjack") (:file "enemies") (:file "items")
