@@ -513,6 +513,13 @@
   (:documentation "convenience functions for battle")
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands) (:f :fmt)))
+(uiop:define-package :yadfa-element-types
+  (:use :cl :yadfa :yadfa-util :iterate)
+  (:export #:normal #:fighting #:flying #:poison #:ground #:rock #:bug #:ghost #:steel #:fire #:water
+           #:grass #:electric #:psychic #:ice #:dragon #:dark #:fairy)
+  (:documentation "Element types")
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+                    (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands) (:f :fmt)))
 (uiop:define-package :yadfa-enemies
   (:use :cl :yadfa :yadfa-util :iterate)
   (:export

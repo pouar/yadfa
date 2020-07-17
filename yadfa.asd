@@ -43,6 +43,9 @@
                               :components ((:file "eggbots") (:file "fursuiters") (:file "haunted") (:file "navy")
                                            (:file "pirates") (:file "pokemon") (:file "raccoon-bandits")
                                            (:file "rpgmaker")))
+                             (:module "element-types"
+                              :depends-on ("prolog")
+                              :components ((:file "pokemon")))
                              (:module "team-members"
                               :depends-on ("moves" "items" "prolog")
                               :components ((:file "allies") (:file "catchables")))
