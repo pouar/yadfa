@@ -28,4 +28,5 @@
                      :defense float-features:long-float-positive-infinity
                      :energy most-positive-fixnum
                      :speed 120)
+   :element-type (list (make-instance 'yadfa-element-types:ghost))
    :moves (list (make-instance 'yadfa-moves:ghost-tickle) (make-instance 'yadfa-moves:ghost-mush) (make-instance 'yadfa-moves:ghost-squish))))

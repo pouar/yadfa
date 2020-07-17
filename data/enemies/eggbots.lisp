@@ -7,4 +7,5 @@
    :species "Egg Pawn"
    :male t
    :attributes (list :not-ticklish t)
-   :bitcoins-per-level 40))
+   :bitcoins-per-level 40
+   :element-type (list (make-instance 'yadfa-element-types:steel))))

@@ -138,7 +138,8 @@
    :name "Fire Breath"
    :energy-cost 5
    :power 60
-   :description "Breathes fire at the enemy"))
+   :description "Breathes fire at the enemy"
+   :element-type (make-instance 'yadfa-element-types:fire)))
 (defmethod attack ((target base-character) (user base-character) (self fire-breath))
   (let ((a (calculate-damage target user self)))
     (format t "~a used ~a~%" (name-of user) (name-of self))

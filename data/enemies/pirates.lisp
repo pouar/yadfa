@@ -8,6 +8,7 @@
    :male (a:random-elt '(t nil))
    :bladder/contents (random 500)
    :bowels/contents (random 700)
+   :element-type (list (make-instance 'yadfa-element-types:water))
    :watersport-limit 300
    :mudsport-limit 400
    :inventory (iter (for i from 0 to (random 20)) (collect (make-instance 'yadfa-items:diaper)))))

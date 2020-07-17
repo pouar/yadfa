@@ -36,6 +36,7 @@
    :bitcoins-per-level 100
    :inventory (iter (for i from 0 to (random 10))
                 (collect (make-instance 'yadfa-items:high-capacity-diaper)))
+   :element-type (list (make-instance 'yadfa-element-types:poison))
    :moves (list (make-instance 'yadfa-moves:spray) (make-instance 'yadfa-moves:face-sit))))
 (defmethod initialize-instance :after
     ((c diapered-skunk) &rest args &key &allow-other-keys)
@@ -108,6 +109,7 @@
    :watersport-chance 3
    :mudsport-chance 3
    :bitcoins-per-level 100
+   :element-type (list (make-instance 'yadfa-element-types:poison))
    :moves (list (make-instance 'yadfa-moves:spray) (make-instance 'yadfa-moves:face-sit))))
 (defmethod initialize-instance :after
     ((c diapered-skunk*) &rest args &key &allow-other-keys)
@@ -189,6 +191,8 @@
                        (collect (make-instance 'yadfa-items:high-capacity-diaper)))
                      (iter (for i from 0 to (random 20))
                        (collect (make-instance 'yadfa-items:kurikia-thick-diaper))))
+   :element-type (list (make-instance 'yadfa-element-types:dragon) (make-instance 'yadfa-element-types:fire)
+                       (make-instance 'yadfa-element-types:flying))
    :moves (list (make-instance 'yadfa-moves:tickle)
                 (make-instance 'yadfa-moves:roar)
                 (make-instance 'yadfa-moves:mush)

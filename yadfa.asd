@@ -30,7 +30,7 @@
                (:module "data"
                 :depends-on ("core")
                 :components ((:module "moves"
-                              :depends-on ("prolog")
+                              :depends-on ("prolog" "element-types")
                               :components ((:file "dbz") (:file "haunted") (:file "pokemon") (:file "regular")))
                              (:module "items"
                               :depends-on ("moves" "prolog")
@@ -39,7 +39,7 @@
                              (:module "prolog"
                               :components ((:file "allies") (:file "enemies") (:file "map")))
                              (:module "enemies"
-                              :depends-on ("moves" "items" "prolog")
+                              :depends-on ("moves" "items" "prolog" "element-types")
                               :components ((:file "eggbots") (:file "fursuiters") (:file "haunted") (:file "navy")
                                            (:file "pirates") (:file "pokemon") (:file "raccoon-bandits")
                                            (:file "rpgmaker")))
