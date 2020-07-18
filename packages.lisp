@@ -399,6 +399,8 @@
    #:stretchable-orca-suit-lite
    #:boxers
    #:panties
+   #:mutagen
+   #:antimutagen
    #:bra
    #:bikini-top
    #:tunic
