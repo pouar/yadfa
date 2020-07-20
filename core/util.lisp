@@ -10,6 +10,14 @@
           (1- (ash 1 width))))
 (defmethod lambda-list ((lambda-exp list))
   (cadr lambda-exp))
+(defmacro print-unreadable-object-with-prefix ((object stream &key (type nil type-supplied-p) (identity nil identity-supplied-p))
+                                               &body body)
+  ;; apparently the ansi standard says that all keywords are printed with the package prefix
+  ;; and so making the current package the keyword package has the effect of causing the printer
+  ;; to print all symbols with the package prefix
+  `(let ((*package* (find-package :keyword)))
+     (print-unreadable-object (,object ,stream ,@(when type-supplied-p `(:type ,type)) ,@(when identity-supplied-p `(:identity ,identity)))
+       ,@body)))
 (defmethod lambda-list ((lambda-exp function))
   (swank-backend:arglist lambda-exp))
 (defmacro do-push (item &rest places)

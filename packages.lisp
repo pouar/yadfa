@@ -22,7 +22,8 @@
    #:in*
    #:sum*
    #:defunassert
-   #:lappendf)
+   #:lappendf
+   #:print-unreadable-object-with-prefix)
   (:documentation "Utility functions that aren't really part of the game's API")
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands)))
