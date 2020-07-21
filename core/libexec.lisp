@@ -3400,7 +3400,10 @@ randomrange is @code{(random-from-range 85 100)}"
                        (if (> no-effect 0)
                            0
                            (expt 2 (- super-effective not-very-effective)))
-                       (if (intersection attack-element-types user-element-types :key 'coerce-element-type :test 'subtypep)
+                       (if (intersection user-element-types attack-element-types
+                                         :key (lambda (o)
+                                                (class-of (coerce-element-type o)))
+                                         :test 'subtypep)
                            1.5
                            1)))))))
 (defun present-stats (user)
