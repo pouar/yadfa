@@ -3,7 +3,8 @@
 (defclass mush (move) ()
   (:default-initargs
    :name "Mush"
-   :description "Mush the target's diaper"))
+   :description "Mush the target's diaper"
+   :element-types (list (make-instance 'yadfa-element-types:abdl))))
 (defmethod attack ((target base-character) (user base-character) (attack mush))
   (declare (ignore attack))
   (if (filter-items (wear-of user) 'incontinence-product)
@@ -87,7 +88,8 @@
   (:default-initargs
    :name "Spray"
    :description "Spray the target with skunk spray. Also fills your pamps with skunk spray while you're at it."
-   :energy-cost 5))
+   :energy-cost 5
+   :element-types (list (make-instance 'yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (attack spray))
   (format t "~a used ~a~%" (name-of user) (name-of attack))
   (let ((amount 50))
@@ -150,7 +152,8 @@
    :name "Face Sit"
    :energy-cost 3
    :power 40
-   :description "Sits on the enemy's face and messes"))
+   :description "Sits on the enemy's face and messes"
+   :element-types (list (make-instance 'yadfa-element-types:abdl) (make-instance 'yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (self face-sit))
   (format t "~a used ~a~%" (name-of user) (name-of self))
   (let* ((m (mess :messer user))
@@ -168,7 +171,8 @@
 (defclass teleporting-flood (wet-move-mixin) ()
   (:default-initargs
    :name "Teleporting Flood"
-   :description "Flood your diapers, but enchants the diaper so it all teleports into someone else's diaper."))
+   :description "Flood your diapers, but enchants the diaper so it all teleports into someone else's diaper."
+   :element-types (list (make-instance 'yadfa-element-types:abdl))))
 (defmethod attack ((target base-character) (user base-character) (self teleporting-flood))
   (format t "~a used ~a~%" (name-of user) (name-of self))
   (if (< (bladder/contents-of user) (bladder/need-to-potty-limit-of user))
@@ -179,7 +183,8 @@
 (defclass teleporting-mess (mess-move-mixin) ()
   (:default-initargs
    :name "Teleporting Mess"
-   :description "Mess your diapers, but enchants the diaper so it all teleports into someone else's diaper."))
+   :description "Mess your diapers, but enchants the diaper so it all teleports into someone else's diaper."
+   :element-types (list (make-instance 'yadfa-element-types:abdl) (make-instance 'yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (self teleporting-mess))
   (format t "~a used ~a~%" (name-of user) (name-of self))
   (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
@@ -191,7 +196,8 @@
   (:default-initargs
    :name "fart"
    :description "Grosses out the enemies with gas. If poisoned or if desperate, you may end up messing yourself instead."
-   :energy-cost 10))
+   :energy-cost 10
+   :element-types (list (make-instance 'yadfa-element-types:abdl) (make-instance 'yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (attack fart))
   (f:fmt t (name-of user) " used " (name-of attack) #\Newline
          "But it failed." #\Newline))

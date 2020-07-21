@@ -14,7 +14,8 @@
 (defclass watersport (wet-move-mixin) ()
   (:default-initargs
    :name "Watersport"
-   :description "Soak your diapers"))
+   :description "Soak your diapers"
+   :element-types (list (make-instance 'yadfa-element-types:abdl))))
 (defmethod attack ((target base-character) (user base-character) (attack watersport))
   (declare (ignore target))
   (format t "~a used ~a~%" (name-of user) (name-of attack))
@@ -25,7 +26,8 @@
 (defclass mudsport (mess-move-mixin) ()
   (:default-initargs
    :name "Mudsport"
-   :description "mess your diapers"))
+   :description "mess your diapers"
+   :element-types (list (make-instance 'yadfa-element-types:abdl))))
 (defmethod attack ((target base-character) (user base-character) (attack mudsport))
   (declare (ignore target))
   (format t "~a used ~a~%" (name-of user) (name-of attack))
@@ -39,7 +41,8 @@
   (:default-initargs
    :name "Mud Bomb"
    :description "massively mess your diapers, never fails"
-   :energy-cost 5))
+   :energy-cost 5
+   :element-types (list (make-instance 'yadfa-element-types:abdl) (make-instance 'yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (attack mudbomb))
   (format t "~a used ~a~%" (name-of user) (name-of attack))
   (write-line "But it failed."))
@@ -69,7 +72,8 @@
 (defclass tackle (move) ()
   (:default-initargs
    :name "Tackle"
-   :description "Tackles the enemy"))
+   :description "Tackles the enemy"
+   :element-types (list (make-instance 'yadfa-element-types:normal))))
 (defclass roar (move) ()
   (:default-initargs
    :name "Roar"
@@ -93,4 +97,5 @@
   (:default-initargs
    :name "Bite"
    :description "Bites the enemy"
-   :power 80))
+   :power 80
+   :element-types (list (make-instance 'yadfa-element-types:dark))))
