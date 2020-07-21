@@ -51,7 +51,14 @@
     nil)
   (:method (source (target (eql nil)))
     nil))
-(defclass base-character (yadfa-class)
+(defclass element-type-mixin ()
+  ((element-types
+    :accessor element-types-of
+    :initform nil
+    :initarg :element-types
+    :type list
+    :documentation #.(f:fmt nil "a list of " (ref element-type :class) "s or symbols that makes @code{CL:MAKE-INSTANCE} return one when passed to it"))))
+(defclass base-character (yadfa-class element-type-mixin)
   ((name
     :initarg :name
     :initform :missingno.
@@ -64,12 +71,6 @@
     :accessor description-of
     :type (or keyword string)
     :documentation "Description of the character")
-   (element-type
-    :accessor element-type-of
-    :initform nil
-    :initarg :element-type
-    :type list
-    :documentation #.(f:fmt nil "a list of " (ref element-type :class) "s or symbols that makes @code{CL:MAKE-INSTANCE} return one when passed to it"))
    (health
     :initarg :health
     :accessor health-of
@@ -314,7 +315,7 @@
     :accessor persistentp
     :documentation "Whether items or moves that cure statuses cure this"))
   (:documentation "Base class for all the status conditions "))
-(defclass move (yadfa-class attack-mixin)
+(defclass move (yadfa-class attack-mixin element-type-mixin)
   ((name
     :initarg :name
     :initform :-
@@ -327,12 +328,6 @@
     :type (or keyword string)
     :accessor description-of
     :documentation "Description of move")
-   (element-type
-    :accessor element-type-of
-    :initform nil
-    :initarg :element-type
-    :type (or (and symbol (not keyword)) element-type)
-    :documentation #.(f:fmt nil "a " (ref element-type :class) " or symbol that makes @code{CL:MAKE-INSTANCE} return one when passed to it"))
    (energy-cost
     :initarg :energy-cost
     :initform 0

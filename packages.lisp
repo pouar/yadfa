@@ -198,7 +198,7 @@
    #:skin-of
    #:config-of
    #:stairs-of
-   #:element-type-of
+   #:element-types-of
    #:last-process-potty-time-of
    #:process-battle-accident-of
    #:process-potty-dance-of

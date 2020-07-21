@@ -10,7 +10,7 @@
    :mudsport-chance 3
    :bladder/contents (random 500)
    :bowels/contents (random 700)
-   :element-type (list (make-instance 'yadfa-element-types:water))
+   :element-types (list (make-instance 'yadfa-element-types:water))
    :inventory (iter (for i from 0 to (random 5)) (collect (make-instance 'yadfa-items:navy-pullups)))
    :bitcoins-per-level 60))
 (defmethod process-battle-accident ((character navy-officer) attack (item item) reload (selected-target base-character))

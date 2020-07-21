@@ -3379,18 +3379,19 @@ attack is @code{(calculate-stat @var{user} :attack)}
 defense is @code{(calculate-stat @var{user} :defense)}
 
 randomrange is @code{(random-from-range 85 100)}"
-  (let ((attack-element-type (element-type-of attack))
-        (target-element-types (element-type-of target))
-        (user-element-types (element-type-of user)))
+  (let ((attack-element-types (element-types-of attack))
+        (target-element-types (element-types-of target))
+        (user-element-types (element-types-of user)))
     (s:mvlet ((super-effective not-very-effective no-effect (funcall (lambda ()
                                                                        (iter (with (the fixnum super-effective) = 0)
                                                                          (with (the fixnum not-very-effective) = 0)
                                                                          (with (the fixnum no-effect) = 0)
-                                                                         (for target-element-type in target-element-types)
-                                                                         (case (type-match attack-element-type target-element-type)
-                                                                           (:super-effective (incf super-effective))
-                                                                           (:not-very-effective (incf not-very-effective))
-                                                                           (:no-effect (incf no-effect)))
+                                                                         (for attack-element-type in attack-element-types)
+                                                                         (iter (for target-element-type in target-element-types)
+                                                                           (case (type-match attack-element-type target-element-type)
+                                                                             (:super-effective (incf super-effective))
+                                                                             (:not-very-effective (incf not-very-effective))
+                                                                             (:no-effect (incf no-effect))))
                                                                          (finally (return (values super-effective not-very-effective no-effect))))))))
       (round (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ 2 * (level-of user)) / 5) + 2) * (power-of attack) * (u:$ (calculate-stat user :attack) / (calculate-stat target :defense)))
                             / 50)
@@ -3399,8 +3400,7 @@ randomrange is @code{(random-from-range 85 100)}"
                        (if (> no-effect 0)
                            0
                            (expt 2 (- super-effective not-very-effective)))
-                       (if (find attack-element-type user-element-types
-                                 :key 'coerce-element-type :test 'subtypep)
+                       (if (intersection attack-element-types user-element-types :key 'coerce-element-type :test 'subtypep)
                            1.5
                            1)))))))
 (defun present-stats (user)
