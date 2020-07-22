@@ -136,30 +136,32 @@
   (:documentation "Class for shops, you can buy stuff from these."))
 (defmethod initialize-instance :after
     ((c shop) &rest args &key &allow-other-keys)
-  (declare (ignorable args))
-  (a:appendf (actions-of c)
-             (list :list-items-for-sale (make-action :documentation "List items for sale"
-                                                     :lambda '(lambda (prop &rest keys &key &allow-other-keys)
-                                                               (declare #+sbcl (type prop prop)
-                                                                        (ignore keys))
-                                                               #-sbcl (check-type prop prop)
-                                                               (shopfun (items-for-sale-of prop) :format-items t)))
-                   :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY). If ITEMS is not specified, you will be prompted for what items to buy"
-                                           :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
-                                                     (declare #+sbcl (type prop prop) #+sbcl (type list items) (ignore keys))
-                                                     #-sbcl (check-type prop prop)
-                                                     #-sbcl (check-type items list)
-                                                     (shopfun (items-for-sale-of prop)
-                                                      :items-to-buy (or items t)
-                                                      :user (player-of *game*))))
-                   :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory. If ITEMS is not specified, you will be prompted for what items to sell"
-                                            :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
-                                                      (declare #+sbcl (type prop prop) #+sbcl (type list items) (ignore keys))
-                                                      #-sbcl (check-type prop prop)
-                                                      #-sbcl (check-type items list)
-                                                      (shopfun (items-for-sale-of prop)
-                                                       :items-to-sell (or items t)
-                                                       :user (player-of *game*)))))))
+  (declare (ignore args))
+  (setf (getf (actions-of c) :list-items-for-sale)
+        (make-action :documentation "List items for sale"
+                     :lambda '(lambda (prop &rest keys &key &allow-other-keys)
+                               (declare #+sbcl (type prop prop)
+                                        (ignore keys))
+                               #-sbcl (check-type prop prop)
+                               (shopfun (items-for-sale-of prop) :format-items t)))
+        (getf (actions-of c) :buy-items)
+        (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY). If ITEMS is not specified, you will be prompted for what items to buy"
+                     :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
+                               (declare #+sbcl (type prop prop) #+sbcl (type list items) (ignore keys))
+                               #-sbcl (check-type prop prop)
+                               #-sbcl (check-type items list)
+                               (shopfun (items-for-sale-of prop)
+                                :items-to-buy (or items t)
+                                :user (player-of *game*))))
+        (getf (actions-of c) :sell-items)
+        (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory. If ITEMS is not specified, you will be prompted for what items to sell"
+                     :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
+                               (declare #+sbcl (type prop prop) #+sbcl (type list items) (ignore keys))
+                               #-sbcl (check-type prop prop)
+                               #-sbcl (check-type items list)
+                               (shopfun (items-for-sale-of prop)
+                                :items-to-sell (or items t)
+                                :user (player-of *game*))))))
 (defclass vending-machine (prop)
   ((items-for-sale
     :initarg :items-for-sale
@@ -173,24 +175,25 @@
   (:documentation "Class for vending machines, Functions like a shop, but only lets you buy items instead of selling them"))
 (defmethod initialize-instance :after
     ((c vending-machine) &rest args &key &allow-other-keys)
-  (declare (ignorable args))
-  (a:appendf (actions-of c)
-             (list :list-items-for-sale (make-action :documentation "List items for sale"
-                                                     :lambda '(lambda (prop &rest keys &key &allow-other-keys)
-                                                               (declare #+sbcl (type prop prop)
-                                                                        (ignore keys))
-                                                               #-sbcl (check-type prop prop)
-                                                               (shopfun (items-for-sale-of prop) :format-items t)))
-                   :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
-                                           :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
-                                                     (declare #+sbcl (type prop prop)
-                                                              #+sbcl (type list items)
-                                                              (ignore keys))
-                                                     #-sbcl (check-type prop prop)
-                                                     #-sbcl (check-type items list)
-                                                     (shopfun (items-for-sale-of prop)
-                                                      :items-to-buy items
-                                                      :user (player-of *game*)))))))
+  (declare (ignore args))
+  (setf (getf (actions-of c) :list-items-for-sale)
+        (make-action :documentation "List items for sale"
+                     :lambda '(lambda (prop &rest keys &key &allow-other-keys)
+                               (declare #+sbcl (type prop prop)
+                                        (ignore keys))
+                               #-sbcl (check-type prop prop)
+                               (shopfun (items-for-sale-of prop) :format-items t)))
+        (getf (actions-of c) :buy-items)
+        (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
+                     :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
+                               (declare #+sbcl (type prop prop)
+                                        #+sbcl (type list items)
+                                        (ignore keys))
+                               #-sbcl (check-type prop prop)
+                               #-sbcl (check-type items list)
+                               (shopfun (items-for-sale-of prop)
+                                :items-to-buy items
+                                :user (player-of *game*))))))
 (defclass debug-shop (prop) ()
   (:default-initargs
    :name "Shop"
@@ -198,75 +201,77 @@
   (:documentation "Class for shops, you can buy stuff from these."))
 (defmethod initialize-instance :after
     ((c debug-shop) &rest args &key &allow-other-keys)
-  (declare (ignorable args))
-  (a:appendf (actions-of c)
-             (list :list-items-for-sale (make-action :documentation "List items for sale"
-                                                     :lambda '(lambda (prop &rest keys &key &allow-other-keys)
-                                                               (declare #+sbcl (type prop prop)
-                                                                        (ignore keys)
-                                                                (ignorable prop))
-                                                               #-sbcl (check-type prop prop)
-                                                               (shopfun (let ((a ()))
-                                                                          (iter (for i in (list-all-packages))
-                                                                            (unless (equal i (find-package :yadfa))
-                                                                              (do-external-symbols  (s i)
-                                                                                (when (and
-                                                                                       (find-class s nil)
-                                                                                       (c2mop:subclassp
-                                                                                        (find-class s)
-                                                                                        (find-class 'item))
-                                                                                       (tossablep (make-instance s)))
-                                                                                  (push (cons s nil) a)))))
-                                                                          a)
-                                                                :format-items t)))
-                   :buy-items (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
-                                           :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
-                                                     (declare #+sbcl (type prop prop)
-                                                              #+sbcl (type list items)
-                                                              (ignore keys)
-                                                      (ignorable prop))
-                                                     #-sbcl (check-type prop prop)
-                                                     #-sbcl (check-type items list)
-                                                     (shopfun
-                                                      (let ((a ()))
-                                                        (iter (for i in (list-all-packages))
-                                                          (unless
-                                                              (equal i (find-package :yadfa))
-                                                            (do-external-symbols (s i)
-                                                              (when (and
-                                                                     (find-class s nil)
-                                                                     (c2mop:subclassp
-                                                                      (find-class s)
-                                                                      (find-class 'item))
-                                                                     (tossablep (make-instance s)))
-                                                                (push (cons s nil) a)))))
-                                                        a)
-                                                      :items-to-buy items
-                                                      :user (player-of *game*))))
-                   :sell-items (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory"
-                                            :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
-                                                      (declare #+sbcl (type prop prop)
-                                                               #+sbcl (type list items)
-                                                               (ignore keys)
-                                                       (ignorable prop))
-                                                      #-sbcl (check-type prop prop)
-                                                      #-sbcl (check-type items list)
-                                                      (shopfun
-                                                       (let ((a ()))
-                                                         (iter
-                                                           (for i in (list-all-packages))
-                                                           (unless (equal i (find-package :yadfa))
-                                                             (do-external-symbols (s i)
-                                                               (when (and
-                                                                      (find-class s nil)
-                                                                      (c2mop:subclassp
-                                                                       (find-class s)
-                                                                       (find-class 'item))
-                                                                      (tossablep (make-instance s)))
-                                                                 (push (cons s nil) a)))))
-                                                         a)
-                                                       :items-to-sell items
-                                                       :user (player-of *game*)))))))
+  (declare (ignore args))
+  (setf (getf (actions-of c) :list-items-for-sale)
+        (make-action :documentation "List items for sale"
+                     :lambda '(lambda (prop &rest keys &key &allow-other-keys)
+                               (declare #+sbcl (type prop prop)
+                                        (ignore keys)
+                                (ignorable prop))
+                               #-sbcl (check-type prop prop)
+                               (shopfun (let ((a ()))
+                                          (iter (for i in (list-all-packages))
+                                            (unless (equal i (find-package :yadfa))
+                                              (do-external-symbols  (s i)
+                                                (when (and
+                                                       (find-class s nil)
+                                                       (c2mop:subclassp
+                                                        (find-class s)
+                                                        (find-class 'item))
+                                                       (tossablep (make-instance s)))
+                                                  (push (cons s nil) a)))))
+                                          a)
+                                :format-items t)))
+        (getf (actions-of c) :buy-items)
+        (make-action :documentation "Buy items. ITEMS is a list of conses where each cons is in the form of (INDEX-OF-ITEM-TO-BUY . QUANTITY-OF-ITEMS-TO-BUY)"
+                     :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
+                               (declare #+sbcl (type prop prop)
+                                        #+sbcl (type list items)
+                                        (ignore keys)
+                                (ignorable prop))
+                               #-sbcl (check-type prop prop)
+                               #-sbcl (check-type items list)
+                               (shopfun
+                                (let ((a ()))
+                                  (iter (for i in (list-all-packages))
+                                    (unless
+                                        (equal i (find-package :yadfa))
+                                      (do-external-symbols (s i)
+                                        (when (and
+                                               (find-class s nil)
+                                               (c2mop:subclassp
+                                                (find-class s)
+                                                (find-class 'item))
+                                               (tossablep (make-instance s)))
+                                          (push (cons s nil) a)))))
+                                  a)
+                                :items-to-buy items
+                                :user (player-of *game*))))
+        (getf (actions-of c) :sell-items)
+        (make-action :documentation "Sell items. ITEMS is a list of indexes where each index corresponds to an item in your inventory"
+                     :lambda '(lambda (prop &rest keys &key items &allow-other-keys)
+                               (declare #+sbcl (type prop prop)
+                                        #+sbcl (type list items)
+                                        (ignore keys)
+                                (ignorable prop))
+                               #-sbcl (check-type prop prop)
+                               #-sbcl (check-type items list)
+                               (shopfun
+                                (let ((a ()))
+                                  (iter
+                                    (for i in (list-all-packages))
+                                    (unless (equal i (find-package :yadfa))
+                                      (do-external-symbols (s i)
+                                        (when (and
+                                               (find-class s nil)
+                                               (c2mop:subclassp
+                                                (find-class s)
+                                                (find-class 'item))
+                                               (tossablep (make-instance s)))
+                                          (push (cons s nil) a)))))
+                                  a)
+                                :items-to-sell items
+                                :user (player-of *game*))))))
 (defclass bed (prop) ()
   (:default-initargs
    :name "Bed"
