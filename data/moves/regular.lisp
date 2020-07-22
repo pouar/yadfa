@@ -260,7 +260,7 @@
    :name "Spank"
    :energy-cost 5
    :power 10
-   :description "Breathes fire at the enemy"))
+   :description "Spanks the enemy"))
 (defmethod attack ((target base-character) (user base-character) (self spank))
   (let ((a (calculate-damage target user self))
         (times (random 10)))
