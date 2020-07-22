@@ -210,7 +210,7 @@
                                                             (format t
                                                                     "You toss your ~a into the bin and pretend you're saving the planet~%"
                                                                     (name-of i)))
-                                                          (alexandria:removef (inventory-of (player-of *game*)) items
+                                                          (alexandria:deletef (inventory-of (player-of *game*)) items
                                                                               :test (lambda (o e)
                                                                                       (member e o))))))))))))
 (ensure-zone (6 11 0 silver-cape)

@@ -45,17 +45,15 @@
            (mess :messer character)))))
 (defmethod initialize-instance :after
     ((c padded-fursuiter-servant) &rest args &key &allow-other-keys)
-  (let ((potty-keys (iter (for (a b) on args)
-                      (when (member a '(:watersport-limit :mudsport-limit))
-                        (collect a)))))
-    (cond ((member '(:watersport-limit :mudsport-limit) potty-keys
-                   :test (lambda (o ei)
-                           (member ei o)))
+  (destructuring-bind (&key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp) &allow-other-keys)
+      args
+    (declare (ignore watersport-limit mudsport-limit))
+    (cond ((and watersportp mudsportp)
            (let ((limits (a:random-elt (list (cons (bladder/need-to-potty-limit-of c) (bowels/need-to-potty-limit-of c)) '(nil)))))
              (setf (watersport-limit-of c) (car limits) (mudsport-limit-of c) (cdr limits))))
-          ((member :watersport-limit potty-keys)
+          (watersportp
            (setf (mudsport-limit-of c) (a:random-elt (list (bowels/need-to-potty-limit-of c) nil))))
-          ((member :mudsport-limit potty-keys)
+          (mudsportp
            (setf (watersport-limit-of c) (a:random-elt (list (bladder/need-to-potty-limit-of c) nil)))))))
 (defclass fursuiter-servant (potty-enemy) ()
   (:default-initargs

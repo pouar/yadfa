@@ -24,15 +24,16 @@
                 (make-instance 'yadfa-moves:mudsport))))
 (defmethod initialize-instance :after
     ((c diapered-kobold) &rest args &key &allow-other-keys)
-  (unless (iter (for (a b) on args)
-            (when (eq a :wear)
-              (leave t)))
-    (push (let ((a (make-instance 'yadfa-items:thick-cloth-diaper)))
-            (setf (sogginess-of a) (random (sogginess-capacity-of a)))
-            (setf (messiness-of a) (random (messiness-capacity-of a)))
-            a)
-          (wear-of c))
-    (push (make-instance (if (malep c) 'yadfa-items:shendyt 'yadfa-items:kalasiris)) (wear-of c))))
+  (destructuring-bind (&key (wear nil wearp) &allow-other-keys)
+      args
+    (declare (ignore wear))
+    (unless wearp
+      (push (let ((a (make-instance 'yadfa-items:thick-cloth-diaper)))
+              (setf (sogginess-of a) (random (sogginess-capacity-of a)))
+              (setf (messiness-of a) (random (messiness-capacity-of a)))
+              a)
+            (wear-of c))
+      (push (make-instance (if (malep c) 'yadfa-items:shendyt 'yadfa-items:kalasiris)) (wear-of c)))))
 (defclass diapered-raccoon-bandit (adopted-enemy ally-last-minute-potty-training pantsable-character) ()
   (:default-initargs
    :name "Diapered Raccoon Bandit"

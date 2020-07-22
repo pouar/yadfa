@@ -20,16 +20,15 @@
    :level 5))
 (defmethod initialize-instance :after
     ((c slynk) &rest args &key &allow-other-keys)
-  (unless (iter (for (a b) on args)
-            (when (eq a :bladder/contents)
-              (leave t)))
-    (setf (bladder/contents-of c)
-          (random (coerce (+ (bladder/potty-desperate-limit-of c) (/ (- (bladder/potty-desperate-limit-of c) (bladder/potty-dance-limit-of c)))) 'long-float))))
-  (unless (iter (for (a b) on args)
-            (when (eq a :bowels/contents)
-              (leave t)))
-    (setf (bowels/contents-of c)
-          (random (coerce (+ (bowels/potty-desperate-limit-of c) (/ (- (bowels/potty-desperate-limit-of c) (bowels/potty-dance-limit-of c)))) 'long-float)))))
+  (destructuring-bind (&key (bladder/contents nil bladderp) (bowels/contents nil bowelsp) &allow-other-keys)
+      args
+    (declare (ignore bladder/contents bowels/contents))
+    (unless bladderp
+      (setf (bladder/contents-of c)
+            (random (coerce (+ (bladder/potty-desperate-limit-of c) (/ (- (bladder/potty-desperate-limit-of c) (bladder/potty-dance-limit-of c)))) 'long-float))))
+    (unless bowelsp
+      (setf (bowels/contents-of c)
+            (random (coerce (+ (bowels/potty-desperate-limit-of c) (/ (- (bowels/potty-desperate-limit-of c) (bowels/potty-dance-limit-of c)))) 'long-float))))))
 (defclass chris (playable-ally ally-rebel-potty-training) ()
   (:default-initargs
    :name "Chris"

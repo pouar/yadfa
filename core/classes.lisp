@@ -549,31 +549,22 @@
 (defclass playable-ally (ally) ())
 (defmethod initialize-instance :after
     ((c base-character) &rest initargs &key &allow-other-keys)
-  (declare (ignorable initargs))
-  (iter (for (a b) on initargs)
-    (cond ((eq a :base-health)
-           (setf (getf (base-stats-of c) :health)
-                 b))
-          ((eq a :base-attack)
-           (setf (getf (base-stats-of c) :attack)
-                 b))
-          ((eq a :base-defence)
-           (setf (getf (base-stats-of c) :defence)
-                 b))
-          ((eq a :base-speed)
-           (setf (getf (base-stats-of c) :speed)
-                 b))
-          ((eq a :base-energy)
-           (setf (getf (base-stats-of c) :energy)
-                 b))))
-  (unless (iter (for (a b) on initargs)
-            (when (eq a :health)
-              (leave t)))
-    (setf (health-of c) (calculate-stat c :health)))
-  (unless (iter (for (a b) on initargs)
-            (when (eq a :energy) (leave t)))
-    (setf (energy-of c) (calculate-stat c :energy)))
-  (setf (exp-of c) (calculate-level-to-exp (level-of c))))
+  (destructuring-bind (&key (health nil healthp) (energy nil energyp)
+                            (base-health nil base-health-p) (base-attack nil base-attack-p)
+                            (base-defense nil base-defense-p) (base-speed nil base-speed-p) (base-energy nil base-energy-p)&allow-other-keys)
+      initargs
+    (declare (ignore health energy)
+             (ignorable base-health base-attack base-defense base-speed))
+    (cond (base-health-p (setf (getf (base-stats-of c) :health) base-health))
+          (base-attack-p (setf (getf (base-stats-of c) :attack) base-attack))
+          (base-defense-p (setf (getf (base-stats-of c) :defence) base-defense))
+          (base-speed-p (setf (getf (base-stats-of c) :speed) base-speed))
+          (base-energy-p (setf (getf (base-stats-of c) :energy) base-energy)))
+    (unless healthp
+      (setf (health-of c) (calculate-stat c :health)))
+    (unless energyp
+      (setf (energy-of c) (calculate-stat c :energy)))
+    (setf (exp-of c) (calculate-level-to-exp (level-of c)))))
 (defclass player (potty-trained-team-member pantsable-character)
   ((position
     :initarg :position
@@ -609,10 +600,11 @@
    :skin '(:fur)))
 (defmethod initialize-instance :after
     ((c player) &rest initargs)
-  (declare (ignorable initargs))
-  (unless (iter (for (a b) on initargs)
-            (when (eq a :warp-on-death-point) (leave t)))
-    (setf (warp-on-death-point-of c) (position-of c))))
+  (destructuring-bind (&key (warp-on-death-point nil warp) &allow-other-keys)
+      initargs
+    (declare (ignore warp-on-death-point))
+    (unless warp
+      (setf (warp-on-death-point-of c) (position-of c)))))
 (defclass zone (yadfa-class)
   ((description
     :initarg :description
@@ -1016,13 +1008,13 @@
   (setf (bulge-text-of new) (cdr (slot-value old 'onesie-bulge-text))))
 (defmethod initialize-instance :after
     ((c onesie/opened) &rest initargs &key &allow-other-keys)
-  (declare (ignorable initargs))
+  (declare (ignore initargs))
   (setf (thickness-capacity-of c) (cdr (onesie-thickness-capacity-of c)))
   (setf (thickness-capacity-threshold-of c) (cdr (onesie-thickness-capacity-threshold-of c)))
   (setf (bulge-text-of c) (cdr (onesie-bulge-text-of c))))
 (defmethod initialize-instance :after
     ((c onesie/closed) &rest initargs &key &allow-other-keys)
-  (declare (ignorable initargs))
+  (declare (ignore initargs))
   (setf (thickness-capacity-of c) (car (onesie-thickness-capacity-of c)))
   (setf (thickness-capacity-threshold-of c) (car (onesie-thickness-capacity-threshold-of c)))
   (setf (waterproofp c) (onesie-waterproof-p c))
