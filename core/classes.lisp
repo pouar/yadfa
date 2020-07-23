@@ -555,11 +555,16 @@
       initargs
     (declare (ignore health energy)
              (ignorable base-health base-attack base-defense base-speed))
-    (cond (base-health-p (setf (getf (base-stats-of c) :health) base-health))
-          (base-attack-p (setf (getf (base-stats-of c) :attack) base-attack))
-          (base-defense-p (setf (getf (base-stats-of c) :defence) base-defense))
-          (base-speed-p (setf (getf (base-stats-of c) :speed) base-speed))
-          (base-energy-p (setf (getf (base-stats-of c) :energy) base-energy)))
+    (when base-health-p
+      (setf (getf (base-stats-of c) :health) base-health))
+    (when base-attack-p
+      (setf (getf (base-stats-of c) :attack) base-attack))
+    (when base-defense-p
+      (setf (getf (base-stats-of c) :defence) base-defense))
+    (when base-speed-p
+      (setf (getf (base-stats-of c) :speed) base-speed))
+    (when base-energy-p
+      (setf (getf (base-stats-of c) :energy) base-energy))
     (unless healthp
       (setf (health-of c) (calculate-stat c :health)))
     (unless energyp
