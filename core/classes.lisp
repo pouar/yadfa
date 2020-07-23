@@ -553,8 +553,7 @@
                             (base-health nil base-health-p) (base-attack nil base-attack-p)
                             (base-defense nil base-defense-p) (base-speed nil base-speed-p) (base-energy nil base-energy-p)&allow-other-keys)
       initargs
-    (declare (ignore health energy)
-             (ignorable base-health base-attack base-defense base-speed))
+    (declare (ignore health energy))
     (when base-health-p
       (setf (getf (base-stats-of c) :health) base-health))
     (when base-attack-p
