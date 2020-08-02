@@ -41,8 +41,8 @@ modules:
       - bash -c 'export TEXDIR=/app/tmp/texlive PATH="$PATH:/app/tmp/texlive/$(uname -m)-linux/bin";sh tools/install-base.sh - "$@" && rm -rf $TEXDIR && mkdir -p $TEXDIR && mv texlive/* $TEXDIR && rm -r texlive && $TEXDIR/bin/$(uname -m)-linux/tlmgr install $(cat pkgs-custom.txt | tr "\n" " ") && $TEXDIR/bin/$(uname -m)-linux/tlmgr path add'
     sources:
       - type: archive
-        sha256: f15c5857fc83a8edfe970de663ce8db7341d4f7e58e2686e2f4ff596ea5ab966
-        url: https://github.com/yihui/tinytex/archive/v0.21.tar.gz
+        sha256: 3d4739ef4505771b144b8d8d455a0d78f122669cf9bd8143b786c1ac8abec880
+        url: https://github.com/yihui/tinytex/archive/v0.25.tar.gz
       - type: file
         path: pkgs-custom.txt
         sha256: 03a78d417c605e5dbbf22e467a45ad808a1ed02c168d109eaefed33344ba40a4
@@ -56,8 +56,8 @@ modules:
       - chmod +x /app/tmp/sbcl-bin/bin/hostname
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.6/sbcl-2.0.6-x86-64-linux-binary.tar.bz2
-        sha256: 0abe511b860ed2a26e61a50c50e0fc50f0060b72a26441cbb344801b8621d34e
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.7/sbcl-2.0.7-x86-64-linux-binary.tar.bz2
+        sha256: 14d7722ac1849919667527c71ce216dfbeb348891efaac850711481b1c72239b
   - name: sbcl
     build-options:
       strip: true
@@ -68,8 +68,8 @@ modules:
       - INSTALL_ROOT="/app/tmp/sbcl" HOME="/app/tmp/home/" sh install.sh
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.6/sbcl-2.0.6-source.tar.bz2
-        sha256: fd92d64c1d97cc4f42fe3dcad2b183bcb225d01cdba4461634926f2f70adddae
+        url: https://downloads.sourceforge.net/project/sbcl/sbcl/2.0.7/sbcl-2.0.7-source.tar.bz2
+        sha256: f596eed82c50abdf48dee5aba0bc39f62d158be29d2e1306f2b0b804219c617c
   - name: yadfa-deps
     buildsystem: simple
     build-commands:
