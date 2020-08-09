@@ -8,8 +8,7 @@
    :male t
    :bladder/contents (random 500)
    :bowels/contents (random 700)
-   :wear (list (make-instance 'yadfa-items:bandit-uniform-tunic)
-               (make-instance 'yadfa-items:bandit-adjustable-diaper))
+   :wear (make-instances yadfa-items:bandit-uniform-tunic yadfa-items:bandit-adjustable-diaper)
    :inventory (let ((a ()))
                 (iter (for i from 0 to (random 5))
                   (push (make-instance 'yadfa-items:bandit-diaper) a))

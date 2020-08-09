@@ -1,5 +1,8 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-enemies"; coding: utf-8-unix; -*-
 (in-package :yadfa-enemies)
+(defmacro make-instances (&rest symbols)
+  `(list ,@(iter (for symbol in symbols)
+             (collect `(make-instance ',symbol)))))
 (defclass catchable-enemy (enemy)
   ((catch-chance
     :initarg :catch-chance
@@ -28,5 +31,5 @@
                      :defense float-features:long-float-positive-infinity
                      :energy most-positive-fixnum
                      :speed 120)
-   :element-types (list (make-instance 'yadfa-element-types:ghost))
-   :moves (list (make-instance 'yadfa-moves:ghost-tickle) (make-instance 'yadfa-moves:ghost-mush) (make-instance 'yadfa-moves:ghost-squish))))
+   :element-types (make-instances yadfa-element-types:ghost)
+   :moves (make-instances yadfa-moves:ghost-tickle yadfa-moves:ghost-mush yadfa-moves:ghost-squish)))

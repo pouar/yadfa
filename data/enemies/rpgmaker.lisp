@@ -37,8 +37,8 @@
    :bitcoins-per-level 100
    :inventory (iter (for i from 0 to (random 10))
                 (collect (make-instance 'yadfa-items:high-capacity-diaper)))
-   :element-types (list (make-instance 'yadfa-element-types:poison))
-   :moves (list (make-instance 'yadfa-moves:spray) (make-instance 'yadfa-moves:face-sit))))
+   :element-types (make-instances yadfa-element-types:poison)
+   :moves (make-instances yadfa-moves:spray yadfa-moves:face-sit)))
 (defmethod initialize-instance :after
     ((c diapered-skunk) &rest args &key &allow-other-keys)
   (destructuring-bind (&key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp)
@@ -109,8 +109,8 @@
    :watersport-chance 3
    :mudsport-chance 3
    :bitcoins-per-level 100
-   :element-types (list (make-instance 'yadfa-element-types:poison))
-   :moves (list (make-instance 'yadfa-moves:spray) (make-instance 'yadfa-moves:face-sit))))
+   :element-types (make-instances yadfa-element-types:poison)
+   :moves (make-instances yadfa-moves:spray yadfa-moves:face-sit)))
 (defmethod initialize-instance :after
     ((c diapered-skunk*) &rest args &key &allow-other-keys)
   (destructuring-bind (&key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp)
@@ -188,18 +188,12 @@
                        (collect (make-instance 'yadfa-items:high-capacity-diaper)))
                      (iter (for i from 0 to (random 20))
                        (collect (make-instance 'yadfa-items:kurikia-thick-diaper))))
-   :element-types (list (make-instance 'yadfa-element-types:dragon) (make-instance 'yadfa-element-types:fire)
-                       (make-instance 'yadfa-element-types:flying))
-   :moves (list (make-instance 'yadfa-moves:tickle)
-                (make-instance 'yadfa-moves:roar)
-                (make-instance 'yadfa-moves:mush)
-                (make-instance 'yadfa-moves:fire-breath))))
+   :element-types (make-instances yadfa-element-types:dragon yadfa-element-types:fire yadfa-element-types:flying)
+   :moves (make-instances yadfa-moves:tickle yadfa-moves:roar yadfa-moves:mush yadfa-moves:fire-breath)))
 (defclass diapered-dragon* (diapered-dragon pantsable-character) ()
   (:default-initargs
    :description "Keeps kobolds as pets. Wears pants to hide {his,her} padding. Waits until the last minute because \"{,s}he's not some hatchling that has to use the potty all the time\""
-   :wear (list (make-instance 'yadfa-items:black-leather-jacket)
-               (make-instance 'yadfa-items:baggy-jeans)
-               (make-instance 'yadfa-items:high-capacity-diaper))))
+   :wear (make-instances yadfa-items:black-leather-jacket yadfa-items:baggy-jeans yadfa-items:high-capacity-diaper)))
 (defclass dergy (bladder-enemy) ()
   (:default-initargs
    :name "Dergy"
@@ -211,10 +205,8 @@
    :wear (list (make-instance 'yadfa-items:kurikia-thick-rubber-diaper))
    :inventory (iter (for i from 0 to (random 20))
                 (collect (make-instance 'yadfa-items:kurikia-thick-rubber-diaper)))
-   :moves (list (make-instance 'yadfa-moves:tickle)
-                (make-instance 'yadfa-moves:roar)
-                (make-instance 'yadfa-moves:mush)
-                (make-instance 'yadfa-moves:fire-breath))))
+   :element-types (list (make-instance 'yadfa-element-types:dragon))
+   :moves (make-instances yadfa-moves:tickle yadfa-moves:roar yadfa-moves:mush yadfa-moves:fire-breath)))
 
 ;;; Raptors would most likely not have bladders irl, but I already threw
 ;;; scientific accuracy out the window when I gave them scales instead of feathers.
@@ -223,8 +215,7 @@
      :name "Raptor"
      :malep (a:random-elt '(t nil))
      :description "Biologically inaccurate velociraptor. The kind you see in Jurassic Park that looks more like a lizard than a prehistoric bird."
-     :moves (list (make-instance 'yadfa-moves:roar)
-                  (make-instance 'yadfa-moves:bite))
+     :moves (make-instances yadfa-moves:roar yadfa-moves:bite)
      :species "Raptor"))
 (setf (get 'diapered-kobold 'change-class-target) 'yadfa-allies:raptor)
 (defmethod change-class-text ((class raptor))

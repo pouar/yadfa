@@ -8,8 +8,7 @@
    :species "Fox"
    :bladder/contents (random 500)
    :bowels/contents (random 700)
-   :wear (list (make-instance 'yadfa-items:fursuit)
-               (make-instance 'yadfa-items:kurikia-thick-diaper))))
+   :wear (make-instances yadfa-items:fursuit yadfa-items:kurikia-thick-diaper)))
 (defmethod process-battle-accident ((character padded-fursuiter-servant) attack (item item) reload (selected-target base-character))
   (declare (ignore attack item reload selected-target))
   (let* ((male (malep character))
@@ -63,7 +62,4 @@
    :species "Fox"
    :bladder/contents (random 500)
    :bowels/contents (random 700)
-   :wear (list (make-instance 'yadfa-items:watertight-fursuit)
-               (make-instance 'yadfa-items:tshirt)
-               (make-instance 'yadfa-items:jeans)
-               (make-instance 'yadfa-items:boxers))))
+   :wear (make-instances yadfa-items:watertight-fursuit yadfa-items:tshirt yadfa-items:jeans yadfa-items:boxers)))
