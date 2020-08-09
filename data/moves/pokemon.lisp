@@ -46,7 +46,7 @@
 (defmethod attack ((target base-character) (user base-character) (attack mudbomb))
   (format t "~a used ~a~%" (name-of user) (name-of attack))
   (write-line "But it failed."))
-(defmethod attack ((target base-character) (user potty-character) (attack mudbomb))
+(defmethod attack ((target base-character) (user bowels-character) (attack mudbomb))
   (format t "~a used ~a~%" (name-of user) (name-of attack))
   (mess :force-fill-amount (if (< (* 30 24 (bowels/fill-rate-of user)) (bowels/maximum-limit-of user))
                                (bowels/maximum-limit-of user)

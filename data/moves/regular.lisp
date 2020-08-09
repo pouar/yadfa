@@ -201,7 +201,7 @@
 (defmethod attack ((target base-character) (user base-character) (attack fart))
   (f:fmt t (name-of user) " used " (name-of attack) #\Newline
          "But it failed." #\Newline))
-(defmethod attack ((target base-character) (user potty-character) (attack fart))
+(defmethod attack ((target base-character) (user bowels-character) (attack fart))
   (f:fmt t (name-of user) " squats down and tries to use " (name-of attack) #\Newline)
   (cond
     ((and (>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
