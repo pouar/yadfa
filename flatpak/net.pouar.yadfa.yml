@@ -84,7 +84,7 @@ modules:
         sha256: 4a7a5c2aebe0716417047854267397e24a44d0cce096127411e9ce9ccfeb2c17
       - type: git
         url: https://gitlab.common-lisp.net/asdf/asdf.git
-        tag: 3.3.4.4
+        tag: 3.3.4.5
         dest: asdf
       - type: git
         url: https://github.com/didierverna/declt.git
