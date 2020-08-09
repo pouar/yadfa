@@ -24,7 +24,8 @@
                              (:file "libexec" :depends-on ("util" "classes" "patches" "init" "structs"))
                              (:file "classes" :depends-on ("util" "patches" "init"))
                              (:file "game" :depends-on ("classes" "init"))
-                             (:file "bin" :depends-on ("libexec" "init"))
+                             (:module "bin" :depends-on ("libexec" "init")
+                              :components ((:file "bin") (:file "world") (:file "battle")))
                              (:file "patches" :depends-on ("init"))
                              (:file "mcclim" :depends-on ("patches" "bin" "init"))))
                (:module "data"
