@@ -100,6 +100,17 @@ Oh who cares what you think, you're just some antivirus that I rely on
     Here's what he had to say about the wonders of modern technology
     `What the fuck happened?'
     He was amazed with today's computer software that is more complex, less customizable and extendable, harder to debug, and lags all the time. But at least hardware got a lot faster.
+  - GNU Hurd removes support for directories. RMS's reasoning is "Directories are a hack. Just put prefixes in front of your filenames everywhere"
+  - A car company that produced cars that ran on water and was fully automated just went out of business.
+    Many customers said that despite it being cheaper, faster, more miles to the gallon, and the fact it could drive itself,
+    they were unable to use it because they didn't want to learn something other than a steering wheel and gas pedals,
+    and the fact that it used ogg instead of mp3 and therefore "wasn't compatible".
+  - Someone has leaked the entire Mathematica source code online. A single lisp file implementing M Expressions as a reader macro.
+    One of the SBCL maintainers commented "I have no idea why Steven Wolfram wrote this.
+    The Lisp community abandoned that syntax for a reason."
+  - For profit university sues The International Obfuscated C Code Contest for copyright infringement.
+    Despite the contestants never laying eyes on the university's code in their life,
+    the code looks eerily similar to what the scientists at the university wrote.
 * Dialogs
   - You see a bunch of people with Windows and Mac laptops, mostly refugees from GNOME. One half were scared back to Windows and the other half wanted a real Mac.
 
