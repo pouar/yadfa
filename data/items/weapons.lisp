@@ -116,3 +116,14 @@
     (format t "Three Sword Style!!!!~%")
     (decf (health-of target) a)
     (format t "~a received ~a damage~%" (name-of target) a)))
+(defclass messing-laser (weapon) ()
+  (:default-initargs
+   :name "Messing Laser"
+   :description "Causes enemies to mess themselves"
+   :values 8000))
+(defmethod attack ((target bowels-character) (user base-character) (weapon messing-laser))
+  (f:fmt t (name-of target) " squats down and starts blorting " (if (malep target) "himself" "herself") " uncontrollably." #\Newline)
+  (mess :force-fill-amount (bowels/maximum-limit-of target))
+  (set-status-condition 'yadfa-status-conditions:messing target))
+(defmethod attack ((target base-character) (user base-character) (weapon messing-laser))
+  (f:fmt t "It has no effect on " (name-of target) #\Newline))

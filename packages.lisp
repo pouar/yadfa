@@ -479,6 +479,7 @@
    #:exterminator-ammo
    #:pink-sword
    #:hammer-gun
+   #:messing-laser
    #:wrench
    #:three-swords
    #:pocket-map-machine
