@@ -1982,7 +1982,7 @@
                      (when (consumablep item)
                        (a:deletef (the list (inventory-of user)) item)))
               (write-line "You can't do that with that item"))
-          (handler-case (progn (setf ret (use-script item target))
+          (handler-case (progn (setf ret (use-script item user target))
                                (when (consumablep item)
                                  (a:deletef (the list (inventory-of user)) item)))
             (unusable-item ()

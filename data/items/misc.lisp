@@ -31,7 +31,7 @@
    :tossable nil
    :sellable nil
    :description "So you're playing Pokémon and you're making your secret base. Then you're like “Damn, I wish I could take this awesome base with me” or “I wish I could create my own decorations for this base instead of only being able to use what Nintendo provides me”. While Pouar can't do anything about Pokémon, he can create a similar feature for this game without these limitations. So here it is, the Pocket Map Machine"))
-(defmethod use-script ((item pocket-map-machine) (user base-character))
+(defmethod use-script ((item pocket-map-machine) (user base-character) (target base-character))
   (declare (ignore user))
   (move-to-pocket-map item))
 (defclass warp-device (item) ()
@@ -40,8 +40,8 @@
    :tossable nil
    :sellable nil
    :description "This device can be used to summon a warp pipe to take you to the secret underground"))
-(defmethod use-script ((item warp-device) (user base-character))
-  (declare (ignore item user))
+(defmethod use-script ((item warp-device) (user base-character) (target base-character))
+  (declare (ignore item user target))
   (move-to-secret-underground))
 (defclass macguffin (item) ()
   (:default-initargs
@@ -53,8 +53,8 @@
   (:default-initargs
    :name "Itemfinder"
    :description "Returns T anytime a hidden item is nearby. It is based on Pouar's ability to detect whatever he has to say is offensive or not. It uses the same algorithm, is about as effective, and has about as many happy customers. Also, if you wrap the function in a not function, it becomes the same algorithm SJWs use to decide whatever they hear is offensive or not."))
-(defmethod use-script ((item itemfinder) (user base-character))
-  (declare (ignore item user)))
+(defmethod use-script ((item itemfinder) (user base-character) (target base-character))
+  (declare (ignore item user target)))
 (defclass shine-star (item) ()
   (:default-initargs
    :name "Shine Star"

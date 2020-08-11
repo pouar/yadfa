@@ -42,10 +42,10 @@
 (defclass diaper-package-mixin (item)
   ((diaper :type symbol
            :initarg :diaper)))
-(defmethod use-script ((item diaper-package-mixin) (user base-character))
+(defmethod use-script ((item diaper-package-mixin) (user base-character) (target base-character))
   (format t "You tear open the package and dump all the diapers out of it.~%")
   (iter (for i from 1 to 20)
-    (push (make-instance (slot-value item 'diaper)) (inventory-of user))))
+    (push (make-instance (slot-value item 'diaper)) (inventory-of target))))
 (defclass generic-diapers (yadfa:diaper undies) ()
   (:default-initargs
    :sogginess-capacity 100

@@ -3,10 +3,10 @@
 (defclass ammo-box-mixin (item)
   ((ammo :type symbol
          :initarg :ammo)))
-(defmethod use-script ((item ammo-box-mixin) (user base-character))
-  (format t "You open the box and dump all the ammunition out of it.~%")
+(defmethod use-script ((item ammo-box-mixin) (user base-character) (target base-character))
+  (f:fmt t (name-of user) " open the box and dump all the ammunition out of it." #\Newline)
   (iter (for i from 1 to 6)
-    (push (make-instance (slot-value item 'ammo)) (inventory-of user))))
+    (push (make-instance (slot-value item 'ammo)) (inventory-of target))))
 (defclass 7.62×39mm (ammo) ()
   (:default-initargs
    :name "7.62x39mm Rounds"
@@ -121,9 +121,12 @@
    :name "Messing Laser"
    :description "Causes enemies to mess themselves"
    :values 8000))
-(defmethod attack ((target bowels-character) (user base-character) (weapon messing-laser))
+(defmethod attack ((target base-character) (user base-character) (weapon messing-laser))
+  (f:fmt t (name-of user) " fires " (if (malep user) "his" "her") " laser at " (name-of target) #\Newline)
+  (use-script weapon user target))
+(defmethod use-script ((weapon messing-laser) (user base-character) (target base-character))
+  (f:fmt t "It has no effect on " (name-of target) #\Newline))
+(defmethod use-script ((weapon messing-laser) (user base-character) (target bowels-character))
   (f:fmt t (name-of target) " squats down and starts blorting " (if (malep target) "himself" "herself") " uncontrollably." #\Newline)
   (mess :force-fill-amount (bowels/maximum-limit-of target))
   (set-status-condition 'yadfa-status-conditions:messing target))
-(defmethod attack ((target base-character) (user base-character) (weapon messing-laser))
-  (f:fmt t "It has no effect on " (name-of target) #\Newline))

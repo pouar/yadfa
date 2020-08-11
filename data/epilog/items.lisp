@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-items"; coding: utf-8-unix; -*-
 (in-package :yadfa-items)
-(defmethod use-script ((item enemy-catcher) (target yadfa-enemies:catchable-enemy))
+(defmethod use-script ((item enemy-catcher) (user base-character) (target yadfa-enemies:catchable-enemy))
   (cond
     ((>= (list-length (contained-enemies-of item)) (contained-enemies-max-length-of item))
      (f:fmt t (name-of item) " can't hold anymore enemies" #\Newline #\Newline))
@@ -73,13 +73,13 @@
                                                            (write-line (yadfa-enemies:change-class-text i))
                                                            (collect (change-class i (get (class-name i) 'yadfa-enemies:change-class-target))))))
                 (format t "No enemies in there to adopt"))))))))
-(defmethod use-script ((item enemy-catcher) (target yadfa-enemies:ghost))
+(defmethod use-script ((item enemy-catcher) (user base-character) (target yadfa-enemies:ghost))
   (f:fmt t "You failed to catch " (name-of target) #\Newline #\Newline)
   (cond ((eq (device-health-of item) t) nil)
         ((<= (device-health-of item) 1)
          (alexandria:deletef (inventory-of (player-of *game*)) item :count 1))
         (t (decf (device-health-of item)))))
-(defmethod use-script ((item ghost-catcher) (target yadfa-enemies:ghost))
+(defmethod use-script ((item ghost-catcher) (user base-character) (target yadfa-enemies:ghost))
   (cond
     ((>= (list-length (contained-enemies-of item)) (contained-enemies-max-length-of item))
      (f:fmt t (name-of item) " can't hold anymore enemies" #\Newline #\Newline))
@@ -103,8 +103,8 @@
 
      (push target (contained-enemies-of item)))))
 (defunassert yadfa-battle-commands:catch-enemy (&optional (target 'yadfa-enemies:catchable-enemy) (item 'enemy-catcher))
-  (item type-specifier
-        target (or unsigned-byte type-specifier))
+    (item type-specifier
+          target (or unsigned-byte type-specifier))
   "Catches an enemy using. @var{ITEM} which is a type specifier. @var{TARGET} is an index or type specifier of an enemy in battle or a type specifier"
   (let ((selected-item (find item (inventory-of (player-of *game*))
                              :test (lambda (type-specifier obj)
@@ -130,7 +130,7 @@
      :item selected-item
      :selected-target selected-target)))
 (defunassert yadfa-world-commands:loot-caught-enemies (&optional item)
-  (item (or null unsigned-byte type-specifier))
+    (item (or null unsigned-byte type-specifier))
   "Loots the enemies you caught. @var{ITEM} is either a type specifier or an unsiged-byte of the item. Don't specify if you want to loot the enemies of all items"
   (cond ((null item)
          (iter (for item in (inventory-of *game*))
