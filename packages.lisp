@@ -155,6 +155,7 @@
    #:mess-move-mixin
    #:wet-move-mixin
    #:prop
+   #:placable-prop
    #:item
    #:consumable
    #:ammo
@@ -200,8 +201,6 @@
    #:stairs-of
    #:element-types-of
    #:last-process-potty-time-of
-   #:process-battle-accident-of
-   #:process-potty-dance-of
    #:blocks-turn-of
    #:duration-of
    #:stat-delta-of
@@ -321,13 +320,49 @@
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands) (:ms :marshal) (:f :fmt)))
 (uiop:define-package :yadfa-bin
-  (:export #:lst #:wear #:unwear #:get-stats #:toggle-onesie #:toss #:toggle-full-repl #:wield #:unwiled #:pokedex #:toggle-lock #:change #:wield #:unwield #:enable-mods #:disable-mods #:reload-files #:get-inventory-of-type)
+  (:export #:lst
+           #:wear
+           #:unwear
+           #:get-stats
+           #:toggle-onesie
+           #:toss
+           #:toggle-full-repl
+           #:wield
+           #:unwiled
+           #:pokedex
+           #:toggle-lock
+           #:change
+           #:wield
+           #:unwield
+           #:enable-mods
+           #:disable-mods
+           #:reload-files
+           #:get-inventory-of-type)
   (:documentation "Commands that the player can run anytime"))
 (uiop:define-package :yadfa-world
-  (:export #:move #:interact #:save-game #:load-game #:go-potty #:tickle #:wash-all-in #:use-item #:add-ally-to-team #:remove-ally-from-team #:swap-team-member #:stats #:place #:reload)
+  (:export #:move
+           #:interact
+           #:save-game
+           #:load-game
+           #:go-potty
+           #:tickle
+           #:wash-all-in
+           #:use-item
+           #:add-ally-to-team
+           #:remove-ally-from-team
+           #:swap-team-member
+           #:stats
+           #:place
+           #:reload
+           #:place-prop
+           #:take-prop)
   (:documentation "contains the commands when in the open world (assuming that's what it's called) (and not in something like a battle). The player probably shouldn't call these with the package prefix unless they're developing"))
 (uiop:define-package :yadfa-battle
-  (:export #:fight #:run #:use-item #:stats #:reload)
+  (:export #:fight
+           #:run
+           #:use-item
+           #:stats
+           #:reload)
   (:documentation "Contains the commands used when battling. The player probably shouldn't call these with the package prefix unless they're developing"))
 (uiop:define-package :yadfa-moves
   (:shadow #:pants)
@@ -518,8 +553,25 @@
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands) (:f :fmt)))
 (uiop:define-package :yadfa-element-types
   (:use :cl :yadfa :yadfa-util :iterate)
-  (:export #:normal #:fighting #:flying #:poison #:ground #:rock #:bug #:ghost #:steel #:fire #:water
-           #:grass #:electric #:psychic #:ice #:dragon #:dark #:fairy #:abdl)
+  (:export #:normal
+           #:fighting
+           #:flying
+           #:poison
+           #:ground
+           #:rock
+           #:bug
+           #:ghost
+           #:steel
+           #:fire
+           #:water
+           #:grass
+           #:electric
+           #:psychic
+           #:ice
+           #:dragon
+           #:dark
+           #:fairy
+           #:abdl)
   (:documentation "Element types")
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands) (:f :fmt)))
@@ -567,6 +619,11 @@
    #:vending-machine
    #:debug-shop
    #:bed
+   #:placable-bed
+   #:placable-toilet
+   #:placable-washer
+   #:pet-bed
+   #:training-potty
    #:items-for-sale-of)
   (:documentation "Contains all the enemies in the game")
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)

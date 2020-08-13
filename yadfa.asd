@@ -56,7 +56,10 @@
                               :components ((:file "allies") (:file "catchables")))
                              (:module "props"
                               :depends-on ("items" "enemies" "team-members" "prolog")
-                              :components ((:file "base") (:file "toilets") (:file "washers")))
+                              :components ((:file "base")
+                                           (:module "props"
+                                            :depends-on ("base")
+                                            :components ((:file "toilets") (:file "washers") (:file "beds")))))
                              (:module "events"
                               :depends-on ("moves" "items" "enemies" "team-members" "props" "prolog")
                               :components ((:file "bandits-domain") (:file "base") (:file "debug") (:file "dirty-chasm")

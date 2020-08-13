@@ -103,21 +103,15 @@
    :description "Use this to catch enemies"
    :value 500
    :power 0))
-(defmethod cant-use-p ((item enemy-catcher) (user base-character) (target base-character) action &rest keys &key &allow-other-keys)
-  (declare (ignorable item user keys target action))
-  (f:fmt t  (name-of item) " can't be used on " (name-of user) #\Newline)
-  t)
-(defmethod cant-use-p ((item enemy-catcher) (user base-character) (target yadfa-enemies:catchable-enemy) action &rest keys &key &allow-other-keys)
-  (declare (ignorable item user keys target action))
+(defmethod cant-use-p ((item enemy-catcher) (user base-character) (target base-character) action &key &allow-other-keys)
+  (values t `(:format-control "~a can't be used on ~a" :format-arguments `(,(name-of item) ,(name-of target)))))
+(defmethod cant-use-p ((item enemy-catcher) (user base-character) (target yadfa-enemies:catchable-enemy) action &key &allow-other-keys)
   nil)
 (defclass ghost-catcher (enemy-catcher) ()
   (:default-initargs
    :name "Ghost Catcher"
    :description "Use this to catch ghosts"))
-(defmethod cant-use-p ((item ghost-catcher) (user base-character) (target base-character) action &rest keys &key &allow-other-keys)
-  (declare (ignorable item user keys target action))
-  (f:fmt t  (name-of item) " can't be used on " (name-of target) #\Newline)
-  t)
-(defmethod cant-use-p ((item ghost-catcher) (user base-character) (target yadfa-enemies:ghost) action &rest keys &key &allow-other-keys)
-  (declare (ignorable item user keys target action))
+(defmethod cant-use-p ((item ghost-catcher) (user base-character) (target base-character) action &key &allow-other-keys)
+  (values t `(:format-control "~a can't be used on ~a" :format-arguments `(,(name-of item) ,(name-of target)))))
+(defmethod cant-use-p ((item ghost-catcher) (user base-character) (target yadfa-enemies:ghost) action &key &allow-other-keys)
   nil)

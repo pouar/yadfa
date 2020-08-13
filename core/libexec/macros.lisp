@@ -2,33 +2,34 @@
 (in-package :yadfa)
 (defmacro handle-user-input (bindings (stream &rest forms) &body body)
   "Macro used to prompt the user for input using restarts when the user enters the wrong input. @var{FORMS} is a list containing the lambda list @code{(case (&optional set-value) &key (error-text \"\") (prompt-text \"\"))}"
-  (a:with-gensyms (tag)
-    `(tagbody
-        ,tag
-        (let* ,bindings
-          ,@(iter (for form in forms)
-              (collect (a:with-gensyms (value)
-                         (destructuring-bind (case (&optional set-value) &key (error-text "") (prompt-text ""))
-                             form
-                           `(restart-case (when ,case
-                                            (error 'invalid-user-input :format-control ,error-text))
-                              ,@(when set-value
-                                  `((use-value (,value)
-                                               :interactive (lambda ()
-                                                              (if clim:*application-frame*
-                                                                  ;; For some reason McCLIM does not echo when using CL:READ on the
-                                                                  ;; Listener's standard input until CL:READ returns. CLIM:ACCEPT otoh
-                                                                  ;; actually does, so let's use that with McCLIM instead.
-                                                                  (list (eval (clim:accept 'clim:expression
-                                                                                           :stream ,stream
-                                                                                           :prompt ,prompt-text)))
-                                                                  (progn
-                                                                    (format ,stream "~s: " ,prompt-text)
-                                                                    (list (eval (read ,stream))))))
-                                               :report ,prompt-text
-                                               (setf ,set-value ,value)
-                                               (go ,tag)))))))))
-          ,@body))))
+  (a:with-gensyms (tag block)
+    `(block ,block
+         (tagbody
+               ,tag
+               (let* ,bindings
+                 ,@(iter (for form in forms)
+                     (collect (a:with-gensyms (value)
+                                (destructuring-bind (case (&optional set-value) &key (error-text "") (prompt-text ""))
+                                    form
+                                  `(restart-case (when ,case
+                                                   (error 'invalid-user-input :format-control ,error-text))
+                                     ,@(when set-value
+                                         `((use-value (,value)
+                                                      :interactive (lambda ()
+                                                                     (if clim:*application-frame*
+                                                                         ;; For some reason McCLIM does not echo when using CL:READ on the
+                                                                         ;; Listener's standard input until CL:READ returns. CLIM:ACCEPT otoh
+                                                                         ;; actually does, so let's use that with McCLIM instead.
+                                                                         (list (eval (clim:accept 'clim:expression
+                                                                                                  :stream ,stream
+                                                                                                  :prompt ,prompt-text)))
+                                                                         (progn
+                                                                           (format ,stream "~s: " ,prompt-text)
+                                                                           (list (eval (read ,stream))))))
+                                                      :report ,prompt-text
+                                                      (setf ,set-value ,value)
+                                                      (go ,tag)))))))))
+                 (return-from ,block (progn ,@body)))))))
 (defmacro defmatch (source target &body return)
   (flet ((arg (arg sym)
            (typecase arg

@@ -13,10 +13,10 @@
   :enter-text "You're wandering around in the secret underground")
 (ensure-zone (-1 1 0 secret-underground)
   :name "Secret Underground Base"
-  :description "A path"
+  :description "A place where you can rest"
   :enter-text "You're wandering around in the secret underground"
+  :placable t
   :props (list :changing-table (make-instance 'yadfa-props:automatic-changing-table)
-               :bed (make-instance 'yadfa-props:bed)
                :chest (make-instance 'prop
                                      :name "Dresser"
                                      :placeable t
@@ -41,6 +41,8 @@
                                                                               (inventory-of (player-of *game*)))))))))
 (ensure-zone (1 1 0 secret-underground)
   :name "Secret Underground Shop"
-  :description "This place has everything"
-  :enter-text "You're inside the secret underground shop"
-  :props (list :shop (make-instance 'yadfa-props:debug-shop)))
+  :description "A shop where you can buy stuff. Be sure to buy a training potty for your base. You don't want to have an accident now do you?"
+  :enter-text "You enter the shop"
+  :props (list :shop (make-instance 'yadfa-props:shop
+                                    :items-for-sale '((yadfa-props:pet-bed)
+                                                      (yadfa-props:training-potty)))))

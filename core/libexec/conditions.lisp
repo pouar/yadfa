@@ -14,3 +14,17 @@
   (:documentation "Condition signaled by @code{TOGGLE-ONESIE} when @code{(CAR CLOTHES)} is locked")
   (:report (lambda (c s)
              (format s "~s is locked" (car (clothes-of c))))))
+(define-condition unusable-item ()
+  ((item :initarg :item
+         :initform nil
+         :reader unusable-item-item)))
+(define-condition item-action-missing (unusable-item)
+  ((action :initarg :action
+           :initform nil
+           :reader unusable-item-action))
+  (:report (lambda (condition stream)
+             (format stream "Action ~s for ~s doesn't exist" (unusable-item-action condition) (unusable-item-item condition)))))
+(define-condition item-use-script-missing (unusable-item)
+  ()
+  (:report (lambda (condition stream)
+             (format stream "~s has no ~s method defined" (unusable-item-item condition) 'use-script))))

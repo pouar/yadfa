@@ -1903,6 +1903,7 @@
            (type (or symbol boolean) attack)
            (type type-specifier reload)
            (type (or item null) item))
+  (fresh-line)
   (when (and (not attack) (not item))
     (write-line "You need to either specify an attack or an item to use")
     (return-from process-battle))
@@ -1934,6 +1935,14 @@
       (unless (or (eq attack t) (get-move attack (first (turn-queue-of *battle*))))
         (format t "~a doesn't know ~a~%" (name-of (first (turn-queue-of *battle*))) attack)
         (return-from process-battle))
+      (when item
+        (multiple-value-bind (cant-use plist) (cant-use-p item (car (turn-queue-of *battle*)) selected-target nil)
+          (when cant-use
+            (destructuring-bind (&key format-control format-arguments &allow-other-keys) plist
+              (if format-control
+                  (apply 'format t format-control format-arguments)
+                  (write-line "You can't do that with that item"))
+              (return-from process-battle)))))
       (when (and (not (eq attack t)) (< (energy-of (first (turn-queue-of *battle*))) (energy-cost-of (get-move attack (first (turn-queue-of *battle*))))))
         (format t "~a doesn't have enough energy to use ~a~%"
                 (name-of (first (turn-queue-of *battle*))) (name-of (get-move attack (first (turn-queue-of *battle*)))))
@@ -1972,26 +1981,25 @@
         (bitcoins-of ally) 0)
   t)
 (defun use-item% (item user &rest keys &key target action &allow-other-keys)
-  (let ((script (when action
-                  (action-lambda (getf (special-actions-of item) action))))
-        (ret nil))
+  (let* ((effective-action (getf (special-actions-of item) action))
+         (script (when effective-action
+                   (action-lambda effective-action))))
     (unless (apply 'cant-use-p item user target action keys)
-      (if action
-          (if script
-              (progn (setf ret (apply (coerce script 'function) item target keys))
-                     (when (consumablep item)
-                       (a:deletef (the list (inventory-of user)) item)))
-              (write-line "You can't do that with that item"))
-          (handler-case (progn (setf ret (use-script item user target))
-                               (when (consumablep item)
-                                 (a:deletef (the list (inventory-of user)) item)))
-            (unusable-item ()
-              (write-line "You can't do that with that item")))))
-    (when (> (health-of target) (calculate-stat target :health))
-      (setf (health-of target) (calculate-stat target :health)))
-    (when (> (energy-of target) (calculate-stat target :energy))
-      (setf (energy-of target) (calculate-stat target :energy)))
-    ret))
+      (cond ((and action effective-action)
+             (error 'item-action-missing :action action :item item))
+            ((and (not action)
+                  (not (compute-applicable-methods #'use-script (list item user target))))
+             (error 'item-use-script-missing-error :format-control "~s has no ~s method defined" :format-arguments `(,item use-script))))
+      (let ((ret (if script
+                     (apply (coerce script 'function) item target keys)
+                     (use-script item user target))))
+        (when (consumablep item)
+          (a:deletef (the list (inventory-of user)) item))
+        (when (> (health-of target) (calculate-stat target :health))
+          (setf (health-of target) (calculate-stat target :health)))
+        (when (> (energy-of target) (calculate-stat target :energy))
+          (setf (energy-of target) (calculate-stat target :energy)))
+        ret))))
 (defunassert set-player (name malep species)
     (malep boolean
            name simple-string

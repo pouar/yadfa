@@ -56,11 +56,9 @@
    :description "WARNING! NOT MEANT FOR HUMAN (or furry) CONSUMPTION. Fills up your energy and your bladder."
    :value 100
    :consumable t))
-(defmethod cant-use-p ((item monster-energy-drink) (user base-character) (target base-character) action &rest keys &key &allow-other-keys)
-  (declare (ignorable item user keys target action))
+(defmethod cant-use-p ((item monster-energy-drink) (user base-character) (target base-character) action &key &allow-other-keys)
   (when (<= (health-of target) 0)
-    (format t "Does ~a look conscious enough to use that?~%" (name-of target))
-    t))
+    (values t `(:format-control "Does ~a look conscious enough to use that?" :format-arguments (,(name-of target))))))
 (defmethod use-script ((item monster-energy-drink) (user base-character) (target base-character))
   (declare (ignore item))
   (incf (bladder/contents-of target) 175)
@@ -84,13 +82,10 @@
             (+ (bowels/contents-of target) (bowels/potty-dance-limit-of target)))))
 (defclass consious-mixin (item) ())
 (defmethod cant-use-p ((item consious-mixin) (user base-character) (target base-character) action &key &allow-other-keys)
-  (declare (ignorable item user action))
   (when (<= (health-of target) 0)
-    (format t "Does ~a look conscious enough to use that?~%" (name-of target))
-    t)
+    (values t `(:format-control "Does ~a look conscious enough to use that?" :format-arguments (,(name-of target)))))
   (when (>= (health-of target) (calculate-stat target :health))
-    (format t "~a's health is already full~%" (name-of target))
-    t))
+    (values t `(:format-control "~a's health is already full" :format-arguments (,(name-of target))))))
 (defclass potion (consious-mixin consumable) ()
   (:default-initargs
    :name "Potion"
@@ -107,10 +102,8 @@
    :value 500
    :consumable t))
 (defmethod cant-use-p ((item revive) (user base-character) (target base-character) action &key &allow-other-keys)
-  (declare (ignorable item user target action))
   (when (> (health-of target) 0)
-    (format t "Does ~a look unconscious to you?~%" (name-of target))
-    t))
+    (values t `(:format-control "Does ~a look unconscious to you?~%" :format-arguments (,(name-of target))))))
 (defmethod use-script ((item revive) (user base-character) (target base-character))
   (declare (ignore item))
   (incf (health-of target) 20))
@@ -140,10 +133,8 @@
    :value 200
    :consumable t))
 (defmethod cant-use-p ((item holy-hand-grenade) (user base-character) (target base-character) action &key &allow-other-keys)
-  (declare (ignorable item user target action))
   (unless *battle*
-    (write-line "You can only use that in battle")
-    t))
+    (values t `(:format-control "You can only use that in battle"))))
 (defmethod use-script ((item holy-hand-grenade) (user base-character) (target base-character))
   (declare (ignore item))
   (if (or (and (typep target 'team-member) (cdr (team-of *game*)))

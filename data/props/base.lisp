@@ -1,3 +1,4 @@
+;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-props"; coding: utf-8-unix; -*-
 (in-package :yadfa-props)
 (defun change-the-baby (user &rest new-diaper)
   (let ((b (apply #'make-instance new-diaper)))
@@ -53,6 +54,13 @@
                                                                       (nth ally (allies-of *game*))
                                                                       (player-of *game*))))))))
   (:documentation "Class for toilets. I'm pretty sure I don't need to tell you what these are for."))
+(defclass placable-toilet (placable-prop toilet) ())
+(defmethod cant-use-p ((item placable-toilet) (user base-character) (target base-character) action &key &allow-other-keys)
+  (values t (if *battle*
+                '(:format-control "That can't be used in a battle")
+                '(:format-control #.(f:fmt nil "YOU CAN'T USE DA POTTY HERE!!! THERE ARE LIKE, PEOPLE HERE!!!!!~%"
+                                     "You're just going to have to hold it until you find an appropriate place to put it~%"
+                                     "or you can just wet and/or mess your pamps like the bab you are.~%")))))
 (defclass washer (prop) ()
   (:default-initargs
    :name "Washer"
@@ -65,7 +73,8 @@
                                   #-sbcl (check-type prop prop)
                                   (yadfa-world:wash-all-in prop)))))
   (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
-
+(defclass placable-washer (placable-prop washer)
+  ())
 (defclass automatic-changing-table (prop) ()
   (:default-initargs
    :name "Automatic Changing Table"
@@ -284,3 +293,4 @@
                                                 #-sbcl (check-type prop prop)
                                                 (go-to-sleep)))))
   (:documentation "Class for beds, you can sleep in these."))
+(defclass placable-bed (placable-prop bed) ())

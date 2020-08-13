@@ -4,6 +4,7 @@
   :name "Bedroom"
   :description "Your house only has a bedroom and a bathroom. Because Pouar was too lazy to code you a real house."
   :enter-text "You enter your bedroom."
+  :placable t
   :props (list :bed (make-instance 'yadfa-props:bed
                                    :name "Your bed"
                                    :description "Pouar wasn't sure what design to put on the sheets, so he decided to leave that up to the player's interpretation.")
@@ -17,6 +18,7 @@
   :name "Bathroom"
   :description "Your bathroom"
   :enter-text "You enter the bathroom"
+  :placable t
   :props (list :toilet (make-instance 'yadfa-props:toilet
                                       :name "Toilet"
                                       :description "You can use this so you don't wet or mess yourself")
