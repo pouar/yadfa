@@ -354,7 +354,8 @@
                 (when first-time
                   (yadfa::switch-user-packages)
                   (yadfa:intro-function))
-                (setq first-time nil needs-redisplay nil)
+                (setq first-time nil
+                      needs-redisplay nil)
                 (when (>= (yadfa:time-of yadfa:*game*) (+ yadfa::*last-rng-update* 20))
                   (setf cl:*random-state* (make-random-state t)
                         yadfa::*last-rng-update* (yadfa:time-of yadfa:*game*))))
