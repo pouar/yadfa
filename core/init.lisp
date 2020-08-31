@@ -4,34 +4,34 @@
 (defconstant +stat-view+ (make-instance 'stat-view))
 (in-package :yadfa)
 (s:eval-always
-  (defmacro ref (symbol type)
-    `(if (asdf:component-loaded-p "yadfa/docs")
-         (format nil "@ref{~a,@code{~a} in @code{~a},@code{~a}∶@code{~a}}"
-                 (uiop:symbol-call '#:net.didierverna.declt '#:escape-anchor
-                                   (uiop:symbol-call '#:net.didierverna.declt '#:anchor-name
-                                                     (uiop:symbol-call '#:net.didierverna.declt '
-                                                                       ,(make-symbol (string-upcase (format nil "make-~a-definition" type)))
-                                                                       :symbol ',symbol)))
-                 (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol)
-                 (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
-                 (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
-                 (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol))
-         (let ((*package* (find-package :cl)))
-           (format nil "~s" ',symbol))))
-  (defmacro xref (symbol type)
-    `(if (asdf:component-loaded-p "yadfa/docs")
-         (format nil "@xref{~a,@code{~a} in @code{~a},@code{~a}∶@code{~a}}"
-                 (uiop:symbol-call '#:net.didierverna.declt '#:escape-anchor
-                                   (uiop:symbol-call '#:net.didierverna.declt '#:anchor-name
-                                                     (uiop:symbol-call '#:net.didierverna.declt
-                                                                       ',(make-symbol (string-upcase (format nil "make-~a-definition" type)))
-                                                                       :symbol ',symbol)))
-                 (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol)
-                 (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
-                 (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
-                 (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol))
-         (let ((*package* (find-package :cl)))
-           (format nil "See ~s" ',symbol)))))
+ (defmacro ref (symbol type)
+   `(if (asdf:component-loaded-p "yadfa/docs")
+        (format nil "@ref{~a,@code{~a} in @code{~a},@code{~a}∶@code{~a}}"
+                (uiop:symbol-call '#:net.didierverna.declt '#:escape-anchor
+                                  (uiop:symbol-call '#:net.didierverna.declt '#:anchor-name
+                                                    (uiop:symbol-call '#:net.didierverna.declt '
+                                                                      ,(make-symbol (string-upcase (format nil "make-~a-definition" type)))
+                                                                      :symbol ',symbol)))
+                (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol)
+                (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
+                (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
+                (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol))
+        (let ((*package* (find-package :cl)))
+          (format nil "~s" ',symbol))))
+ (defmacro xref (symbol type)
+   `(if (asdf:component-loaded-p "yadfa/docs")
+        (format nil "@xref{~a,@code{~a} in @code{~a},@code{~a}∶@code{~a}}"
+                (uiop:symbol-call '#:net.didierverna.declt '#:escape-anchor
+                                  (uiop:symbol-call '#:net.didierverna.declt '#:anchor-name
+                                                    (uiop:symbol-call '#:net.didierverna.declt
+                                                                      ',(make-symbol (string-upcase (format nil "make-~a-definition" type)))
+                                                                      :symbol ',symbol)))
+                (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol)
+                (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
+                (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
+                (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol))
+        (let ((*package* (find-package :cl)))
+          (format nil "See ~s" ',symbol)))))
 (declaim (type (or null battle) *battle*)
          (type list yadfa-clim::*records* *mods* *cheat-hooks*)
          (type (or null game) *game*)

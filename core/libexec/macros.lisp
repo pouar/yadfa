@@ -4,32 +4,32 @@
   "Macro used to prompt the user for input using restarts when the user enters the wrong input. @var{FORMS} is a list containing the lambda list @code{(case (&optional set-value) &key (error-text \"\") (prompt-text \"\"))}"
   (a:with-gensyms (tag block)
     `(block ,block
-         (tagbody
-               ,tag
-               (let* ,bindings
-                 ,@(iter (for form in forms)
-                     (collect (a:with-gensyms (value)
-                                (destructuring-bind (case (&optional set-value) &key (error-text "") (prompt-text ""))
-                                    form
-                                  `(restart-case (when ,case
-                                                   (error 'invalid-user-input :format-control ,error-text))
-                                     ,@(when set-value
-                                         `((use-value (,value)
-                                                      :interactive (lambda ()
-                                                                     (if clim:*application-frame*
-                                                                         ;; For some reason McCLIM does not echo when using CL:READ on the
-                                                                         ;; Listener's standard input until CL:READ returns. CLIM:ACCEPT otoh
-                                                                         ;; actually does, so let's use that with McCLIM instead.
-                                                                         (list (eval (clim:accept 'clim:expression
-                                                                                                  :stream ,stream
-                                                                                                  :prompt ,prompt-text)))
-                                                                         (progn
-                                                                           (format ,stream "~s: " ,prompt-text)
-                                                                           (list (eval (read ,stream))))))
-                                                      :report ,prompt-text
-                                                      (setf ,set-value ,value)
-                                                      (go ,tag)))))))))
-                 (return-from ,block (progn ,@body)))))))
+       (tagbody
+          ,tag
+          (let* ,bindings
+            ,@(iter (for form in forms)
+                    (collect (a:with-gensyms (value)
+                               (destructuring-bind (case (&optional set-value) &key (error-text "") (prompt-text ""))
+                                   form
+                                 `(restart-case (when ,case
+                                                  (error 'invalid-user-input :format-control ,error-text))
+                                    ,@(when set-value
+                                        `((use-value (,value)
+                                                     :interactive (lambda ()
+                                                                    (if clim:*application-frame*
+                                                                        ;; For some reason McCLIM does not echo when using CL:READ on the
+                                                                        ;; Listener's standard input until CL:READ returns. CLIM:ACCEPT otoh
+                                                                        ;; actually does, so let's use that with McCLIM instead.
+                                                                        (list (eval (clim:accept 'clim:expression
+                                                                                                 :stream ,stream
+                                                                                                 :prompt ,prompt-text)))
+                                                                        (progn
+                                                                          (format ,stream "~s: " ,prompt-text)
+                                                                          (list (eval (read ,stream))))))
+                                                     :report ,prompt-text
+                                                     (setf ,set-value ,value)
+                                                     (go ,tag)))))))))
+            (return-from ,block (progn ,@body)))))))
 (defmacro defmatch (source target &body return)
   (flet ((arg (arg sym)
            (typecase arg
@@ -45,18 +45,18 @@
   `(progn (s:eval-always (defclass ,name (,@superclasses element-type) ,slot-specifiers
                            (:metaclass element-type-class)
                            ,@(iter (for class-option in class-options)
-                               (unless (s:memq (car class-option) '(:super-effective :not-very-effective :no-effect :element-name))
-                                 (collect class-option)))))
+                                   (unless (s:memq (car class-option) '(:super-effective :not-very-effective :no-effect :element-name))
+                                     (collect class-option)))))
           ,@(iter (for class-option in class-options)
-              (let ((option-name (car class-option)))
-                (when (s:memq option-name '(:super-effective :not-very-effective :no-effect))
-                  (appending (iter (for target in (cdr class-option))
-                               (collect `(s:eval-always (unless (find-class ',target nil)
-                                                          (defclass ,target (element-type) () (:metaclass element-type-class)))))
-                               (collect `(defmatch ,name ,target ,option-name)))))
-                (collect `(setf (slot-value (find-class ',name) 'name) ,(if (eq option-name :element-name)
-                                                                            (second class-option)
-                                                                            nil)))))
+                  (let ((option-name (car class-option)))
+                    (when (s:memq option-name '(:super-effective :not-very-effective :no-effect))
+                      (appending (iter (for target in (cdr class-option))
+                                       (collect `(s:eval-always (unless (find-class ',target nil)
+                                                                  (defclass ,target (element-type) () (:metaclass element-type-class)))))
+                                       (collect `(defmatch ,name ,target ,option-name)))))
+                    (collect `(setf (slot-value (find-class ',name) 'name) ,(if (eq option-name :element-name)
+                                                                                (second class-option)
+                                                                                nil)))))
           (find-class ',name)))
 (defmacro accept-with-effective-frame (&body body)
   `(cond
@@ -81,7 +81,7 @@
   `(cond
      (c:*application-frame*
       (push (clim:updating-output (*query-io*)
-              ,@body)
+                                  ,@body)
             yadfa-clim::*records*))
      (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame
                                                                :width 1024 :height 768
@@ -92,21 +92,21 @@
 (defmacro updating-present-with-effective-frame
     ((stream
       &key (unique-id nil unique-id-supplied-p) (id-test nil id-test-supplied-p)
-           (cache-value nil cache-value-supplied-p)
-           (cache-test nil cache-test-supplied-p)
-           (fixed-position nil fixed-position-supplied-p)
-           (all-new nil all-new-supplied-p)
-           (parent-cache nil parent-cache-supplied-p)
-           (record-type nil record-type-supplied-p)
+        (cache-value nil cache-value-supplied-p)
+        (cache-test nil cache-test-supplied-p)
+        (fixed-position nil fixed-position-supplied-p)
+        (all-new nil all-new-supplied-p)
+        (parent-cache nil parent-cache-supplied-p)
+        (record-type nil record-type-supplied-p)
       &allow-other-keys) &body body)
   `(cond
      (c:*application-frame*
       (push (clim:updating-output (,stream ,@(and unique-id-supplied-p `(:unique-id ,unique-id)) ,@(and id-test-supplied-p `(:id-test ,id-test))
-                                   ,@(and cache-value-supplied-p `(:cache-value ,cache-value)) ,@(and cache-test-supplied-p `(:cache-test ,cache-test))
-                                   ,@(and fixed-position-supplied-p `(:fixed-position ,fixed-position)) ,@(and all-new-supplied-p `(:all-new ,all-new))
-                                   ,@(and parent-cache-supplied-p `(:parent-cache ,parent-cache))
-                                   ,@(and record-type-supplied-p (and `(:record-type ,record-type))))
-              ,@body)
+                                           ,@(and cache-value-supplied-p `(:cache-value ,cache-value)) ,@(and cache-test-supplied-p `(:cache-test ,cache-test))
+                                           ,@(and fixed-position-supplied-p `(:fixed-position ,fixed-position)) ,@(and all-new-supplied-p `(:all-new ,all-new))
+                                           ,@(and parent-cache-supplied-p `(:parent-cache ,parent-cache))
+                                           ,@(and record-type-supplied-p (and `(:record-type ,record-type))))
+                                  ,@body)
             yadfa-clim::*records*))
      (t (clim:run-frame-top-level (clim:make-application-frame 'yadfa-clim::emacs-frame
                                                                :width 1024 :height 768
@@ -126,10 +126,10 @@
   `(progn
      (defclass ,(a:format-symbol (symbol-package base-class) "~a" (symbol-name base-class))
          ,(if (iter (for i in direct-superclasses)
-                (when (subtypep i 'yadfa:onesie)
-                  (leave t)))
-           direct-superclasses
-           `(yadfa:onesie ,@direct-superclasses))
+                    (when (subtypep i 'yadfa:onesie)
+                      (leave t)))
+              direct-superclasses
+              `(yadfa:onesie ,@direct-superclasses))
        ,@body)
      (defclass ,(a:format-symbol (symbol-package base-class) "~a/OPENED" (symbol-name base-class))
          (,(a:format-symbol (symbol-package base-class) "~a" (symbol-name base-class))

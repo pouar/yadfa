@@ -45,7 +45,7 @@
 (defmethod use-script ((item diaper-package-mixin) (user base-character) (target base-character))
   (format t "You tear open the package and dump all the diapers out of it.~%")
   (iter (for i from 1 to 20)
-    (push (make-instance (slot-value item 'diaper)) (inventory-of target))))
+        (push (make-instance (slot-value item 'diaper)) (inventory-of target))))
 (defclass generic-diapers (yadfa:diaper undies) ()
   (:default-initargs
    :sogginess-capacity 100
@@ -214,21 +214,21 @@
          (calculate-gems (amount)
            (declare (type fixnum amount))
            (iter (for (the simple-string color) in '("magneta" "yellow" "purple" "green" "red"))
-             (for (the fixnum value) in '(25 10 5 2 1))
-             (with (the fixnum ret) = 0)
-             (setf ret (iter (with (the fixnum ret) = 0)
-                         (while (>= amount value))
-                         (incf ret)
-                         (decf amount value)
-                         (finally (return ret))))
-             (when (> ret 0)
-               (collect (list color ret)))))
+                 (for (the fixnum value) in '(25 10 5 2 1))
+                 (with (the fixnum ret) = 0)
+                 (setf ret (iter (with (the fixnum ret) = 0)
+                                 (while (>= amount value))
+                                 (incf ret)
+                                 (decf amount value)
+                                 (finally (return ret))))
+                 (when (> ret 0)
+                   (collect (list color ret)))))
          (text-length (text)
            (s:nlet rec ((count 0)
                         (text text))
-             (if (>= count 2)
-                 count
-                 (rec (1+ count) (cdr text))))))
+                   (if (>= count 2)
+                       count
+                       (rec (1+ count) (cdr text))))))
     (let* ((text (calculate-gems count))
            (text-length (text-length text)))
       (declare (type list text))
@@ -236,11 +236,11 @@
                          (2
                           (:fmt (:join (", " ", and ")
                                        (iter (for i in text)
-                                         (collect (format-pair i))))))
+                                             (collect (format-pair i))))))
                          (1
                           (:fmt (:join " and "
                                        (iter (for i in text)
-                                         (collect (format-pair i))))))
+                                             (collect (format-pair i))))))
                          (0
                           (:fmt (format-pair (car text))))))))))
 (defmethod describe-diaper-wear-usage ((item gem-diaper))

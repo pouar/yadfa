@@ -106,17 +106,17 @@
     :accessor ai-of))
   (:command-table (game-frame :inherit-from (playing-commands end-game-commands end-round-commands)))
   (:pane (c:vertically ()
-           (c:make-clim-stream-pane :name 'game :scroll-bars nil :incremental-redisplay t
-                                    :display-time :command-loop :display-function 'draw-game :width 640 :height 200 :max-height 300)
-           (c:make-clim-stream-pane :name 'gadgets :scroll-bars nil :incremental-redisplay nil :background climi::*3d-normal-color*
-                                    :display-time :command-loop :display-function 'draw-gadgets :width 640 :max-height 80)
-           (c:make-clim-interactor-pane :display-time :command-loop :name 'int :width 1200))))
+                       (c:make-clim-stream-pane :name 'game :scroll-bars nil :incremental-redisplay t
+                                                :display-time :command-loop :display-function 'draw-game :width 640 :height 200 :max-height 300)
+                       (c:make-clim-stream-pane :name 'gadgets :scroll-bars nil :incremental-redisplay nil :background climi::*3d-normal-color*
+                                                :display-time :command-loop :display-function 'draw-gadgets :width 640 :max-height 80)
+                       (c:make-clim-interactor-pane :display-time :command-loop :name 'int :width 1200))))
 (defmethod c:run-frame-top-level ((frame game-frame) &key)
   (let ((*player-cards* (make-array 12 :fill-pointer 0 :initial-element nil :element-type '(or null card)))
         (*ai-cards* (make-array 12 :fill-pointer 0 :initial-element nil :element-type '(or null card)))
         (*deck* (make-array 48 :fill-pointer 48 :element-type 'card :initial-contents (iter (for value in '(2 3 4 5 6 7 8 9 :king :queen :jack :ace))
-                                                                                        (dolist (suit '(:diamond :club :heart :spade))
-                                                                                          (collect (make-instance 'card :value value :suit suit))))))
+                                                                                            (dolist (suit '(:diamond :club :heart :spade))
+                                                                                              (collect (make-instance 'card :value value :suit suit))))))
         (*round* :playing)
         (*player-clothes* (list (make-instance 'yadfa-items:blackjack-uniform-diaper)))
         *checkpoints*
@@ -138,20 +138,20 @@
   `(multiple-value-bind (x y) (point-position ,point)
      (c:draw-rectangle* ,medium x y (+ x (* ,stat 400)) (+ y 15)
                         :ink (cond ,@(iter (for i in colors)
-                                       (collect `(,(car i) ,(intern (format nil "+~a+"
-                                                                            (if (typep (car (last i)) 'cons)
-                                                                                (caar (last i))
-                                                                                (car (last i))))
-                                                                    "CLIM"))))))
+                                           (collect `(,(car i) ,(intern (format nil "+~a+"
+                                                                                (if (typep (car (last i)) 'cons)
+                                                                                    (caar (last i))
+                                                                                    (car (last i))))
+                                                                        "CLIM"))))))
      (c:draw-rectangle* ,medium x y (+ x 400) (+ y 15)
                         :filled nil)
      (setf (c:stream-cursor-position ,medium) (values (+ x 400) y))))
 (defun deal ()
   (set-mode :playing)
   (iter (for i in-vector *player-cards*)
-    (vector-push i *deck*))
+        (vector-push i *deck*))
   (iter (for i in-vector *ai-cards*)
-    (vector-push i *deck*))
+        (vector-push i *deck*))
   (setf (fill-pointer *player-cards*) 0
         (fill-pointer *ai-cards*) 0)
   (setf *deck* (alexandria:shuffle *deck*))
@@ -170,11 +170,11 @@
     (declare (type boolean ace)
              (type fixnum total))
     (iter (for i in-vector cards)
-      (when i
-        (typecase (value-of i)
-          (fixnum (incf total (value-of i)))
-          ((member :king :queen :jack) (incf total 10))
-          ((eql :ace) (setf ace t) (incf total)))))
+          (when i
+            (typecase (value-of i)
+              (fixnum (incf total (value-of i)))
+              ((member :king :queen :jack) (incf total 10))
+              ((eql :ace) (setf ace t) (incf total)))))
     (if (and ace (<= total 10))
         (+ total 10)
         total)))
@@ -193,10 +193,10 @@
   (labels ((process-potty-checkpoint (user)
              (a:switch (user :test (lambda (o e)
                                      (>= (bladder/contents-of o) (funcall e o))))
-               ('bladder/need-to-potty-limit-of :need-to-potty)
-               ('bladder/potty-dance-limit-of :potty-dance)
-               ('bladder/potty-desperate-limit-of :potty-desparate)
-               ('bladder/maximum-limit-of :lose)))
+                       ('bladder/need-to-potty-limit-of :need-to-potty)
+                       ('bladder/potty-dance-limit-of :potty-dance)
+                       ('bladder/potty-desperate-limit-of :potty-desparate)
+                       ('bladder/maximum-limit-of :lose)))
            (process-potty-user (user &optional (clothing nil clothing-p))
              (let ((new-checkpoint (process-potty-checkpoint user))
                    (had-accident (when (>= (bladder/contents-of (player-of *game*)) (bladder/maximum-limit-of (player-of *game*)))
@@ -214,9 +214,9 @@
       (thunk (ai-of frame)))))
 (defmethod c:default-frame-top-level ((frame game-frame)
                                       &key command-parser
-                                           command-unparser
-                                           partial-command-parser
-                                           prompt)
+                                        command-unparser
+                                        partial-command-parser
+                                        prompt)
   (declare (ignore command-parser command-unparser partial-command-parser prompt))
   (deal)
   (call-next-method))
@@ -254,33 +254,33 @@
     (setf *put-on-old-clothes* put-on-old-clothes)
     (c:frame-exit c:*application-frame*)))
 (serapeum:eval-always
-  (in-package :yadfa-blackjack)
-  (defclass give-up () ()))
+ (in-package :yadfa-blackjack)
+ (defclass give-up () ()))
 (c:define-presentation-to-command-translator give-up-with-accept
     (give-up com-give-up game-frame
-     :gesture :select
-     :documentation "Give Up?"
-     :pointer-documentation "Give Up?")
-    (object frame)
+             :gesture :select
+             :documentation "Give Up?"
+             :pointer-documentation "Give Up?")
+  (object frame)
   (let ((*query-io* (c:frame-query-io frame))
         go-potty put-on-old-clothes)
     (c:accepting-values (*query-io* :own-window t :exit-boxes '((:exit "Accept")))
-      (fresh-line *query-io*)
-      (setf go-potty (c:accept '(c:member-alist (("Run to the toilet" :toilet)
-                                                 ("Flood your pamps" :pamps)))
-                               :prompt "<Run to the toilet> | <Flood your pamps>"
-                               :default :pamps :stream *query-io* :view c:+option-pane-view+))
-      (fresh-line *query-io*)
-      (setf put-on-old-clothes (c:accept 'boolean
-                                         :prompt "Put on old clothes?:"
-                                         :default t :stream *query-io* :view c:+toggle-button-view+)))
+                        (fresh-line *query-io*)
+                        (setf go-potty (c:accept '(c:member-alist (("Run to the toilet" :toilet)
+                                                                   ("Flood your pamps" :pamps)))
+                                                 :prompt "<Run to the toilet> | <Flood your pamps>"
+                                                 :default :pamps :stream *query-io* :view c:+option-pane-view+))
+                        (fresh-line *query-io*)
+                        (setf put-on-old-clothes (c:accept 'boolean
+                                                           :prompt "Put on old clothes?:"
+                                                           :default t :stream *query-io* :view c:+toggle-button-view+)))
     `(,go-potty ,put-on-old-clothes)))
 (c:define-command (com-stay :name t :command-table playing-commands)
     ()
   (let ((player-total (calculate-total *player-cards*))
         (stream (c:frame-standard-output c:*application-frame*)))
     (iter (while (<= player-total (calculate-total *ai-cards*) 20))
-      (vector-push (vector-pop *deck*) *ai-cards*))
+          (vector-push (vector-pop *deck*) *ai-cards*))
     (let ((ai-total (calculate-total *ai-cards*)))
       (cond
         ((> ai-total 21)
@@ -308,15 +308,15 @@
 (cc:define-conditional-command (com-playing-mode)
     (game-frame :enable-commands (playing-commands)
                 :disable-commands (end-round-commands end-game-commands))
-    ())
+  ())
 (cc:define-conditional-command (com-end-round-mode)
     (game-frame :enable-commands (end-round-commands)
                 :disable-commands (playing-commands end-game-commands))
-    ())
+  ())
 (cc:define-conditional-command (com-end-game-mode)
     (game-frame :enable-commands (end-game-commands)
                 :disable-commands (playing-commands end-round-commands))
-    ())
+  ())
 (defclass stat-view (c:view) ())
 (defconstant +stat-view+ (make-instance 'stat-view))
 (c:define-presentation-method c:present (user (type base-character) medium (view stat-view) &key)
@@ -337,26 +337,26 @@
              (c:draw-circle* pane (+ (c:point-x point) 10) (+ (c:point-y point) 10) 10 :ink c:+red+)
              (c:draw-circle* pane (+ (c:point-x point) 30) (+ (c:point-y point) 10) 10 :ink c:+red+ )
              (c:draw-polygon pane (iter (for (x y) on '(0 10 40 10 20 40) by 'cddr)
-                                    (collect (c:make-point (+ (c:point-x point) x) (+ (c:point-y point) y)))) :ink c:+red+))
+                                        (collect (c:make-point (+ (c:point-x point) x) (+ (c:point-y point) y)))) :ink c:+red+))
            (draw-spade (point)
              (declare (type c:point point))
              (c:draw-circle* pane (+ (c:point-x point) 10) (+ (c:point-y point) 20) 10 :ink c:+black+)
              (c:draw-circle* pane (+ (c:point-x point) 30) (+ (c:point-y point) 20) 10 :ink c:+black+)
              (c:draw-polygon pane (iter (for (x y) on '(0 15 20 0 40 15 20 20) by 'cddr)
-                                    (collect (c:make-point (+ (c:point-x point) x) (+ (c:point-y point) y)))) :ink c:+black+)
+                                        (collect (c:make-point (+ (c:point-x point) x) (+ (c:point-y point) y)))) :ink c:+black+)
              (c:draw-polygon pane (iter (for (x y) on '(10 40 30 40 20 20) by 'cddr)
-                                    (collect (c:make-point (+ (c:point-x point) x) (+ (c:point-y point) y)))) :ink c:+black+))
+                                        (collect (c:make-point (+ (c:point-x point) x) (+ (c:point-y point) y)))) :ink c:+black+))
            (draw-diamond (point)
              (declare (type c:point point))
              (c:draw-polygon pane (iter (for (x y) on '(20 0 0 20 20 40 40 20) by 'cddr)
-                                    (collect (c:make-point (+ (c:point-x point) x) (+ (c:point-y point) y)))) :ink c:+red+))
+                                        (collect (c:make-point (+ (c:point-x point) x) (+ (c:point-y point) y)))) :ink c:+red+))
            (draw-club (point)
              (declare (type c:point point))
              (c:draw-circle* pane (+ (c:point-x point) 10) (+ (c:point-y point) 20) 10 :ink c:+black+)
              (c:draw-circle* pane (+ (c:point-x point) 30) (+ (c:point-y point) 20) 10 :ink c:+black+)
              (c:draw-circle* pane (+ (c:point-x point) 20) (+ (c:point-y point) 10) 10 :ink c:+black+)
              (c:draw-polygon pane (iter (for (x y) on '(10 40 30 40 20 20) by 'cddr)
-                                    (collect (c:make-point (+ (c:point-x point) x) (+ (c:point-y point) y)))) :ink c:+black+))
+                                        (collect (c:make-point (+ (c:point-x point) x) (+ (c:point-y point) y)))) :ink c:+black+))
            (draw-card (card point)
              (declare (type card card)
                       (type c:point point))
@@ -382,51 +382,51 @@
              (multiple-value-bind (x y) (c:stream-cursor-position pane)
                (declare (ignore x))
                (iter (for i in-vector cards)
-                 (for x upfrom 0)
-                 (c:updating-output (pane :unique-id `(,user ,x) :id-test 'equal :cache-value `(,i ,(side-of i)) :cache-test 'equal)
-                   (draw-card i (c:make-point (+ (* x 40) 10) y))))
+                     (for x upfrom 0)
+                     (c:updating-output (pane :unique-id `(,user ,x) :id-test 'equal :cache-value `(,i ,(side-of i)) :cache-test 'equal)
+                                        (draw-card i (c:make-point (+ (* x 40) 10) y))))
                (c:stream-increment-cursor-position pane 0 40)
                (c:updating-output (pane :unique-id user :id-test 'eq :cache-value (bladder/contents-of user))
-                 (c:present user 'base-character :view +stat-view+ :stream pane)))))
+                                  (c:present user 'base-character :view +stat-view+ :stream pane)))))
     (setf (c:stream-cursor-position pane) (values 0 0))
     (draw-row (ai-of frame) *ai-cards*)
     (draw-row (player-of *game*) *player-cards*)))
 (defun draw-gadgets (frame pane)
   (declare (ignore frame))
   (c:formatting-item-list (pane)
-    (let ((table (case *round*
-                   (:playing 'playing-commands)
-                   (:end-round 'end-round-commands)
-                   (:end-game 'end-game-commands))))
-      (macrolet ((thunk (&rest alist)
-                   `(c:map-over-command-table-names
-                     (lambda (name symbol)
-                       (c:formatting-cell (pane)
-                         (case symbol
-                           ,@(iter (for i in (append alist '((t `(,(c:gadget-client button)) (c:command :command-table game-frame)))))
-                               (destructuring-bind (command object type) i
-                                 (collect `(,command (c:with-output-as-gadget (pane)
-                                                       (c:make-pane 'c:push-button
-                                                                    :label name
-                                                                    :client symbol
-                                                                    :activate-callback
-                                                                    (lambda (button)
-                                                                      (declare (ignorable button))
-                                                                      ;; apparently panes don't work as presentations in McCLIM
-                                                                      (c:throw-highlighted-presentation
-                                                                       (make-instance 'c:standard-presentation
-                                                                                      :object ,object
-                                                                                      :single-box t
-                                                                                      :type ',type)
-                                                                       c:*input-context*
-                                                                       (make-instance 'c:pointer-button-press-event
-                                                                                      :sheet nil
-                                                                                      :x 0 :y 0
-                                                                                      :modifier-state 0
-                                                                                      :button c:+pointer-left-button+))))))))))))
-                     table
-                     :inherited nil)))
-        (thunk ('com-give-up (make-instance 'give-up) give-up))))))
+                          (let ((table (case *round*
+                                         (:playing 'playing-commands)
+                                         (:end-round 'end-round-commands)
+                                         (:end-game 'end-game-commands))))
+                            (macrolet ((thunk (&rest alist)
+                                         `(c:map-over-command-table-names
+                                           (lambda (name symbol)
+                                             (c:formatting-cell (pane)
+                                                                (case symbol
+                                                                  ,@(iter (for i in (append alist '((t `(,(c:gadget-client button)) (c:command :command-table game-frame)))))
+                                                                     (destructuring-bind (command object type) i
+                                                                       (collect `(,command (c:with-output-as-gadget (pane)
+                                                                                             (c:make-pane 'c:push-button
+                                                                                                          :label name
+                                                                                                          :client symbol
+                                                                                                          :activate-callback
+                                                                                                          (lambda (button)
+                                                                                                            (declare (ignorable button))
+                                                                                                            ;; apparently panes don't work as presentations in McCLIM
+                                                                                                            (c:throw-highlighted-presentation
+                                                                                                             (make-instance 'c:standard-presentation
+                                                                                                                            :object ,object
+                                                                                                                            :single-box t
+                                                                                                                            :type ',type)
+                                                                                                             c:*input-context*
+                                                                                                             (make-instance 'c:pointer-button-press-event
+                                                                                                                            :sheet nil
+                                                                                                                            :x 0 :y 0
+                                                                                                                            :modifier-state 0
+                                                                                                                            :button c:+pointer-left-button+))))))))))))
+                                           table
+                                           :inherited nil)))
+                              (thunk ('com-give-up (make-instance 'give-up) give-up))))))
 (defun run-game (&optional (enemy 'enemy))
   (let ((c:*default-server-path* (if (eq (car (clim:port-server-path (clim:find-port))) :clx-ff)
                                      :clx-ttf nil))

@@ -50,30 +50,30 @@
   (:command-definer t))
 (defmethod run-frame-top-level :around ((frame accept-values) &key)
   (letf (((frame-process frame) (current-process)))
-    (funcall (frame-top-level-lambda frame) frame)))
+        (funcall (frame-top-level-lambda frame) frame)))
 (defmethod display-exit-boxes ((frame accept-values) stream (view textual-dialog-view))
   (declare (ignorable frame))
   (updating-output (stream :unique-id 'buttons :cache-value t)
-    (fresh-line stream)
-    (formatting-table (stream)
-      (formatting-row (stream)
-        (dolist (i (slot-value frame 'exit-boxes))
-          (formatting-cell (stream)
-            (with-output-as-presentation (stream nil (cond ((eql (car i) :exit)
-                                                            'exit-button)
-                                                           ((eql (car i) :abort)
-                                                            'abort-button)))
-              (surrounding-output-with-border
-                  (stream :shape :rounded :radius 6
-                          :background +gray80+ :highlight-background +gray90+)
-                (format stream (cadr i))))))))
-    (terpri stream)))
+                   (fresh-line stream)
+                   (formatting-table (stream)
+                                     (formatting-row (stream)
+                                                     (dolist (i (slot-value frame 'exit-boxes))
+                                                       (formatting-cell (stream)
+                                                                        (with-output-as-presentation (stream nil (cond ((eql (car i) :exit)
+                                                                                                                        'exit-button)
+                                                                                                                       ((eql (car i) :abort)
+                                                                                                                        'abort-button)))
+                                                                          (surrounding-output-with-border
+                                                                           (stream :shape :rounded :radius 6
+                                                                                   :background +gray80+ :highlight-background +gray90+)
+                                                                           (format stream (cadr i))))))))
+                   (terpri stream)))
 (defmethod default-frame-top-level
     ((frame accept-values)
      &key command-parser
-          command-unparser
-          partial-command-parser
-          prompt)
+       command-unparser
+       partial-command-parser
+       prompt)
   (declare (ignore command-parser command-unparser partial-command-parser prompt))
   ;; Give each pane a fresh start first time through.
   (let* ((stream (slot-value frame 'stream))
@@ -106,24 +106,24 @@
                               :stream stream
                               :align-prompts align-prompts))
              (arecord (updating-output (stream :record-type 'accepting-values-record)
-                        (when label
-                          (format stream label)
-                          (terpri stream))
-                        (if align-prompts
-                            (formatting-table (stream)
-                              #1=(setf return-values
-                                       (multiple-value-list
-                                        (funcall body *accepting-values-stream*))))
-                            #1#)
-                        (unless (queries *accepting-values-stream*)
-                          (cerror "Exit returning body values."
-                                  "~s must contain at least one call to ~s."
-                                  'accepting-values 'accept)
-                          (return-from default-frame-top-level return-values))
-                        (display-exit-boxes frame
-                                            stream
-                                            (stream-default-view
-                                             *accepting-values-stream*))))
+                                       (when label
+                                         (format stream label)
+                                         (terpri stream))
+                                       (if align-prompts
+                                           (formatting-table (stream)
+                                                             #1=(setf return-values
+                                                                      (multiple-value-list
+                                                                       (funcall body *accepting-values-stream*))))
+                                           #1#)
+                                       (unless (queries *accepting-values-stream*)
+                                         (cerror "Exit returning body values."
+                                                 "~s must contain at least one call to ~s."
+                                                 'accepting-values 'accept)
+                                         (return-from default-frame-top-level return-values))
+                                       (display-exit-boxes frame
+                                                           stream
+                                                           (stream-default-view
+                                                            *accepting-values-stream*))))
              (first-time t)
              (current-command (if initially-select-p
                                   `(com-select-query
@@ -135,67 +135,67 @@
              (*accelerator-gestures* (compute-inherited-keystrokes command-table)))
         (letf (((frame-command-table *application-frame*)
                 (find-command-table command-table)))
-          (unwind-protect
-               (handler-case
-                   (loop
-                     (if first-time
-                         (setq first-time nil)
-                         (when resynchronize-every-pass
-                           (redisplay arecord stream)))
-                     (with-input-context
-                         ('(command :command-table accept-values))
-                         (object)
-                         (progn
-                           (when (and select-first-query
-                                      (not initially-select-p))
-                             (setf current-command
-                                   `(com-select-query
-                                     ,(query-identifier
-                                       (first
-                                        (queries *accepting-values-stream*))))
-                                   select-first-query nil))
-                           (handler-case
-                               (progn
-                                 (apply (command-name current-command)
-                                        (command-arguments current-command))
-                                 ;; If current command returns without throwing a
-                                 ;; command, go back to the default command
-                                 (setq current-command *default-command*))
-                             (accelerator-gesture (c)
-                               (let ((command (lookup-keystroke-command-item
-                                               (accelerator-gesture-event c) command-table)))
-                                 (if (listp command)
-                                     (setq current-command
-                                           (if (clim:partial-command-p command)
-                                               (funcall clim:*partial-command-parser*
-                                                        command-table stream command
-                                                        (position clim:*unsupplied-argument-marker* command))
-                                               command))
-                                     ;; may be it is a gesture of the frame's command-table
-                                     (signal c))))))
-                       (t (setq current-command object)))
-                     (redisplay arecord stream))
-                 (av-exit ()
-                   (finalize-query-records *accepting-values-stream*)
-                   (setf (last-pass *accepting-values-stream*) t)
-                   (redisplay arecord stream)))
-            (dolist (query (queries *accepting-values-stream*))
-              (finalize (editing-stream (record query)) nil))
-            (erase-output-record arecord stream)
-            (setf (stream-cursor-position stream)
-                  (values cx cy))))
+              (unwind-protect
+                   (handler-case
+                       (loop
+                         (if first-time
+                             (setq first-time nil)
+                             (when resynchronize-every-pass
+                               (redisplay arecord stream)))
+                         (with-input-context
+                             ('(command :command-table accept-values))
+                           (object)
+                           (progn
+                             (when (and select-first-query
+                                        (not initially-select-p))
+                               (setf current-command
+                                     `(com-select-query
+                                       ,(query-identifier
+                                         (first
+                                          (queries *accepting-values-stream*))))
+                                     select-first-query nil))
+                             (handler-case
+                                 (progn
+                                   (apply (command-name current-command)
+                                          (command-arguments current-command))
+                                   ;; If current command returns without throwing a
+                                   ;; command, go back to the default command
+                                   (setq current-command *default-command*))
+                               (accelerator-gesture (c)
+                                 (let ((command (lookup-keystroke-command-item
+                                                 (accelerator-gesture-event c) command-table)))
+                                   (if (listp command)
+                                       (setq current-command
+                                             (if (clim:partial-command-p command)
+                                                 (funcall clim:*partial-command-parser*
+                                                          command-table stream command
+                                                          (position clim:*unsupplied-argument-marker* command))
+                                                 command))
+                                       ;; may be it is a gesture of the frame's command-table
+                                       (signal c))))))
+                           (t (setq current-command object)))
+                         (redisplay arecord stream))
+                     (av-exit ()
+                       (finalize-query-records *accepting-values-stream*)
+                       (setf (last-pass *accepting-values-stream*) t)
+                       (redisplay arecord stream)))
+                (dolist (query (queries *accepting-values-stream*))
+                  (finalize (editing-stream (record query)) nil))
+                (erase-output-record arecord stream)
+                (setf (stream-cursor-position stream)
+                      (values cx cy))))
         (apply 'values return-values)))))
 (defun invoke-accepting-values
     (stream body
      &rest args
      &key own-window exit-boxes
-          (initially-select-query-identifier nil initially-select-p)
-          select-first-query
-          modify-initial-query resynchronize-every-pass resize-frame
-          align-prompts label scroll-bars
-          x-position y-position width height
-          (command-table 'accept-values)
-          (frame-class 'accept-values))
+       (initially-select-query-identifier nil initially-select-p)
+       select-first-query
+       modify-initial-query resynchronize-every-pass resize-frame
+       align-prompts label scroll-bars
+       x-position y-position width height
+       (command-table 'accept-values)
+       (frame-class 'accept-values))
   (declare (ignore own-window exit-boxes modify-initial-query
                    resize-frame scroll-bars x-position y-position width height
                    initially-select-query-identifier

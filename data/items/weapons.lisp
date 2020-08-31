@@ -6,7 +6,7 @@
 (defmethod use-script ((item ammo-box-mixin) (user base-character) (target base-character))
   (f:fmt t (name-of user) " open the box and dump all the ammunition out of it." #\Newline)
   (iter (for i from 1 to 6)
-    (push (make-instance (slot-value item 'ammo)) (inventory-of target))))
+        (push (make-instance (slot-value item 'ammo)) (inventory-of target))))
 (defclass 7.62×39mm (ammo) ()
   (:default-initargs
    :name "7.62x39mm Rounds"

@@ -3,11 +3,11 @@
 (defun change-the-baby (user &rest new-diaper)
   (let ((b (apply #'make-instance new-diaper)))
     (iter (for clothes on (wear-of user))
-      (when (typep (car clothes) 'bottoms)
-        (handler-case (toggle-onesie (car clothes) clothes user)
-          (onesie-locked (c)
-            (setf (lockedp (car (clothes-of c))) nil)
-            (toggle-onesie (car (clothes-of c)) (clothes-of c) (user-of c))))))
+          (when (typep (car clothes) 'bottoms)
+            (handler-case (toggle-onesie (car clothes) clothes user)
+              (onesie-locked (c)
+                (setf (lockedp (car (clothes-of c))) nil)
+                (toggle-onesie (car (clothes-of c)) (clothes-of c) (user-of c))))))
     (setf (inventory-of (player-of *game*)) (append (inventory-of (player-of *game*)) (filter-items (wear-of user) 'closed-bottoms))
           (wear-of user) (remove-if (lambda (a)
                                       (typep a 'closed-bottoms))
@@ -16,15 +16,15 @@
         (push b (cdr (last (wear-of user))))
         (push b (wear-of user)))
     (iter (for clothes on (wear-of user))
-      (let ((nth (car clothes))
-            (nthcdr (cdr clothes)))
-        (when (or (and (typep nth 'bottoms) (thickness-capacity-of nth) nthcdr
-                       (> (total-thickness nthcdr) (thickness-capacity-of nth)))
-                  (and (typep nth 'closed-bottoms)
-                       (or (>= (sogginess-of nth) (/ (sogginess-capacity-of nth) 4))
-                           (>= (messiness-of nth) (/ (messiness-capacity-of nth) 4)))))
-          (push nth (inventory-of (player-of *game*)))
-          (setf (wear-of user) (s:delq nth (wear-of user))))))))
+          (let ((nth (car clothes))
+                (nthcdr (cdr clothes)))
+            (when (or (and (typep nth 'bottoms) (thickness-capacity-of nth) nthcdr
+                           (> (total-thickness nthcdr) (thickness-capacity-of nth)))
+                      (and (typep nth 'closed-bottoms)
+                           (or (>= (sogginess-of nth) (/ (sogginess-capacity-of nth) 4))
+                               (>= (messiness-of nth) (/ (messiness-capacity-of nth) 4)))))
+              (push nth (inventory-of (player-of *game*)))
+              (setf (wear-of user) (s:delq nth (wear-of user))))))))
 (defclass toilet (prop) ()
   (:default-initargs
    :name "Toilet"
@@ -86,38 +86,38 @@
                                            (ignore keys))
                                   #-sbcl (check-type prop prop)
                                   (iter (for j in (append (list (player-of *game*)) (allies-of *game*)))
-                                    (let ((a (calculate-diaper-usage j)))
-                                      (when (and
-                                             (or
-                                              (>=
-                                               (getf a :sogginess)
-                                               (/ (getf a :sogginess-capacity) 4))
-                                              (>=
-                                               (getf a :messiness)
-                                               (/ (getf a :messiness-capacity) 4)))
-                                             (filter-items (wear-of j) 'closed-bottoms))
-                                        (format t "Mechanical arms come out of the changing table and strap ~a down on the table to prevent ~a from escaping and proceeds to change ~a~%~%"
-                                                (name-of j)
-                                                (if (malep j) "him" "her")
-                                                (if (malep j) "him" "her"))
-                                        (if (filter-items (wear-of j) 'padding)
-                                            (progn
-                                              (format t "~a: Hey!!! Don't change me here!!! People can see me!!! Stop!!!~%~%"
-                                                      (name-of j)))
-                                            (progn
-                                              (format t "~a: Hey!!! I don't need diapers!!! Stop!!!~%~%"
-                                                      (name-of j))))
-                                        (change-the-baby j 'yadfa-items:kurikia-thick-diaper :locked t)
-                                        (format t "*The machine removes ~a's soggy clothing (and any clothing that doesn't fit over the new diaper) and puts a thick diaper on ~a, then locks it to prevent the baby from removing it.*~%~%"
-                                                (name-of j)
-                                                (if (malep j) "him" "her"))
-                                        (format t "*The machine unstraps ~a from the table and lets ~a go. The diaper is so thick ~a's legs are spread apart forcing ~a to waddle*~%~%"
-                                                (name-of j)
-                                                (if (malep j) "him" "her")
-                                                (name-of j)
-                                                (if (malep j) "him" "her"))
-                                        (when (trigger-event 'yadfa-events:get-diaper-locked-1)
-                                          (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%" (name-of j))))))))))
+                                   (let ((a (calculate-diaper-usage j)))
+                                     (when (and
+                                            (or
+                                             (>=
+                                              (getf a :sogginess)
+                                              (/ (getf a :sogginess-capacity) 4))
+                                             (>=
+                                              (getf a :messiness)
+                                              (/ (getf a :messiness-capacity) 4)))
+                                            (filter-items (wear-of j) 'closed-bottoms))
+                                       (format t "Mechanical arms come out of the changing table and strap ~a down on the table to prevent ~a from escaping and proceeds to change ~a~%~%"
+                                               (name-of j)
+                                               (if (malep j) "him" "her")
+                                               (if (malep j) "him" "her"))
+                                       (if (filter-items (wear-of j) 'padding)
+                                           (progn
+                                             (format t "~a: Hey!!! Don't change me here!!! People can see me!!! Stop!!!~%~%"
+                                                     (name-of j)))
+                                           (progn
+                                             (format t "~a: Hey!!! I don't need diapers!!! Stop!!!~%~%"
+                                                     (name-of j))))
+                                       (change-the-baby j 'yadfa-items:kurikia-thick-diaper :locked t)
+                                       (format t "*The machine removes ~a's soggy clothing (and any clothing that doesn't fit over the new diaper) and puts a thick diaper on ~a, then locks it to prevent the baby from removing it.*~%~%"
+                                               (name-of j)
+                                               (if (malep j) "him" "her"))
+                                       (format t "*The machine unstraps ~a from the table and lets ~a go. The diaper is so thick ~a's legs are spread apart forcing ~a to waddle*~%~%"
+                                               (name-of j)
+                                               (if (malep j) "him" "her")
+                                               (name-of j)
+                                               (if (malep j) "him" "her"))
+                                       (when (trigger-event 'yadfa-events:get-diaper-locked-1)
+                                         (format t "*~a tugs at the tabs trying to remove them, but they won't budge. Better find a solution before its too late*~%~%" (name-of j))))))))))
   (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 (defclass checkpoint (prop) ()
   (:default-initargs
@@ -220,15 +220,15 @@
                                #-sbcl (check-type prop prop)
                                (shopfun (let ((a ()))
                                           (iter (for i in (list-all-packages))
-                                            (unless (equal i (find-package :yadfa))
-                                              (do-external-symbols  (s i)
-                                                (when (and
-                                                       (find-class s nil)
-                                                       (c2mop:subclassp
-                                                        (find-class s)
-                                                        (find-class 'item))
-                                                       (tossablep (make-instance s)))
-                                                  (push (cons s nil) a)))))
+                                                (unless (equal i (find-package :yadfa))
+                                                  (do-external-symbols  (s i)
+                                                    (when (and
+                                                           (find-class s nil)
+                                                           (c2mop:subclassp
+                                                            (find-class s)
+                                                            (find-class 'item))
+                                                           (tossablep (make-instance s)))
+                                                      (push (cons s nil) a)))))
                                           a)
                                 :format-items t)))
         (getf (actions-of c) :buy-items)
@@ -243,16 +243,16 @@
                                (shopfun
                                 (let ((a ()))
                                   (iter (for i in (list-all-packages))
-                                    (unless
-                                        (equal i (find-package :yadfa))
-                                      (do-external-symbols (s i)
-                                        (when (and
-                                               (find-class s nil)
-                                               (c2mop:subclassp
-                                                (find-class s)
-                                                (find-class 'item))
-                                               (tossablep (make-instance s)))
-                                          (push (cons s nil) a)))))
+                                        (unless
+                                            (equal i (find-package :yadfa))
+                                          (do-external-symbols (s i)
+                                            (when (and
+                                                   (find-class s nil)
+                                                   (c2mop:subclassp
+                                                    (find-class s)
+                                                    (find-class 'item))
+                                                   (tossablep (make-instance s)))
+                                              (push (cons s nil) a)))))
                                   a)
                                 :items-to-buy items
                                 :user (player-of *game*))))
@@ -268,16 +268,16 @@
                                (shopfun
                                 (let ((a ()))
                                   (iter
-                                    (for i in (list-all-packages))
-                                    (unless (equal i (find-package :yadfa))
-                                      (do-external-symbols (s i)
-                                        (when (and
-                                               (find-class s nil)
-                                               (c2mop:subclassp
-                                                (find-class s)
-                                                (find-class 'item))
-                                               (tossablep (make-instance s)))
-                                          (push (cons s nil) a)))))
+                                   (for i in (list-all-packages))
+                                   (unless (equal i (find-package :yadfa))
+                                     (do-external-symbols (s i)
+                                       (when (and
+                                              (find-class s nil)
+                                              (c2mop:subclassp
+                                               (find-class s)
+                                               (find-class 'item))
+                                              (tossablep (make-instance s)))
+                                         (push (cons s nil) a)))))
                                   a)
                                 :items-to-sell items
                                 :user (player-of *game*))))))

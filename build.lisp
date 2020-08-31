@@ -34,7 +34,7 @@
 (let ((*compile-verbose* nil) (*compile-print* nil))
   (ql:quickload (loop for i in (asdf:system-depends-on (asdf:find-system :yadfa))
                       when (stringp i) collect i
-                      when (and (listp i) (eq (first i) :feature) (uiop:featurep (second i))) collect (third i)))
+                        when (and (listp i) (eq (first i) :feature) (uiop:featurep (second i))) collect (third i)))
   (declaim (optimize (debug 2) safety))
   (ql:quickload :yadfa))
 (when (find "immutable" (uiop:command-line-arguments) :test #'string=)

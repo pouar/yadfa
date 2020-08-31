@@ -381,5 +381,5 @@
                     10 "Well it's not noticeable"
                     0 "It's clean")
    :wear-mess-text '(400 "There's a big lump on the back of your seat"
-                    10 "Well it's not noticeable"
-                    0 "It's clean")))
+                     10 "Well it's not noticeable"
+                     0 "It's clean")))

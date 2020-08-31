@@ -427,8 +427,8 @@
 (defmethod initialize-instance :after
     ((c base-character) &rest initargs &key &allow-other-keys)
   (destructuring-bind (&key (health nil healthp) (energy nil energyp)
-                            (base-health nil base-health-p) (base-attack nil base-attack-p)
-                            (base-defense nil base-defense-p) (base-speed nil base-speed-p) (base-energy nil base-energy-p)&allow-other-keys)
+                         (base-health nil base-health-p) (base-attack nil base-attack-p)
+                         (base-defense nil base-defense-p) (base-speed nil base-speed-p) (base-energy nil base-energy-p)&allow-other-keys)
       initargs
     (declare (ignore health energy))
     (when base-health-p
@@ -1047,7 +1047,7 @@
      (enter-battle-text-of c)
      (with-output-to-string (s)
        (iter (for i in (enemies-of c))
-         (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
+             (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
   (setf (turn-queue-of c) (sort (append* (enemies-of c) (team-npcs-of c) (team-of *game*)) '>
                                 :key (lambda (a)
                                        (calculate-stat a :speed))))

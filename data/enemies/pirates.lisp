@@ -29,11 +29,11 @@
   (:default-initargs
    :description "A variant of the Diaper Pirate that wears 3 layers of padding. A stuffer, a normal diaper, and a super thick diaper."
    :inventory (nconc (iter (for i from 0 to (random 20))
-                       (collect (make-instance 'yadfa-items:incontinence-pad)))
+                           (collect (make-instance 'yadfa-items:incontinence-pad)))
                      (iter (for i from 0 to (random 20))
-                       (collect (make-instance 'yadfa-items:cloth-diaper)))
+                           (collect (make-instance 'yadfa-items:cloth-diaper)))
                      (iter (for i from 0 to (random 20))
-                       (collect (make-instance 'yadfa-items:thick-rubber-diaper))))))
+                           (collect (make-instance 'yadfa-items:thick-rubber-diaper))))))
 (defmethod initialize-instance :after ((c thickly-diaper-pirate) &rest args &key &allow-other-keys)
   (destructuring-bind (&key (wear nil wearp) &allow-other-keys)
       args
@@ -42,7 +42,7 @@
       (setf (wear-of c) nil)
       (a:appendf (wear-of c)
                  (iter (for i in '(yadfa-items:thick-rubber-diaper yadfa-items:cloth-diaper yadfa-items:incontinence-pad))
-                   (collect (make-instance i))))
+                       (collect (make-instance i))))
       (unless (malep c)
         (push (make-instance 'yadfa-items:bra) (wear-of c)))
       (push (make-instance 'yadfa-items:pirate-shirt) (wear-of c)))))

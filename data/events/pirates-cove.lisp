@@ -32,16 +32,16 @@
                      (name-of (player-of *game*)) ": got a name?" #\Newline #\Newline)
               (finish-output)
               (accept-with-effective-frame
-                (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
-                  (setf coon (clim:accept 'string :stream *query-io* :prompt "Raccoon Name"
-                                                  :default #.(second
-                                                              (assoc :name
-                                                                     (progn
-                                                                       (c2mop:ensure-finalized
-                                                                        (find-class 'yadfa-allies:slynk))
-                                                                       (c2mop:compute-default-initargs
-                                                                        (find-class 'yadfa-allies:slynk)))))
-                                                  :view clim:+text-field-view+))))
+               (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
+                                      (setf coon (clim:accept 'string :stream *query-io* :prompt "Raccoon Name"
+                                                                      :default #.(second
+                                                                                  (assoc :name
+                                                                                         (progn
+                                                                                           (c2mop:ensure-finalized
+                                                                                            (find-class 'yadfa-allies:slynk))
+                                                                                           (c2mop:compute-default-initargs
+                                                                                            (find-class 'yadfa-allies:slynk)))))
+                                                                      :view clim:+text-field-view+))))
               (f:fmt t "Raccoon: It's " (name-of coon) #\Newline #\Newline
                      (name-of coon) " decides you can't be all bad since you're the first one to be nice to him (plus the Raccoon Bandits abandoned him) and decides to join your team" #\Newline #\Newline)
               (do-push coon (team-of *game*) (allies-of *game*))

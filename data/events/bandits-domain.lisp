@@ -113,13 +113,13 @@
                             (name-of (player-of *game*)) " gets everything the raccoon is carrying except the clothes and diapers the raccoon is wearing. The raccoon then waddles off with his legs spread apart like a 5 year old who didn't make it to the toilet in time." #\Newline #\Newline)
                      (incf (bitcoins-of (player-of *game*)) (random-from-range 50000 100000))
                      (iter (for i from 0 to (random 5))
-                       (push (make-instance 'yadfa-items:gold-bar) (inventory-of (player-of *game*))))
+                           (push (make-instance 'yadfa-items:gold-bar) (inventory-of (player-of *game*))))
                      (iter (for i from 0 to (random 5))
-                       (push (make-instance 'yadfa-items:gem) (inventory-of (player-of *game*))))
+                           (push (make-instance 'yadfa-items:gem) (inventory-of (player-of *game*))))
                      (iter (for i from 0 to (random 5))
-                       (push (make-instance 'yadfa-items:bandit-uniform-tunic) (inventory-of (player-of *game*))))
+                           (push (make-instance 'yadfa-items:bandit-uniform-tunic) (inventory-of (player-of *game*))))
                      (iter (for i from 0 to (random 20))
-                       (push (make-instance 'yadfa-items:bandit-adjustable-diaper) (inventory-of (player-of *game*))))
+                           (push (make-instance 'yadfa-items:bandit-adjustable-diaper) (inventory-of (player-of *game*))))
                      (push (make-instance 'yadfa-items:bandit-swimsuit/closed) (inventory-of (player-of *game*))))
                    (set-new-battle '((yadfa-enemies:diapered-raccoon-bandit . (list :level (random-from-range 2 5)
                                                                                     :bowels/contents 0
@@ -237,32 +237,32 @@
                      (name-of (player-of *game*)) ": Mind telling me your names?" #\Newline #\Newline)
               (finish-output)
               (accept-with-effective-frame (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
-                                             (fresh-line *query-io*)
-                                             (setf a (make-instance 'yadfa-allies:chris
-                                                                    :name (clim:accept 'string
-                                                                                       :prompt "Fox Name"
-                                                                                       :default (second
-                                                                                                 (assoc :name (progn
-                                                                                                                (c2mop:ensure-finalized
-                                                                                                                 (find-class 'yadfa-allies:chris))
-                                                                                                                (c2mop:compute-default-initargs
-                                                                                                                 (find-class 'yadfa-allies:chris)))))
-                                                                                       :view clim:+text-field-view+
-                                                                                       :stream *query-io*)))
-                                             (fresh-line *query-io*)
-                                             (setf b (make-instance 'yadfa-allies:kristy
-                                                                    :name (clim:accept 'string
-                                                                                       :prompt "Vixen Name"
-                                                                                       :default (second
-                                                                                                 (assoc :name (progn
-                                                                                                                (c2mop:ensure-finalized
-                                                                                                                 (find-class 'yadfa-allies:kristy))
-                                                                                                                (c2mop:compute-default-initargs
-                                                                                                                 (find-class 'yadfa-allies:kristy)))))
-                                                                                       :view clim:+text-field-view+
-                                                                                       :stream *query-io*)))))
+                                                                  (fresh-line *query-io*)
+                                                                  (setf a (make-instance 'yadfa-allies:chris
+                                                                                         :name (clim:accept 'string
+                                                                                                            :prompt "Fox Name"
+                                                                                                            :default (second
+                                                                                                                      (assoc :name (progn
+                                                                                                                                     (c2mop:ensure-finalized
+                                                                                                                                      (find-class 'yadfa-allies:chris))
+                                                                                                                                     (c2mop:compute-default-initargs
+                                                                                                                                      (find-class 'yadfa-allies:chris)))))
+                                                                                                            :view clim:+text-field-view+
+                                                                                                            :stream *query-io*)))
+                                                                  (fresh-line *query-io*)
+                                                                  (setf b (make-instance 'yadfa-allies:kristy
+                                                                                         :name (clim:accept 'string
+                                                                                                            :prompt "Vixen Name"
+                                                                                                            :default (second
+                                                                                                                      (assoc :name (progn
+                                                                                                                                     (c2mop:ensure-finalized
+                                                                                                                                      (find-class 'yadfa-allies:kristy))
+                                                                                                                                     (c2mop:compute-default-initargs
+                                                                                                                                      (find-class 'yadfa-allies:kristy)))))
+                                                                                                            :view clim:+text-field-view+
+                                                                                                            :stream *query-io*)))))
               (iter (for i in (list a b))
-                (do-push i (team-of *game*) (allies-of *game*)))
+                    (do-push i (team-of *game*) (allies-of *game*)))
               (f:fmt t "Fox: I'm " (name-of a) #\Newline #\Newline
                      "Vixen: And I'm " (name-of b) #\Newline #\Newline
                      (name-of a) ": What's yours?" #\Newline #\Newline

@@ -10,7 +10,7 @@
    :bowels/contents (random 700)
    :bitcoins-per-level 100
    :inventory (iter (for i from 0 to (random 10))
-                (collect (make-instance 'yadfa-items:cloth-diaper)))))
+                    (collect (make-instance 'yadfa-items:cloth-diaper)))))
 (setf (get 'diapered-kobold 'change-class-target) 'yadfa-allies:diapered-kobold)
 (defmethod initialize-instance :after
     ((c diapered-kobold) &rest args &key &allow-other-keys)
@@ -36,13 +36,13 @@
    :mudsport-chance 3
    :bitcoins-per-level 100
    :inventory (iter (for i from 0 to (random 10))
-                (collect (make-instance 'yadfa-items:high-capacity-diaper)))
+                    (collect (make-instance 'yadfa-items:high-capacity-diaper)))
    :element-types (make-instances yadfa-element-types:poison)
    :moves (make-instances yadfa-moves:spray yadfa-moves:face-sit)))
 (defmethod initialize-instance :after
     ((c diapered-skunk) &rest args &key &allow-other-keys)
   (destructuring-bind (&key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp)
-                            (wear nil wearp)
+                         (wear nil wearp)
                        &allow-other-keys)
       args
     (declare (ignore watersport-limit mudsport-limit wear))
@@ -114,7 +114,7 @@
 (defmethod initialize-instance :after
     ((c diapered-skunk*) &rest args &key &allow-other-keys)
   (destructuring-bind (&key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp)
-                            (wear nil wearp) (description nil descriptionp)
+                         (wear nil wearp) (description nil descriptionp)
                        &allow-other-keys)
       args
     (declare (ignore watersport-limit mudsport-limit wear description))
@@ -185,9 +185,9 @@
    :wear (list (make-instance 'yadfa-items:black-leather-jacket)
                (make-instance 'yadfa-items:high-capacity-diaper))
    :inventory (nconc (iter (for i from 0 to (random 20))
-                       (collect (make-instance 'yadfa-items:high-capacity-diaper)))
+                           (collect (make-instance 'yadfa-items:high-capacity-diaper)))
                      (iter (for i from 0 to (random 20))
-                       (collect (make-instance 'yadfa-items:kurikia-thick-diaper))))
+                           (collect (make-instance 'yadfa-items:kurikia-thick-diaper))))
    :element-types (make-instances yadfa-element-types:dragon yadfa-element-types:fire yadfa-element-types:flying)
    :moves (make-instances yadfa-moves:tickle yadfa-moves:roar yadfa-moves:mush yadfa-moves:fire-breath)))
 (defclass diapered-dragon* (diapered-dragon pantsable-character) ()
@@ -204,19 +204,19 @@
    :bladder/fill-rate (* (/ 14000 24 60) 2)
    :wear (list (make-instance 'yadfa-items:kurikia-thick-rubber-diaper))
    :inventory (iter (for i from 0 to (random 20))
-                (collect (make-instance 'yadfa-items:kurikia-thick-rubber-diaper)))
+                    (collect (make-instance 'yadfa-items:kurikia-thick-rubber-diaper)))
    :element-types (list (make-instance 'yadfa-element-types:dragon))
    :moves (make-instances yadfa-moves:tickle yadfa-moves:roar yadfa-moves:mush yadfa-moves:fire-breath)))
 
 ;;; Raptors would most likely not have bladders irl, but I already threw
 ;;; scientific accuracy out the window when I gave them scales instead of feathers.
 (defclass raptor (potty-enemy adoptable-enemy) ()
-    (:default-initargs
-     :name "Raptor"
-     :malep (a:random-elt '(t nil))
-     :description "Biologically inaccurate velociraptor. The kind you see in Jurassic Park that looks more like a lizard than a prehistoric bird."
-     :moves (make-instances yadfa-moves:roar yadfa-moves:bite)
-     :species "Raptor"))
+  (:default-initargs
+   :name "Raptor"
+   :malep (a:random-elt '(t nil))
+   :description "Biologically inaccurate velociraptor. The kind you see in Jurassic Park that looks more like a lizard than a prehistoric bird."
+   :moves (make-instances yadfa-moves:roar yadfa-moves:bite)
+   :species "Raptor"))
 (setf (get 'diapered-kobold 'change-class-target) 'yadfa-allies:raptor)
 (defmethod change-class-text ((class raptor))
   (format nil "~a was adopted and diapered" (name-of class)))

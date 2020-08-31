@@ -2,7 +2,7 @@
 (in-package :yadfa-enemies)
 (defmacro make-instances (&rest symbols)
   `(list ,@(iter (for symbol in symbols)
-             (collect `(make-instance ',symbol)))))
+                 (collect `(make-instance ',symbol)))))
 (defclass catchable-enemy (enemy)
   ((catch-chance
     :initarg :catch-chance

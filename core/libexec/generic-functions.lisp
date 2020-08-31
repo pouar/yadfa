@@ -157,11 +157,11 @@
   (:method ((self npc) (target base-character))
     (let ((moves-with-health
             (iter (for i in (moves-of self))
-              (when (and (>= (energy-of self) (energy-cost-of i)) (position :ai-health-inc (ai-flags-of i)))
-                (collect i))))
+                  (when (and (>= (energy-of self) (energy-cost-of i)) (position :ai-health-inc (ai-flags-of i)))
+                    (collect i))))
           (moves-can-use (iter (for i in (moves-of self))
-                           (when (>= (energy-of self) (energy-cost-of i))
-                             (collect i))))
+                               (when (>= (energy-of self) (energy-cost-of i))
+                                 (collect i))))
           (move-to-use nil))
       (cond
         ((and (<= (health-of self) (/ (calculate-stat self :health) 4)) moves-with-health)

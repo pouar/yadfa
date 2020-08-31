@@ -12,14 +12,14 @@
  :prompt nil)
 #|
 (when (and
-       (ql-dist:find-dist "ultralisp")
-       (ql-dist:installedp (ql-dist:find-dist "ultralisp")))
-  (ql-dist:install-dist "http://dist.ultralisp.org/"
-                        :prompt nil))
+(ql-dist:find-dist "ultralisp")
+(ql-dist:installedp (ql-dist:find-dist "ultralisp")))
+(ql-dist:install-dist "http://dist.ultralisp.org/"
+:prompt nil))
 |#
 (ql:quickload (loop for i in (asdf:system-depends-on (asdf:find-system :yadfa))
                     when (stringp i) collect i
-                    when (and (listp i) (eq (first i) :feature) (uiop:featurep (second i))) collect (third i)))
+                      when (and (listp i) (eq (first i) :feature) (uiop:featurep (second i))) collect (third i)))
 (declaim (optimize (debug 2) safety))
 (setf *read-default-float-format* 'long-float)
 (ql:quickload :yadfa)

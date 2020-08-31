@@ -4,7 +4,7 @@
   "Render ITEM's documentation string.
 Rendering is done on *standard-output*."
   (when-let ((docstring (docstring item)))
-    (write-string docstring *standard-output*)))
+            (write-string docstring *standard-output*)))
 (defun render-header (library-name tagline version contact-names contact-emails
                       copyright-years license
                       texi-name info-name declt-notice

@@ -33,10 +33,10 @@
   t)
 
 (defunassert get-event (event-id)
-    (event-id symbol)
+  (event-id symbol)
   (gethash event-id *events*))
 (defunassert (setf get-event) (new-value event-id)
-    (event-id symbol)
+  (event-id symbol)
   (setf (gethash event-id *events*) new-value))
 (defun get-zone (position)
   (declare (type list position))
@@ -47,52 +47,52 @@
   (setf (position-of new-value) position
         (gethash position (slot-value *game* 'zones)) new-value))
 (s:eval-always
-  (defun set-logical-pathnames ()
-    (setf (logical-pathname-translations "YADFA")
-          `(("yadfa:data;**;*.*.*" ,(uiop:merge-pathnames*
-                                     (make-pathname
-                                      :directory '(:relative "YADFA" :wild-inferiors)
-                                      :name :wild
-                                      :type :wild
-                                      :version :wild
-                                      :case :common)
-                                     (uiop:xdg-data-home)))
-            ("yadfa:config;**;*.*.*" ,(uiop:merge-pathnames*
-                                       (make-pathname
-                                        :directory '(:relative "YADFA" :wild-inferiors)
-                                        :name :wild
-                                        :type :wild
-                                        :version :wild
-                                        :case :common)
-                                       (uiop:xdg-config-home)))
-            ("yadfa:home;**;*.*.*" ,(uiop:merge-pathnames*
-                                     (make-pathname
-                                      :directory '(:relative :wild-inferiors)
-                                      :type :wild
-                                      :name :wild
-                                      :version :wild
-                                      :case :common)
-                                     (if uiop:*image-dumped-p*
-                                         (make-pathname
-                                          :device (pathname-device (truename (uiop:argv0)))
-                                          :directory (pathname-directory (truename (uiop:argv0))))
-                                         (asdf:component-pathname (asdf:find-system "yadfa")))))))
-    (illogical-pathnames:define-illogical-host :yadfa.data (uiop:merge-pathnames*
-                                                            (make-pathname
-                                                             :directory '(:relative "YADFA")
-                                                             :case :common)
-                                                            (uiop:xdg-data-home)))
-    (illogical-pathnames:define-illogical-host :yadfa.config (uiop:merge-pathnames*
+ (defun set-logical-pathnames ()
+   (setf (logical-pathname-translations "YADFA")
+         `(("yadfa:data;**;*.*.*" ,(uiop:merge-pathnames*
+                                    (make-pathname
+                                     :directory '(:relative "YADFA" :wild-inferiors)
+                                     :name :wild
+                                     :type :wild
+                                     :version :wild
+                                     :case :common)
+                                    (uiop:xdg-data-home)))
+           ("yadfa:config;**;*.*.*" ,(uiop:merge-pathnames*
+                                      (make-pathname
+                                       :directory '(:relative "YADFA" :wild-inferiors)
+                                       :name :wild
+                                       :type :wild
+                                       :version :wild
+                                       :case :common)
+                                      (uiop:xdg-config-home)))
+           ("yadfa:home;**;*.*.*" ,(uiop:merge-pathnames*
+                                    (make-pathname
+                                     :directory '(:relative :wild-inferiors)
+                                     :type :wild
+                                     :name :wild
+                                     :version :wild
+                                     :case :common)
+                                    (if uiop:*image-dumped-p*
+                                        (make-pathname
+                                         :device (pathname-device (truename (uiop:argv0)))
+                                         :directory (pathname-directory (truename (uiop:argv0))))
+                                        (asdf:component-pathname (asdf:find-system "yadfa")))))))
+   (illogical-pathnames:define-illogical-host :yadfa.data (uiop:merge-pathnames*
+                                                           (make-pathname
+                                                            :directory '(:relative "YADFA")
+                                                            :case :common)
+                                                           (uiop:xdg-data-home)))
+   (illogical-pathnames:define-illogical-host :yadfa.config (uiop:merge-pathnames*
+                                                             (make-pathname
+                                                              :directory '(:relative "YADFA")
+                                                              :case :common)
+                                                             (uiop:xdg-config-home)))
+   (illogical-pathnames:define-illogical-host :yadfa.home (if uiop:*image-dumped-p*
                                                               (make-pathname
-                                                               :directory '(:relative "YADFA")
-                                                               :case :common)
-                                                              (uiop:xdg-config-home)))
-    (illogical-pathnames:define-illogical-host :yadfa.home (if uiop:*image-dumped-p*
-                                                               (make-pathname
-                                                                :device (pathname-device (truename (uiop:argv0)))
-                                                                :directory (pathname-directory (truename (uiop:argv0))))
-                                                               (asdf:system-source-directory "yadfa"))))
-  (set-logical-pathnames))
+                                                               :device (pathname-device (truename (uiop:argv0)))
+                                                               :directory (pathname-directory (truename (uiop:argv0))))
+                                                              (asdf:system-source-directory "yadfa"))))
+ (set-logical-pathnames))
 (defun process-potty-dance-check (character attack)
   (and (or
         (>= (bladder/contents-of character) (bladder/potty-dance-limit-of character))
@@ -111,37 +111,37 @@
           1)
        (or (eq attack t) (not (typep (get-move attack character) '(or mess-move-mixin wet-move-mixin))))))
 (defunassert get-positions-of-type (type list)
-    (type type-specifier
-          list list)
+  (type type-specifier
+        list list)
   (iter (for i in list)
-    (for (the fixnum j) upfrom 0)
-    (when (typep i type)
-      (collect j))))
+        (for (the fixnum j) upfrom 0)
+        (when (typep i type)
+          (collect j))))
 (defunassert finished-events (events)
-    (events (or list symbol))
+  (events (or list symbol))
   (iter (for (the (or list symbol) event) in (a:ensure-list events))
-    #-(or sbcl ccl)
-    (check-type event (or list symbol))
-    (unless (gethash (a:ensure-list event) (finished-events-of *game*))
-      (leave))
-    (finally (return t))))
+        #-(or sbcl ccl)
+        (check-type event (or list symbol))
+        (unless (gethash (a:ensure-list event) (finished-events-of *game*))
+          (leave))
+        (finally (return t))))
 (defunassert unfinished-events (events)
-    (events (or list symbol))
+  (events (or list symbol))
   (iter (for (the (or list symbol) event) in (a:ensure-list events))
-    #-(or sbcl ccl)
-    (check-type event (or list symbol))
-    (when (gethash (a:ensure-list event) (finished-events-of *game*))
-      (leave))
-    (finally (return t))))
+        #-(or sbcl ccl)
+        (check-type event (or list symbol))
+        (when (gethash (a:ensure-list event) (finished-events-of *game*))
+          (leave))
+        (finally (return t))))
 (defunassert finish-events (events)
-    (events (or list symbol))
+  (events (or list symbol))
   (iter (for (the symbol event) in (a:ensure-list events))
-    #-(or sbcl ccl)
-    (check-type event symbol)
-    (remhash event (current-events-of *game*))
-    (setf (gethash `(,event) (finished-events-of *game*)) t)))
+        #-(or sbcl ccl)
+        (check-type event symbol)
+        (remhash event (current-events-of *game*))
+        (setf (gethash `(,event) (finished-events-of *game*)) t)))
 (defunassert get-diaper-expansion (item)
-    (item closed-bottoms)
+  (item closed-bottoms)
   (+ (* 10 (/ (+ (sogginess-of item) (messiness-of item))
               (- (* 72 36) (* (/ (* 72 5/7) 2) 18/2 pi))))
      (thickness-of item)))
@@ -162,13 +162,13 @@
                    (t new))))
     (iter (for i in (uiop:directory*
                      #P((:common :yadfa.data) ("MODS" :**) (:* "ASD") :newest)))
-      (setf (gethash (pathname-name i) *mod-registry*)
-            (preferred-mod (gethash (pathname-name i) *mod-registry*)
-                           i)))))
+          (setf (gethash (pathname-name i) *mod-registry*)
+                (preferred-mod (gethash (pathname-name i) *mod-registry*)
+                               i)))))
 (defun clear-pattern-cache ()
   (clrhash *pattern-cache*))
 (defunassert find-mod (system)
-    (system (or symbol simple-string))
+  (system (or symbol simple-string))
   (gethash (asdf:primary-system-name system) *mod-registry*))
 (defun clear-configuration-hook ()
   (set-logical-pathnames)
@@ -193,16 +193,16 @@
       (if (and
            (typep mods 'list)
            (iter (for i in mods)
-             (unless (typep i '(or string symbol asdf/component:component))
-               (leave nil))
-             (finally (return t))))
+                 (unless (typep i '(or string symbol asdf/component:component))
+                   (leave nil))
+                 (finally (return t))))
           (setf *mods* mods)
           (write-line "The configuration file containing the list of enabled mods isn't valid, ignoring")))
     (let ((*compile-verbose* compiler-verbose)
           (*compile-print* compiler-verbose))
       (iter (for i in *mods*)
-        (when (asdf:find-system i nil)
-          (apply #'asdf:load-system i :allow-other-keys t keys))))))
+            (when (asdf:find-system i nil)
+              (apply #'asdf:load-system i :allow-other-keys t keys))))))
 (defun (setf getf-direction) (new-value position direction attribute)
   (setf (getf (getf (direction-attributes-of (get-zone position)) direction) attribute) new-value))
 (defun getf-direction (position direction attribute)
@@ -213,8 +213,8 @@
     (remf (direction-attributes-of (get-zone position)) direction)))
 (defun set-status-condition (status-condition user &key duration test key
                              &aux (status-conditions (iter (for i in (getf (status-conditions-of *battle*) user))
-                                                       (when (eq (type-of i) status-condition)
-                                                         (collect i))))
+                                                           (when (eq (type-of i) status-condition)
+                                                             (collect i))))
                                (i (if (or (eq (accumulative-of (make-instance status-condition)) t)
                                           (list-length-> (accumulative-of (make-instance status-condition)) status-conditions))
                                       (make-instance status-condition)
@@ -231,34 +231,34 @@
     (setf (duration-of i) duration))
   t)
 (defunassert trigger-event (event-ids)
-    (event-ids (or symbol list))
+  (event-ids (or symbol list))
   (iter (for (the symbol event-id) in (a:ensure-list event-ids))
-    #-(or sbcl ccl)
-    (check-type event-id symbol)
-    (when (and
-           (funcall (coerce (slot-value (get-event event-id) 'predicate) 'function)
-                    (get-event event-id))
-           (or (and (slot-value (get-event event-id) 'repeatable) (not (gethash event-id (current-events-of *game*))))
-               (not (gethash event-id (finished-events-of *game*))))
-           (finished-events (slot-value (get-event event-id) 'finished-depends)))
-      (let* ((mission (slot-value (get-event event-id) 'mission))
-             (accept (when mission
-                       (funcall (coerce (slot-value (get-event event-id) 'mission) 'function)))))
-        (when mission
-          (setf (gethash event-id (current-events-of *game*)) t))
-        (setf (gethash `(,event-id
-                         ,@(when (and mission (s:memq accept '(:accepted :declined)))
-                             `(,accept)))
-                       (finished-events-of *game*))
-              t)
-        (apply (coerce (slot-value (get-event event-id) 'lambda) 'function)
-               `(,event-id ,@(when mission `(,accept)))))
-      (collect event-id))))
+        #-(or sbcl ccl)
+        (check-type event-id symbol)
+        (when (and
+               (funcall (coerce (slot-value (get-event event-id) 'predicate) 'function)
+                        (get-event event-id))
+               (or (and (slot-value (get-event event-id) 'repeatable) (not (gethash event-id (current-events-of *game*))))
+                   (not (gethash event-id (finished-events-of *game*))))
+               (finished-events (slot-value (get-event event-id) 'finished-depends)))
+          (let* ((mission (slot-value (get-event event-id) 'mission))
+                 (accept (when mission
+                           (funcall (coerce (slot-value (get-event event-id) 'mission) 'function)))))
+            (when mission
+              (setf (gethash event-id (current-events-of *game*)) t))
+            (setf (gethash `(,event-id
+                             ,@(when (and mission (s:memq accept '(:accepted :declined)))
+                                 `(,accept)))
+                           (finished-events-of *game*))
+                  t)
+            (apply (coerce (slot-value (get-event event-id) 'lambda) 'function)
+                   `(,event-id ,@(when mission `(,accept)))))
+          (collect event-id))))
 (defunassert event-attributes (event-id)
-    (event-id symbol)
+  (event-id symbol)
   (gethash event-id (slot-value *game* 'event-attributes%)))
 (defunassert (setf event-attributes) (instance event-id)
-    (event-id symbol)
+  (event-id symbol)
   (setf (gethash event-id (slot-value *game* 'event-attributes%)) instance))
 (defun set-new-battle (enemies &rest keys &key team-npcs win-events enter-battle-text continuable)
   (when continuable
@@ -271,38 +271,38 @@
   (setf *battle*
         (apply #'make-instance 'battle
                :enemies (iter (for (the list j) in enemies)
-                          (collect (apply #'make-instance (car j) (eval (cdr j)))))
+                              (collect (apply #'make-instance (car j) (eval (cdr j)))))
                :team-npcs (iter (for (the list j) in team-npcs)
-                            (collect (apply #'make-instance (car j) (eval (cdr j)))))
+                                (collect (apply #'make-instance (car j) (eval (cdr j)))))
                keys))
   (format t "~a~%" (enter-battle-text-of *battle*))
   (iter (for (the symbol j) in (iter (for i in (enemies-of *battle*))
-                                 (unless (s:memq (class-name (class-of i)) (seen-enemies-of *game*))
-                                   (format t "~a was added to your pokedex~%" (name-of i))
-                                   (push (class-name (class-of i)) (seen-enemies-of *game*))
-                                   (collect (class-name (class-of i))))))
-    (yadfa-bin:pokedex j))
+                                     (unless (s:memq (class-name (class-of i)) (seen-enemies-of *game*))
+                                       (format t "~a was added to your pokedex~%" (name-of i))
+                                       (push (class-name (class-of i)) (seen-enemies-of *game*))
+                                       (collect (class-name (class-of i))))))
+        (yadfa-bin:pokedex j))
   (switch-user-packages)
   (process-battle :attack t :no-team-attack t))
 (defunassert run-equip-effects (user)
-    (user base-character)
+  (user base-character)
   (iter (for i in (wear-of user))
-    (wear-script i user))
+        (wear-script i user))
   (when (wield-of user)
     (wield-script (wield-of user) user)))
 (defunassert get-warp-point (direction position)
-    (direction symbol position list)
+  (direction symbol position list)
   (getf (warp-points-of (get-zone position))
         (typecase direction
           ((member :north :south :east :west :up :down)
            direction)
           (keyword
            (iter (for (k v) on (warp-points-of (get-zone position)) by 'cddr)
-             (when (and (string= k direction) v)
-               (leave k))))
+                 (when (and (string= k direction) v)
+                   (leave k))))
           (symbol direction))))
 (defunassert get-destination (direction position)
-    (direction symbol position list)
+  (direction symbol position list)
   (macrolet ((a (pos x y z)
                (a:with-gensyms ((posx "POSX") (posy "POSY") (posz "POSZ") (posm "POSM") (b "B"))
                  `(let ((,b (destructuring-bind (,posx ,posy ,posz ,posm) ,pos
@@ -322,7 +322,7 @@
 (defunassert get-path-end (destination &optional position direction
                                        &aux (player (player-of *game*)) (allies (allies-of *game*)) (wield (wield-of player))
                                        (wear (wear-of player)) (inventory (inventory-of player)))
-    (direction symbol position list destination list)
+  (direction symbol position list destination list)
   (unless (get-zone destination)
     (return-from get-path-end (values nil (format nil "Pick a direction the game knows about~%"))))
   (when (or (hiddenp (get-zone destination)) (and position direction (getf-direction position direction :hidden)))
@@ -336,9 +336,9 @@
                                          (cons wield wear)
                                          (let ((a ()))
                                            (iter (for i in allies)
-                                             (push (wield-of i) a)
-                                             (iter (for j in (wear-of i))
-                                               (push j a)))
+                                                 (push (wield-of i) a)
+                                                 (iter (for j in (wear-of i))
+                                                       (push j a)))
                                            a)))))
             (and position direction
                  (getf-direction position direction :locked)
@@ -348,14 +348,14 @@
                                          (cons wield wear)
                                          (let ((a ()))
                                            (iter (for i in allies)
-                                             (push (wield-of i) a)
-                                             (iter (for j in (wear-of i))
-                                               (push j a)))
+                                                 (push (wield-of i) a)
+                                                 (iter (for j in (wear-of i))
+                                                       (push j a)))
                                            a))))))
     (return-from get-path-end (values nil (format nil "zone ~a is locked~%" destination))))
   destination)
 (defunassert print-map-pattern-cache (path designs)
-    (path pathname designs list)
+  (path pathname designs list)
   (or (gethash `(:map-pattern ,path ,designs) *pattern-cache*)
       (setf (gethash `(:map-pattern ,path ,designs) *pattern-cache*)
             (clim:make-pattern-from-bitmap-file
@@ -375,7 +375,7 @@
            (and (not (s:memq direction '(:up :down)))))
        t))
 (defunassert print-map (position &aux (player (player-of *game*)) (player-position (position-of player)) (player-zone (get-zone player-position)))
-    (player player player-position list player-zone (or null zone))
+  (player player player-position list player-zone (or null zone))
   (labels ((a (position)
              (let ((b 0)
                    (array
@@ -396,65 +396,65 @@
                            #P"e.xpm"
                            #P"dot.xpm")))
                (iter (for direction in '(:east :west :south :north))
-                 (for (the fixnum byte-position) upfrom 0)
-                 (unless (travelablep position direction)
-                   (setf (ldb (byte 1 byte-position) b) 1)))
+                     (for (the fixnum byte-position) upfrom 0)
+                     (unless (travelablep position direction)
+                       (setf (ldb (byte 1 byte-position) b) 1)))
                (aref array b))))
     (updating-present-with-effective-frame (*query-io* :unique-id `(map% ,position)
                                                        :id-test #'equal
                                                        :cache-value (sxhash (list player-position
                                                                                   (iter (for i in '(:north :south :east :west :up :down))
-                                                                                    (collect (travelablep player-position i)))
+                                                                                        (collect (travelablep player-position i)))
                                                                                   (and player-zone
                                                                                        (warp-points-of player-zone)))))
-      (let ((pattern (print-map-pattern-cache #P"blank.xpm"
-                                              (list clim:+background-ink+ clim:+foreground-ink+))))
-        (multiple-value-bind (start-x start-y) (if c:*application-frame*
-                                                   (clim:stream-cursor-position *standard-output*)
-                                                   (values 0 0))
-          (declare (type real start-x start-y))
-          (clim:updating-output (t)
-            ;; position needs to be bound inside of clim:updating-output and not outside
-            ;; for the presentation to notice when the floor the player is on changes
-            (let* ((player-position (position-of (player-of *game*)))
-                   (position (if (eq position t)
-                                 player-position
-                                 position)))
-              (declare (type list position player-position))
-              (destructuring-bind (posx posy posz posm) position
-                (declare (type integer posx posy posz)
-                         (type symbol posm))
-                (iter (for (the integer y)
-                           from (- posy 15)
-                           to (+ posy 15))
-                  (for y-pos
-                       from start-y
-                       to (+ start-y (* 30 (the (unsigned-byte 32) (clim:pattern-height pattern))))
-                       by (the (unsigned-byte 32) (clim:pattern-height pattern)))
-                  (iter (for (the integer x)
-                             from (- posx 15)
-                             to (+ posx 15))
-                    (for x-pos
-                         from start-x
-                         to (+ start-x (* 30 (the (unsigned-byte 32) (clim:pattern-width pattern))))
-                         by (the (unsigned-byte 32) (clim:pattern-width pattern)))
-                    (let* ((current-position `(,x ,y ,posz ,posm))
-                           (current-zone (get-zone current-position))
-                           (char (cons (if (or (and current-zone (hiddenp current-zone)) (not current-zone))
-                                           #P"blank.xpm"
-                                           (a current-position))
-                                       (clim:make-rgb-color (if (and current-zone (warp-points-of current-zone)) 1 0)
-                                                            (if (equal current-position player-position) 0.7l0 0)
-                                                            (if (or (travelablep current-position :up) (travelablep current-position :down)) 1 0)))))
-                      (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
-                      (when (get-zone current-position)
-                        (clim:with-output-as-presentation
-                            (*standard-output* (get-zone current-position) 'zone)
-                          (clim:draw-pattern* *standard-output* pattern x-pos y-pos)))))))))
-          (when c:*application-frame*
-            (clim:stream-set-cursor-position *standard-output* start-x (+ start-y (* 31 (the (unsigned-byte 32) (clim:pattern-height pattern)))))))))))
+                                           (let ((pattern (print-map-pattern-cache #P"blank.xpm"
+                                                                                   (list clim:+background-ink+ clim:+foreground-ink+))))
+                                             (multiple-value-bind (start-x start-y) (if c:*application-frame*
+                                                                                        (clim:stream-cursor-position *standard-output*)
+                                                                                        (values 0 0))
+                                               (declare (type real start-x start-y))
+                                               (clim:updating-output (t)
+                                                                     ;; position needs to be bound inside of clim:updating-output and not outside
+                                                                     ;; for the presentation to notice when the floor the player is on changes
+                                                                     (let* ((player-position (position-of (player-of *game*)))
+                                                                            (position (if (eq position t)
+                                                                                          player-position
+                                                                                          position)))
+                                                                       (declare (type list position player-position))
+                                                                       (destructuring-bind (posx posy posz posm) position
+                                                                         (declare (type integer posx posy posz)
+                                                                                  (type symbol posm))
+                                                                         (iter (for (the integer y)
+                                                                                    from (- posy 15)
+                                                                                    to (+ posy 15))
+                                                                               (for y-pos
+                                                                                    from start-y
+                                                                                    to (+ start-y (* 30 (the (unsigned-byte 32) (clim:pattern-height pattern))))
+                                                                                    by (the (unsigned-byte 32) (clim:pattern-height pattern)))
+                                                                               (iter (for (the integer x)
+                                                                                          from (- posx 15)
+                                                                                          to (+ posx 15))
+                                                                                     (for x-pos
+                                                                                          from start-x
+                                                                                          to (+ start-x (* 30 (the (unsigned-byte 32) (clim:pattern-width pattern))))
+                                                                                          by (the (unsigned-byte 32) (clim:pattern-width pattern)))
+                                                                                     (let* ((current-position `(,x ,y ,posz ,posm))
+                                                                                            (current-zone (get-zone current-position))
+                                                                                            (char (cons (if (or (and current-zone (hiddenp current-zone)) (not current-zone))
+                                                                                                            #P"blank.xpm"
+                                                                                                            (a current-position))
+                                                                                                        (clim:make-rgb-color (if (and current-zone (warp-points-of current-zone)) 1 0)
+                                                                                                                             (if (equal current-position player-position) 0.7l0 0)
+                                                                                                                             (if (or (travelablep current-position :up) (travelablep current-position :down)) 1 0)))))
+                                                                                       (setf pattern (print-map-pattern-cache (car char) (list clim:+background-ink+ (cdr char))))
+                                                                                       (when (get-zone current-position)
+                                                                                         (clim:with-output-as-presentation
+                                                                                             (*standard-output* (get-zone current-position) 'zone)
+                                                                                           (clim:draw-pattern* *standard-output* pattern x-pos y-pos)))))))))
+                                               (when c:*application-frame*
+                                                 (clim:stream-set-cursor-position *standard-output* start-x (+ start-y (* 31 (the (unsigned-byte 32) (clim:pattern-height pattern)))))))))))
 (defunassert get-zone-text (text)
-    (text (or string coerced-function))
+  (text (or string coerced-function))
   (typecase text
     (string
      text)
@@ -467,8 +467,8 @@
                             old-direction)
                            (keyword
                             (iter (for (k v) on (warp-points-of (get-zone old-position)) by 'cddr)
-                              (when (and (string= k old-direction) v)
-                                (leave k))))
+                                  (when (and (string= k old-direction) v)
+                                    (leave k))))
                            (symbol old-direction)))))
     (format t "~a~%" (get-zone-text (if (and old-position old-direction (getf-direction old-position old-direction :exit-text))
                                         (getf-direction old-position old-direction :exit-text)
@@ -493,27 +493,27 @@
       (z '(0 0 1) :up stairs)
       (z '(0 0 -1) :down stairs)))
   (iter (for (a b) on (warp-points-of (get-zone position)) by #'cddr)
-    (when (and (get-zone b) (not (hiddenp (get-zone b))))
-      (format t "To ~s is ~a. " a (name-of (get-zone b)))))
+        (when (and (get-zone b) (not (hiddenp (get-zone b))))
+          (format t "To ~s is ~a. " a (name-of (get-zone b)))))
   (format t "~%"))
 (defun get-inventory-list ()
   (iter (for i in (inventory-of (player-of *game*))) (collect (symbol-name (type-of i)))))
 (defunassert filter-items (items type)
-    (items list type type-specifier)
+  (items list type type-specifier)
   "This function will return all items in the list @var{ITEMS} that is of type @var{TYPE}"
   (iter (for item in items)
-    (when (typep item type)
-      (collect item))))
+        (when (typep item type)
+          (collect item))))
 (defunassert swell-up% (user)
-    (user base-character)
+  (user base-character)
   (iter (for i in (filter-items (wear-of user) 'closed-bottoms))
-    (if (waterproofp i)
-        (finish)
-        (progn
-          (setf (sogginess-of i) (sogginess-capacity-of i))
-          (collect i)))))
+        (if (waterproofp i)
+            (finish)
+            (progn
+              (setf (sogginess-of i) (sogginess-capacity-of i))
+              (collect i)))))
 (defunassert swell-up (user &aux (swollen-clothes (swell-up% user)) (name (name-of user)))
-    (user base-character)
+  (user base-character)
   (cond
     ((filter-items swollen-clothes 'diaper)
      (format t "~a's diapers swells up humorously~%~%" name))
@@ -526,22 +526,22 @@
   (swell-up (player-of *game*))
   (iter (for i in (allies-of *game*)) (swell-up i)))
 (defunassert total-thickness (clothing)
-    (clothing list)
+  (clothing list)
   (iter (for i in (filter-items clothing 'closed-bottoms))
-    (with j = 0)
-    (incf j (get-diaper-expansion i))
-    (finally (return j))))
+        (with j = 0)
+        (incf j (get-diaper-expansion i))
+        (finally (return j))))
 (defun fast-thickness (list item)
   #+sbcl (declare (type list list)
                   (type clothing item))
   (s:nlet execute (list item (count 0))
-    (if (or (eq (car list) item) (endp list))
-        count
-        (execute (cdr list) item (if (typep (car list) 'closed-bottoms)
-                                     (+ count (get-diaper-expansion (car list)))
-                                     count)))))
+          (if (or (eq (car list) item) (endp list))
+              count
+              (execute (cdr list) item (if (typep (car list) 'closed-bottoms)
+                                           (+ count (get-diaper-expansion (car list)))
+                                           count)))))
 (defunassert pop-from-expansion (user &optional wet/mess &aux (reverse-wear (nreverse (wear-of user))) (last (car reverse-wear)) (return ()))
-    (user base-character)
+  (user base-character)
   (macrolet ((pushclothing (i wet/mess return)
                `(progn
                   (when (and (getf (car ,wet/mess) :wet-amount)
@@ -552,81 +552,81 @@
                     (pushnew ,i (getf (cdr ,wet/mess) :popped)))
                   (pushnew ,i ,return))))
     (iter
-      (for item in reverse-wear)
-      (let* ((thickness-capacity (if (typep item 'bottoms) (thickness-capacity-of item)))
-             (thickness-capacity-threshold (if (typep item 'bottoms) (thickness-capacity-threshold-of item)))
-             (total-thickness (if (and (typep item 'bottoms)
-                                       thickness-capacity
-                                       thickness-capacity-threshold)
-                                  (fast-thickness reverse-wear item))))
-        (declare (type (or null (real 0)) thickness-capacity thickness-capacity-threshold total-thickness))
-        (when
-            (and (not (eq item last))
-                 total-thickness
-                 thickness-capacity
-                 thickness-capacity-threshold
-                 (> total-thickness (+ thickness-capacity thickness-capacity-threshold)))
-          (typecase item
-            (onesie/closed
-             (toggle-onesie% item)
-             (if (lockedp item)
-                 (progn (format t "~a's ~a pops open from the expansion destroying the lock in the process~%~%"
-                                (name-of user)
-                                (name-of item))
-                        (setf (lockedp item) nil))
-                 (format t "~a's ~a pops open from the expansion~%~%"
-                         (name-of user)
-                         (name-of item)))
-             (pushclothing (the item item) wet/mess return))
-            ((or incontinence-product snap-bottoms)
-             (push item (inventory-of (if (typep user 'team-member)
-                                          (player-of *game*)
-                                          user)))
-             (a:deletef (the list reverse-wear) item :count 1)
-             (format t "~a's ~a comes off from the expansion~%~%"
-                     (name-of user)
-                     (name-of item))
-             (pushclothing (the item item) wet/mess return))
-            ((and bottoms (not incontinence-product))
-             (a:deletef (the list reverse-wear) item :count 1)
-             (format t "~a's ~a tears from the expansion and is destroyed~%~%"
-                     (name-of user)
-                     (name-of item))
-             (pushclothing (the item item) wet/mess return))))))
+     (for item in reverse-wear)
+     (let* ((thickness-capacity (if (typep item 'bottoms) (thickness-capacity-of item)))
+            (thickness-capacity-threshold (if (typep item 'bottoms) (thickness-capacity-threshold-of item)))
+            (total-thickness (if (and (typep item 'bottoms)
+                                      thickness-capacity
+                                      thickness-capacity-threshold)
+                                 (fast-thickness reverse-wear item))))
+       (declare (type (or null (real 0)) thickness-capacity thickness-capacity-threshold total-thickness))
+       (when
+           (and (not (eq item last))
+                total-thickness
+                thickness-capacity
+                thickness-capacity-threshold
+                (> total-thickness (+ thickness-capacity thickness-capacity-threshold)))
+         (typecase item
+           (onesie/closed
+            (toggle-onesie% item)
+            (if (lockedp item)
+                (progn (format t "~a's ~a pops open from the expansion destroying the lock in the process~%~%"
+                               (name-of user)
+                               (name-of item))
+                       (setf (lockedp item) nil))
+                (format t "~a's ~a pops open from the expansion~%~%"
+                        (name-of user)
+                        (name-of item)))
+            (pushclothing (the item item) wet/mess return))
+           ((or incontinence-product snap-bottoms)
+            (push item (inventory-of (if (typep user 'team-member)
+                                         (player-of *game*)
+                                         user)))
+            (a:deletef (the list reverse-wear) item :count 1)
+            (format t "~a's ~a comes off from the expansion~%~%"
+                    (name-of user)
+                    (name-of item))
+            (pushclothing (the item item) wet/mess return))
+           ((and bottoms (not incontinence-product))
+            (a:deletef (the list reverse-wear) item :count 1)
+            (format t "~a's ~a tears from the expansion and is destroyed~%~%"
+                    (name-of user)
+                    (name-of item))
+            (pushclothing (the item item) wet/mess return))))))
     (setf (wear-of user) (nreverse reverse-wear))
     (cond ((or (getf (car wet/mess) :popped) (getf (cdr wet/mess) :popped))
            (values wet/mess :wet/mess))
           (return (values return :return))
           (t (values nil nil)))))
 (defunassert thickest-sort (clothing)
-    (clothing list)
+  (clothing list)
   (s:dsu-sort (iter (for i in clothing)
-                (when (typep i 'closed-bottoms)
-                  (collect i)))
+                    (when (typep i 'closed-bottoms)
+                      (collect i)))
               '>
               :key 'get-diaper-expansion))
 (defunassert thickest (clothing &optional n &aux (a (iter (for i in clothing)
-                                                      (when (typep i 'closed-bottoms)
-                                                        (collect i)))))
-    (clothing list n (or null unsigned-byte))
+                                                          (when (typep i 'closed-bottoms)
+                                                            (collect i)))))
+  (clothing list n (or null unsigned-byte))
   (if n
       (the (values list &optional)
            (s:bestn n a '> :key 'get-diaper-expansion :memo t))
       (iter (for i in a)
-        (finding i maximizing (get-diaper-expansion i)))))
+            (finding i maximizing (get-diaper-expansion i)))))
 (defun move-to-zone (new-position &key ignore-lock direction old-position)
   (when (iter (for i in (cons (player-of *game*) (allies-of *game*)))
-          (let ((wear (typecase (must-wear-of (get-zone new-position))
-                        (cons (must-wear-of (get-zone new-position)))
-                        (symbol (gethash (must-wear-of *game*) (must-wear-of (get-zone new-position))))))
-                (not-wear (typecase (must-not-wear-of (get-zone new-position))
-                            (cons (must-not-wear-of (get-zone new-position)))
-                            (symbol (gethash (must-not-wear-of *game*) (must-not-wear-of (get-zone new-position)))))))
-            (when (or (and (list-length-> 1 (filter-items (wear-of i) (car wear)))
-                           (not (funcall (coerce (cdr wear) 'function) i)))
-                      (and (list-length-< 0 (filter-items (wear-of i) (car not-wear)))
-                           (not (funcall (coerce (cdr not-wear) 'function) i))))
-              (leave t))))
+              (let ((wear (typecase (must-wear-of (get-zone new-position))
+                            (cons (must-wear-of (get-zone new-position)))
+                            (symbol (gethash (must-wear-of *game*) (must-wear-of (get-zone new-position))))))
+                    (not-wear (typecase (must-not-wear-of (get-zone new-position))
+                                (cons (must-not-wear-of (get-zone new-position)))
+                                (symbol (gethash (must-not-wear-of *game*) (must-not-wear-of (get-zone new-position)))))))
+                (when (or (and (list-length-> 1 (filter-items (wear-of i) (car wear)))
+                               (not (funcall (coerce (cdr wear) 'function) i)))
+                          (and (list-length-< 0 (filter-items (wear-of i) (car not-wear)))
+                               (not (funcall (coerce (cdr not-wear) 'function) i))))
+                  (leave t))))
     (return-from move-to-zone))
   (when (and (not ignore-lock)
              (or (and (lockedp (get-zone new-position))
@@ -659,8 +659,8 @@
   (process-potty)
   (run-equip-effects (player-of *game*))
   (iter (for i in (allies-of *game*))
-    (process-potty i)
-    (run-equip-effects i))
+        (process-potty i)
+        (run-equip-effects i))
   (print-enter-text (position-of (player-of *game*)) old-position direction)
   (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
          (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
@@ -673,19 +673,19 @@
          (return-from move-to-zone))
         ((resolve-enemy-spawn-list (get-zone (position-of (player-of *game*))))
          (let ((enemy-spawn-list (iter (for i in (resolve-enemy-spawn-list (get-zone (position-of (player-of *game*)))))
-                                   (when (< (random 1.0l0) (getf i :chance))
-                                     (leave (cond ((getf i :eval)
-                                                   (eval (getf i :eval)))
-                                                  ((getf i :lambda)
-                                                   (funcall (coerce (getf i :lambda) 'function)))
-                                                  (t (getf i :enemies)))))))
+                                       (when (< (random 1.0l0) (getf i :chance))
+                                         (leave (cond ((getf i :eval)
+                                                       (eval (getf i :eval)))
+                                                      ((getf i :lambda)
+                                                       (funcall (coerce (getf i :lambda) 'function)))
+                                                      (t (getf i :enemies)))))))
                (team-npc-spawn-list (iter (for i in (resolve-team-npc-spawn-list (get-zone (position-of (player-of *game*)))))
-                                      (when (< (random 1.0l0) (getf i :chance))
-                                        (leave (cond ((getf i :eval)
-                                                      (eval (getf i :eval)))
-                                                     ((getf i :lambda)
-                                                      (funcall (coerce (getf i :lambda) 'function)))
-                                                     (t (getf i :enemies))))))))
+                                          (when (< (random 1.0l0) (getf i :chance))
+                                            (leave (cond ((getf i :eval)
+                                                          (eval (getf i :eval)))
+                                                         ((getf i :lambda)
+                                                          (funcall (coerce (getf i :lambda) 'function)))
+                                                         (t (getf i :enemies))))))))
            (when enemy-spawn-list
              (set-new-battle enemy-spawn-list :team-npcs team-npc-spawn-list))))))
 (defun move-to-secret-underground ()
@@ -703,9 +703,9 @@
     (return-from move-to-pocket-map))
   (unless (get-zone '(0 0 0 pocket-map))
     (make-pocket-zone (0 0 0)
-      :name "Pocket Map Entrance"
-      :description "Welcome to the Pocket Map. It's like the secret bases in Pokémon, except you customize it by scripting, and you can take it with you."
-      :enter-text "You're at the start of the Pocket Map. Use the Pocket Map machine again at anytime to exit."))
+                      :name "Pocket Map Entrance"
+                      :description "Welcome to the Pocket Map. It's like the secret bases in Pokémon, except you customize it by scripting, and you can take it with you."
+                      :enter-text "You're at the start of the Pocket Map. Use the Pocket Map machine again at anytime to exit."))
   (let ((old-position (position-of (player-of *game*))))
     (move-to-zone (if (eq (fourth (position-of (player-of *game*))) :pocket-map)
                       (getf (attributes-of item) :pocket-map-position)
@@ -716,10 +716,10 @@
 (defunassert wet (&key (wet-amount t) force-fill-amount pants-down accident force-wet-amount (wetter (player-of *game*)) (clothes nil clothes-supplied-p)
                        &aux (return-value ()) (affected-clothes ()) (random (random 4)) (amount nil)
                        (clothes (if clothes-supplied-p clothes (wear-of wetter))))
-    (force-fill-amount (or null real)
-                       force-wet-amount (or boolean real)
-                       wet-amount (or boolean real)
-                       wetter base-character)
+  (force-fill-amount (or null real)
+                     force-wet-amount (or boolean real)
+                     wet-amount (or boolean real)
+                     wetter base-character)
   #.(format nil "this function is mostly for mods, doesn't print text or diaper expansion, that's handled by other functions. @var{WETTER} is the instance of @code{BASE-CHARACTER} doing the flooding. @var{WET-AMOUNT} is the amount @var{WETTER} floods but won't flood if he/she can't go, passing @code{T} to @var{WET-AMOUNT} means to use @code{(BLADDER/CONTENTS-OF WETTER)}, @var{FORCE-WET-AMOUNT} causes @var{WETTER} to wet regardless. @var{FORCE-FILL-AMOUNT} will set @code{(BLADDER/CONTENTS-OF WETTER)} to that amount first. @var{PANTS-DOWN} is @code{T} if @var{WETTER} pulls his/her pants down first. @var{ACCIDENT} is @code{T} if the wetting isn't intentional and @var{WETTER} may or may not be able to stop the flow. if @var{CLOTHES} is passed, it will be the one @var{WETTER} floods, otherwise it will be @code{(wear-of @var{WETTER})}
 
 ~a."
@@ -742,9 +742,9 @@
         (accident
          (setf amount
                (a:switch (random :test '=)
-                 (3 (* 4 (bladder/fill-rate-of wetter)))
-                 (2 (bladder/need-to-potty-limit-of wetter))
-                 (t (bladder/contents-of wetter)))))
+                         (3 (* 4 (bladder/fill-rate-of wetter)))
+                         (2 (bladder/need-to-potty-limit-of wetter))
+                         (t (bladder/contents-of wetter)))))
         (t (setf amount (cond ((eq wet-amount t)
                                (bladder/contents-of wetter))
                               ((> wet-amount (bladder/contents-of wetter))
@@ -754,9 +754,9 @@
   (setf (getf return-value :accident)
         (if accident
             (a:switch (random :test '=)
-              (3 :dribble)
-              (2 :some)
-              (t :all))))
+                      (3 :dribble)
+                      (2 :some)
+                      (t :all))))
   (setf (getf return-value :old-bladder-contents) (bladder/contents-of wetter))
   (let* ((amount-left amount))
     (cond ((or pants-down (not (filter-items clothes 'closed-bottoms)))
@@ -765,19 +765,19 @@
           (t
            (decf (bladder/contents-of wetter) amount)
            (iter (while (> amount-left 0))
-             (for i in (reverse clothes))
-             (when (typep i 'closed-bottoms)
-               (cond ((> amount-left (- (sogginess-capacity-of i) (sogginess-of i)))
-                      (if (leakproofp i)
+                 (for i in (reverse clothes))
+                 (when (typep i 'closed-bottoms)
+                   (cond ((> amount-left (- (sogginess-capacity-of i) (sogginess-of i)))
+                          (if (leakproofp i)
+                              (setf amount-left 0)
+                              (decf amount-left (- (sogginess-capacity-of i) (sogginess-of i))))
+                          (setf (sogginess-of i) (sogginess-capacity-of i))
+                          (push i affected-clothes)
+                          )
+                         ((> amount-left 0)
+                          (incf (sogginess-of i) amount-left)
                           (setf amount-left 0)
-                          (decf amount-left (- (sogginess-capacity-of i) (sogginess-of i))))
-                      (setf (sogginess-of i) (sogginess-capacity-of i))
-                      (push i affected-clothes)
-                      )
-                     ((> amount-left 0)
-                      (incf (sogginess-of i) amount-left)
-                      (setf amount-left 0)
-                      (push i affected-clothes)))))))
+                          (push i affected-clothes)))))))
     (setf (getf return-value :new-bladder-contents) (bladder/contents-of wetter))
     (setf (getf return-value :affected-clothes) affected-clothes)
     (setf (getf return-value :leak-amount) amount-left)
@@ -785,10 +785,10 @@
   return-value)
 (defunassert mess (&key (mess-amount t) force-fill-amount pants-down accident force-mess-amount (messer (player-of *game*)) (clothes nil clothes-supplied-p)
                         &aux (return-value ()) (affected-clothes ()) (amount nil) (clothes (if clothes-supplied-p clothes (wear-of messer))))
-    (force-fill-amount (or null real)
-                       force-mess-amount (or boolean real)
-                       mess-amount (or boolean real)
-                       messer base-character)
+  (force-fill-amount (or null real)
+                     force-mess-amount (or boolean real)
+                     mess-amount (or boolean real)
+                     messer base-character)
   #.(format nil "this function is mostly for mods, doesn't print text or diaper expansion, that's handled by other functions. @var{MESSER} is the instance of @code{BASE-CHARACTER} doing the messing. @var{MESS-AMOUNT} is the amount @var{MESSER} messes but won't mess if he/she can't go, passing @code{T} to @var{MESS-AMOUNT} means to use @code{(BOWELS/CONTENTS-OF MESSER)}, @var{FORCE-MESS-AMOUNT} causes @var{MESSER} to mess regardless. @var{FORCE-FILL-AMOUNT} will set @code{(BOWELS/CONTENTS-OF MESSER)} to that amount first. @var{PANTS-DOWN} is @code{T} if @var{MESSER} pulls his/her pants down first. @var{ACCIDENT} is @code{T} if the messing isn't intentional. If @var{CLOTHES} is passed, it will be the one @var{MESSER} messes, otherwise it will be @code{(wear-of @var{MESSER})}
 
 
@@ -825,27 +825,27 @@
           (t
            (decf (bowels/contents-of messer) amount)
            (iter (while (> amount-left 0))
-             (for i in (reverse clothes))
-             (when (typep i 'closed-bottoms)
-               (cond ((> amount-left (- (messiness-capacity-of i) (messiness-of i)))
-                      (if (leakproofp i)
+                 (for i in (reverse clothes))
+                 (when (typep i 'closed-bottoms)
+                   (cond ((> amount-left (- (messiness-capacity-of i) (messiness-of i)))
+                          (if (leakproofp i)
+                              (setf amount-left 0)
+                              (decf amount-left (- (messiness-capacity-of i) (messiness-of i))))
+                          (setf (messiness-of i) (messiness-capacity-of i))
+                          (push i affected-clothes))
+                         ((> amount-left 0)
+                          (incf (messiness-of i) amount-left)
                           (setf amount-left 0)
-                          (decf amount-left (- (messiness-capacity-of i) (messiness-of i))))
-                      (setf (messiness-of i) (messiness-capacity-of i))
-                      (push i affected-clothes))
-                     ((> amount-left 0)
-                      (incf (messiness-of i) amount-left)
-                      (setf amount-left 0)
-                      (push i affected-clothes)))))))
+                          (push i affected-clothes)))))))
     (setf (getf return-value :new-bowels-contents) (bowels/contents-of messer))
     (setf (getf return-value :affected-clothes) affected-clothes)
     (setf (getf return-value :leak-amount) amount-left)
     (setf (getf return-value :mess-amount) amount))
   return-value)
 (defunassert potty-on-toilet (prop &key wet mess pants-down (user (player-of *game*)))
-    (prop yadfa-props:toilet
-          wet (or boolean real)
-          mess (or boolean real))
+  (prop yadfa-props:toilet
+        wet (or boolean real)
+        mess (or boolean real))
   (when (notany #'identity (list wet mess))
     (setf wet t
           mess t))
@@ -861,13 +861,13 @@
                    :user user))
      (return-from potty-on-toilet))
     ((and pants-down (iter (for i in (filter-items (wear-of user) 'closed-bottoms))
-                       (when (lockedp i)
-                         (format t "~a struggles to remove ~a ~a, realizes ~a can't, then starts panicking while doing a potty dance.~%"
-                                 (name-of user)
-                                 (if (malep user) "his" "her")
-                                 (name-of i)
-                                 (if (malep user) "he" "she"))
-                         (leave t))))
+                           (when (lockedp i)
+                             (format t "~a struggles to remove ~a ~a, realizes ~a can't, then starts panicking while doing a potty dance.~%"
+                                     (name-of user)
+                                     (if (malep user) "his" "her")
+                                     (name-of i)
+                                     (if (malep user) "he" "she"))
+                             (leave t))))
      (return-from potty-on-toilet)))
   (let* ((mess-return-value (when mess
                               (mess :mess-amount mess :pants-down pants-down :messer user)))
@@ -905,8 +905,8 @@
                 out)
           (format t "~a~%" (a:random-elt out))))))
 (defunassert potty-on-self-or-prop (prop &key wet mess pants-down (user (player-of *game*)))
-    (wet (or boolean real)
-         mess (or boolean real))
+  (wet (or boolean real)
+       mess (or boolean real))
   (when (notany #'identity (list wet mess))
     (setf wet t
           mess t))
@@ -924,13 +924,13 @@
                        :user user))
          (return-from potty-on-self-or-prop))
         ((and pants-down (iter (for i in (filter-items (wear-of user) 'closed-bottoms))
-                           (when (lockedp i)
-                             (format t "~a struggles to remove ~a ~a, realizes ~a can't, then starts panicking while doing a potty dance.~%"
-                                     (name-of user)
-                                     (if (malep user) "his" "her")
-                                     (name-of i)
-                                     (if (malep user) "he" "she"))
-                             (leave t))))
+                               (when (lockedp i)
+                                 (format t "~a struggles to remove ~a ~a, realizes ~a can't, then starts panicking while doing a potty dance.~%"
+                                         (name-of user)
+                                         (if (malep user) "his" "her")
+                                         (name-of i)
+                                         (if (malep user) "he" "she"))
+                                 (leave t))))
          (return-from potty-on-self-or-prop)))
   (let*
       ((mess-return-value (when mess
@@ -1277,7 +1277,7 @@
              (funcall (coerce (potty-trigger-of (get-zone (position-of (player-of *game*)))) 'function)
                       (cons wet-return-value mess-return-value) user))))))))
 (defunassert process-potty (&optional (user (player-of *game*)))
-    (user (or player ally))
+  (user (or player ally))
   (let ((time-difference (- (time-of *game*) (last-process-potty-time-of user))))
     (incf (bladder/contents-of user) (* (bladder/fill-rate-of user) time-difference))
     (incf (bowels/contents-of user) (* (bowels/fill-rate-of user) time-difference)))
@@ -1292,13 +1292,13 @@
                                 (when (>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
                                   (mess :messer user))))))
     (iter (for i in '(:wet :mess))
-      (output-process-potty-text user
-                                 (get-babyish-padding user)
-                                 i
-                                 (get-process-potty-action-type user
-                                                                i
-                                                                had-accident)
-                                 had-accident))
+          (output-process-potty-text user
+                                     (get-babyish-padding user)
+                                     i
+                                     (get-process-potty-action-type user
+                                                                    i
+                                                                    had-accident)
+                                     had-accident))
     (multiple-value-bind
           (value key)
         (pop-from-expansion user had-accident)
@@ -1331,78 +1331,78 @@
                     (string= a (class-name (class-of b)))
                     (eq a (class-name (class-of b)))))))
 (defunassert calculate-diaper-usage (user)
-    (user base-character)
+  (user base-character)
   (iter
-    (with sogginess = 0)
-    (with sogginess-capacity = 0)
-    (with messiness = 0)
-    (with messiness-capacity = 0)
-    (for i in (wear-of user))
-    (when (typep i 'closed-bottoms)
-      (incf sogginess (sogginess-of i))
-      (incf sogginess-capacity (sogginess-capacity-of i))
-      (incf messiness (messiness-of i))
-      (incf messiness-capacity (messiness-capacity-of i)))
-    (finally (return `(:sogginess ,sogginess :sogginess-capacity ,sogginess-capacity
-                       :messiness ,messiness :messiness-capacity ,messiness-capacity)))))
+   (with sogginess = 0)
+   (with sogginess-capacity = 0)
+   (with messiness = 0)
+   (with messiness-capacity = 0)
+   (for i in (wear-of user))
+   (when (typep i 'closed-bottoms)
+     (incf sogginess (sogginess-of i))
+     (incf sogginess-capacity (sogginess-capacity-of i))
+     (incf messiness (messiness-of i))
+     (incf messiness-capacity (messiness-capacity-of i)))
+   (finally (return `(:sogginess ,sogginess :sogginess-capacity ,sogginess-capacity
+                      :messiness ,messiness :messiness-capacity ,messiness-capacity)))))
 (defunassert calculate-diaper-usage* (clothes)
-    (clothes list)
+  (clothes list)
   (iter
-    (with sogginess = 0)
-    (with sogginess-capacity = 0)
-    (with messiness = 0)
-    (with messiness-capacity = 0)
-    (for i in clothes)
-    (when (typep i 'closed-bottoms)
-      (incf sogginess (sogginess-of i))
-      (incf sogginess-capacity (sogginess-capacity-of i))
-      (incf messiness (messiness-of i))
-      (incf messiness-capacity (messiness-capacity-of i)))
-    (finally (return `(:sogginess ,sogginess :sogginess-capacity ,sogginess-capacity
-                       :messiness ,messiness :messiness-capacity ,messiness-capacity)))))
+   (with sogginess = 0)
+   (with sogginess-capacity = 0)
+   (with messiness = 0)
+   (with messiness-capacity = 0)
+   (for i in clothes)
+   (when (typep i 'closed-bottoms)
+     (incf sogginess (sogginess-of i))
+     (incf sogginess-capacity (sogginess-capacity-of i))
+     (incf messiness (messiness-of i))
+     (incf messiness-capacity (messiness-capacity-of i)))
+   (finally (return `(:sogginess ,sogginess :sogginess-capacity ,sogginess-capacity
+                      :messiness ,messiness :messiness-capacity ,messiness-capacity)))))
 (defunassert calculate-level-to-exp (level)
-    (level real)
+  (level real)
   (floor (/ (* 4 (expt level 3)) 5)))
 (defunassert calculate-exp-yield (target)
-    (target enemy)
+  (target enemy)
   (u:$ (exp-yield-of target) * (level-of target) / 7))
 (defunassert calculate-wear-stats (user)
-    (user base-character)
+  (user base-character)
   (iter
-    (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
-    (for i in (wear-of user))
-    (iter
-      (for (a b) on (wear-stats-of i) by #'cddr)
-      (incf (getf j a) b))
-    (finally (return j))))
+   (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
+   (for i in (wear-of user))
+   (iter
+    (for (a b) on (wear-stats-of i) by #'cddr)
+    (incf (getf j a) b))
+   (finally (return j))))
 (defunassert calculate-wield-stats (user)
-    (user base-character)
+  (user base-character)
   (iter
-    (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
-    (for (a b) on (if (wield-of user) (wield-stats-of (wield-of user)) ()) by #'cddr)
-    (incf (getf j a) b)
-    (finally (return j))))
+   (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
+   (for (a b) on (if (wield-of user) (wield-stats-of (wield-of user)) ()) by #'cddr)
+   (incf (getf j a) b)
+   (finally (return j))))
 (defunassert calculate-stat-delta (user)
-    (user base-character)
+  (user base-character)
   (iter
-    (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
-    (for i in (when *battle* (getf (status-conditions-of *battle*) user)))
-    (iter
-      (for (a b) on (stat-delta-of i) by #'cddr)
-      (incf (getf j a) b))
-    (finally (return j))))
+   (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
+   (for i in (when *battle* (getf (status-conditions-of *battle*) user)))
+   (iter
+    (for (a b) on (stat-delta-of i) by #'cddr)
+    (incf (getf j a) b))
+   (finally (return j))))
 (defunassert calculate-stat-multiplier (user)
-    (user base-character)
+  (user base-character)
   (iter
-    (with j = (list :health 1 :attack 1 :defense 1 :energy 1 :speed 1))
-    (for i in (when *battle* (getf (status-conditions-of *battle*) user)))
-    (iter
-      (for (a b) on (stat-multiplier-of i) by #'cddr)
-      (declare (ignorable b))
-      (setf (getf j a) (* (getf j a))))
-    (finally (return j))))
+   (with j = (list :health 1 :attack 1 :defense 1 :energy 1 :speed 1))
+   (for i in (when *battle* (getf (status-conditions-of *battle*) user)))
+   (iter
+    (for (a b) on (stat-multiplier-of i) by #'cddr)
+    (declare (ignorable b))
+    (setf (getf j a) (* (getf j a))))
+   (finally (return j))))
 (defunassert calculate-stat (user stat-key)
-    (user base-character)
+  (user base-character)
   (round (if (or (eq stat-key :health) (eq stat-key :energy))
              (u:$ (u:$ (u:$ (u:$ (u:$ (getf (base-stats-of user) stat-key) +
                                       (getf (iv-stats-of user) stat-key) +
@@ -1426,8 +1426,8 @@
                   + 5))))
 (defun present-stats (user)
   (updating-present-with-effective-frame (*query-io* :unique-id `(stats% ,user) :id-test #'equal)
-    (clim:updating-output (*query-io*)
-      (clim:present user (type-of user) :view yadfa-clim:+stat-view+))))
+                                         (clim:updating-output (*query-io*)
+                                                               (clim:present user (type-of user) :view yadfa-clim:+stat-view+))))
 (defun describe-item (item &optional wear)
   (format t
           "Name: ~a~%Resale Value: ~f~%Description:~%~a~%"
@@ -1442,13 +1442,13 @@
     (format t "Ammo Type: ~s" (ammo-type-of item)))
   (when (special-actions-of item)
     (iter (for (a b) on (special-actions-of item) by #'cddr)
-      (format t "Keyword: ~a~%Other Parameters: ~w~%Documentation: ~a~%~%Describe: ~a~%~%"
-              a
-              (cddr (lambda-list (action-lambda b)))
-              (documentation b t)
-              (with-output-to-string (s)
-                (let ((*standard-output* s))
-                  (describe (action-lambda b)))))))
+          (format t "Keyword: ~a~%Other Parameters: ~w~%Documentation: ~a~%~%Describe: ~a~%~%"
+                  a
+                  (cddr (lambda-list (action-lambda b)))
+                  (documentation b t)
+                  (with-output-to-string (s)
+                    (let ((*standard-output* s))
+                      (describe (action-lambda b)))))))
   t)
 (defun finish-battle (&optional lose &aux (player (player-of *game*)) (male (malep player)) (name (name-of player))
                                        (position (position-of player)) (enemies (enemies-of *battle*)) (team (team-of *game*)))
@@ -1465,59 +1465,59 @@
                      (name-of (get-zone position))
                      position)
              (iter (for user in (cons player (allies-of *game*)))
-               (setf (health-of user) (calculate-stat user :health))
-               (setf (energy-of user) (calculate-stat user :energy)))
+                   (setf (health-of user) (calculate-stat user :health))
+                   (setf (energy-of user) (calculate-stat user :energy)))
              (let ((exp-gained (/ (iter (for enemy in enemies)
-                                    (with j = 0)
-                                    (incf j (calculate-exp-yield enemy))
-                                    (finally (return j)))
+                                        (with j = 0)
+                                        (incf j (calculate-exp-yield enemy))
+                                        (finally (return j)))
                                   2)))
                (iter (for team-member in team)
-                 (incf (exp-of team-member) exp-gained)
-                 (let ((old-level (level-of team-member)))
-                   (iter (while (>= (exp-of team-member) (calculate-level-to-exp (+ (level-of team-member) 1))))
-                     (incf (level-of team-member)))
-                   (when (> (level-of team-member) old-level)
-                     (format t "~a level-uped to ~d~%" (name-of team-member) (level-of team-member))
-                     (iter (for level from (1+ old-level) to (level-of team-member))
-                       (iter (for learned-move in (learned-moves-of team-member))
-                         (when (= (car learned-move) level)
-                           (unless (get-move (cdr learned-move) team-member)
-                             (pushnewmove (cdr learned-move) team-member)
-                             (format t "~a learned ~a~%" (name-of team-member) (name-of (get-move (cdr learned-move) team-member))))))))))
+                     (incf (exp-of team-member) exp-gained)
+                     (let ((old-level (level-of team-member)))
+                       (iter (while (>= (exp-of team-member) (calculate-level-to-exp (+ (level-of team-member) 1))))
+                             (incf (level-of team-member)))
+                       (when (> (level-of team-member) old-level)
+                         (format t "~a level-uped to ~d~%" (name-of team-member) (level-of team-member))
+                         (iter (for level from (1+ old-level) to (level-of team-member))
+                               (iter (for learned-move in (learned-moves-of team-member))
+                                     (when (= (car learned-move) level)
+                                       (unless (get-move (cdr learned-move) team-member)
+                                         (pushnewmove (cdr learned-move) team-member)
+                                         (format t "~a learned ~a~%" (name-of team-member) (name-of (get-move (cdr learned-move) team-member))))))))))
                (setf *battle* nil))
              (iter (for team-member in team)
-               (wet :force-fill-amount (bladder/maximum-limit-of team-member))
-               (mess :force-fill-amount (bowels/maximum-limit-of team-member))))
+                   (wet :force-fill-amount (bladder/maximum-limit-of team-member))
+                   (mess :force-fill-amount (bowels/maximum-limit-of team-member))))
       (progn (format t "~a won the battle~%~%" name)
              (let ((items-looted (iter (for enemy in enemies)
-                                   (with j = ())
-                                   (setf j (append* j (inventory-of enemy) (wear-of enemy)))
-                                   (setf (inventory-of enemy) nil
-                                         (wear-of enemy) nil)
-                                   (finally (return j))))
+                                       (with j = ())
+                                       (setf j (append* j (inventory-of enemy) (wear-of enemy)))
+                                       (setf (inventory-of enemy) nil
+                                             (wear-of enemy) nil)
+                                       (finally (return j))))
                    (bitcoins-looted (iter (for enemy in enemies)
-                                      (with j = 0)
-                                      (incf j (if (bitcoins-per-level-of enemy) (* (bitcoins-per-level-of enemy) (level-of enemy)) (bitcoins-of enemy)))
-                                      (finally (return j))))
+                                          (with j = 0)
+                                          (incf j (if (bitcoins-per-level-of enemy) (* (bitcoins-per-level-of enemy) (level-of enemy)) (bitcoins-of enemy)))
+                                          (finally (return j))))
                    (exp-gained (iter (for enemy in enemies)
-                                 (with j = 0)
-                                 (incf j (calculate-exp-yield enemy))
-                                 (finally (return j))))
+                                     (with j = 0)
+                                     (incf j (calculate-exp-yield enemy))
+                                     (finally (return j))))
                    (win-events (win-events-of *battle*)))
                (iter (for team-member in team)
-                 (incf (exp-of team-member) exp-gained)
-                 (let ((old-level (level-of team-member)))
-                   (iter (while (>= (exp-of team-member) (calculate-level-to-exp (+ (level-of team-member) 1))))
-                     (incf (level-of team-member)))
-                   (when (> (level-of team-member) old-level)
-                     (format t "~a level-uped to ~d~%" (name-of team-member) (level-of team-member))
-                     (iter (for level from (1+ old-level) to (level-of team-member))
-                       (iter (for learned-move in (learned-moves-of team-member))
-                         (when (= (car learned-move) level)
-                           (unless (get-move (cdr learned-move) team-member)
-                             (pushnewmove (cdr learned-move) team-member)
-                             (format t "~a learned ~a~%" (name-of team-member) (name-of (get-move (cdr learned-move) team-member))))))))))
+                     (incf (exp-of team-member) exp-gained)
+                     (let ((old-level (level-of team-member)))
+                       (iter (while (>= (exp-of team-member) (calculate-level-to-exp (+ (level-of team-member) 1))))
+                             (incf (level-of team-member)))
+                       (when (> (level-of team-member) old-level)
+                         (format t "~a level-uped to ~d~%" (name-of team-member) (level-of team-member))
+                         (iter (for level from (1+ old-level) to (level-of team-member))
+                               (iter (for learned-move in (learned-moves-of team-member))
+                                     (when (= (car learned-move) level)
+                                       (unless (get-move (cdr learned-move) team-member)
+                                         (pushnewmove (cdr learned-move) team-member)
+                                         (format t "~a learned ~a~%" (name-of team-member) (name-of (get-move (cdr learned-move) team-member))))))))))
                (cond ((and items-looted (> bitcoins-looted 0))
                       (format t "~a loots ~d bitcoins and ~d ~a from the enemies~%"
                               name
@@ -1544,8 +1544,8 @@
 (defun wash (clothing)
   (declare (type list clothing))
   (iter (for i in (filter-items clothing 'closed-bottoms))
-    (when (not (disposablep i))
-      (setf (sogginess-of i) 0 (messiness-of i) 0))))
+        (when (not (disposablep i))
+          (setf (sogginess-of i) 0 (messiness-of i) 0))))
 (defun go-to-sleep% (user)
   (incf (time-of *game*) 60)
   (let ((time-difference (- (time-of *game*) (last-process-potty-time-of user))))
@@ -1557,81 +1557,169 @@
   (cons (wet :wetter user) (mess :messer user)))
 (defun go-to-sleep ()
   (iter (for i in (cons (player-of *game*) (allies-of *game*)))
-    (let* ((return-value (go-to-sleep% i))
-           (out ())
-           (male (malep i))
-           (hisher (if male "his" "her"))
-           (name (name-of i))
-           (cheshe (if male "He" "She")))
-      (multiple-value-bind (value key)
-          (pop-from-expansion i return-value)
-        (when (eq key :wet/mess)
-          (setf return-value value)))
-      (format t "~a wakes up " (name-of i))
-      (when (> (getf (car return-value) :wet-amount) 0)
-        (cond ((filter-items (wear-of i) 'diaper)
-               (if (> (getf (car return-value) :leak-amount) 0)
-                   (progn (push (format nil "feeling all cold and soggy. ~a checks ~a diaper and to ~a embarrassment finds out it's leaking profusely. Seems ~a wet the bed.~%"
-                                        cheshe
-                                        hisher
-                                        hisher
-                                        name)
-                                out)
-                          (format t "~a" (a:random-elt out))
-                          (setf out ()))
-                   (progn (push (format nil "and hears a squish . ~a looks down at ~a diaper, notices that it's soggy and then folds ~a ears back and blushes. Looks like ~a wet the bed~%"
-                                        cheshe
-                                        hisher
-                                        hisher
-                                        name)
-                                out)
-                          (push (format nil "and looks down and pokes ~a diaper, then gets all blushy when it squishes. Seems ~a wet the bed~%"
-                                        hisher
-                                        name)
-                                out)
-                          (format t "~a" (a:random-elt out))
-                          (setf out ()))))
+        (let* ((return-value (go-to-sleep% i))
+               (out ())
+               (male (malep i))
+               (hisher (if male "his" "her"))
+               (name (name-of i))
+               (cheshe (if male "He" "She")))
+          (multiple-value-bind (value key)
+              (pop-from-expansion i return-value)
+            (when (eq key :wet/mess)
+              (setf return-value value)))
+          (format t "~a wakes up " (name-of i))
+          (when (> (getf (car return-value) :wet-amount) 0)
+            (cond ((filter-items (wear-of i) 'diaper)
+                   (if (> (getf (car return-value) :leak-amount) 0)
+                       (progn (push (format nil "feeling all cold and soggy. ~a checks ~a diaper and to ~a embarrassment finds out it's leaking profusely. Seems ~a wet the bed.~%"
+                                            cheshe
+                                            hisher
+                                            hisher
+                                            name)
+                                    out)
+                              (format t "~a" (a:random-elt out))
+                              (setf out ()))
+                       (progn (push (format nil "and hears a squish . ~a looks down at ~a diaper, notices that it's soggy and then folds ~a ears back and blushes. Looks like ~a wet the bed~%"
+                                            cheshe
+                                            hisher
+                                            hisher
+                                            name)
+                                    out)
+                              (push (format nil "and looks down and pokes ~a diaper, then gets all blushy when it squishes. Seems ~a wet the bed~%"
+                                            hisher
+                                            name)
+                                    out)
+                              (format t "~a" (a:random-elt out))
+                              (setf out ()))))
+                  ((filter-items (wear-of i) 'pullup)
+                   (if (> (getf (car return-value) :leak-amount) 0)
+                       (progn (push (format nil "feeling all cold and soggy. ~a checks ~a pullups and to ~a embarrassment finds out it's leaking profusely. Seems ~a wet the bed.~%"
+                                            cheshe
+                                            hisher
+                                            hisher
+                                            name)
+                                    out)
+                              (format t "~a" (a:random-elt out))
+                              (setf out ()))
+                       (progn (push (format nil "and hears a squish. ~a looks down at ~a pullups, notices that ~a and then folds ~a ears back and blushes. Looks like ~a wet the bed~%"
+                                            cheshe
+                                            (if (filter-items (wear-of i) '(ab-clothing pullup))
+                                                "the little pictures have faded"
+                                                "it's soggy")
+                                            hisher
+                                            hisher
+                                            name)
+                                    out)
+                              (format t "~a" (a:random-elt out))
+                              (setf out ()))))
+                  ((filter-items (wear-of i) 'stuffer)
+                   (if (> (getf (car return-value) :leak-amount) 0)
+                       (progn (push (format nil "feeling all cold and soggy. ~a notices ~a PJs, the padding under ~a PJs, and bed are soaked. Seems ~a wet the bed~%"
+                                            cheshe
+                                            hisher
+                                            hisher
+                                            name)
+                                    out)
+                              (format t "~a" (a:random-elt out))
+                              (setf out ()))
+                       (progn (push (format nil "and hears a squish from under ~a PJs. ~a checks the incontinence pad under them and notices that they're soaked and then folds ~a ears back and blushes. Looks like ~a wet the bed~%"
+                                            hisher
+                                            cheshe
+                                            hisher
+                                            name)
+                                    out)
+                              (format t "~a" (a:random-elt out))
+                              (setf out ()))))
+                  ((filter-items (wear-of i) 'closed-bottoms)
+                   (push (format nil "feeling all cold and soggy. ~a notices ~a PJs and bed are soaked then folds ~a ears back and blushes. Seems ~a wet the bed~%"
+                                 cheshe
+                                 hisher
+                                 hisher
+                                 name)
+                         out)
+                   (format t "~a" (a:random-elt out))
+                   (setf out ()))
+                  (t
+                   (push (format nil "feeling all cold and soggy. ~a notices the bed is soaked then folds ~a ears back and blushes. Seems ~a wet the bed~%"
+                                 cheshe
+                                 hisher
+                                 name)
+                         out)
+                   (format t "~a" (a:random-elt out))
+                   (setf out ()))))
+          (when (and (> (getf (cdr return-value) :mess-amount) 0) (> (getf (car return-value) :wet-amount) 0))
+            (format t "~a is also " (name-of i)))
+          (when (> (getf (cdr return-value) :mess-amount) 0)
+            (cond
+              ((filter-items (wear-of i) 'diaper)
+               (if (> (getf (cdr return-value) :leak-amount) 0)
+                   (progn
+                     (push (format nil
+                                   "feeling all mushy. ~a notices to ~a embarrassment that ~a diaper is leaking poo all over the bed. Seems ~a messed the bed~%"
+                                   cheshe
+                                   hisher
+                                   hisher
+                                   name)
+                           out)
+                     (format t "~a" (a:random-elt out))
+                     (setf out ()))
+                   (progn
+                     (push (format nil
+                                   "feeling all mushy. ~a notices to ~a embarrassment that ~a diaper is filled with poo. Seems ~a messed the bed~%"
+                                   cheshe
+                                   hisher
+                                   hisher
+                                   name)
+                           out)
+                     (format t "~a" (a:random-elt out))
+                     (setf out ()))))
               ((filter-items (wear-of i) 'pullup)
-               (if (> (getf (car return-value) :leak-amount) 0)
-                   (progn (push (format nil "feeling all cold and soggy. ~a checks ~a pullups and to ~a embarrassment finds out it's leaking profusely. Seems ~a wet the bed.~%"
-                                        cheshe
-                                        hisher
-                                        hisher
-                                        name)
-                                out)
-                          (format t "~a" (a:random-elt out))
-                          (setf out ()))
-                   (progn (push (format nil "and hears a squish. ~a looks down at ~a pullups, notices that ~a and then folds ~a ears back and blushes. Looks like ~a wet the bed~%"
-                                        cheshe
-                                        (if (filter-items (wear-of i) '(ab-clothing pullup))
-                                            "the little pictures have faded"
-                                            "it's soggy")
-                                        hisher
-                                        hisher
-                                        name)
-                                out)
-                          (format t "~a" (a:random-elt out))
-                          (setf out ()))))
+               (if (> (getf (cdr return-value) :leak-amount) 0)
+                   (progn
+                     (push (format nil
+                                   "feeling all mushy. ~a notices to ~a embarrassment that ~a pullups is leaking poo all over the bed. Seems ~a messed the bed~%"
+                                   cheshe
+                                   hisher
+                                   hisher
+                                   name)
+                           out)
+                     (format t "~a" (a:random-elt out))
+                     (setf out ()))
+                   (progn
+                     (push (format nil
+                                   "feeling all mushy. ~a notices to ~a embarrassment that ~a pullup is filled with poo. Seems ~a messed the bed~%"
+                                   cheshe
+                                   hisher
+                                   hisher
+                                   name)
+                           out)
+                     (format t "~a" (a:random-elt out))
+                     (setf out ()))))
               ((filter-items (wear-of i) 'stuffer)
-               (if (> (getf (car return-value) :leak-amount) 0)
-                   (progn (push (format nil "feeling all cold and soggy. ~a notices ~a PJs, the padding under ~a PJs, and bed are soaked. Seems ~a wet the bed~%"
-                                        cheshe
-                                        hisher
-                                        hisher
-                                        name)
-                                out)
-                          (format t "~a" (a:random-elt out))
-                          (setf out ()))
-                   (progn (push (format nil "and hears a squish from under ~a PJs. ~a checks the incontinence pad under them and notices that they're soaked and then folds ~a ears back and blushes. Looks like ~a wet the bed~%"
-                                        hisher
-                                        cheshe
-                                        hisher
-                                        name)
-                                out)
-                          (format t "~a" (a:random-elt out))
-                          (setf out ()))))
+               (if (> (getf (cdr return-value) :leak-amount) 0)
+                   (progn
+                     (push (format nil
+                                   "feeling all mushy. ~a notices to ~a embarrassment that ~a incontinence pad is leaking poo all over the bed and PJs. Seems ~a messed the bed~%"
+                                   cheshe
+                                   hisher
+                                   hisher
+                                   name)
+                           out)
+                     (format t "~a" (a:random-elt out))
+                     (setf out ()))
+                   (progn
+                     (push (format nil
+                                   "feeling all mushy. ~a notices to ~a embarrassment that ~a incontinence pad is filled with poo. Seems ~a messed the bed~%"
+                                   cheshe
+                                   hisher
+                                   hisher
+                                   name)
+                           out)
+                     (format t "~a" (a:random-elt out))
+                     (setf out ()))))
               ((filter-items (wear-of i) 'closed-bottoms)
-               (push (format nil "feeling all cold and soggy. ~a notices ~a PJs and bed are soaked then folds ~a ears back and blushes. Seems ~a wet the bed~%"
+               (push (format nil
+                             "feeling all mushy. ~a notices to ~a embarrassment that ~a PJs have poo in them and is getting on the bed. Seems ~a messed the bed~%"
                              cheshe
                              hisher
                              hisher
@@ -1640,123 +1728,35 @@
                (format t "~a" (a:random-elt out))
                (setf out ()))
               (t
-               (push (format nil "feeling all cold and soggy. ~a notices the bed is soaked then folds ~a ears back and blushes. Seems ~a wet the bed~%"
+               (push (format nil
+                             "feeling all mushy. ~a notices to ~a embarrassment that ~a bed has poo on it. Seems ~a messed the bed~%"
                              cheshe
+                             hisher
                              hisher
                              name)
                      out)
                (format t "~a" (a:random-elt out))
-               (setf out ()))))
-      (when (and (> (getf (cdr return-value) :mess-amount) 0) (> (getf (car return-value) :wet-amount) 0))
-        (format t "~a is also " (name-of i)))
-      (when (> (getf (cdr return-value) :mess-amount) 0)
-        (cond
-          ((filter-items (wear-of i) 'diaper)
-           (if (> (getf (cdr return-value) :leak-amount) 0)
-               (progn
-                 (push (format nil
-                               "feeling all mushy. ~a notices to ~a embarrassment that ~a diaper is leaking poo all over the bed. Seems ~a messed the bed~%"
-                               cheshe
-                               hisher
-                               hisher
-                               name)
-                       out)
-                 (format t "~a" (a:random-elt out))
-                 (setf out ()))
-               (progn
-                 (push (format nil
-                               "feeling all mushy. ~a notices to ~a embarrassment that ~a diaper is filled with poo. Seems ~a messed the bed~%"
-                               cheshe
-                               hisher
-                               hisher
-                               name)
-                       out)
-                 (format t "~a" (a:random-elt out))
-                 (setf out ()))))
-          ((filter-items (wear-of i) 'pullup)
-           (if (> (getf (cdr return-value) :leak-amount) 0)
-               (progn
-                 (push (format nil
-                               "feeling all mushy. ~a notices to ~a embarrassment that ~a pullups is leaking poo all over the bed. Seems ~a messed the bed~%"
-                               cheshe
-                               hisher
-                               hisher
-                               name)
-                       out)
-                 (format t "~a" (a:random-elt out))
-                 (setf out ()))
-               (progn
-                 (push (format nil
-                               "feeling all mushy. ~a notices to ~a embarrassment that ~a pullup is filled with poo. Seems ~a messed the bed~%"
-                               cheshe
-                               hisher
-                               hisher
-                               name)
-                       out)
-                 (format t "~a" (a:random-elt out))
-                 (setf out ()))))
-          ((filter-items (wear-of i) 'stuffer)
-           (if (> (getf (cdr return-value) :leak-amount) 0)
-               (progn
-                 (push (format nil
-                               "feeling all mushy. ~a notices to ~a embarrassment that ~a incontinence pad is leaking poo all over the bed and PJs. Seems ~a messed the bed~%"
-                               cheshe
-                               hisher
-                               hisher
-                               name)
-                       out)
-                 (format t "~a" (a:random-elt out))
-                 (setf out ()))
-               (progn
-                 (push (format nil
-                               "feeling all mushy. ~a notices to ~a embarrassment that ~a incontinence pad is filled with poo. Seems ~a messed the bed~%"
-                               cheshe
-                               hisher
-                               hisher
-                               name)
-                       out)
-                 (format t "~a" (a:random-elt out))
-                 (setf out ()))))
-          ((filter-items (wear-of i) 'closed-bottoms)
-           (push (format nil
-                         "feeling all mushy. ~a notices to ~a embarrassment that ~a PJs have poo in them and is getting on the bed. Seems ~a messed the bed~%"
-                         cheshe
-                         hisher
-                         hisher
-                         name)
-                 out)
-           (format t "~a" (a:random-elt out))
-           (setf out ()))
-          (t
-           (push (format nil
-                         "feeling all mushy. ~a notices to ~a embarrassment that ~a bed has poo on it. Seems ~a messed the bed~%"
-                         cheshe
-                         hisher
-                         hisher
-                         name)
-                 out)
-           (format t "~a" (a:random-elt out))
-           (setf out ()))))))
+               (setf out ()))))))
   t)
 (defunassert shopfun (items-for-sale &key items-to-buy items-to-sell user format-items)
-    (user (or base-character null)
-          items-to-buy (or list boolean)
-          items-to-sell (or list boolean)
-          items-for-sale list)
+  (user (or base-character null)
+        items-to-buy (or list boolean)
+        items-to-sell (or list boolean)
+        items-for-sale list)
   (when items-to-buy
     (if (eq items-to-buy t)
         (let (item quantity)
           (accept-with-effective-frame (clim:accepting-values (*query-io* :resynchronize-every-pass t)
-                                         (fresh-line *query-io*)
-                                         (setf item (clim:accept `(clim:member-alist ,(iter (for i in items-for-sale)
-                                                                                        (collect (list (name-of (apply 'make-instance (car i) (eval (cdr i))))
-                                                                                                       i)))) :prompt "Item"
-                                                                                                             :view (make-instance 'clim:radio-box-view
-                                                                                                                                  :orientation :vertical)
-                                                                                                             :stream *query-io*))
-                                         (fresh-line *query-io*)
-                                         (setf quantity (clim:accept 'string :prompt "Quantity"
-                                                                             :view clim:+text-field-view+ :stream *query-io*))))
+                                                              (fresh-line *query-io*)
+                                                              (setf item (clim:accept `(clim:member-alist ,(iter (for i in items-for-sale)
+                                                                                                                 (collect (list (name-of (apply 'make-instance (car i) (eval (cdr i))))
+                                                                                                                                i)))) :prompt "Item"
+                                                                                                                                      :view (make-instance 'clim:radio-box-view
+                                                                                                                                                           :orientation :vertical)
+                                                                                                                                      :stream *query-io*))
+                                                              (fresh-line *query-io*)
+                                                              (setf quantity (clim:accept 'string :prompt "Quantity"
+                                                                                                  :view clim:+text-field-view+ :stream *query-io*))))
           (when (and quantity item (handler-case (if (typep (parse-integer quantity) '(integer 1 *))
                                                      t
                                                      (progn (format t "Quantity must be an '(integer 1 *)~%")
@@ -1785,83 +1785,83 @@
                                (or (plural-name-of temp) (format nil "~as" (name-of temp)))
                                (* (value-of temp) quantity)))))))
         (iter (for i in items-to-buy)
-          (let ((item (when (list-length-<= (car i) items-for-sale)
-                        (apply #'make-instance
-                               (car (nth (car i) items-for-sale))
-                               (eval (cdr (nth (car i) items-for-sale)))))))
-            (cond ((not item)
-                   (format t "item ~d doesn't exist~%" (car i)))
-                  ((> (* (value-of item) (cdr i)) (bitcoins-of user))
-                   (format t "You don't have enough bitcoins to buy ~a~%"
-                           (if (= (cdr i) 1)
-                               (format nil "that ~a" (name-of item))
-                               (format nil "~d ~a"
-                                       (cdr i)
-                                       (if (plural-name-of item)
-                                           (plural-name-of item)
-                                           (format nil "~as" (name-of item)))))))
-                  (t (dotimes (j (cdr i))
-                       (push (apply #'make-instance
-                                    (car (nth (car i) items-for-sale))
-                                    (eval (cdr (nth (car i) items-for-sale))))
-                             (inventory-of user)))
-                     (decf (bitcoins-of user) (* (value-of item) (cdr i)))
-                     (format t "You buy ~d ~a for ~f bitcoins~%"
-                             (cdr i)
-                             (or (plural-name-of item) (format nil "~as" (name-of item)))
-                             (* (value-of item) (cdr i)))))))))
+              (let ((item (when (list-length-<= (car i) items-for-sale)
+                            (apply #'make-instance
+                                   (car (nth (car i) items-for-sale))
+                                   (eval (cdr (nth (car i) items-for-sale)))))))
+                (cond ((not item)
+                       (format t "item ~d doesn't exist~%" (car i)))
+                      ((> (* (value-of item) (cdr i)) (bitcoins-of user))
+                       (format t "You don't have enough bitcoins to buy ~a~%"
+                               (if (= (cdr i) 1)
+                                   (format nil "that ~a" (name-of item))
+                                   (format nil "~d ~a"
+                                           (cdr i)
+                                           (if (plural-name-of item)
+                                               (plural-name-of item)
+                                               (format nil "~as" (name-of item)))))))
+                      (t (dotimes (j (cdr i))
+                           (push (apply #'make-instance
+                                        (car (nth (car i) items-for-sale))
+                                        (eval (cdr (nth (car i) items-for-sale))))
+                                 (inventory-of user)))
+                         (decf (bitcoins-of user) (* (value-of item) (cdr i)))
+                         (format t "You buy ~d ~a for ~f bitcoins~%"
+                                 (cdr i)
+                                 (or (plural-name-of item) (format nil "~as" (name-of item)))
+                                 (* (value-of item) (cdr i)))))))))
   (when items-to-sell
     (if (eq items-to-sell t)
         (let (items)
           (accept-with-effective-frame (clim:accepting-values (*query-io* :resynchronize-every-pass t)
-                                         (setf items (clim:accept `(clim:subset-alist ,(iter (for item in (remove-duplicates (inventory-of user)))
-                                                                                         (collect (cons (name-of item)
-                                                                                                        item)))) :prompt "Items"
-                                                                                                                 :view clim:+check-box-view+ :stream *query-io*))))
+                                                              (setf items (clim:accept `(clim:subset-alist ,(iter (for item in (remove-duplicates (inventory-of user)))
+                                                                                                                  (collect (cons (name-of item)
+                                                                                                                                 item)))) :prompt "Items"
+                                                                                                                                          :view clim:+check-box-view+ :stream *query-io*))))
           (iter (for i in items)
-            (format t "You sell your ~a for ~f bitcoins~%"
-                    (name-of i)
-                    (/ (value-of i) 2))
-            (incf (bitcoins-of user) (/ (value-of i) 2)))
+                (format t "You sell your ~a for ~f bitcoins~%"
+                        (name-of i)
+                        (/ (value-of i) 2))
+                (incf (bitcoins-of user) (/ (value-of i) 2)))
           (a:deletef (the list (inventory-of user)) items :test (lambda (o e)
                                                                   (s:memq e o))))
         (let ((items (sort (remove-duplicates items-to-sell) #'<)))
           (setf items (iter (generate i in items)
-                        (for j in (inventory-of user))
-                        (for (the fixnum k) upfrom 0)
-                        (when (first-iteration-p)
-                          (next i))
-                        (when (= k i)
-                          (collect j)
-                          (next i))))
+                            (for j in (inventory-of user))
+                            (for (the fixnum k) upfrom 0)
+                            (when (first-iteration-p)
+                              (next i))
+                            (when (= k i)
+                              (collect j)
+                              (next i))))
           (unless items
             (format t "Those items aren't valid")
             (return-from shopfun))
           (iter (for i in items)
-            (when (not (sellablep i))
-              (format t "That item isn't sellable~%~%")
-              (return-from shopfun)))
+                (when (not (sellablep i))
+                  (format t "That item isn't sellable~%~%")
+                  (return-from shopfun)))
           (iter (for i in items)
-            (format t "You sell your ~a for ~f bitcoins~%"
-                    (name-of (nth i (inventory-of user)))
-                    (/ (value-of (nth i (inventory-of user))) 2))
-            (incf (bitcoins-of user) (/ (value-of i) 2)))
+                (format t "You sell your ~a for ~f bitcoins~%"
+                        (name-of (nth i (inventory-of user)))
+                        (/ (value-of (nth i (inventory-of user))) 2))
+                (incf (bitcoins-of user) (/ (value-of i) 2)))
           (a:deletef (the list (inventory-of user)) items
                      :test (lambda (o e)
                              (s:memq e o))))))
   (when format-items
     (format t "~10a~40a~10@a~%" "Index" "Item" "Price")
     (iter (for i in items-for-sale)
-      (for (the fixnum j) upfrom 0)
-      (let ((item (apply #'make-instance (car i) (eval (cdr i)))))
-        (format t "~10a~40a~10@a~%" j (name-of item) (value-of item))))))
+          (for (the fixnum j) upfrom 0)
+          (let ((item (apply #'make-instance (car i) (eval (cdr i)))))
+            (format t "~10a~40a~10@a~%" j (name-of item) (value-of item))))))
 
 (defun getf-action-from-prop (position prop action)
   (getf (actions-of (getf (get-props-from-zone position) prop)) action))
 (defun (setf getf-action-from-prop) (new-value position prop action)
   (setf (getf (actions-of (getf (get-props-from-zone position) prop)) action) new-value))
 (defunassert wash-in-washer (washer)
-    (washer (or yadfa-props:washer null))
+  (washer (or yadfa-props:washer null))
   "washes your dirty diapers and all the clothes you've ruined. WASHER is an instance of a washer you want to put your clothes in."
   (declare (ignorable washer))
   (wash (inventory-of (player-of *game*)))
@@ -1881,23 +1881,23 @@
     (flet ((check-if-done ()
              (s:run-hooks '*cheat-hooks*)
              (iter (for i in (append (enemies-of *battle*) (team-of *game*)))
-               (if (<= (health-of i) 0)
-                   (progn (setf (health-of i) 0)
-                          (unless (s:memq i (fainted-of *battle*))
-                            (format t "~a has fainted~%~%" (name-of i))
-                            (pushnew i (fainted-of *battle*)))
-                          (a:deletef (turn-queue-of *battle*) i))
-                   (a:deletef (fainted-of *battle*) i :count 1))
-               (when (> (health-of i) (calculate-stat i :health))
-                 (setf (health-of i) (calculate-stat i :health)))
-               (when (> (energy-of i) (calculate-stat i :energy))
-                 (setf (energy-of i) (calculate-stat i :energy))))
+                   (if (<= (health-of i) 0)
+                       (progn (setf (health-of i) 0)
+                              (unless (s:memq i (fainted-of *battle*))
+                                (format t "~a has fainted~%~%" (name-of i))
+                                (pushnew i (fainted-of *battle*)))
+                              (a:deletef (turn-queue-of *battle*) i))
+                       (a:deletef (fainted-of *battle*) i :count 1))
+                   (when (> (health-of i) (calculate-stat i :health))
+                     (setf (health-of i) (calculate-stat i :health)))
+                   (when (> (energy-of i) (calculate-stat i :energy))
+                     (setf (energy-of i) (calculate-stat i :energy))))
              (unless (iter (for i in (team-of *game*)) (when (> (health-of i) 0) (leave t)))
                (finish-battle t)
                (return-from process-battle t))
              (unless (iter (for i in (enemies-of *battle*))
-                       (when (> (health-of i) 0)
-                         (leave t)))
+                           (when (> (health-of i) 0)
+                             (leave t)))
                (finish-battle)
                (return-from process-battle t))))
       (check-if-done)
@@ -1917,27 +1917,27 @@
                 (name-of (first (turn-queue-of *battle*))) (name-of (get-move attack (first (turn-queue-of *battle*)))))
         (return-from process-battle))
       (iter (until (and team-attacked (typep (first (turn-queue-of *battle*)) 'team-member)))
-        (check-if-done)
-        (let* ((current-character (pop (turn-queue-of *battle*)))
-               (new-ret (process-battle-turn current-character attack item reload selected-target)))
-          (iter (for i in (append (team-of *game*) (team-npcs-of *battle*) (enemies-of *battle*)))
-            (pop-from-expansion i))
-          (when (typep current-character '(not npc))
-            (setf team-attacked t
-                  ret new-ret)))
-        (check-if-done)
-        (unless (turn-queue-of *battle*)
-          (incf (time-of *game*))
-          (setf (turn-queue-of *battle*)
-                (s:dsu-sort (iter (for i in (append (enemies-of *battle*) (team-npcs-of *battle*) (team-of *game*)))
-                              (when (> (health-of i) 0)
-                                (collect i)))
-                            '>
-                            :key (lambda (a) (calculate-stat a :speed))))))
+            (check-if-done)
+            (let* ((current-character (pop (turn-queue-of *battle*)))
+                   (new-ret (process-battle-turn current-character attack item reload selected-target)))
+              (iter (for i in (append (team-of *game*) (team-npcs-of *battle*) (enemies-of *battle*)))
+                    (pop-from-expansion i))
+              (when (typep current-character '(not npc))
+                (setf team-attacked t
+                      ret new-ret)))
+            (check-if-done)
+            (unless (turn-queue-of *battle*)
+              (incf (time-of *game*))
+              (setf (turn-queue-of *battle*)
+                    (s:dsu-sort (iter (for i in (append (enemies-of *battle*) (team-npcs-of *battle*) (team-of *game*)))
+                                      (when (> (health-of i) 0)
+                                        (collect i)))
+                                '>
+                                :key (lambda (a) (calculate-stat a :speed))))))
       (format t "~a is next in battle~%" (name-of (first (turn-queue-of *battle*))))
       ret)))
 (defunassert ally-join (ally)
-    (ally ally)
+  (ally ally)
   (format t "~a Joins the team~%" (name-of ally))
   (when (> (bitcoins-of ally) 0)
     (format t "~a gets ~f bitcoins from ~a~%" (name-of (player-of *game*)) (bitcoins-of ally) (name-of ally)))
@@ -1969,9 +1969,9 @@
         (setf (energy-of target) (calculate-stat target :energy)))
       ret)))
 (defunassert set-player (name malep species)
-    (malep boolean
-           name simple-string
-           species simple-string)
+  (malep boolean
+         name simple-string
+         species simple-string)
   "Sets the name, gender, and species of the player"
   (setf (name-of (player-of *game*)) name)
   (setf (species-of (player-of *game*)) species)
@@ -1984,42 +1984,42 @@
   "This function sets up the player and prints the back story. If you're trying to create your own game with a different storyline using a mod, you can replace this function. Be careful when enabling mods that change the story line this significantly as they can overwrite each other"
   (write-line "Enter your character's name, gender, and species" *query-io*)
   (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
-    (fresh-line *query-io*)
-    (setf name (clim:accept 'string :prompt "Name" :default (name-of default) :view clim:+text-field-view+ :stream *query-io*))
-    (fresh-line *query-io*)
-    (setf male (clim:accept 'boolean :prompt "Is Male"
-                                     :default (malep default) :view clim:+toggle-button-view+ :stream *query-io*))
-    (fresh-line *query-io*)
-    (setf species (clim:accept 'string :prompt "Species"
-                                       :default (species-of default) :view clim:+text-field-view+ :stream *query-io*))
-    (fresh-line *query-io*)
-    (setf clothes (clim:accept `((clim:subset-completion ,wear) :name-key ,(lambda (o) (name-of (make-instance o))))
-                               :prompt "Clothes" :view clim:+check-box-view+ :default '(yadfa-items:tshirt yadfa-items:diaper)
-                               :stream *query-io*))
-    (fresh-line *query-io*)
-    (setf bladder (clim:accept '(clim:completion (:normal :low :overactive))
-                               :prompt "Bladder capacity" :default :normal :view clim:+option-pane-view+ :stream *query-io*))
-    (fresh-line *query-io*)
-    (setf bowels (clim:accept '(clim:completion (:normal :low :kid))
-                              :prompt "Bowels capacity" :default :normal :view clim:+option-pane-view+ :stream *query-io*))
-    (fresh-line *query-io*)
-    (setf fill-rate (clim:accept '(clim:completion (:normal :fast :faster))
-                                 :prompt "Bladder/Bowels fill rate" :default :normal :view clim:+option-pane-view+ :stream *query-io*))
-    (fresh-line *query-io*)
-    (setf bio (clim:accept 'string :prompt "Description" :default (description-of default) :view '(clim:text-editor-view :ncolumns 80 :nlines 7)
-                                   :stream *query-io*)))
+                         (fresh-line *query-io*)
+                         (setf name (clim:accept 'string :prompt "Name" :default (name-of default) :view clim:+text-field-view+ :stream *query-io*))
+                         (fresh-line *query-io*)
+                         (setf male (clim:accept 'boolean :prompt "Is Male"
+                                                          :default (malep default) :view clim:+toggle-button-view+ :stream *query-io*))
+                         (fresh-line *query-io*)
+                         (setf species (clim:accept 'string :prompt "Species"
+                                                            :default (species-of default) :view clim:+text-field-view+ :stream *query-io*))
+                         (fresh-line *query-io*)
+                         (setf clothes (clim:accept `((clim:subset-completion ,wear) :name-key ,(lambda (o) (name-of (make-instance o))))
+                                                    :prompt "Clothes" :view clim:+check-box-view+ :default '(yadfa-items:tshirt yadfa-items:diaper)
+                                                    :stream *query-io*))
+                         (fresh-line *query-io*)
+                         (setf bladder (clim:accept '(clim:completion (:normal :low :overactive))
+                                                    :prompt "Bladder capacity" :default :normal :view clim:+option-pane-view+ :stream *query-io*))
+                         (fresh-line *query-io*)
+                         (setf bowels (clim:accept '(clim:completion (:normal :low :kid))
+                                                   :prompt "Bowels capacity" :default :normal :view clim:+option-pane-view+ :stream *query-io*))
+                         (fresh-line *query-io*)
+                         (setf fill-rate (clim:accept '(clim:completion (:normal :fast :faster))
+                                                      :prompt "Bladder/Bowels fill rate" :default :normal :view clim:+option-pane-view+ :stream *query-io*))
+                         (fresh-line *query-io*)
+                         (setf bio (clim:accept 'string :prompt "Description" :default (description-of default) :view '(clim:text-editor-view :ncolumns 80 :nlines 7)
+                                                        :stream *query-io*)))
   (clim:accepting-values (*query-io* :resynchronize-every-pass t :exit-boxes '((:exit "Accept")))
-    (setf tail-type (clim:accept '(clim:completion (:small :medium :large :lizard :bird-small :bird-large nil))
-                                 :prompt "Tail type" :default (car (tail-of default)) :view clim:+option-pane-view+ :stream *query-io*))
-    (fresh-line *query-io*)
-    (setf tail (clim:accept '((clim:subset-completion (:multi :scales :fur :feathers)))
-                            :prompt "Tail attributes" :default (cdr (tail-of default)) :view clim:+check-box-view+ :stream *query-io*))
-    (fresh-line *query-io*)
-    (setf wings (clim:accept '((clim:subset-completion (:scales :fur :feathers)))
-                             :prompt "Wings attributes" :default (wings-of default) :view clim:+check-box-view+ :stream *query-io*))
-    (fresh-line *query-io*)
-    (setf skin (clim:accept '((clim:subset-completion (:scales :fur :feathers)))
-                            :prompt "Skin attributes" :default (skin-of default) :view clim:+check-box-view+ :stream *query-io*)))
+                         (setf tail-type (clim:accept '(clim:completion (:small :medium :large :lizard :bird-small :bird-large nil))
+                                                      :prompt "Tail type" :default (car (tail-of default)) :view clim:+option-pane-view+ :stream *query-io*))
+                         (fresh-line *query-io*)
+                         (setf tail (clim:accept '((clim:subset-completion (:multi :scales :fur :feathers)))
+                                                 :prompt "Tail attributes" :default (cdr (tail-of default)) :view clim:+check-box-view+ :stream *query-io*))
+                         (fresh-line *query-io*)
+                         (setf wings (clim:accept '((clim:subset-completion (:scales :fur :feathers)))
+                                                  :prompt "Wings attributes" :default (wings-of default) :view clim:+check-box-view+ :stream *query-io*))
+                         (fresh-line *query-io*)
+                         (setf skin (clim:accept '((clim:subset-completion (:scales :fur :feathers)))
+                                                 :prompt "Skin attributes" :default (skin-of default) :view clim:+check-box-view+ :stream *query-io*)))
   (setf (player-of *game*) (make-instance 'player
                                           :position '(0 0 0 yadfa-zones:home)
                                           :name name
@@ -2047,13 +2047,13 @@
                                                                     :faster 20/9)
                                                                   fill-rate)
                                           :wear (iter (for i in wear)
-                                                  (when (s:memq i clothes)
-                                                    (collect (make-instance i))))))
+                                                      (when (s:memq i clothes)
+                                                        (collect (make-instance i))))))
   (setf (team-of *game*) (list (player-of *game*)))
   (iter (for i in (iter (for i in '(yadfa-items:diaper yadfa-items:pullups yadfa-items:boxers yadfa-items:panties))
-                    (when (s:memq i clothes)
-                      (collect i))))
-    (dotimes (j (random 20))
-      (push (make-instance i)
-            (get-items-from-prop :dresser (position-of (player-of *game*))))))
+                        (when (s:memq i clothes)
+                          (collect i))))
+        (dotimes (j (random 20))
+          (push (make-instance i)
+                (get-items-from-prop :dresser (position-of (player-of *game*))))))
   (write-line "You wake up from sleeping, the good news is that you managed to stay dry throughout the night. Bad news is your bladder filled up during the night. You would get up and head to the toilet, but the bed is too comfy, so you just lay there holding it until the discomfort of your bladder exceeds the comfort of your bed. Then eventually get up while holding yourself and hopping from foot to foot hoping you can make it to a bathroom in time" *query-io*))

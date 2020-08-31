@@ -29,7 +29,7 @@
                         " type" #\Newline)))
           (setf (element-types-of target) new)
           (iter (for i in difference)
-            (format-type i)))
+                (format-type i)))
         (f:fmt t "It had no effect on " (name-of target) #\Newline))))
 (defclass antimutagen (consumable)
   ((element-types :initarg :element-types :accessor element-types-of)))
@@ -48,7 +48,7 @@
                         " type" #\Newline)))
           (setf (element-types-of target) new)
           (iter (for i in difference)
-            (format-type i)))
+                (format-type i)))
         (f:fmt t "It had no effect on " (name-of target) #\Newline))))
 (defclass monster-energy-drink (consumable) ()
   (:default-initargs
@@ -154,4 +154,4 @@
   (iter (for i in (if (typep target 'team-member)
                       (enemies-of *battle*)
                       (team-of *game*)))
-    (decf (health-of i) 120)))
+        (decf (health-of i) 120)))
