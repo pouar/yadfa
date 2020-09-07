@@ -128,6 +128,10 @@
    #:toggle-onesie
    #:type-match
    #:coerce-element-type
+   #:fill-bladder
+   #:fill-bowels
+   #:bladder/fill-rate
+   #:bowels/fill-rate
    ;;constructors
    #:make-action
    ;;classes
