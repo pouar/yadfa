@@ -4,38 +4,41 @@
   (:default-initargs
    :name "Superglitch"
    :description "Classic glitch move from the Pokémon games, but without the undefined behavior and unwanted side effects."))
-(defmethod attack ((target base-character) (user base-character) (attack superglitch))
+(defmethod attack ((target base-character) (user base-character) (attack superglitch)
+                   &aux (name (name-of user)))
   (declare (ignore attack))
   (format t
           "TMTRAINER ~a is frozen solid~%TMTRAINER ~a is hurt by the burn~%"
-          (name-of user)
-          (name-of user))
+          name
+          name)
   (setf (health-of target) 0))
 (defclass watersport (wet-move-mixin) ()
   (:default-initargs
    :name "Watersport"
    :description "Soak your diapers"
    :element-types (list (make-instance 'yadfa-element-types:abdl))))
-(defmethod attack ((target base-character) (user base-character) (attack watersport))
+(defmethod attack ((target base-character) (user base-character) (attack watersport)
+                   &aux (name (name-of user)))
   (declare (ignore target))
-  (format t "~a used ~a~%" (name-of user) (name-of attack))
+  (format t "~a used ~a~%" name (name-of attack))
   (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
       (format t "But it failed~%")
       (progn (wet :wetter user)
-             (format t "~a wet ~a~%" (name-of user) (if (malep user) "himself" "herself")))))
+             (format t "~a wet ~a~%" name (if (malep user) "himself" "herself")))))
 (defclass mudsport (mess-move-mixin) ()
   (:default-initargs
    :name "Mudsport"
    :description "mess your diapers"
    :element-types (list (make-instance 'yadfa-element-types:abdl))))
-(defmethod attack ((target base-character) (user base-character) (attack mudsport))
+(defmethod attack ((target base-character) (user base-character) (attack mudsport)
+                   &aux (name (name-of user)))
   (declare (ignore target))
-  (format t "~a used ~a~%" (name-of user) (name-of attack))
+  (format t "~a used ~a~%" name (name-of attack))
   (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
       (format t "But it failed~%")
       (progn (mess :messer user)
              (format t "~a messed ~a~%"
-                     (name-of user)
+                     name
                      (if (malep user) "himself" "herself")))))
 (defclass mudbomb (mess-move-mixin) ()
   (:default-initargs
@@ -46,13 +49,13 @@
 (defmethod attack ((target base-character) (user base-character) (attack mudbomb))
   (format t "~a used ~a~%" (name-of user) (name-of attack))
   (write-line "But it failed."))
-(defmethod attack ((target base-character) (user bowels-character) (attack mudbomb))
-  (format t "~a used ~a~%" (name-of user) (name-of attack))
-  (mess :force-fill-amount (if (< (* 30 24 (bowels/fill-rate-of user)) (bowels/maximum-limit-of user))
-                               (bowels/maximum-limit-of user)
-                               (* 30 24 (bowels/fill-rate-of user))) :messer user)
+(defmethod attack ((target base-character) (user bowels-character) (attack mudbomb)
+                   &aux (bowels/fill-rate (* 30 24 (bowels/fill-rate-of user))) (bowels/maximum-limit (bowels/maximum-limit-of user))
+                     (name (name-of user)))
+  (format t "~a used ~a~%" name (name-of attack))
+  (mess :force-fill-amount (if (< bowels/fill-rate bowels/maximum-limit) bowels/maximum-limit bowels/fill-rate) :messer user)
   (format t "~a messed ~a massively~%"
-          (name-of user)
+          name
           (if (malep user) "himself" "herself"))
   (iter (for i in (if (typep user 'team-member)
                       (enemies-of *battle*)
