@@ -132,6 +132,8 @@
    #:fill-bowels
    #:bladder/fill-rate
    #:bowels/fill-rate
+   #:fart
+   #:fart-result-text
    ;;constructors
    #:make-action
    ;;classes
@@ -230,6 +232,7 @@
    #:bowels/potty-dance-limit-of
    #:bowels/potty-desperate-limit-of
    #:bowels/maximum-limit-of
+   #:fart-count-of
    #:moves-of
    #:exp-of
    #:user-of
@@ -359,7 +362,8 @@
            #:place
            #:reload
            #:place-prop
-           #:take-prop)
+           #:take-prop
+           #:fart)
   (:documentation "contains the commands when in the open world (assuming that's what it's called) (and not in something like a battle). The player probably shouldn't call these with the package prefix unless they're developing"))
 (uiop:define-package :yadfa-battle
   (:export #:fight

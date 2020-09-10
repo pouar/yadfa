@@ -18,6 +18,13 @@
    :skin '(:fur)
    :description "Used to be one of the Diapered Raccoon Bandits. Was kicked out after he was forced to give the location of Pirate's Cove to the Navy. He was humiliated constantly by the Diapered Pirates until you rescued him. Is too embarrassed to admit when he as to go unless he's desperate"
    :level 5))
+(defmethod fart-result-text ((user slynk) (result (eql :failure)) mess &key stream)
+  (if (and (getf mess :leak-amount) (> (getf mess :leak-amount) 0))
+      (f:fmt stream (name-of user) " gets a look of horror on " (if (malep user) "his" "her") " face as "
+             (if (malep user) "he" "she") " ends up messing " (if (malep user) "himself" "herself")
+             " and has a blowout" #\Newline)
+      (f:fmt stream (name-of user) "tries to fart to relieve the pressure but ends up messing " (if (malep user) "his" "her")
+             "pamps, doesn't seem to realize it wasn't a fart and just continues on in a messy diaper" #\Newline)))
 (defmethod initialize-instance :after
     ((c slynk) &rest args &key &allow-other-keys)
   (destructuring-bind (&key (bladder/contents nil bladderp) (bowels/contents nil bowelsp) &allow-other-keys)

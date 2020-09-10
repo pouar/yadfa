@@ -401,7 +401,13 @@
     :initform 800
     :type (real 0)
     :accessor bowels/maximum-limit-of
-    :documentation "When the character's bowels gets this full, @{he,she@} messes @{him,her@}self")))
+    :documentation "When the character's bowels gets this full, @{he,she@} messes @{him,her@}self")
+   (fart-count
+    :initarg :fart-count
+    :initform 0
+    :type unsigned-byte
+    :accessor fart-count-of
+    :documentation "How many times the character has farted to reduce the pressure since the last mess. Used to calculate how much pressure this relieves and the chance the character might end up messing himself/herself instead.")))
 (defclass potty-character (bladder-character bowels-character)
   ())
 (defclass team-member (base-character)

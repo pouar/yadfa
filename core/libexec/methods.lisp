@@ -212,13 +212,11 @@
   (format stream "~a~%"
           (a:random-elt '("You feel like you're gonna mess yourself"
                           "You clench hard trying to avoid messing"
-                          "You fart a little due to the pressure"
                           "Aww, does the baby need to potty?"))))
 (defmethod output-process-potty-text ((user player) padding (type (eql :mess)) (action (eql :desparate)) had-accident &key (stream *standard-output*))
   (format stream "~a~%"
           (a:random-elt '("You feel like you're gonna mess yourself"
                           "You clench hard trying to avoid messing"
-                          "You fart a little due to the pressure"
                           "Aww, does the baby need to potty?"))))
 (defmethod output-process-potty-text ((user player) padding (type (eql :mess)) (action (eql :need-to-potty)) had-accident &key (stream *standard-output*))
   (format stream "You need to poo~%"))
@@ -235,7 +233,6 @@
                                   ""))
                      ,(format nil "Heh, the baby blorted ~a pamps." (if (malep user) "his" "her"))
                      "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
-                     "You try to fart to relieve the pressure, except it wasn't a fart"
                      "You end up messing your self"
                      "The back of your diaper expands as you accidentally mess yourself")))
             (when (filter-items (wear-of user) '(and diaper ab-clothing))
@@ -257,7 +254,6 @@
                                   " with your tail up"
                                   ""))
                      "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
-                     "You try to fart to relieve the pressure, except it wasn't a fart"
                      "You end up messing your self"
                      "The back of your pullups expands as you accidentally mess yourself")))
             (when (filter-items (wear-of user) '(or ab-clothing pullup))
@@ -279,7 +275,6 @@
                                        " with your tail up"
                                        ""))
                           "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
-                          "You try to fart to relieve the pressure, except it wasn't a fart"
                           "You end up messing your self"
                           "a lump forms at the seat of your pants")))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
@@ -300,7 +295,6 @@
                                        " with your tail up"
                                        ""))
                           "Your struggle to hold it in, but your bowels decide to empty themselves anyway"
-                          "You try to fart to relieve the pressure, except it wasn't a fart"
                           "You end up messing your self")))
   (when (and (cdr had-accident) (> (getf (cdr had-accident) :leak-amount) 0))
     (format stream "~a~%"
@@ -791,8 +785,6 @@
                                               user-name player-name hisher)))
                               (progn (with-output-to-string (s)
                                        (format s "*~a is doing a potty dance like a 5 year old*~%~%" user-name))
-                                     (with-output-to-string (s)
-                                       (format s "*~a farts to relieve the pressure*~%~%" user-name))
                                      (with-output-to-string (s)
                                        (format s "*~a is bouncing up and down with ~a knees pressed together holding ~aself*~%~%"
                                                user-name hisher (if male "him" "her")))
