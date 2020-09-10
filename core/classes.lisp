@@ -317,6 +317,18 @@
     :type real
     :accessor bladder/fill-rate-of
     :documentation "Amount in ml that the character's bladder fills each turn.")
+   (bladder/fill-rate/multiplier
+    :initarg :bladder/fill-rate/multiplier
+    :initform 1
+    :type real
+    :accessor bladder/fill-rate/multiplier-of
+    :documentation "Multiplier for @var{BLADDER/FILL-RATE}. Decreases by @var{BLADDER/FILL-RATE/COOLDOWN} every turn")
+   (bladder/fill-rate/cooldown
+    :initarg :bladder/fill-rate/cooldown
+    :initform 1/20
+    :type real
+    :accessor bladder/fill-rate/cooldown-of
+    :documentation "How much  @var{BLADDER/FILL-RATE/MULTIPLIER} decreases every turn")
    (bladder/need-to-potty-limit
     :initarg :bladder/need-to-potty-limit
     :initform 300
@@ -354,6 +366,18 @@
     :type (real 0)
     :accessor bowels/fill-rate-of
     :documentation "Amount in grams that the character's bowels fills each turn")
+   (bowels/fill-rate/multiplier
+    :initarg :bowels/fill-rate/multiplier
+    :initform 1
+    :type real
+    :accessor bowels/fill-rate/multiplier-of
+    :documentation "Multiplier for @var{BOWELS/FILL-RATE}. Decreases by @var{BOWELS/FILL-RATE/COOLDOWN} every turn")
+   (bowels/fill-rate/cooldown
+    :initarg :bowels/fill-rate/cooldown
+    :initform 1/20
+    :type real
+    :accessor bowels/fill-rate/cooldown-of
+    :documentation "How much  @var{BOWELS/FILL-RATE/MULTIPLIER} decreases every turn")
    (bowels/need-to-potty-limit
     :initarg :bowels/need-to-potty-limit
     :initform 400
