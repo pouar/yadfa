@@ -841,6 +841,7 @@
     (setf (getf return-value :affected-clothes) affected-clothes)
     (setf (getf return-value :leak-amount) amount-left)
     (setf (getf return-value :mess-amount) amount))
+  (setf (fart-count-of messer) 0)
   return-value)
 (defunassert potty-on-toilet (prop &key wet mess pants-down (user (player-of *game*)))
   (prop yadfa-props:toilet
