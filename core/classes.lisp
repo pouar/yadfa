@@ -15,8 +15,6 @@
     :type list
     :documentation "Plist of attributes which are used instead of slots for stuff that aren't shared between slots"))
   (:documentation "All the classes that are part of the game's core inherit this class"))
-(defclass battle-script-mixin () ())
-(defclass attack-mixin () ())
 (defclass element-type-class (standard-class) ((name :initform nil)))
 (defmethod name-of ((class element-type-class))
   (or (slot-value class 'name) (class-name class)))
@@ -24,6 +22,18 @@
 (defmethod c2mop:validate-superclass ((class standard-class) (superclass element-type-class))
   (error 'simple-error :format-control "Either you didn't use ~s to define ~s or you tried to inherit a class not defined with ~s" :format-arguments `(define-type ,(class-name class) define-type)))
 (defclass element-type () () (:metaclass element-type-class))
+(defclass buff () ()
+  (:documentation #.(f:fmt nil "mixin for " (ref move :class) " or " (ref item :class) " that sets specified " (ref status-condition :class) " that causes buffs also uses this mixin")))
+(defclass debuff () ()
+  (:documentation #.(f:fmt nil "mixin for " (ref move :class) " or " (ref item :class) " that sets specified " (ref status-condition :class) " that causes debuffs also uses this mixin")))
+(defclass clear-status-mixin ()
+  ((statuses-cleared
+    :initarg :statuses-cleared
+    :accessor statuses-cleared-of
+    :initform ()
+    :type list
+    :documentation "Status conditions that this move or item clears"))
+  (:documentation #.(f:fmt nil "mixin for " (ref move :class) " or " (ref item :class) " that clears specified " (ref status-condition :class))))
 (defclass element-type-mixin ()
   ((element-types
     :accessor element-types-of
@@ -133,7 +143,7 @@
     :type (or null item)
     :documentation "Item the character is wielding as a weapon"))
   (:documentation "Base class for the characters in the game"))
-(defclass item (yadfa-class attack-mixin)
+(defclass item (yadfa-class)
   ((description
     :initarg :description
     :initform :?
@@ -176,18 +186,6 @@
     :accessor value-of
     :type (real 0)
     :documentation "Value of item in bitcoins")
-   (ai-flags
-    :initarg :ai-flags
-    :initform ()
-    :accessor ai-flags-of
-    :type list
-    :documentation "List of flags that affect the AI")
-   (power
-    :initarg :power
-    :initform 40
-    :accessor power-of
-    :type real
-    :documentation "Attack base when used as a melee weapon")
    (wear-stats
     :initarg :wear-stats
     :initform ()
@@ -207,7 +205,15 @@
     :type list
     :documentation "Plist of actions that the player sees as actions with a lambda with the lambda-list @code{(item user &key &allow-other-keys)} they can perform with the item, @var{ITEM} is the instance that this slot belongs to, @var{USER} is the user using the item"))
   (:documentation "Something you can store in your inventory and use"))
-(defclass status-condition (yadfa-class battle-script-mixin)
+(defclass damage-item (item)
+  ((use-power
+    :initarg :use-power
+    :initform 40
+    :type real
+    :accessor use-power-of
+    :documentation "attack power of item when used instead of wielded"))
+  (:documentation "Item that deal damage when used"))
+(defclass status-condition (yadfa-class)
   ((name
     :initarg :name
     :initform nil
@@ -268,7 +274,7 @@
     :accessor persistentp
     :documentation "Whether items or moves that cure statuses cure this"))
   (:documentation "Base class for all the status conditions "))
-(defclass move (yadfa-class attack-mixin element-type-mixin)
+(defclass move (yadfa-class element-type-mixin)
   ((name
     :initarg :name
     :initform :-
@@ -286,20 +292,28 @@
     :initform 0
     :type real
     :accessor energy-cost-of
-    :documentation "How much energy this move costs")
-   (power
+    :documentation "How much energy this move costs"))
+  (:documentation "base class of moves used in battle"))
+(defclass health-inc-move (move)
+  ((health
+    :accessor health-of
+    :initform 0
+    :type real
+    :initarg :health)))
+(defclass energy-inc-move (move)
+  ((energy
+    :accessor energy-of
+    :initform 0
+    :type real
+    :initarg :energy)))
+(defclass damage-move (move)
+  ((power
     :initarg :power
     :initform 40
     :type real
     :accessor power-of
-    :documentation "Number used to determine the damage of this attack")
-   (ai-flags
-    :initarg :ai-flags
-    :initform ()
-    :accessor ai-flags-of
-    :type list
-    :documentation "list containing flags that affect the behavior of the AI."))
-  (:documentation "base class of moves used in battle"))
+    :documentation "Number used to determine the damage of this attack"))
+  (:documentation "Move that causes damage when used"))
 (defclass mess-move-mixin (move) ()
   (:documentation "Basically any move that involves messing"))
 (defclass wet-move-mixin (move) ()
@@ -737,7 +751,15 @@
     :type real
     :documentation "Attack base when using this as ammo."))
   (:documentation "Ammo is typically inherited by this class, but nothing in the code actually enforces this and is meant to make filtering easier"))
-(defclass weapon (item)
+(defclass damage-wield (item)
+  ((power
+    :initarg :power
+    :initform 40
+    :accessor power-of
+    :type real
+    :documentation "Attack base when used as a melee weapon"))
+  (:documentation "Items that cause damage when wielded"))
+(defclass weapon (damage-wield)
   ((ammo-type
     :initarg :ammo-type
     :initform nil
@@ -762,7 +784,7 @@
     :type unsigned-byte
     :accessor ammo-capacity-of
     :documentation "How much ammo this thing can hold"))
-  (:documentation "Weapons typically inherited this class, but nothing in the code actually enforces this and is meant to make filtering easier"))
+  (:documentation "Items intended to be wielded as a weapon"))
 (defclass clothing (item)
   ())
 (defclass top (clothing)

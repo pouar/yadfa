@@ -126,7 +126,7 @@
 (defmethod use-script ((item maximum-tomato) (user base-character) (target base-character))
   (declare (ignore item))
   (setf (health-of target) (calculate-stat target :health)))
-(defclass holy-hand-grenade (consumable) ()
+(defclass holy-hand-grenade (consumable damage-item) ()
   (:default-initargs
    :name "Holy Hand Grenade of Antioch"
    :description  "And Saint Attila raised the hand grenade up on high, saying, “O Lord, bless this thy hand grenade. That with it, thou mayest blow thine enemies to tiny bits, in thy mercy” And the Lord did grin, and the people did feast upon the lambs, and sloths, and carp, and anchovies, and orangutans, and breakfast cereals, and fruit bats, and..."
@@ -135,8 +135,7 @@
 (defmethod cant-use-p ((item holy-hand-grenade) (user base-character) (target base-character) action &key &allow-other-keys)
   (unless *battle*
     (values t `(:format-control "You can only use that in battle"))))
-(defmethod use-script ((item holy-hand-grenade) (user base-character) (target base-character))
-  (declare (ignore item))
+(defmethod use-script :around ((item holy-hand-grenade) (user base-character) (target base-character))
   (if (or (and (typep target 'team-member) (cdr (team-of *game*)))
           (and (typep target 'enemy) (cdr (enemies-of *battle*))))
       (progn
@@ -154,4 +153,4 @@
   (iter (for i in (if (typep target 'team-member)
                       (enemies-of *battle*)
                       (team-of *game*)))
-        (decf (health-of i) 120)))
+        (decf (health-of i) (use-power-of item))))

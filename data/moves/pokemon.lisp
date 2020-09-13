@@ -1,11 +1,11 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-moves"; coding: utf-8-unix; -*-
 (in-package :yadfa-moves)
-(defclass superglitch (move) ()
+(defclass superglitch (damage-move) ()
   (:default-initargs
    :name "Superglitch"
    :description "Classic glitch move from the Pokémon games, but without the undefined behavior and unwanted side effects."))
-(defmethod attack ((target base-character) (user base-character) (attack superglitch)
-                   &aux (name (name-of user)))
+(defmethod attack :around ((target base-character) (user base-character) (attack superglitch)
+                           &aux (name (name-of user)))
   (declare (ignore attack))
   (format t
           "TMTRAINER ~a is frozen solid~%TMTRAINER ~a is hurt by the burn~%"
@@ -20,7 +20,6 @@
 (defmethod attack ((target base-character) (user base-character) (attack watersport)
                    &aux (name (name-of user)))
   (declare (ignore target))
-  (format t "~a used ~a~%" name (name-of attack))
   (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
       (format t "But it failed~%")
       (progn (wet :wetter user)
@@ -33,26 +32,23 @@
 (defmethod attack ((target base-character) (user base-character) (attack mudsport)
                    &aux (name (name-of user)))
   (declare (ignore target))
-  (format t "~a used ~a~%" name (name-of attack))
   (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
       (format t "But it failed~%")
       (progn (mess :messer user)
              (format t "~a messed ~a~%"
                      name
                      (if (malep user) "himself" "herself")))))
-(defclass mudbomb (mess-move-mixin) ()
+(defclass mudbomb (mess-move-mixin debuff) ()
   (:default-initargs
    :name "Mud Bomb"
    :description "massively mess your diapers, never fails"
    :energy-cost 5
    :element-types (list (make-instance 'yadfa-element-types:abdl) (make-instance 'yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (attack mudbomb))
-  (format t "~a used ~a~%" (name-of user) (name-of attack))
   (write-line "But it failed."))
 (defmethod attack ((target base-character) (user bowels-character) (attack mudbomb)
                    &aux (bowels/fill-rate (* 30 24 (bowels/fill-rate-of user))) (bowels/maximum-limit (bowels/maximum-limit-of user))
                      (name (name-of user)))
-  (format t "~a used ~a~%" name (name-of attack))
   (mess :force-fill-amount (if (< bowels/fill-rate bowels/maximum-limit) bowels/maximum-limit bowels/fill-rate) :messer user)
   (format t "~a messed ~a massively~%"
           name
@@ -62,29 +58,27 @@
                       (team-of *game*)))
         (set-status-condition 'yadfa-status-conditions:skunked i)
         (format t "~a is grossed out by the smell~%" (name-of i))))
-(defclass tickle (move) ()
+(defclass tickle (move debuff) ()
   (:default-initargs
    :name "Tickle"
    :description "Tickle the enemy"))
 (defmethod attack ((target base-character) (user base-character) (attack tickle))
-  (format t "~a used ~a~%" (name-of user) (name-of attack))
   (if (getf (attributes-of target) :not-ticklish)
       (write-line "It has no effect")
       (progn (format t "~a starts laughing helplessly~%" (name-of target))
              (set-status-condition 'yadfa-status-conditions:laughing target))))
-(defclass tackle (move) ()
+(defclass tackle (damage-move) ()
   (:default-initargs
    :name "Tackle"
    :description "Tackles the enemy"
    :element-types (list (make-instance 'yadfa-element-types:normal))))
-(defclass roar (move) ()
+(defclass roar (move debuff) ()
   (:default-initargs
    :name "Roar"
    :energy-cost 2
    :description "Scares enemies into flooding themselves"))
 (defmethod attack ((target base-character) (user base-character) (attack roar))
   (declare (ignore target))
-  (format t "~a used ~a~%" (name-of user) (name-of attack))
   (unless (iter (for i in (if (typep user 'team-member)
                               (enemies-of *battle*)
                               (team-of *game*)))
@@ -96,7 +90,7 @@
                   (setf j t))
                 (finally (return j)))
     (write-line "it had no effect")))
-(defclass bite (move) ()
+(defclass bite (damage-move) ()
   (:default-initargs
    :name "Bite"
    :description "Bites the enemy"

@@ -30,24 +30,6 @@
    :ammo-type '7.62×39mm
    :ammo-capacity 3
    :power 40))
-(defmethod attack ((target base-character) (user base-character) (self ak47))
-  (let ((a (calculate-damage target user (if (first (ammo-of self))
-                                             (ammo-power-of (first (ammo-of self)))
-                                             (power-of self)))))
-    (apply #'format t
-           (if (first (ammo-of self))
-               (list "~a fires ~a ~a at ~a~%"
-                     (name-of user)
-                     (if (malep user) "his" "her")
-                     (name-of self)
-                     (name-of target))
-               (list "~a whacks ~a ~a at ~a~%"
-                     (name-of user)
-                     (if (malep user) "his" "her")
-                     (name-of self)
-                     (name-of target))))
-    (decf (health-of target) a)
-    (format t "~a received ~a damage~%" (name-of target) a)))
 (defclass exterminator-ammo (ammo) ()
   (:default-initargs
    :name "Exterminator Ammo"
@@ -65,20 +47,15 @@
    :ammo-capacity 1
    :power 0))
 (defmethod attack ((target base-character) (user base-character) (self exterminator))
-  (let ((a (calculate-damage target user (if (first (ammo-of self))
-                                             (ammo-power-of (first (ammo-of self)))
-                                             (power-of self)))))
-    (apply #'format t
-           (if (first (ammo-of self))
-               (list "*BOOOMKSSSHHH!!!!!*~%")
-               (list "~a struggles to whack ~a with ~a ~a but barely taps ~a~%"
-                     (name-of user)
-                     (name-of target)
-                     (if (malep user) "his" "her")
-                     (name-of self)
-                     (if (malep target) "his" "her"))))
-    (decf (health-of target) a)
-    (format t "~a received ~a damage~%" (name-of target) a)))
+  (apply #'format t
+         (if (first (ammo-of self))
+             (list "*BOOOMKSSSHHH!!!!!*~%")
+             (list "~a struggles to whack ~a with ~a ~a but barely taps ~a~%"
+                   (name-of user)
+                   (name-of target)
+                   (if (malep user) "his" "her")
+                   (name-of self)
+                   (if (malep target) "his" "her")))))
 (defclass pink-sword (weapon) ()
   (:default-initargs
    :name "Pink Sword"
@@ -110,18 +87,13 @@
    :power 150
    :description "You're just like Roronoa Zoro with these"))
 (defmethod attack ((target base-character) (user base-character) (self three-swords))
-  (let ((a (calculate-damage target user (if (first (ammo-of self))
-                                             (ammo-power-of (first (ammo-of self)))
-                                             (power-of self)))))
-    (format t "Three Sword Style!!!!~%")
-    (decf (health-of target) a)
-    (format t "~a received ~a damage~%" (name-of target) a)))
+  (format t "Three Sword Style!!!!~%"))
 (defclass messing-laser (weapon) ()
   (:default-initargs
    :name "Messing Laser"
    :description "Causes enemies to mess themselves"
    :values 8000))
-(defmethod attack ((target base-character) (user base-character) (weapon messing-laser))
+(defmethod attack :around ((target base-character) (user base-character) (weapon messing-laser))
   (f:fmt t (name-of user) " fires " (if (malep user) "his" "her") " laser at " (name-of target) #\Newline)
   (use-script weapon user target))
 (defmethod use-script ((weapon messing-laser) (user base-character) (target base-character))

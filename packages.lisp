@@ -158,6 +158,14 @@
    #:player
    #:zone
    #:move
+   #:buff
+   #:debuff
+   #:clear-status-mixin
+   #:health-inc-move
+   #:energy-inc-move
+   #:damage-move
+   #:damage-item
+   #:damage-wield
    #:mess-move-mixin
    #:wet-move-mixin
    #:prop
@@ -207,6 +215,7 @@
    #:stairs-of
    #:element-types-of
    #:last-process-potty-time-of
+   #:statuses-cleared-of
    #:blocks-turn-of
    #:duration-of
    #:stat-delta-of
@@ -273,8 +282,7 @@
    #:team-npc-spawn-list-of
    #:energy-cost-of
    #:power-of
-   #:ai-flags-of
-   #:attack-of
+   #:use-power-of
    #:reload-count-of
    #:ammo-power-of
    #:ammo-of

@@ -19,7 +19,7 @@
    :bitcoins-per-level 40))
 (defmethod battle-script ((self diapered-raccoon-bandit) (target base-character))
   (let ((moves-with-health (iter (for i in (moves-of self))
-                                 (when (and (>= (energy-of self) (energy-cost-of i)) (position :ai-health-inc (ai-flags-of i)))
+                                 (when (and (>= (energy-of self) (energy-cost-of i)) (typep i 'health-inc-move))
                                    (collect i))))
         (moves-can-use (iter (for i in (moves-of self))
                              (when (>= (energy-of self) (energy-cost-of i))

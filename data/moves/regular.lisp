@@ -1,6 +1,6 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-moves"; coding: utf-8-unix; -*-
 (in-package :yadfa-moves)
-(defclass mush (move) ()
+(defclass mush (move debuff) ()
   (:default-initargs
    :name "Mush"
    :description "Mush the target's diaper"
@@ -15,7 +15,7 @@
             (progn (format t "~a's diaper has been mushed~%" (name-of target))
                    (set-status-condition 'yadfa-status-conditions:mushed target))))
       (f:fmt t "it has no effect on " (name-of target) #\Newline)))
-(defclass pants (move) ()
+(defclass pants (move debuff) ()
   (:default-initargs
    :name "Pants"
    :description "Pants the enemy"))
@@ -84,7 +84,7 @@
         (progn
           (format t "~a tries to pants ~a~%" (name-of user) (name-of target))
           (format t "The attack has no effect on ~a~%" (name-of target))))))
-(defclass spray (move) ()
+(defclass spray (move debuff) ()
   (:default-initargs
    :name "Spray"
    :description "Spray the target with skunk spray. Also fills your pamps with skunk spray while you're at it."
@@ -117,7 +117,7 @@
                (name-of user)))))
   (format t "~a is grossed out by the smell~%" (name-of target))
   (set-status-condition 'yadfa-status-conditions:skunked target))
-(defclass boop (move) ()
+(defclass boop (move debuff) ()
   (:default-initargs
    :name "Boop"
    :description "Boops da target on da snoot"
@@ -135,19 +135,14 @@
            "It's like a mess button." #\Newline)
     (mess :force-fill-amount (bowels/maximum-limit-of target))
     (set-status-condition 'yadfa-status-conditions:messing target)))
-(defclass fire-breath (move) ()
+(defclass fire-breath (damage-move) ()
   (:default-initargs
    :name "Fire Breath"
    :energy-cost 5
    :power 60
    :description "Breathes fire at the enemy"
    :element-types (list (make-instance 'yadfa-element-types:fire))))
-(defmethod attack ((target base-character) (user base-character) (self fire-breath))
-  (let ((a (calculate-damage target user self)))
-    (format t "~a used ~a~%" (name-of user) (name-of self))
-    (decf (health-of target) a)
-    a))
-(defclass face-sit (mess-move-mixin) ()
+(defclass face-sit (mess-move-mixin damage-move debuff) ()
   (:default-initargs
    :name "Face Sit"
    :energy-cost 3
@@ -155,26 +150,21 @@
    :description "Sits on the enemy's face and messes"
    :element-types (list (make-instance 'yadfa-element-types:abdl) (make-instance 'yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (self face-sit))
-  (format t "~a used ~a~%" (name-of user) (name-of self))
   (let* ((m (mess :messer user))
-         (c (calculate-diaper-usage user))
-         (a (calculate-damage target user self)))
+         (c (calculate-diaper-usage user)))
     (if (> (getf m :mess-amount) 0)
         (format t "~a sits on ~a's face and messes~%" (name-of user) (name-of target))
         (format t "~a sits on ~a's face~%" (name-of user) (name-of target)))
     (when (>= (getf c :messiness) 2000)
       (format t "~a is grossed out by the smell~%" (name-of target))
       (set-status-condition 'yadfa-status-conditions:skunked target))
-    (format t "~a is damaged by the impact~%" (name-of target))
-    (decf (health-of target) a)
-    a))
+    (format t "~a is damaged by the impact~%" (name-of target))))
 (defclass teleporting-flood (wet-move-mixin) ()
   (:default-initargs
    :name "Teleporting Flood"
    :description "Flood your diapers, but enchants the diaper so it all teleports into someone else's diaper."
    :element-types (list (make-instance 'yadfa-element-types:abdl))))
 (defmethod attack ((target base-character) (user base-character) (self teleporting-flood))
-  (format t "~a used ~a~%" (name-of user) (name-of self))
   (if (< (bladder/contents-of user) (bladder/need-to-potty-limit-of user))
       (format t "But it failed~%")
       (progn (wet :wetter user :clothes (wear-of target))
@@ -186,22 +176,20 @@
    :description "Mess your diapers, but enchants the diaper so it all teleports into someone else's diaper."
    :element-types (list (make-instance 'yadfa-element-types:abdl) (make-instance 'yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (self teleporting-mess))
-  (format t "~a used ~a~%" (name-of user) (name-of self))
   (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
       (format t "But it failed~%")
       (progn (mess :messer user :clothes (wear-of target))
              (format t "~a gets a freaked expression on ~a face as ~a messes ~a's pamps~%" (name-of target) (if (malep target) "his" "her")
                      (name-of user) (name-of target)))))
-(defclass fart (mess-move-mixin) ()
+(defclass fart (mess-move-mixin debuff) ()
   (:default-initargs
    :name "fart"
    :description "Grosses out the enemies with gas. If poisoned or if desperate, you may end up messing yourself instead."
    :energy-cost 10
    :element-types (list (make-instance 'yadfa-element-types:abdl) (make-instance 'yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (attack fart))
-  (f:fmt t (name-of user) " used " (name-of attack) #\Newline
-         "But it failed." #\Newline))
-(defmethod attack ((target base-character) (user bowels-character) (attack fart))
+  (f:fmt t "But it failed." #\Newline))
+(defmethod attack :around ((target base-character) (user bowels-character) (attack fart))
   (let* ((padding (get-babyish-padding user))
          (name (name-of user))
          (malep (malep user))
@@ -241,13 +229,13 @@
                   (set-status-condition 'yadfa-status-conditions:skunked i)
                   (f:fmt* t (name-of i) " is grossed out by the smell" #\Newline)))
                (:fail (fail)))))))))
-(defclass spank (move) ()
+(defclass spank (damage-move) ()
   (:default-initargs
    :name "Spank"
    :energy-cost 5
    :power 10
    :description "Spanks the enemy"))
-(defmethod attack ((target base-character) (user base-character) (self spank))
+(defmethod attack :around ((target base-character) (user base-character) (self spank))
   (let ((a (calculate-damage target user self))
         (times (random 10)))
     (f:fmt t
