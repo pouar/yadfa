@@ -131,6 +131,8 @@
   (:method ((element zone)) (resolve-team-npc-spawn-list (team-npc-spawn-list-of element))))
 (defgeneric attack (target user attack)
   (:documentation #.(f:fmt nil "Method run when attacking. @var{ATTACK} is @code{NIL} when it is the default attack without any weapons. is an instance of " (ref move :class) " when it is an attack using a move and is an instance of " (ref item :class) " when that instance is being used as a weapon"))
+  (:method ((target base-character) (user base-character) (attack move)))
+  (:method ((target base-character) (user base-character) (attack item)))
   (:method :before ((target base-character) (user base-character) (attack damage-move))
     (decf (health-of target) (calculate-damage target user attack)))
   (:method :around ((target base-character) (user base-character) (item weapon))
