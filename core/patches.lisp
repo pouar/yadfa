@@ -8,6 +8,27 @@
   (elt expr 5))
 (in-package :climi)
 
+;;; I think it's supposed to use maybe-funcall instead of funcall
+
+(defmethod stream-input-wait ((stream input-stream-kernel) &key timeout input-wait-test)
+  (loop
+    with wait-fun = (and input-wait-test (curry input-wait-test stream))
+    with timeout-time = (and timeout (+ timeout (now)))
+    when (stream-gesture-available-p stream)
+      do (return-from stream-input-wait t)
+    do (multiple-value-bind (available reason)
+           (event-listen-or-wait stream :timeout timeout
+                                        :wait-function wait-fun)
+         (when (and (null available) (eq reason :timeout))
+           (return-from stream-input-wait (values nil :timeout)))
+         (when-let ((event (event-read-no-hang stream)))
+           (handle-event (event-sheet event) event))
+         (when timeout
+           (setf timeout (compute-decay timeout-time nil)))
+         (when (maybe-funcall input-wait-test stream)
+           (return-from stream-input-wait
+             (values nil :input-wait-test))))))
+
 ;;; the patch I added that makes the FreeType renderer pick the right defaults seems to make it a lot slower
 ;;; especially now that McCLIM is no longer caching all the fonts because that doesn't work when *default-text-style*
 ;;; changes. Cache all the fonts again for the FreeType renderer until this gets much faster upstream
