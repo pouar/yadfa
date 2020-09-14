@@ -865,13 +865,13 @@
     :initform 0
     :accessor messiness-of
     :type (real 0)
-    :documentation "messiness in cg")
+    :documentation "messiness in grams")
    (messiness-capacity
     :initarg :messiness-capacity
     :initform 10
     :accessor messiness-capacity-of
     :type (real 0)
-    :documentation "messiness capacity in cg")
+    :documentation "messiness capacity in grams")
    (mess-text
     :initarg :mess-text
     :initform '()
