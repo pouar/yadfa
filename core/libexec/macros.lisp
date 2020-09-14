@@ -76,7 +76,8 @@
                                                                :emacs-frame-lambda (lambda (frame)
                                                                                      (let ((*query-io* (clim:frame-query-io frame)))
                                                                                        ,@body
-                                                                                       (read-char *query-io*))))))))
+                                                                                       (loop until (eql #\Return (c:read-gesture
+                                                                                                                  :stream *query-io*))))))))))
 (defmacro present-with-effective-frame (&body body)
   `(cond
      (c:*application-frame*
@@ -88,7 +89,8 @@
                                                                :emacs-frame-lambda (lambda (frame)
                                                                                      (let ((*query-io* (clim:frame-query-io frame)))
                                                                                        ,@body
-                                                                                       (read-char *query-io*))))))))
+                                                                                       (loop until (eql #\Return (c:read-gesture
+                                                                                                                  :stream *query-io*))))))))))
 (defmacro updating-present-with-effective-frame
     ((stream
       &key (unique-id nil unique-id-supplied-p) (id-test nil id-test-supplied-p)
@@ -113,7 +115,8 @@
                                                                :emacs-frame-lambda (lambda (frame)
                                                                                      (let ((*query-io* (clim:frame-query-io frame)))
                                                                                        ,@body
-                                                                                       (read-char *query-io*))))))))
+                                                                                       (loop until (eql #\Return (c:read-gesture
+                                                                                                                  :stream *query-io*))))))))))
 (defmacro defevent (event-id &rest args)
   `(progn
      (setf (gethash ',event-id *events*) (make-instance 'event :id ',event-id ,@args))
