@@ -27,9 +27,9 @@
   (:default-initargs
    :description "A variant of the Diaper Pirate that wears 3 layers of padding. A stuffer, a normal diaper, and a super thick diaper."
    :inventory (nconc (iter (for i from 0 to (random 20))
-                           (collect (make-instance 'yadfa-items:incontinence-pad)))
+                       (collect (make-instance 'yadfa-items:incontinence-pad)))
                      (iter (for i from 0 to (random 20))
-                           (collect (make-instance 'yadfa-items:cloth-diaper)))
+                       (collect (make-instance 'yadfa-items:cloth-diaper)))
                      (iter (for i from 0 to (random 20))
                        (collect (make-instance 'yadfa-items:thick-rubber-diaper))))))
 (defmethod initialize-instance :after ((c thickly-diaper-pirate) &key (wear nil wearp) &allow-other-keys)

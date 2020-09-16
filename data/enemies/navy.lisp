@@ -17,12 +17,12 @@
   (declare (ignore attack item reload selected-target))
   (let* ((male (malep character))
          (pamps (iter (for i in (wear-of character))
-                      (let ((i (typecase i
-                                 (diaper 'diaper)
-                                 (pullup 'pullup)
-                                 (closed-bottoms 'closed-bottoms))))
-                        (when i
-                          (leave i)))))
+                  (let ((i (typecase i
+                             (diaper 'diaper)
+                             (pullup 'pullup)
+                             (closed-bottoms 'closed-bottoms))))
+                    (when i
+                      (leave i)))))
          (pampspronoun (if male
                            (if pamps
                                "his "
@@ -94,9 +94,9 @@
    :watersport-chance (random-from-range 1 3)
    :mudsport-chance (random-from-range 1 3)
    :inventory (nconc (iter (for i from 0 to (random 5))
-                           (collect (make-instance 'yadfa-items:navy-pullups)))
+                       (collect (make-instance 'yadfa-items:navy-pullups)))
                      (iter (for i from 0 to (random 15))
-                           (collect (make-instance 'yadfa-items:cloth-incontinence-pad))))))
+                       (collect (make-instance 'yadfa-items:cloth-incontinence-pad))))))
 (defmethod initialize-instance :after
     ((c navy-officer*) &key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp) (wear nil wearp) &allow-other-keys)
   (declare (ignore watersport-limit mudsport-limit wear))

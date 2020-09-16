@@ -10,7 +10,7 @@
    :bowels/contents (random 700)
    :bitcoins-per-level 100
    :inventory (iter (for i from 0 to (random 10))
-                    (collect (make-instance 'yadfa-items:cloth-diaper)))))
+                (collect (make-instance 'yadfa-items:cloth-diaper)))))
 (setf (get 'diapered-kobold 'change-class-target) 'yadfa-allies:diapered-kobold)
 (defmethod initialize-instance :after
     ((c diapered-kobold) &key (wear nil wearp) &allow-other-keys)

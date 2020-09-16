@@ -6,54 +6,54 @@
   (let ((class (slot-value (class-of o) 'name)))
     (if class
         (print-unreadable-object-with-prefix (o s :type t :identity t)
-                                             (write class :stream s))
+          (write class :stream s))
         (call-next-method))))
 (defmethod print-object ((o element-type-class) s)
   (let ((class (slot-value o 'name)))
     (if class
         (print-unreadable-object-with-prefix (o s :type t :identity nil)
-                                             (f:fmt s (:s class) " " (:s (class-name o))))
+          (f:fmt s (:s class) " " (:s (class-name o))))
         (call-next-method))))
 (defmethod print-object ((obj ally) stream)
   (print-unreadable-object-with-prefix (obj stream :type t :identity t)
-                                       (print-slot obj 'name stream)))
+    (print-slot obj 'name stream)))
 (defmethod print-object ((obj zone) stream)
   (print-unreadable-object-with-prefix (obj stream :type t :identity t)
-                                       (print-slot obj 'position stream)
-                                       (write-string " " stream)
-                                       (print-slot obj 'name stream)))
+    (print-slot obj 'position stream)
+    (write-string " " stream)
+    (print-slot obj 'name stream)))
 (defmethod print-object ((obj prop) stream)
   (print-unreadable-object-with-prefix (obj stream :type t :identity t)
-                                       (print-slot obj 'name stream)))
+    (print-slot obj 'name stream)))
 (defmethod print-object ((obj enemy) stream)
   (print-unreadable-object-with-prefix (obj stream :type t :identity t)
-                                       (cond ((not (slot-boundp obj 'male))
-                                              (print-slot obj 'male stream))
-                                             ((slot-value obj 'male)
-                                              (write "Male" :stream stream))
-                                             (t (write "Female" :stream stream)))
-                                       (write-string " " stream)
-                                       (print-slot obj 'species stream)))
+    (cond ((not (slot-boundp obj 'male))
+           (print-slot obj 'male stream))
+          ((slot-value obj 'male)
+           (write "Male" :stream stream))
+          (t (write "Female" :stream stream)))
+    (write-string " " stream)
+    (print-slot obj 'species stream)))
 (defmethod process-potty-dance ((character base-character) attack (item item) reload (selected-target base-character))
   (declare (ignore item reload selected-target))
   (when (process-potty-dance-check character attack)
     (format t "~a is too busy doing a potty dance to fight~%" (name-of character))
     t))
 #.`(progn ,@(iter (for i in '("BLADDER" "BOWELS"))
-                  (appending (iter (for j in '("CONTENTS-OF" "FILL-RATE-OF"))
-                                   (collect `(defmethod ,(a:format-symbol :yadfa "~a/~a" i j) ((object base-character))
-                                               (declare (ignore object))
-                                               0))
-                                   (collect `(defmethod (setf ,(a:format-symbol :yadfa "~a/~a" i j)) (newval (object base-character))
-                                               (declare (ignore object newval))
-                                               0))))
-                  (appending (iter (for j in '("NEED-TO-POTTY-LIMIT-OF" "POTTY-DANCE-LIMIT-OF" "POTTY-DESPERATE-LIMIT-OF" "MAXIMUM-LIMIT-OF"))
-                                   (collect `(defmethod ,(a:format-symbol :yadfa "~a/~a" i j) ((object base-character))
-                                               (declare (ignore object))
-                                               1))
-                                   (collect `(defmethod (setf ,(a:format-symbol :yadfa "~a/~a" i j)) (newval (object base-character))
-                                               (declare (ignore object newval))
-                                               1))))))
+              (appending (iter (for j in '("CONTENTS-OF" "FILL-RATE-OF"))
+                           (collect `(defmethod ,(a:format-symbol :yadfa "~a/~a" i j) ((object base-character))
+                                       (declare (ignore object))
+                                       0))
+                           (collect `(defmethod (setf ,(a:format-symbol :yadfa "~a/~a" i j)) (newval (object base-character))
+                                       (declare (ignore object newval))
+                                       0))))
+              (appending (iter (for j in '("NEED-TO-POTTY-LIMIT-OF" "POTTY-DANCE-LIMIT-OF" "POTTY-DESPERATE-LIMIT-OF" "MAXIMUM-LIMIT-OF"))
+                           (collect `(defmethod ,(a:format-symbol :yadfa "~a/~a" i j) ((object base-character))
+                                       (declare (ignore object))
+                                       1))
+                           (collect `(defmethod (setf ,(a:format-symbol :yadfa "~a/~a" i j)) (newval (object base-character))
+                                       (declare (ignore object newval))
+                                       1))))))
 (defmethod toggle-onesie (onesie clothes user)
   (error 'invalid-user-input :format-control "That's not a onesie"))
 (defmethod toggle-onesie ((onesie onesie/opened) clothes (user base-character))
@@ -68,8 +68,8 @@
       (toggle-onesie% onesie)))
 (defmethod get-babyish-padding ((user team-member))
   #.`(cond ,@(iter (for i in '(diaper pullup closed-bottoms))
-                   (collect `((filter-items (wear-of user) ',i)
-                              ',i)))
+               (collect `((filter-items (wear-of user) ',i)
+                          ',i)))
            (t nil)))
 (defmethod output-process-potty-text (user padding type action had-accident &key (stream *standard-output*))
   (declare (ignore user padding type action had-accident stream)))
@@ -93,28 +93,28 @@
                                       &key (stream *standard-output*))
   (format stream "~a~%"
           (let ((j (a:switch ((getf (car had-accident) :accident) :test 'eq)
-                             (:dribble `("You gasp in horror as a little leaks out"
-                                         "You think you just leaked a little"
-                                         ,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                                  (a:random-elt '("groan" "whine")))))
-                             (:some '("You gasp in horror as you flood yourself, but manage to stop yourself"))
-                             (:all (let ((a `(,(format nil
-                                                       "LOOK EVERYBODY!!!! ~a IS WETTING ~a DIAPERS!!!!~%~%*~a eeps and hides ~a soggy padding in embarrassment*"
-                                                       (string-upcase (name-of user))
-                                                       (if (malep user) "HIS" "HER")
-                                                       (name-of user)
-                                                       (if (malep user) "his" "her"))
-                                              "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                                              "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                                              "You cross your legs in a vain attempt to hold it in but fail miserably"
-                                              "You gasp in embarrassment as you flood yourself like a toddler"
-                                              "You let out a groan as your bladder empties itself"
-                                              "You fall to your knees clutching the front of your diapers struggling to keep your diapers dry and flood yourself")))
-                                     (unless (malep user)
-                                       (push "You press your legs together while fidgeting and squirming until your flood your pamps like the baby girl you are" a))
-                                     (when (s:memq (car (tail-of user)) '(:medium :large :lizard))
-                                       "You clutch the front of your diaper with your legs crossed and your tail between your legs in vain as you flood your pamps")
-                                     a)))))
+                     (:dribble `("You gasp in horror as a little leaks out"
+                                 "You think you just leaked a little"
+                                 ,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                          (a:random-elt '("groan" "whine")))))
+                     (:some '("You gasp in horror as you flood yourself, but manage to stop yourself"))
+                     (:all (let ((a `(,(format nil
+                                               "LOOK EVERYBODY!!!! ~a IS WETTING ~a DIAPERS!!!!~%~%*~a eeps and hides ~a soggy padding in embarrassment*"
+                                               (string-upcase (name-of user))
+                                               (if (malep user) "HIS" "HER")
+                                               (name-of user)
+                                               (if (malep user) "his" "her"))
+                                      "After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                      "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                      "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                      "You gasp in embarrassment as you flood yourself like a toddler"
+                                      "You let out a groan as your bladder empties itself"
+                                      "You fall to your knees clutching the front of your diapers struggling to keep your diapers dry and flood yourself")))
+                             (unless (malep user)
+                               (push "You press your legs together while fidgeting and squirming until your flood your pamps like the baby girl you are" a))
+                             (when (s:memq (car (tail-of user)) '(:medium :large :lizard))
+                               "You clutch the front of your diaper with your legs crossed and your tail between your legs in vain as you flood your pamps")
+                             a)))))
             (when (>= (getf (car had-accident) :wet-amount) 300)
               (push (format nil "Aww, the baby is using ~a diapers?" (if (malep user) "his" "her")) j))
             (a:random-elt j)))
@@ -131,25 +131,25 @@
                                       &key (stream *standard-output*))
   (format stream "~a~%"
           (a:random-elt (a:switch ((getf (car had-accident) :accident) :test 'eq)
-                                  (:dribble `(,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                                       (a:random-elt '("groan" "whine")))
-                                              "You gasp in horror as a little leaks out"
-                                              "You think you just leaked a little"))
-                                  (:some '("You gasp in horror as you flood yourself, but manage to stop yourself"))
-                                  (:all `(,(format nil "Naughty ~a wetting your pullups. You know you're supposed to use the toilet like a big kid."
-                                                   (if (malep user) "boy" "girl"))
-                                          ,(format nil "LOOK EVERYBODY!!!! ~A IS WETTING ~a PULLUPS!!!!!!~%~%*~a eeps and hides ~a soggy pullups in embarrassment*"
-                                                   (string-upcase (name-of user))
-                                                   (if (malep user) "HIS" "HER")
-                                                   (name-of user)
-                                                   (if (malep user) "his" "her"))
-                                          "After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                                          "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                                          "You cross your legs in a vain attempt to hold it in but fail miserably"
-                                          "You gasp in embarrassment as you flood yourself like a toddler"
-                                          "You let out a groan as your bladder empties itself"
-                                          "You fall to your knees clutching the front of your pullups struggling to keep them dry and flood yourself"
-                                          "The little pictures on the front of your pullups fade showing everyone what you did")))))
+                          (:dribble `(,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                               (a:random-elt '("groan" "whine")))
+                                      "You gasp in horror as a little leaks out"
+                                      "You think you just leaked a little"))
+                          (:some '("You gasp in horror as you flood yourself, but manage to stop yourself"))
+                          (:all `(,(format nil "Naughty ~a wetting your pullups. You know you're supposed to use the toilet like a big kid."
+                                           (if (malep user) "boy" "girl"))
+                                  ,(format nil "LOOK EVERYBODY!!!! ~A IS WETTING ~a PULLUPS!!!!!!~%~%*~a eeps and hides ~a soggy pullups in embarrassment*"
+                                           (string-upcase (name-of user))
+                                           (if (malep user) "HIS" "HER")
+                                           (name-of user)
+                                           (if (malep user) "his" "her"))
+                                  "After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                  "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                  "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                  "You gasp in embarrassment as you flood yourself like a toddler"
+                                  "You let out a groan as your bladder empties itself"
+                                  "You fall to your knees clutching the front of your pullups struggling to keep them dry and flood yourself"
+                                  "The little pictures on the front of your pullups fade showing everyone what you did")))))
   (format stream "~a~%"
           (let ((out '("Your face turns red as you leak everywhere"
                        "Your pullups leak. There goes the carpet."
@@ -162,18 +162,18 @@
                                       &key (stream *standard-output*))
   (format stream "~a~%"
           (a:random-elt (a:switch ((getf (car had-accident) :accident) :test 'eq)
-                                  (:dribble `(,(format nil
-                                                       "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                                       (a:random-elt '("groan" "whine")))
-                                              "You gasp in horror as a little leaks out"
-                                              "You think you just leaked a little"))
-                                  (:some '("You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                                  (:all '("After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                                          "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                                          "You cross your legs in a vain attempt to hold it in but fail miserably"
-                                          "You gasp in embarrassment as you flood yourself like a toddler"
-                                          "You let out a groan as your bladder empties itself"
-                                          "You fall to your knees holding your crotch struggling to keep your pants dry and flood yourself")))))
+                          (:dribble `(,(format nil
+                                               "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                               (a:random-elt '("groan" "whine")))
+                                      "You gasp in horror as a little leaks out"
+                                      "You think you just leaked a little"))
+                          (:some '("You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                          (:all '("After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                                  "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                                  "You cross your legs in a vain attempt to hold it in but fail miserably"
+                                  "You gasp in embarrassment as you flood yourself like a toddler"
+                                  "You let out a groan as your bladder empties itself"
+                                  "You fall to your knees holding your crotch struggling to keep your pants dry and flood yourself")))))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
     (format stream "~a~%"
             (a:random-elt `(,(format nil "Bad ~a! No going potty in the house!" (if (= (random 2) 0) (species-of user) (name-of user)))
@@ -190,16 +190,16 @@
   (format stream "~a~%"
           (let
               ((j (a:switch ((getf (car had-accident) :accident) :test 'eq)
-                            (:dribble `(,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
-                                                 (a:random-elt '("groan" "whine")))
-                                        "You gasp in horror as a little leaks out"
-                                        "You think you just leaked a little"))
-                            (:some '("You gasp in  horror as you flood yourself, but manage to stop yourself"))
-                            (:all '("After doing a potty dance like a 5 year old, you freeze and pee yourself"
-                                    "Grabbing your crotch you pause and blush as you flood yourself like an infant"
-                                    "You cross your legs in a vain attempt to hold it in but fail miserably"
-                                    "You gasp in embarrassment as you flood yourself like a toddler"
-                                    "You let out a groan as your bladder empties itself")))))
+                    (:dribble `(,(format nil "A little squirts out. You quickly grab yourself with a ~a, but manage to stop the flood"
+                                         (a:random-elt '("groan" "whine")))
+                                "You gasp in horror as a little leaks out"
+                                "You think you just leaked a little"))
+                    (:some '("You gasp in  horror as you flood yourself, but manage to stop yourself"))
+                    (:all '("After doing a potty dance like a 5 year old, you freeze and pee yourself"
+                            "Grabbing your crotch you pause and blush as you flood yourself like an infant"
+                            "You cross your legs in a vain attempt to hold it in but fail miserably"
+                            "You gasp in embarrassment as you flood yourself like a toddler"
+                            "You let out a groan as your bladder empties itself")))))
             (a:random-elt j)))
   (when (and (car had-accident) (> (getf (car had-accident) :leak-amount) 0))
     (format stream "~a~%"
@@ -1607,54 +1607,55 @@ randomrange is @code{(random-from-range 85 100)}"
         (user-element-types (element-types-of user)))
     (s:mvlet ((super-effective not-very-effective no-effect (funcall (lambda ()
                                                                        (iter (with (the fixnum super-effective) = 0)
-                                                                             (with (the fixnum not-very-effective) = 0)
-                                                                             (with (the fixnum no-effect) = 0)
-                                                                             (for attack-element-type in attack-element-types)
-                                                                             (iter (for target-element-type in target-element-types)
-                                                                                   (case (type-match attack-element-type target-element-type)
-                                                                                     (:super-effective (incf super-effective))
-                                                                                     (:not-very-effective (incf not-very-effective))
-                                                                                     (:no-effect (incf no-effect))))
-                                                                             (finally (return (values super-effective not-very-effective no-effect))))))))
-             (round (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ 2 * (level-of user)) / 5) + 2) * (power-of attack) * (u:$ (calculate-stat user :attack) / (calculate-stat target :defense)))
-                                   / 50)
-                              + 2)
-                         * (* (u:$ (random-from-range 85 100) / 100)
-                              (if (> no-effect 0)
-                                  0
-                                  (expt 2 (- super-effective not-very-effective)))
-                              (if (intersection user-element-types attack-element-types
-                                                :key (lambda (o)
-                                                       (class-of (coerce-element-type o)))
-                                                :test 'subtypep)
-                                  1.5
-                                  1)))))))
+                                                                         (with (the fixnum not-very-effective) = 0)
+                                                                         (with (the fixnum no-effect) = 0)
+                                                                         (for attack-element-type in attack-element-types)
+                                                                         (iter (for target-element-type in target-element-types)
+                                                                           (case (type-match attack-element-type target-element-type)
+                                                                             (:super-effective (incf super-effective))
+                                                                             (:not-very-effective (incf not-very-effective))
+                                                                             (:no-effect (incf no-effect))))
+                                                                         (finally (return (values super-effective not-very-effective no-effect))))))))
+      (round (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ 2 * (level-of user)) / 5) + 2) * (power-of attack) *
+                                 (u:$ (calculate-stat user :attack) / (calculate-stat target :defense)))
+                            / 50)
+                       + 2)
+                  * (* (u:$ (random-from-range 85 100) / 100)
+                       (if (> no-effect 0)
+                           0
+                           (expt 2 (- super-effective not-very-effective)))
+                       (if (intersection user-element-types attack-element-types
+                                         :key (lambda (o)
+                                                (class-of (coerce-element-type o)))
+                                         :test 'subtypep)
+                           1.5
+                           1)))))))
 
 (defmethod describe-diaper-wear-usage (item))
 (defmethod describe-diaper-inventory-usage (item))
 (defmethod describe-diaper-usage (item))
 (defmethod describe-diaper-inventory-usage ((item closed-bottoms))
   (iter (for (a b) on (wet-text-of item) by #'cddr)
-        (when (>= (sogginess-of item) a)
-          (f:fmt* t #\Space b #\Newline)
-          (finish)))
+    (when (>= (sogginess-of item) a)
+      (f:fmt* t #\Space b #\Newline)
+      (finish)))
   (iter (for (a b) on (mess-text-of item) by #'cddr)
-        (when (>= (messiness-of item) a)
-          (f:fmt* t #\Space b #\Newline)
-          (finish))))
+    (when (>= (messiness-of item) a)
+      (f:fmt* t #\Space b #\Newline)
+      (finish))))
 (defmethod describe-diaper-wear-usage ((item closed-bottoms))
   (iter (for (a b) on (wear-wet-text-of item) by #'cddr)
-        (when (>= (sogginess-of item) a)
-          (f:fmt* t #\Space b #\Newline)
-          (finish)))
+    (when (>= (sogginess-of item) a)
+      (f:fmt* t #\Space b #\Newline)
+      (finish)))
   (iter (for (a b) on (wear-mess-text-of item) by #'cddr)
-        (when (>= (messiness-of item) a)
-          (f:fmt* t #\Space b #\Newline)
-          (finish)))
+    (when (>= (messiness-of item) a)
+      (f:fmt* t #\Space b #\Newline)
+      (finish)))
   (iter (for (a b) on (bulge-text-of item) by #'cddr)
-        (when (>= (total-thickness item) a)
-          (f:fmt* t #\Space b #\Newline)
-          (finish))))
+    (when (>= (total-thickness item) a)
+      (f:fmt* t #\Space b #\Newline)
+      (finish))))
 (defmethod describe-diaper-usage ((item closed-bottoms))
   (f:fmt t
          "Sogginess: " (sogginess-of item) #\Newline
@@ -1663,13 +1664,13 @@ randomrange is @code{(random-from-range 85 100)}"
          "Messiness Capacity: " (messiness-capacity-of item) #\Newline))
 (defmethod process-battle-turn ((character npc) attack item reload selected-target)
   (iter (for i in (getf (status-conditions-of *battle*) character))
-        (when (or (eq (duration-of i) t) (> (duration-of i) 0))
-          (condition-script character i)
-          (when (typep (duration-of i) 'real)
-            (decf (duration-of i))))
-        (removef-if (getf (status-conditions-of *battle*) character)
-                    (lambda (a) (and (not (eq a t)) (<= a 0)))
-                    :key #'duration-of))
+    (when (or (eq (duration-of i) t) (> (duration-of i) 0))
+      (condition-script character i)
+      (when (typep (duration-of i) 'real)
+        (decf (duration-of i))))
+    (removef-if (getf (status-conditions-of *battle*) character)
+                (lambda (a) (and (not (eq a t)) (<= a 0)))
+                :key #'duration-of))
   (run-equip-effects character)
   (when (<= (health-of character) 0)
     (unless (s:memq character (fainted-of *battle*))
@@ -1689,8 +1690,8 @@ randomrange is @code{(random-from-range 85 100)}"
   (cond ((process-battle-accident character attack item reload selected-target)
          nil)
         ((iter (for j in (getf (status-conditions-of *battle*) character))
-               (when (blocks-turn-of j)
-                 (leave t))))
+           (when (blocks-turn-of j)
+             (leave t))))
         ((process-potty-dance character attack item reload selected-target) t)
         ((and (wield-of character)
               (ammo-type-of (wield-of character))
@@ -1698,8 +1699,8 @@ randomrange is @code{(random-from-range 85 100)}"
               (> (ammo-capacity-of (wield-of character)) 0)
               (ammo-type-of (wield-of character))
               (iter (for i in (inventory-of character))
-                    (when (typep i (ammo-type-of (wield-of character)))
-                      (leave t))))
+                (when (typep i (ammo-type-of (wield-of character)))
+                  (leave t))))
          (format t "~a reloaded ~a ~a"
                  (name-of character)
                  (if (malep character)
@@ -1707,27 +1708,27 @@ randomrange is @code{(random-from-range 85 100)}"
                      "her")
                  (name-of (wield-of character)))
          (iter (with count = 0)
-               (for item in (inventory-of character))
-               (when (or (list-length-<= (ammo-capacity-of (wield-of character)) (ammo-of (wield-of character)))
-                         (and (reload-count-of (wield-of character)) (>= count (reload-count-of (wield-of character)))))
-                 (leave t))
-               (when (typep item (ammo-type-of (wield-of character)))
-                 (incf count)
-                 (push item (ammo-of (wield-of character)))
-                 (a:deletef item (inventory-of character) :count 1))))
+           (for item in (inventory-of character))
+           (when (or (list-length-<= (ammo-capacity-of (wield-of character)) (ammo-of (wield-of character)))
+                     (and (reload-count-of (wield-of character)) (>= count (reload-count-of (wield-of character)))))
+             (leave t))
+           (when (typep item (ammo-type-of (wield-of character)))
+             (incf count)
+             (push item (ammo-of (wield-of character)))
+             (a:deletef item (inventory-of character) :count 1))))
         (t
          (battle-script character (a:random-elt (if (typep character 'enemy)
                                                     (team-of *game*)
                                                     (enemies-of *battle*)))))))
 (defmethod process-battle-turn ((character base-character) attack item reload selected-target)
   (iter (for status-condition in (getf (status-conditions-of *battle*) character))
-        (when (or (eq (duration-of status-condition) t) (> (duration-of status-condition) 0))
-          (condition-script character status-condition)
-          (when (typep (duration-of status-condition) 'real)
-            (decf (duration-of status-condition))))
-        (removef-if (getf (status-conditions-of *battle*) character)
-                    (lambda (a) (and (not (eq a t)) (<= a 0)))
-                    :key #'duration-of))
+    (when (or (eq (duration-of status-condition) t) (> (duration-of status-condition) 0))
+      (condition-script character status-condition)
+      (when (typep (duration-of status-condition) 'real)
+        (decf (duration-of status-condition))))
+    (removef-if (getf (status-conditions-of *battle*) character)
+                (lambda (a) (and (not (eq a t)) (<= a 0)))
+                :key #'duration-of))
   (run-equip-effects character)
   (when (<= (health-of character) 0)
     (setf (health-of character) 0)
@@ -1747,8 +1748,8 @@ randomrange is @code{(random-from-range 85 100)}"
   (cond ((process-battle-accident character attack item reload selected-target)
          nil)
         ((iter (for j in (getf (status-conditions-of *battle*) character))
-               (when (blocks-turn-of j)
-                 (leave t))))
+           (when (blocks-turn-of j)
+             (leave t))))
         ((process-potty-dance character attack item reload selected-target) t)
         (item
          (format t "~a used ~a ~a on ~a~%"
@@ -1764,20 +1765,20 @@ randomrange is @code{(random-from-range 85 100)}"
                             "her")
                         (name-of (wield-of character)))
                 (iter (with count = 0)
-                      (for item in (inventory-of (player-of *game*)))
-                      (when (or
-                             (list-length-<= (ammo-capacity-of (wield-of character))
-                                             (ammo-of (wield-of character)))
-                             (and
-                              (reload-count-of (wield-of character))
-                              (>=
-                               count
-                               (reload-count-of (wield-of character)))))
-                        (leave t))
-                      (when (and (typep item reload) (typep item (ammo-type-of (wield-of character))))
-                        (incf count)
-                        (push item (ammo-of (wield-of character)))
-                        (a:deletef item (inventory-of (player-of *game*)) :count 1))))
+                  (for item in (inventory-of (player-of *game*)))
+                  (when (or
+                         (list-length-<= (ammo-capacity-of (wield-of character))
+                                         (ammo-of (wield-of character)))
+                         (and
+                          (reload-count-of (wield-of character))
+                          (>=
+                           count
+                           (reload-count-of (wield-of character)))))
+                    (leave t))
+                  (when (and (typep item reload) (typep item (ammo-type-of (wield-of character))))
+                    (incf count)
+                    (push item (ammo-of (wield-of character)))
+                    (a:deletef item (inventory-of (player-of *game*)) :count 1))))
         ((eq attack t)
          (if (wield-of character)
              (progn (attack selected-target character (wield-of character))
