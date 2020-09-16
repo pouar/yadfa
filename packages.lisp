@@ -396,6 +396,7 @@
    #:pants
    #:fire-breath
    #:roar
+   #:scratch
    #:face-sit
    #:ghost-tickle
    #:ghost-squish

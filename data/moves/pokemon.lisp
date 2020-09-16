@@ -97,3 +97,8 @@
    :description "Bites the enemy"
    :power 80
    :element-types '(#.(make-instance 'yadfa-element-types:dark))))
+(defclass scratch (damage-move) ()
+  (:default-initargs
+   :name "Scratch"
+   :description "Scratches the enemy"
+   :power 40))
