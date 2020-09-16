@@ -469,27 +469,25 @@
 (defclass ally-feral (ally potty-trained-team-member) ())
 (defclass playable-ally (ally) ())
 (defmethod initialize-instance :after
-    ((c base-character) &rest initargs &key &allow-other-keys)
-  (destructuring-bind (&key (health nil healthp) (energy nil energyp)
-                         (base-health nil base-health-p) (base-attack nil base-attack-p)
-                         (base-defense nil base-defense-p) (base-speed nil base-speed-p) (base-energy nil base-energy-p)&allow-other-keys)
-      initargs
-    (declare (ignore health energy))
-    (when base-health-p
-      (setf (getf (base-stats-of c) :health) base-health))
-    (when base-attack-p
-      (setf (getf (base-stats-of c) :attack) base-attack))
-    (when base-defense-p
-      (setf (getf (base-stats-of c) :defence) base-defense))
-    (when base-speed-p
-      (setf (getf (base-stats-of c) :speed) base-speed))
-    (when base-energy-p
-      (setf (getf (base-stats-of c) :energy) base-energy))
-    (unless healthp
-      (setf (health-of c) (calculate-stat c :health)))
-    (unless energyp
-      (setf (energy-of c) (calculate-stat c :energy)))
-    (setf (exp-of c) (calculate-level-to-exp (level-of c)))))
+    ((c base-character) &key (health nil healthp) (energy nil energyp)
+                          (base-health nil base-health-p) (base-attack nil base-attack-p)
+                          (base-defense nil base-defense-p) (base-speed nil base-speed-p) (base-energy nil base-energy-p) &allow-other-keys)
+  (declare (ignore health energy))
+  (when base-health-p
+    (setf (getf (base-stats-of c) :health) base-health))
+  (when base-attack-p
+    (setf (getf (base-stats-of c) :attack) base-attack))
+  (when base-defense-p
+    (setf (getf (base-stats-of c) :defence) base-defense))
+  (when base-speed-p
+    (setf (getf (base-stats-of c) :speed) base-speed))
+  (when base-energy-p
+    (setf (getf (base-stats-of c) :energy) base-energy))
+  (unless healthp
+    (setf (health-of c) (calculate-stat c :health)))
+  (unless energyp
+    (setf (energy-of c) (calculate-stat c :energy)))
+  (setf (exp-of c) (calculate-level-to-exp (level-of c))))
 (defclass player (potty-trained-team-member pantsable-character)
   ((position
     :initarg :position
@@ -524,12 +522,10 @@
    :tail '(:medium :fur)
    :skin '(:fur)))
 (defmethod initialize-instance :after
-    ((c player) &rest initargs)
-  (destructuring-bind (&key (warp-on-death-point nil warp) &allow-other-keys)
-      initargs
-    (declare (ignore warp-on-death-point))
-    (unless warp
-      (setf (warp-on-death-point-of c) (position-of c)))))
+    ((c player) &key (warp-on-death-point nil warp) &allow-other-keys)
+  (declare (ignore warp-on-death-point))
+  (unless warp
+    (setf (warp-on-death-point-of c) (position-of c))))
 (defclass zone (yadfa-class)
   ((description
     :initarg :description
@@ -940,14 +936,12 @@
   (setf (thickness-capacity-threshold-of new) (cdr (slot-value old 'onesie-thickness-capacity-threshold)))
   (setf (bulge-text-of new) (cdr (slot-value old 'onesie-bulge-text))))
 (defmethod initialize-instance :after
-    ((c onesie/opened) &rest initargs &key &allow-other-keys)
-  (declare (ignore initargs))
+    ((c onesie/opened) &key &allow-other-keys)
   (setf (thickness-capacity-of c) (cdr (onesie-thickness-capacity-of c)))
   (setf (thickness-capacity-threshold-of c) (cdr (onesie-thickness-capacity-threshold-of c)))
   (setf (bulge-text-of c) (cdr (onesie-bulge-text-of c))))
 (defmethod initialize-instance :after
-    ((c onesie/closed) &rest initargs &key &allow-other-keys)
-  (declare (ignore initargs))
+    ((c onesie/closed) &key &allow-other-keys)
   (setf (thickness-capacity-of c) (car (onesie-thickness-capacity-of c)))
   (setf (thickness-capacity-threshold-of c) (car (onesie-thickness-capacity-threshold-of c)))
   (setf (waterproofp c) (onesie-waterproof-p c))
@@ -1092,8 +1086,7 @@
     :documentation "Characters that have fainted in battle, used so the \"X has fainted\" messages don't appear repeatedly"))
   (:documentation "Class that contains the information about the battle"))
 (defmethod initialize-instance :after
-    ((c battle) &rest initargs &key &allow-other-keys)
-  (declare (ignore initargs))
+    ((c battle) &key &allow-other-keys)
   (unless (enter-battle-text-of c)
     (setf
      (enter-battle-text-of c)

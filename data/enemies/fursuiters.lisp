@@ -43,17 +43,15 @@
            (format t "~a squats down and messes ~aself in the middle of battle~%" (name-of character) himher)
            (mess :messer character)))))
 (defmethod initialize-instance :after
-    ((c padded-fursuiter-servant) &rest args &key &allow-other-keys)
-  (destructuring-bind (&key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp) &allow-other-keys)
-      args
-    (declare (ignore watersport-limit mudsport-limit))
-    (cond ((and watersportp mudsportp)
-           (let ((limits (a:random-elt (list (cons (bladder/need-to-potty-limit-of c) (bowels/need-to-potty-limit-of c)) '(nil)))))
-             (setf (watersport-limit-of c) (car limits) (mudsport-limit-of c) (cdr limits))))
-          (watersportp
-           (setf (mudsport-limit-of c) (a:random-elt (list (bowels/need-to-potty-limit-of c) nil))))
-          (mudsportp
-           (setf (watersport-limit-of c) (a:random-elt (list (bladder/need-to-potty-limit-of c) nil)))))))
+    ((c padded-fursuiter-servant) &key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp) &allow-other-keys)
+  (declare (ignore watersport-limit mudsport-limit))
+  (cond ((and watersportp mudsportp)
+         (let ((limits (a:random-elt (list (cons (bladder/need-to-potty-limit-of c) (bowels/need-to-potty-limit-of c)) '(nil)))))
+           (setf (watersport-limit-of c) (car limits) (mudsport-limit-of c) (cdr limits))))
+        (watersportp
+         (setf (mudsport-limit-of c) (a:random-elt (list (bowels/need-to-potty-limit-of c) nil))))
+        (mudsportp
+         (setf (watersport-limit-of c) (a:random-elt (list (bladder/need-to-potty-limit-of c) nil))))))
 (defclass fursuiter-servant (potty-enemy) ()
   (:default-initargs
    :name "Fursuiter Servant"

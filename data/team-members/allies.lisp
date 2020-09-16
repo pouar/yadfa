@@ -26,16 +26,14 @@
       (f:fmt stream (name-of user) "tries to fart to relieve the pressure but ends up messing " (if (malep user) "his" "her")
              "pamps, doesn't seem to realize it wasn't a fart and just continues on in a messy diaper" #\Newline)))
 (defmethod initialize-instance :after
-    ((c slynk) &rest args &key &allow-other-keys)
-  (destructuring-bind (&key (bladder/contents nil bladderp) (bowels/contents nil bowelsp) &allow-other-keys)
-      args
-    (declare (ignore bladder/contents bowels/contents))
-    (unless bladderp
-      (setf (bladder/contents-of c)
-            (random (coerce (+ (bladder/potty-desperate-limit-of c) (/ (- (bladder/potty-desperate-limit-of c) (bladder/potty-dance-limit-of c)))) 'long-float))))
-    (unless bowelsp
-      (setf (bowels/contents-of c)
-            (random (coerce (+ (bowels/potty-desperate-limit-of c) (/ (- (bowels/potty-desperate-limit-of c) (bowels/potty-dance-limit-of c)))) 'long-float))))))
+    ((c slynk) &key (bladder/contents nil bladderp) (bowels/contents nil bowelsp) &allow-other-keys)
+  (declare (ignore bladder/contents bowels/contents))
+  (unless bladderp
+    (setf (bladder/contents-of c)
+          (random (coerce (+ (bladder/potty-desperate-limit-of c) (/ (- (bladder/potty-desperate-limit-of c) (bladder/potty-dance-limit-of c)))) 'long-float))))
+  (unless bowelsp
+    (setf (bowels/contents-of c)
+          (random (coerce (+ (bowels/potty-desperate-limit-of c) (/ (- (bowels/potty-desperate-limit-of c) (bowels/potty-dance-limit-of c)))) 'long-float)))))
 (defclass chris (playable-ally ally-rebel-potty-training) ()
   (:default-initargs
    :name "Chris"

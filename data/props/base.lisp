@@ -144,8 +144,7 @@
    :description "A place to buy crap with your bitcoins")
   (:documentation "Class for shops, you can buy stuff from these."))
 (defmethod initialize-instance :after
-    ((c shop) &rest args &key &allow-other-keys)
-  (declare (ignore args))
+    ((c shop) &key &allow-other-keys)
   (setf (getf (actions-of c) :list-items-for-sale)
         (make-action :documentation "List items for sale"
                      :lambda '(lambda (prop &rest keys &key &allow-other-keys)
@@ -183,8 +182,7 @@
    :description "An automated machine where you can buy items from")
   (:documentation "Class for vending machines, Functions like a shop, but only lets you buy items instead of selling them"))
 (defmethod initialize-instance :after
-    ((c vending-machine) &rest args &key &allow-other-keys)
-  (declare (ignore args))
+    ((c vending-machine) &key &allow-other-keys)
   (setf (getf (actions-of c) :list-items-for-sale)
         (make-action :documentation "List items for sale"
                      :lambda '(lambda (prop &rest keys &key &allow-other-keys)
@@ -209,8 +207,7 @@
    :description "A place to buy crap with your bitcoins")
   (:documentation "Class for shops, you can buy stuff from these."))
 (defmethod initialize-instance :after
-    ((c debug-shop) &rest args &key &allow-other-keys)
-  (declare (ignore args))
+    ((c debug-shop) &key &allow-other-keys)
   (setf (getf (actions-of c) :list-items-for-sale)
         (make-action :documentation "List items for sale"
                      :lambda '(lambda (prop &rest keys &key &allow-other-keys)
@@ -220,15 +217,15 @@
                                #-sbcl (check-type prop prop)
                                (shopfun (let ((a ()))
                                           (iter (for i in (list-all-packages))
-                                                (unless (equal i (find-package :yadfa))
-                                                  (do-external-symbols  (s i)
-                                                    (when (and
-                                                           (find-class s nil)
-                                                           (c2mop:subclassp
-                                                            (find-class s)
-                                                            (find-class 'item))
-                                                           (tossablep (make-instance s)))
-                                                      (push (cons s nil) a)))))
+                                            (unless (equal i (find-package :yadfa))
+                                              (do-external-symbols  (s i)
+                                                (when (and
+                                                       (find-class s nil)
+                                                       (c2mop:subclassp
+                                                        (find-class s)
+                                                        (find-class 'item))
+                                                       (tossablep (make-instance s)))
+                                                  (push (cons s nil) a)))))
                                           a)
                                 :format-items t)))
         (getf (actions-of c) :buy-items)
@@ -243,16 +240,16 @@
                                (shopfun
                                 (let ((a ()))
                                   (iter (for i in (list-all-packages))
-                                        (unless
-                                            (equal i (find-package :yadfa))
-                                          (do-external-symbols (s i)
-                                            (when (and
-                                                   (find-class s nil)
-                                                   (c2mop:subclassp
-                                                    (find-class s)
-                                                    (find-class 'item))
-                                                   (tossablep (make-instance s)))
-                                              (push (cons s nil) a)))))
+                                    (unless
+                                        (equal i (find-package :yadfa))
+                                      (do-external-symbols (s i)
+                                        (when (and
+                                               (find-class s nil)
+                                               (c2mop:subclassp
+                                                (find-class s)
+                                                (find-class 'item))
+                                               (tossablep (make-instance s)))
+                                          (push (cons s nil) a)))))
                                   a)
                                 :items-to-buy items
                                 :user (player-of *game*))))
@@ -268,16 +265,16 @@
                                (shopfun
                                 (let ((a ()))
                                   (iter
-                                   (for i in (list-all-packages))
-                                   (unless (equal i (find-package :yadfa))
-                                     (do-external-symbols (s i)
-                                       (when (and
-                                              (find-class s nil)
-                                              (c2mop:subclassp
-                                               (find-class s)
-                                               (find-class 'item))
-                                              (tossablep (make-instance s)))
-                                         (push (cons s nil) a)))))
+                                    (for i in (list-all-packages))
+                                    (unless (equal i (find-package :yadfa))
+                                      (do-external-symbols (s i)
+                                        (when (and
+                                               (find-class s nil)
+                                               (c2mop:subclassp
+                                                (find-class s)
+                                                (find-class 'item))
+                                               (tossablep (make-instance s)))
+                                          (push (cons s nil) a)))))
                                   a)
                                 :items-to-sell items
                                 :user (player-of *game*))))))

@@ -75,21 +75,19 @@
                    pampsname)
            (mess :messer character)))))
 (defmethod initialize-instance :after
-    ((c navy-officer) &rest args &key &allow-other-keys)
-  (destructuring-bind (&key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp) (wear nil wearp) &allow-other-keys)
-      args
-    (declare (ignore watersport-limit mudsport-limit wear))
-    (unless wearp
-      (push (make-instance 'yadfa-items:navy-pullups) (wear-of c))
-      (when (and (not (malep c)) (= (random 5) 0))
-        (push (make-instance 'yadfa-items:navy-skirt) (wear-of c)))
-      (unless (malep c)
-        (push (make-instance 'yadfa-items:bra) (wear-of c)))
-      (push (make-instance 'yadfa-items:navy-shirt) (wear-of c)))
-    (unless watersportp
-      (setf (watersport-limit-of c) (- (bladder/maximum-limit-of c) (bladder/potty-desperate-limit-of c))))
-    (unless mudsportp
-      (setf (mudsport-limit-of c) (- (bowels/maximum-limit-of c) (bowels/potty-desperate-limit-of c))))))
+    ((c navy-officer) &key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp) (wear nil wearp) &allow-other-keys)
+  (declare (ignore watersport-limit mudsport-limit wear))
+  (unless wearp
+    (push (make-instance 'yadfa-items:navy-pullups) (wear-of c))
+    (when (and (not (malep c)) (= (random 5) 0))
+      (push (make-instance 'yadfa-items:navy-skirt) (wear-of c)))
+    (unless (malep c)
+      (push (make-instance 'yadfa-items:bra) (wear-of c)))
+    (push (make-instance 'yadfa-items:navy-shirt) (wear-of c)))
+  (unless watersportp
+    (setf (watersport-limit-of c) (- (bladder/maximum-limit-of c) (bladder/potty-desperate-limit-of c))))
+  (unless mudsportp
+    (setf (mudsport-limit-of c) (- (bowels/maximum-limit-of c) (bowels/potty-desperate-limit-of c)))))
 (defclass navy-officer* (navy-officer) ()
   (:default-initargs
    :description "A variant of the Navy Officer. This variant still wears the standard pullups, but supplements them with stuffers to avoid changing the pullups out and is a bit less likely to try and hold it"
@@ -100,21 +98,19 @@
                      (iter (for i from 0 to (random 15))
                            (collect (make-instance 'yadfa-items:cloth-incontinence-pad))))))
 (defmethod initialize-instance :after
-    ((c navy-officer*) &rest args &key &allow-other-keys)
-  (destructuring-bind (&key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp) (wear nil wearp) &allow-other-keys)
-      args
-    (declare (ignore watersport-limit mudsport-limit wear))
-    (unless wearp
-      (push (make-instance 'yadfa-items:cloth-incontinence-pad) (wear-of c))
-      (push (make-instance 'yadfa-items:navy-pullups) (wear-of c))
-      (when (and (not (malep c)) (= (random 5) 0))
-        (push (make-instance 'yadfa-items:navy-skirt) (wear-of c)))
-      (unless (malep c)
-        (push (make-instance 'yadfa-items:bra) (wear-of c)))
-      (push (make-instance 'yadfa-items:navy-shirt) (wear-of c)))
-    (unless watersportp
-      (setf (watersport-limit-of c) (- (bladder/maximum-limit-of c)
-                                       (a:random-elt (list (bladder/potty-dance-limit-of c) (bladder/need-to-potty-limit-of c))))))
-    (unless mudsportp
-      (setf (mudsport-limit-of c) (- (bowels/maximum-limit-of c)
-                                     (a:random-elt (list (bowels/potty-dance-limit-of c) (bowels/need-to-potty-limit-of c))))))))
+    ((c navy-officer*) &key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp) (wear nil wearp) &allow-other-keys)
+  (declare (ignore watersport-limit mudsport-limit wear))
+  (unless wearp
+    (push (make-instance 'yadfa-items:cloth-incontinence-pad) (wear-of c))
+    (push (make-instance 'yadfa-items:navy-pullups) (wear-of c))
+    (when (and (not (malep c)) (= (random 5) 0))
+      (push (make-instance 'yadfa-items:navy-skirt) (wear-of c)))
+    (unless (malep c)
+      (push (make-instance 'yadfa-items:bra) (wear-of c)))
+    (push (make-instance 'yadfa-items:navy-shirt) (wear-of c)))
+  (unless watersportp
+    (setf (watersport-limit-of c) (- (bladder/maximum-limit-of c)
+                                     (a:random-elt (list (bladder/potty-dance-limit-of c) (bladder/need-to-potty-limit-of c))))))
+  (unless mudsportp
+    (setf (mudsport-limit-of c) (- (bowels/maximum-limit-of c)
+                                   (a:random-elt (list (bowels/potty-dance-limit-of c) (bowels/need-to-potty-limit-of c)))))))
