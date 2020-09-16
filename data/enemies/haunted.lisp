@@ -37,3 +37,33 @@
                    (setf j t))
                  (finally (return j))))
     (write-line "it had no effect")))
+(defclass werewolf (potty-enemy) ()
+  (:default-initargs
+   :name "Werewolf"
+   :description "A scary werewolf"
+   :species "Werewolf"
+   :male (a:random-elt '(t nil))
+   :element-types '(#.(make-instance 'yadfa-element-types:dark))
+   :moves (make-instances yadfa-moves:bite yadfa-moves:roar yadfa-moves:scratch)))
+(defmethod initialize-instance :after
+    ((c werewolf) &key (wear nil wearp) &allow-other-keys)
+  (declare (ignore wear))
+  (unless wearp
+    (setf (wear-of c)
+          (let (wear
+                (malep (malep c)))
+            (push (make-instance (if malep
+                                     'yadfa-items:boxers
+                                     'yadfa-items:panties))
+                  wear)
+            (push (make-instance 'yadfa-items:jeans)
+                  wear)
+            (unless malep
+              (push (make-instance 'yadfa-items:bra)
+                    wear))
+            wear))))
+(defclass domesticated-werewolf (werewolf) ()
+  (:default-initargs
+   :name "Domesticated Werewolf"
+   :description "These are kept by the ghosts as pets. The ghosts like to pretend they aren't housebroken, so they aren't allowed inside without diapers."
+   :wear (make-instances yadfa-items:collar yadfa-items:thick-diaper)))

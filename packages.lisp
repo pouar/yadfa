@@ -617,6 +617,8 @@
    #:diapered-dragon
    #:dergy
    #:ghost
+   #:werewolf
+   #:domesticated-werewolf
    #:catchable-enemy
    #:catch-chance-of
    #:raptor
