@@ -523,6 +523,8 @@
    #:collar
    #:rubber-suit
    #:magic-diaper-key
+   #:lil-koopalings
+   #:lil-koopalings-package
    #:ak47
    #:7.62×39mm
    #:box-of-7.62×39mm

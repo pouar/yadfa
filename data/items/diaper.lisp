@@ -45,7 +45,7 @@
 (defmethod use-script ((item diaper-package-mixin) (user base-character) (target base-character))
   (format t "You tear open the package and dump all the diapers out of it.~%")
   (iter (for i from 1 to 20)
-        (push (make-instance (slot-value item 'diaper)) (inventory-of target))))
+    (push (make-instance (slot-value item 'diaper)) (inventory-of target))))
 (defclass generic-diapers (yadfa:diaper undies) ()
   (:default-initargs
    :sogginess-capacity 100
@@ -214,21 +214,21 @@
          (calculate-gems (amount)
            (declare (type fixnum amount))
            (iter (for (the simple-string color) in '("magneta" "yellow" "purple" "green" "red"))
-                 (for (the fixnum value) in '(25 10 5 2 1))
-                 (with (the fixnum ret) = 0)
-                 (setf ret (iter (with (the fixnum ret) = 0)
-                                 (while (>= amount value))
-                                 (incf ret)
-                                 (decf amount value)
-                                 (finally (return ret))))
-                 (when (> ret 0)
-                   (collect (list color ret)))))
+             (for (the fixnum value) in '(25 10 5 2 1))
+             (with (the fixnum ret) = 0)
+             (setf ret (iter (with (the fixnum ret) = 0)
+                         (while (>= amount value))
+                         (incf ret)
+                         (decf amount value)
+                         (finally (return ret))))
+             (when (> ret 0)
+               (collect (list color ret)))))
          (text-length (text)
            (s:nlet rec ((count 0)
                         (text text))
-                   (if (>= count 2)
-                       count
-                       (rec (1+ count) (cdr text))))))
+             (if (>= count 2)
+                 count
+                 (rec (1+ count) (cdr text))))))
     (let* ((text (calculate-gems count))
            (text-length (text-length text)))
       (declare (type list text))
@@ -236,11 +236,11 @@
                          (2
                           (:fmt (:join (", " ", and ")
                                        (iter (for i in text)
-                                             (collect (format-pair i))))))
+                                         (collect (format-pair i))))))
                          (1
                           (:fmt (:join " and "
                                        (iter (for i in text)
-                                             (collect (format-pair i))))))
+                                         (collect (format-pair i))))))
                          (0
                           (:fmt (format-pair (car text))))))))))
 (defmethod describe-diaper-wear-usage ((item gem-diaper))
@@ -540,3 +540,27 @@
                     2000 "It squishes when you walk"
                     500 "The hearts on the front have faded"
                     1 "You can barely tell you wet it")))
+(defclass lil-koopalings (yadfa:diaper) ()
+  (:default-initargs
+   :sogginess-capacity 1000000
+   :messiness-capacity 1000000
+   :thickness 1000
+   :thickness-capacity 2000
+   :name "Lil Koopalings Diapers"
+   :description "Ultra thick pamps developed by Ivan Koopa. The color is the same color as the respective main Koopaling's color, while the tapes are the same color as the ring around the respective Koopaling's shell. Their emblem is also on the front and back of the diaper"
+   :wear-wet-text '(1000000 "little yellow streams are leaking down from the leg guards"
+                    500000 "The front is clearly stained yellow"
+                    10000 "It squishes a bit"
+                    1 "You can barely tell you wet it")
+   :wear-mess-text '(1000000 "Poo is leaking out of the leg guards and the back is stained brown"
+                     500000 "The back is clearly stained brown"
+                     500 "You can feel your mess back there but it isn't visible"
+                     1 "You can feel a slight mess back there")))
+(defclass lil-koopalings-package (diaper-package-mixin) ()
+  (:default-initargs
+   :name "Package of Lil Koopalings Diapers"
+   :plural-name "Packages of Lil Koopalings Diapers"
+   :description "Ultra thick pamps developed by Ivan Koopa. The color is the same color as the respective main Koopaling's color, while the tapes are the same color as the ring around the respective Koopaling's shell. Their emblem is also on the front and back of the diaper"
+   :consumable t
+   :value 200
+   :diaper 'lil-koopalings))
