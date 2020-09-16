@@ -111,6 +111,10 @@
   (:default-initargs
    :name "Ghost Catcher"
    :description "Use this to catch ghosts"))
+;;; actual class isn't loaded yet, but methods need a class defined, so define a dummy class
+;;; which should get replaced later in the loading process
+(unless (find-class 'yadfa-enemies:ghost nil)
+  (defclass yadfa-enemies:ghost () ()))
 (defmethod cant-use-p ((item ghost-catcher) (user base-character) (target base-character) action &key &allow-other-keys)
   (values t `(:format-control "~a can't be used on ~a" :format-arguments `(,(name-of item) ,(name-of target)))))
 (defmethod cant-use-p ((item ghost-catcher) (user base-character) (target yadfa-enemies:ghost) action &key &allow-other-keys)

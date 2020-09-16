@@ -12,11 +12,23 @@
           name
           name)
   (setf (health-of target) 0))
-(defclass watersport (wet-move-mixin) ()
-  (:default-initargs
-   :name "Watersport"
-   :description "Soak your diapers"
-   :element-types (list (make-instance 'yadfa-element-types:abdl))))
+(progn
+  (defclass watersport (wet-move-mixin) ()
+    (:default-initargs
+     :name "Watersport"
+     :description "Soak your diapers"
+     :element-types '(#1=#.(make-instance 'yadfa-element-types:abdl))))
+  (defclass mudsport (mess-move-mixin) ()
+    (:default-initargs
+     :name "Mudsport"
+     :description "mess your diapers"
+     :element-types '(#1#)))
+  (defclass mudbomb (mess-move-mixin debuff) ()
+    (:default-initargs
+     :name "Mud Bomb"
+     :description "massively mess your diapers, never fails"
+     :energy-cost 5
+     :element-types '(#1# #.(make-instance 'yadfa-element-types:poison)))))
 (defmethod attack ((target base-character) (user base-character) (attack watersport)
                    &aux (name (name-of user)))
   (declare (ignore target))
@@ -24,11 +36,6 @@
       (format t "But it failed~%")
       (progn (wet :wetter user)
              (format t "~a wet ~a~%" name (if (malep user) "himself" "herself")))))
-(defclass mudsport (mess-move-mixin) ()
-  (:default-initargs
-   :name "Mudsport"
-   :description "mess your diapers"
-   :element-types (list (make-instance 'yadfa-element-types:abdl))))
 (defmethod attack ((target base-character) (user base-character) (attack mudsport)
                    &aux (name (name-of user)))
   (declare (ignore target))
@@ -38,12 +45,6 @@
              (format t "~a messed ~a~%"
                      name
                      (if (malep user) "himself" "herself")))))
-(defclass mudbomb (mess-move-mixin debuff) ()
-  (:default-initargs
-   :name "Mud Bomb"
-   :description "massively mess your diapers, never fails"
-   :energy-cost 5
-   :element-types (list (make-instance 'yadfa-element-types:abdl) (make-instance 'yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (attack mudbomb))
   (write-line "But it failed."))
 (defmethod attack ((target base-character) (user bowels-character) (attack mudbomb)
@@ -71,7 +72,7 @@
   (:default-initargs
    :name "Tackle"
    :description "Tackles the enemy"
-   :element-types (list (make-instance 'yadfa-element-types:normal))))
+   :element-types '(#.(make-instance 'yadfa-element-types:normal))))
 (defclass roar (move debuff) ()
   (:default-initargs
    :name "Roar"
@@ -95,4 +96,4 @@
    :name "Bite"
    :description "Bites the enemy"
    :power 80
-   :element-types (list (make-instance 'yadfa-element-types:dark))))
+   :element-types '(#.(make-instance 'yadfa-element-types:dark))))

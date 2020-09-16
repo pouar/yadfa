@@ -22,21 +22,34 @@
             a)
           (wear-of c))
     (push (make-instance (if (malep c) 'yadfa-items:shendyt 'yadfa-items:kalasiris)) (wear-of c))))
-(defclass diapered-skunk (potty-enemy skunk-boop-mixin) ()
-  (:default-initargs
-   :name "Diapered Skunk"
-   :description "They spray their diapers when attacking. Their diapers reek of a smell of urine, feces, and skunk spray."
-   :species "Skunk"
-   :male (a:random-elt '(t nil))
-   :bladder/contents (random 500)
-   :bowels/contents (random 700)
-   :watersport-chance 3
-   :mudsport-chance 3
-   :bitcoins-per-level 100
-   :inventory (iter (for i from 0 to (random 10))
-                    (collect (make-instance 'yadfa-items:high-capacity-diaper)))
-   :element-types (make-instances yadfa-element-types:poison)
-   :moves (make-instances yadfa-moves:spray yadfa-moves:face-sit)))
+(progn
+  (defclass diapered-skunk (potty-enemy skunk-boop-mixin) ()
+    (:default-initargs
+     :name "Diapered Skunk"
+     :description "They spray their diapers when attacking. Their diapers reek of a smell of urine, feces, and skunk spray."
+     :species "Skunk"
+     :male (a:random-elt '(t nil))
+     :bladder/contents (random 500)
+     :bowels/contents (random 700)
+     :watersport-chance 3
+     :mudsport-chance 3
+     :bitcoins-per-level 100
+     :inventory (iter (for i from 0 to (random 10))
+                  (collect (make-instance 'yadfa-items:high-capacity-diaper)))
+     :element-types '(#1=#.(make-instance 'yadfa-element-types:poison))
+     :moves (make-instances yadfa-moves:spray yadfa-moves:face-sit)))
+  (defclass diapered-skunk* (potty-enemy skunk-boop-mixin) ()
+    (:default-initargs
+     :name "Diapered Skunk"
+     :species "Skunk"
+     :male (a:random-elt '(t nil))
+     :bladder/contents (random 500)
+     :bowels/contents (random 700)
+     :watersport-chance 3
+     :mudsport-chance 3
+     :bitcoins-per-level 100
+     :element-types '(#1#)
+     :moves (make-instances yadfa-moves:spray yadfa-moves:face-sit))))
 (defmethod initialize-instance :after
     ((c diapered-skunk) &key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp)
                           (wear nil wearp) &allow-other-keys)
@@ -94,18 +107,6 @@
              (mess :messer character)
              (set-status-condition 'yadfa-status-conditions:messing character))
            t))))
-(defclass diapered-skunk* (potty-enemy skunk-boop-mixin) ()
-  (:default-initargs
-   :name "Diapered Skunk"
-   :species "Skunk"
-   :male (a:random-elt '(t nil))
-   :bladder/contents (random 500)
-   :bowels/contents (random 700)
-   :watersport-chance 3
-   :mudsport-chance 3
-   :bitcoins-per-level 100
-   :element-types (make-instances yadfa-element-types:poison)
-   :moves (make-instances yadfa-moves:spray yadfa-moves:face-sit)))
 (defmethod initialize-instance :after
     ((c diapered-skunk*) &key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp)
                            (wear nil wearp) (description nil descriptionp) &allow-other-keys)
@@ -165,40 +166,42 @@
              (mess :messer character)
              (set-status-condition 'yadfa-status-conditions:messing character))
            t))))
-(defclass diapered-dragon (potty-enemy) ()
-  (:default-initargs
-   :name "Diapered Dragon"
-   :description "Keeps kobolds as pets. Waits until the last minute because \{,s}he's not some hatchling that has to use the potty all the time\""
-   :species "Dragon"
-   :male (a:random-elt '(t nil))
-   :bladder/contents (random 500)
-   :bowels/contents (random 700)
-   :bitcoins-per-level 100
-   :wear (list (make-instance 'yadfa-items:black-leather-jacket)
-               (make-instance 'yadfa-items:high-capacity-diaper))
-   :inventory (nconc (iter (for i from 0 to (random 20))
-                           (collect (make-instance 'yadfa-items:high-capacity-diaper)))
-                     (iter (for i from 0 to (random 20))
-                           (collect (make-instance 'yadfa-items:kurikia-thick-diaper))))
-   :element-types (make-instances yadfa-element-types:dragon yadfa-element-types:fire yadfa-element-types:flying)
-   :moves (make-instances yadfa-moves:tickle yadfa-moves:roar yadfa-moves:mush yadfa-moves:fire-breath)))
+(progn
+  (defclass diapered-dragon (potty-enemy) ()
+    (:default-initargs
+     :name "Diapered Dragon"
+     :description "Keeps kobolds as pets. Waits until the last minute because \{,s}he's not some hatchling that has to use the potty all the time\""
+     :species "Dragon"
+     :male (a:random-elt '(t nil))
+     :bladder/contents (random 500)
+     :bowels/contents (random 700)
+     :bitcoins-per-level 100
+     :wear (list (make-instance 'yadfa-items:black-leather-jacket)
+                 (make-instance 'yadfa-items:high-capacity-diaper))
+     :inventory (nconc (iter (for i from 0 to (random 20))
+                         (collect (make-instance 'yadfa-items:high-capacity-diaper)))
+                       (iter (for i from 0 to (random 20))
+                         (collect (make-instance 'yadfa-items:kurikia-thick-diaper))))
+     :element-types '(#1=#.(make-instance 'yadfa-element-types:dragon) #.(make-instance 'yadfa-element-types:fire)
+                      #.(make-instance 'yadfa-element-types:flying))
+     :moves (make-instances yadfa-moves:tickle yadfa-moves:roar yadfa-moves:mush yadfa-moves:fire-breath)))
+  (defclass dergy (bladder-enemy) ()
+    (:default-initargs
+     :name "Dergy"
+     :description "An alien dragon like species that liquefies its food, so he lacks bowels as everything goes through its bladder. But since all that mass is forced through its bladder now, it fills up much quicker, so they have to go more often and can't hold it in for as long."
+     :species "Dergy"
+     :malep (a:random-elt '(t nil))
+     :bitcoins-per-level 100
+     :bladder/fill-rate (* (/ 14000 24 60) 2)
+     :wear (list (make-instance 'yadfa-items:kurikia-thick-rubber-diaper))
+     :inventory (iter (for i from 0 to (random 20))
+                  (collect (make-instance 'yadfa-items:kurikia-thick-rubber-diaper)))
+     :element-types '(#1#)
+     :moves (make-instances yadfa-moves:tickle yadfa-moves:roar yadfa-moves:mush yadfa-moves:fire-breath))))
 (defclass diapered-dragon* (diapered-dragon pantsable-character) ()
   (:default-initargs
    :description "Keeps kobolds as pets. Wears pants to hide {his,her} padding. Waits until the last minute because \"{,s}he's not some hatchling that has to use the potty all the time\""
    :wear (make-instances yadfa-items:black-leather-jacket yadfa-items:baggy-jeans yadfa-items:high-capacity-diaper)))
-(defclass dergy (bladder-enemy) ()
-  (:default-initargs
-   :name "Dergy"
-   :description "An alien dragon like species that liquefies its food, so he lacks bowels as everything goes through its bladder. But since all that mass is forced through its bladder now, it fills up much quicker, so they have to go more often and can't hold it in for as long."
-   :species "Dergy"
-   :malep (a:random-elt '(t nil))
-   :bitcoins-per-level 100
-   :bladder/fill-rate (* (/ 14000 24 60) 2)
-   :wear (list (make-instance 'yadfa-items:kurikia-thick-rubber-diaper))
-   :inventory (iter (for i from 0 to (random 20))
-                    (collect (make-instance 'yadfa-items:kurikia-thick-rubber-diaper)))
-   :element-types (list (make-instance 'yadfa-element-types:dragon))
-   :moves (make-instances yadfa-moves:tickle yadfa-moves:roar yadfa-moves:mush yadfa-moves:fire-breath)))
 
 ;;; Raptors would most likely not have bladders irl, but I already threw
 ;;; scientific accuracy out the window when I gave them scales instead of feathers.

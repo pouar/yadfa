@@ -22,6 +22,8 @@
 (defmethod c2mop:validate-superclass ((class standard-class) (superclass element-type-class))
   (error 'simple-error :format-control "Either you didn't use ~s to define ~s or you tried to inherit a class not defined with ~s" :format-arguments `(define-type ,(class-name class) define-type)))
 (defclass element-type () () (:metaclass element-type-class))
+(defmethod make-load-form ((object element-type) &optional env)
+  (make-load-form-saving-slots object :environment env))
 (defclass buff () ()
   (:documentation #.(f:fmt nil "mixin for " (ref move :class) " or " (ref item :class) " that sets specified " (ref status-condition :class) " that causes buffs also uses this mixin")))
 (defclass debuff () ()
