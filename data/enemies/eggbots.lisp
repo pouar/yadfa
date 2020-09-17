@@ -8,4 +8,4 @@
    :male t
    :attributes (list :not-ticklish t)
    :bitcoins-per-level 40
-   :element-types '(#.(make-instance 'yadfa-element-types:steel))))
+   :element-types '#.(coerce-element-types 'yadfa-element-types:steel)))

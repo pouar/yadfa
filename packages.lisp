@@ -128,6 +128,7 @@
    #:toggle-onesie
    #:type-match
    #:coerce-element-type
+   #:coerce-element-types
    #:fill-bladder
    #:fill-bowels
    #:bladder/fill-rate

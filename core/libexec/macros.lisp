@@ -47,6 +47,8 @@
                            ,@(iter (for class-option in class-options)
                                    (unless (s:memq (car class-option) '(:super-effective :not-very-effective :no-effect :element-name))
                                      (collect class-option)))))
+          (or (gethash ',name *element-types*)
+              (setf (gethash ',name *element-types*) (make-instance ',name)))
           ,@(iter (for class-option in class-options)
                   (let ((option-name (car class-option)))
                     (when (s:memq option-name '(:super-effective :not-very-effective :no-effect))

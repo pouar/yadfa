@@ -1,40 +1,10 @@
 ;;;; -*- mode: Common-Lisp; sly-buffer-package: "yadfa-moves"; coding: utf-8-unix; -*-
 (in-package :yadfa-moves)
-(progn
-  (defclass mush (move debuff) ()
-    (:default-initargs
-     :name "Mush"
-     :description "Mush the target's diaper"
-     :element-types '(#1=#.(make-instance 'yadfa-element-types:abdl))))
-  (defclass spray (move debuff) ()
-    (:default-initargs
-     :name "Spray"
-     :description "Spray the target with skunk spray. Also fills your pamps with skunk spray while you're at it."
-     :energy-cost 5
-     :element-types '(#2=#.(make-instance 'yadfa-element-types:poison))))
-  (defclass face-sit (mess-move-mixin damage-move debuff) ()
-    (:default-initargs
-     :name "Face Sit"
-     :energy-cost 3
-     :power 40
-     :description "Sits on the enemy's face and messes"
-     :element-types '(#1# #2#)))
-  (defclass teleporting-flood (wet-move-mixin) ()
-    (:default-initargs
-     :name "Teleporting Flood"
-     :description "Flood your diapers, but enchants the diaper so it all teleports into someone else's diaper."
-     :element-types '(#1#)))
-  (defclass teleporting-mess (mess-move-mixin) ()
-    (:default-initargs
-     :name "Teleporting Mess"
-     :description "Mess your diapers, but enchants the diaper so it all teleports into someone else's diaper."
-     :element-types '(#1# #2#)))
-  (defclass fart (mess-move-mixin debuff) ()
-    (:default-initargs
-     :name "fart"
-     :description "Grosses out the enemies with gas. If poisoned or if desperate, you may end up messing yourself instead."
-     :energy-cost 10
-     :element-types '(#1# #2#))))
+(defclass mush (move debuff) ()
+  (:default-initargs
+   :name "Mush"
+   :description "Mush the target's diaper"
+   :element-types '#.(coerce-element-types 'yadfa-element-types:abdl)))
 (defmethod attack ((target base-character) (user base-character) (attack mush))
   (declare (ignore attack))
   (if (filter-items (wear-of user) 'incontinence-product)
@@ -114,6 +84,12 @@
         (progn
           (format t "~a tries to pants ~a~%" (name-of user) (name-of target))
           (format t "The attack has no effect on ~a~%" (name-of target))))))
+(defclass spray (move debuff) ()
+  (:default-initargs
+   :name "Spray"
+   :description "Spray the target with skunk spray. Also fills your pamps with skunk spray while you're at it."
+   :energy-cost 5
+   :element-types '#.(coerce-element-types 'yadfa-element-types:poison)))
 (defmethod attack ((target base-character) (user base-character) (attack spray))
   (format t "~a used ~a~%" (name-of user) (name-of attack))
   (let ((amount 50))
@@ -166,6 +142,13 @@
    :power 60
    :description "Breathes fire at the enemy"
    :element-types '(#.(make-instance 'yadfa-element-types:fire))))
+(defclass face-sit (mess-move-mixin damage-move debuff) ()
+  (:default-initargs
+   :name "Face Sit"
+   :energy-cost 3
+   :power 40
+   :description "Sits on the enemy's face and messes"
+   :element-types '#.(coerce-element-types '(yadfa-element-types:abdl yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (self face-sit))
   (let* ((m (mess :messer user))
          (c (calculate-diaper-usage user)))
@@ -176,18 +159,34 @@
       (format t "~a is grossed out by the smell~%" (name-of target))
       (set-status-condition 'yadfa-status-conditions:skunked target))
     (format t "~a is damaged by the impact~%" (name-of target))))
+(defclass teleporting-flood (wet-move-mixin) ()
+  (:default-initargs
+   :name "Teleporting Flood"
+   :description "Flood your diapers, but enchants the diaper so it all teleports into someone else's diaper."
+   :element-types '#.(coerce-element-types 'yadfa-element-types:abdl)))
 (defmethod attack ((target base-character) (user base-character) (self teleporting-flood))
   (if (< (bladder/contents-of user) (bladder/need-to-potty-limit-of user))
       (format t "But it failed~%")
       (progn (wet :wetter user :clothes (wear-of target))
              (format t "~a gets a freaked expression on ~a face as ~a floods ~a's pamps~%" (name-of target) (if (malep target) "his" "her")
                      (name-of user) (name-of target)))))
+(defclass teleporting-mess (mess-move-mixin) ()
+  (:default-initargs
+   :name "Teleporting Mess"
+   :description "Mess your diapers, but enchants the diaper so it all teleports into someone else's diaper."
+   :element-types '#.(coerce-element-types '(yadfa-element-types:abdl yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (self teleporting-mess))
   (if (< (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
       (format t "But it failed~%")
       (progn (mess :messer user :clothes (wear-of target))
              (format t "~a gets a freaked expression on ~a face as ~a messes ~a's pamps~%" (name-of target) (if (malep target) "his" "her")
                      (name-of user) (name-of target)))))
+(defclass fart (mess-move-mixin debuff) ()
+  (:default-initargs
+   :name "fart"
+   :description "Grosses out the enemies with gas. If poisoned or if desperate, you may end up messing yourself instead."
+   :energy-cost 10
+   :element-types '#.(coerce-element-types '(yadfa-element-types:abdl yadfa-element-types:poison))))
 (defmethod attack ((target base-character) (user base-character) (attack fart))
   (f:fmt t "But it failed." #\Newline))
 (defmethod attack :around ((target base-character) (user bowels-character) (attack fart))

@@ -54,3 +54,5 @@
   "contains the package designators for the exported symbols to be used as commands")
 (g:define-global-var *last-rng-update* 0)
 (g:define-global-var *immutable* nil)
+(g:define-global-var *element-types* (make-hash-table :test 'eq)
+  "Hash table containing preinitialized element types. Used instead of defining a bunch of constants.")

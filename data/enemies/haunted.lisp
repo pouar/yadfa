@@ -15,7 +15,7 @@
                      :defense float-features:long-float-positive-infinity
                      :energy most-positive-fixnum
                      :speed 120)
-   :element-types '(#.(make-instance 'yadfa-element-types:ghost))
+   :element-types '#.(coerce-element-types 'yadfa-element-types:ghost)
    :moves (make-instances yadfa-moves:ghost-tickle yadfa-moves:ghost-mush yadfa-moves:ghost-squish)))
 (defmethod default-attack ((target team-member) (user ghost))
   (declare (ignore target))
@@ -43,7 +43,7 @@
    :description "A scary werewolf"
    :species "Werewolf"
    :male (a:random-elt '(t nil))
-   :element-types '(#.(make-instance 'yadfa-element-types:dark))
+   :element-types '#.(coerce-element-types 'yadfa-element-types:dark)
    :moves (make-instances yadfa-moves:bite yadfa-moves:roar yadfa-moves:scratch)))
 (defmethod initialize-instance :after
     ((c werewolf) &key (wear nil wearp) &allow-other-keys)
