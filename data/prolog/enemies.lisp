@@ -4,8 +4,8 @@
   `(list ,@(iter (for symbol in symbols)
                  (collect `(make-instance ',symbol)))))
 (defclass catchable-enemy (enemy)
-  ((catch-chance
-    :initarg :catch-chance
+  ((catch-chance%
+    :initarg catch-chance
     :accessor catch-chance-of
     :initform (lambda (enemy)
                 (let ((rate 1)) ; number between 0 and 1

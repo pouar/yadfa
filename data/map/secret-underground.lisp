@@ -44,5 +44,5 @@
              :description "A shop where you can buy stuff. Be sure to buy a training potty for your base. You don't want to have an accident now do you?"
              :enter-text "You enter the shop"
              :props (list :shop (make-instance 'yadfa-props:shop
-                                               :items-for-sale '((yadfa-props:pet-bed)
-                                                                 (yadfa-props:training-potty)))))
+                                               'yadfa-props:items-for-sale '((yadfa-props:pet-bed)
+                                                                             (yadfa-props:training-potty)))))

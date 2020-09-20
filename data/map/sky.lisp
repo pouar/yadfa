@@ -58,30 +58,30 @@
              :enter-text "You're inside the power room"
              :props (list
                      :vending-machine (make-instance 'yadfa-props:shop
-                                                     :items-for-sale '((yadfa-items:disposable-swim-diaper . (list :value 10))
-                                                                       (yadfa-items:diaper . (list :value 10))))))
+                                                     'yadfa-props:items-for-sale '((yadfa-items:disposable-swim-diaper . (list :value 10))
+                                                                                   (yadfa-items:diaper . (list :value 10))))))
 (ensure-zone (4 -18 0 candle-carnival)
              :name "Changing room"
              :description "A place where you can change your clothes for swimming. There's a vending machine for people to buy diapers from while they're here"
              :enter-text "You enter the changing room"
              :props (list
                      :vending-machine (make-instance 'yadfa-props:vending-machine
-                                                     :items-for-sale '((yadfa-items:disposable-swim-diaper . (list :value 11))
-                                                                       (yadfa-items:diaper . (list :value 10))
-                                                                       (yadfa-items:pullups . (list :value 5))))))
+                                                     'yadfa-props:items-for-sale '((yadfa-items:disposable-swim-diaper . (list :value 11))
+                                                                                   (yadfa-items:diaper . (list :value 10))
+                                                                                   (yadfa-items:pullups . (list :value 5))))))
 (ensure-zone (-4 -18 0 candle-carnival)
              :name "Gift Shop"
              :description "Here you can buy stuff"
              :enter-text "You enter the shop"
              :props (list
                      :shop (make-instance 'yadfa-props:shop
-                                          :items-for-sale '((yadfa-items:disposable-swim-diaper-package)
-                                                            (yadfa-items:swim-diaper-cover)
-                                                            (yadfa-items:blanket)
-                                                            (yadfa-items:plushie)
-                                                            (yadfa-items:pirate-dress)
-                                                            (yadfa-items:pirate-shirt)
-                                                            (yadfa-items:orca-suit-lite)))))
+                                          'yadfa-props:items-for-sale '((yadfa-items:disposable-swim-diaper-package)
+                                                                        (yadfa-items:swim-diaper-cover)
+                                                                        (yadfa-items:blanket)
+                                                                        (yadfa-items:plushie)
+                                                                        (yadfa-items:pirate-dress)
+                                                                        (yadfa-items:pirate-shirt)
+                                                                        (yadfa-items:orca-suit-lite)))))
 (uiop:define-package #:sky-base
   (:export
    #:main-office

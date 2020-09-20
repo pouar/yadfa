@@ -552,7 +552,15 @@
    #:contained-enemies-of
    #:contained-enemies-max-length-of
    #:catch-chance-multiplier-of
-   #:catch-chance-delta-of)
+   #:catch-chance-delta-of
+   #:contained-enemies
+   #:contained-enemies-max-length
+   #:catch-chance-multiplier
+   #:catch-chance-delta
+   #:device-health
+   #:max-device-health
+   #:device-health-of
+   #:max-device-health-of)
   (:documentation "Contains all the items in the game")
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands) (:f :fmt)))
@@ -622,6 +630,7 @@
    #:domesticated-werewolf
    #:catchable-enemy
    #:catch-chance-of
+   #:catch-chance
    #:raptor
    #:change-class-target
    #:change-class-text
@@ -646,7 +655,8 @@
    #:placable-washer
    #:pet-bed
    #:training-potty
-   #:items-for-sale-of)
+   #:items-for-sale-of
+   #:items-for-sale)
   (:documentation "Contains all the enemies in the game")
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands) (:f :fmt)))

@@ -28,17 +28,17 @@
              :potty-trigger 'trigger-diaper-police
              :props (list
                      :shop (make-instance 'yadfa-props:shop
-                                          :items-for-sale (list
-                                                           '(yadfa-items:monster-energy-drink)
-                                                           '(yadfa-items:generic-diapers-package)
-                                                           '(yadfa-items:generic-pullons-package)
-                                                           '(yadfa-items:dress)
-                                                           '(yadfa-items:jeans)
-                                                           '(yadfa-items:tshirt)
-                                                           '(yadfa-items:boxers)
-                                                           '(yadfa-items:panties)
-                                                           '(yadfa-items:knights-armor)
-                                                           '(yadfa-items:potion)))
+                                          'yadfa-props:items-for-sale (list
+                                                                       '(yadfa-items:monster-energy-drink)
+                                                                       '(yadfa-items:generic-diapers-package)
+                                                                       '(yadfa-items:generic-pullons-package)
+                                                                       '(yadfa-items:dress)
+                                                                       '(yadfa-items:jeans)
+                                                                       '(yadfa-items:tshirt)
+                                                                       '(yadfa-items:boxers)
+                                                                       '(yadfa-items:panties)
+                                                                       '(yadfa-items:knights-armor)
+                                                                       '(yadfa-items:potion)))
                      :changing-table (make-instance 'yadfa-props:automatic-changing-table)))
 
 (ensure-zone (0 -1 0 ironside)
@@ -49,13 +49,13 @@
              :potty-trigger 'trigger-diaper-police
              :props (list
                      :shop (make-instance 'yadfa-props:shop
-                                          :items-for-sale (list
-                                                           '(yadfa-items:bottle-of-milk)
-                                                           '(yadfa-items:incontinence-pad-package)
-                                                           '(yadfa-items:diaper-package)
-                                                           '(yadfa-items:pullups-package)
-                                                           '(yadfa-items:toddler-dress)
-                                                           '(yadfa-items:onesie/opened)))
+                                          'yadfa-props:items-for-sale (list
+                                                                       '(yadfa-items:bottle-of-milk)
+                                                                       '(yadfa-items:incontinence-pad-package)
+                                                                       '(yadfa-items:diaper-package)
+                                                                       '(yadfa-items:pullups-package)
+                                                                       '(yadfa-items:toddler-dress)
+                                                                       '(yadfa-items:onesie/opened)))
                      :changing-table (make-instance 'yadfa-props:automatic-changing-table)))
 (ensure-zone (2 1 0 ironside)
              :name "Ironside University Entrance"

@@ -133,8 +133,8 @@
                                                          (format t "You will now teleport here when you black out")))))
   (:documentation "Class for washers, you can wash your diapers and all the clothes you've ruined in these."))
 (defclass shop (prop)
-  ((items-for-sale
-    :initarg :items-for-sale
+  ((items-for-sale%
+    :initarg items-for-sale
     :initform ()
     :accessor items-for-sale-of
     :type list
@@ -171,8 +171,8 @@
                                 :items-to-sell (or items t)
                                 :user (player-of *game*))))))
 (defclass vending-machine (prop)
-  ((items-for-sale
-    :initarg :items-for-sale
+  ((items-for-sale%
+    :initarg items-for-sale
     :initform ()
     :accessor items-for-sale-of
     :type list
