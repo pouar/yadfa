@@ -37,63 +37,67 @@
                 (collect (make-instance 'yadfa-items:high-capacity-diaper)))
    :element-types '#.(coerce-element-types 'yadfa-element-types:poison)
    :moves (make-instances yadfa-moves:spray yadfa-moves:face-sit)))
-(defmethod initialize-instance :after
-    ((c diapered-skunk) &key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp)
-                          (wear nil wearp) &allow-other-keys)
-  (declare (ignore watersport-limit mudsport-limit wear))
-  (unless wearp
-    (push (let ((a (make-instance 'yadfa-items:high-capacity-diaper)))
-            (setf (sogginess-of a) (+ (bladder/potty-desperate-limit-of c) (random (+ (bladder/maximum-limit-of c) (- (bladder/maximum-limit-of c) (bladder/potty-desperate-limit-of c))))))
-            (setf (messiness-of a) (+ (bowels/potty-desperate-limit-of c) (random (- (bowels/maximum-limit-of c) (bowels/potty-desperate-limit-of c)))))
-            a)
-          (wear-of c))
-    (push (make-instance (if (malep c) 'yadfa-items:tshirt 'yadfa-items:bikini-top)) (wear-of c))
-    (push (make-instance 'yadfa-items:black-leather-jacket) (wear-of c)))
-  (unless watersportp
-    (setf (watersport-limit-of c) (- (bladder/maximum-limit-of c) (bladder/potty-desperate-limit-of c))))
-  (unless mudsportp
-    (setf (mudsport-limit-of c) (- (bowels/maximum-limit-of c) (bowels/potty-desperate-limit-of c)))))
-(defmethod process-battle-accident ((character diapered-skunk) attack (item item) reload (selected-target base-character))
-  (declare (ignore attack item reload selected-target))
-  (let* ((watersport-chance (random (watersport-chance-of character)))
-         (mudsport-chance (random (mudsport-chance-of character)))
-         (male (malep character))
-         (hisher (if male "his" "her"))
-         (name (name-of character))
-         (bladder/maximum-limit (bladder/maximum-limit-of character))
-         (bowels/maximum-limit (bowels/maximum-limit-of character))
-         (mudsport-limit (mudsport-limit-of character))
-         (watersport-limit (watersport-limit-of character)))
-    (cond ((or (>= (bladder/contents-of character)
-                   (bladder/maximum-limit-of character))
-               (>= (bowels/contents-of character) bowels/maximum-limit)
-               (and watersport-limit
-                    (<= (- bladder/maximum-limit (bladder/contents-of character)) watersport-limit)
-                    (< watersport-chance 1))
-               (and mudsport-limit
-                    (<= (- bowels/maximum-limit (bowels/contents-of character)) mudsport-limit)
-                    (< mudsport-chance 1)))
-           (when (or (>= (bladder/contents-of character) bladder/maximum-limit)
-                     (and watersport-limit
-                          (<= (- bladder/maximum-limit (bladder/contents-of character)) watersport-limit)
-                          (< watersport-chance 1)))
-             (format t "~a gets a look of relief on ~a face as ~a floods ~a pamps~%"
-                     name
-                     hisher
-                     (if male "he" "she")
-                     hisher)
-             (wet :wetter character)
-             (set-status-condition 'yadfa-status-conditions:wetting character))
-           (when (or (>= (bowels/contents-of character) bowels/maximum-limit)
-                     (and mudsport-limit
-                          (<= (- bowels/maximum-limit (bowels/contents-of character)) mudsport-limit)
-                          (< mudsport-chance 1)))
-             (format t "~a squats down and with a heavy grunt pushes a huge load into ~a diapers~%"
-                     name
-                     hisher)
-             (mess :messer character)
-             (set-status-condition 'yadfa-status-conditions:messing character))
-           t))))
+(s:defmethods diapered-skunk (character)
+  (:method initialize-instance :after
+      (character &key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp)
+                      (wear nil wearp) &allow-other-keys)
+    (declare (ignore watersport-limit mudsport-limit wear))
+    (unless wearp
+      (push (let ((a (make-instance 'yadfa-items:high-capacity-diaper)))
+              (setf (sogginess-of a) (+ (bladder/potty-desperate-limit-of character)
+                                        (random (+ (bladder/maximum-limit-of character)
+                                                   (- (bladder/maximum-limit-of character) (bladder/potty-desperate-limit-of character))))))
+              (setf (messiness-of a) (+ (bowels/potty-desperate-limit-of character)
+                                        (random (- (bowels/maximum-limit-of character) (bowels/potty-desperate-limit-of character)))))
+              a)
+            (wear-of character))
+      (push (make-instance (if (malep character) 'yadfa-items:tshirt 'yadfa-items:bikini-top)) (wear-of character))
+      (push (make-instance 'yadfa-items:black-leather-jacket) (wear-of character)))
+    (unless watersportp
+      (setf (watersport-limit-of character) (- (bladder/maximum-limit-of character) (bladder/potty-desperate-limit-of character))))
+    (unless mudsportp
+      (setf (mudsport-limit-of character) (- (bowels/maximum-limit-of character) (bowels/potty-desperate-limit-of character)))))
+  (:method process-battle-accident (character attack (item item) reload (selected-target base-character))
+    (declare (ignore attack item reload selected-target))
+    (let* ((watersport-chance (random (watersport-chance-of character)))
+           (mudsport-chance (random (mudsport-chance-of character)))
+           (male (malep character))
+           (hisher (if male "his" "her"))
+           (name (name-of character))
+           (bladder/maximum-limit (bladder/maximum-limit-of character))
+           (bowels/maximum-limit (bowels/maximum-limit-of character))
+           (mudsport-limit (mudsport-limit-of character))
+           (watersport-limit (watersport-limit-of character)))
+      (cond ((or (>= (bladder/contents-of character)
+                     (bladder/maximum-limit-of character))
+                 (>= (bowels/contents-of character) bowels/maximum-limit)
+                 (and watersport-limit
+                      (<= (- bladder/maximum-limit (bladder/contents-of character)) watersport-limit)
+                      (< watersport-chance 1))
+                 (and mudsport-limit
+                      (<= (- bowels/maximum-limit (bowels/contents-of character)) mudsport-limit)
+                      (< mudsport-chance 1)))
+             (when (or (>= (bladder/contents-of character) bladder/maximum-limit)
+                       (and watersport-limit
+                            (<= (- bladder/maximum-limit (bladder/contents-of character)) watersport-limit)
+                            (< watersport-chance 1)))
+               (format t "~a gets a look of relief on ~a face as ~a floods ~a pamps~%"
+                       name
+                       hisher
+                       (if male "he" "she")
+                       hisher)
+               (wet :wetter character)
+               (set-status-condition 'yadfa-status-conditions:wetting character))
+             (when (or (>= (bowels/contents-of character) bowels/maximum-limit)
+                       (and mudsport-limit
+                            (<= (- bowels/maximum-limit (bowels/contents-of character)) mudsport-limit)
+                            (< mudsport-chance 1)))
+               (format t "~a squats down and with a heavy grunt pushes a huge load into ~a diapers~%"
+                       name
+                       hisher)
+               (mess :messer character)
+               (set-status-condition 'yadfa-status-conditions:messing character))
+             t)))))
 (defclass diapered-skunk* (potty-enemy skunk-boop-mixin) ()
   (:default-initargs
    :name "Diapered Skunk"
@@ -106,65 +110,66 @@
    :bitcoins-per-level 100
    :element-types '#.(coerce-element-types 'yadfa-element-types:poison)
    :moves (make-instances yadfa-moves:spray yadfa-moves:face-sit)))
-(defmethod initialize-instance :after
-    ((c diapered-skunk*) &key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp)
-                           (wear nil wearp) (description nil descriptionp) &allow-other-keys)
-  (declare (ignore watersport-limit mudsport-limit wear description))
-  (unless wearp
-    (push (let ((a (make-instance 'yadfa-items:high-capacity-diaper)))
-            (setf (sogginess-of a) (sogginess-capacity-of a))
-            (setf (messiness-of a) (messiness-capacity-of a))
-            a)
-          (wear-of c)))
-  (unless watersportp
-    (setf (watersport-limit-of c) (- (bladder/maximum-limit-of c) (bladder/potty-desperate-limit-of c))))
-  (unless mudsportp
-    (setf (mudsport-limit-of c) (- (bowels/maximum-limit-of c) (bowels/potty-desperate-limit-of c))))
-  (unless descriptionp
-    (let* ((male (malep c))
-           (hisher (if male "his" "her")))
-      (setf (description-of c) (format nil "If you thought the other skunk was stinky, that's nothing compared to this one. Apparently this skunk never changes ~a pamps at all and just continues to flood, mess, and spray ~a current one. ~a doesn't wear anything else because it just gets covered in too much of ~a own stinky juices." hisher hisher (if male "He" "She") hisher)))))
-(defmethod process-battle-accident ((character diapered-skunk*) attack (item item) reload (selected-target base-character))
-  (declare (ignore attack item reload selected-target))
-  (let* ((watersport-chance (random (watersport-chance-of character)))
-         (mudsport-chance (random (mudsport-chance-of character)))
-         (male (malep character))
-         (hisher (if male "his" "her"))
-         (name (name-of character))
-         (bladder/maximum-limit (bladder/maximum-limit-of character))
-         (bowels/maximum-limit (bowels/maximum-limit-of character))
-         (mudsport-limit (mudsport-limit-of character))
-         (watersport-limit (watersport-limit-of character)))
-    (cond ((or (>= (bladder/contents-of character)
-                   (bladder/maximum-limit-of character))
-               (>= (bowels/contents-of character) bowels/maximum-limit)
-               (and watersport-limit
-                    (<= (- bladder/maximum-limit (bladder/contents-of character)) watersport-limit)
-                    (< watersport-chance 1))
-               (and mudsport-limit
-                    (<= (- bowels/maximum-limit (bowels/contents-of character)) mudsport-limit)
-                    (< mudsport-chance 1)))
-           (when (or (>= (bladder/contents-of character) bladder/maximum-limit)
-                     (and watersport-limit
-                          (<= (- bladder/maximum-limit (bladder/contents-of character)) watersport-limit)
-                          (< watersport-chance 1)))
-             (format t "~a gets a look of relief on ~a face as ~a floods ~a already leaky and waterlogged pamps~%"
-                     name
-                     hisher
-                     (if male "he" "she")
-                     hisher)
-             (wet :wetter character)
-             (set-status-condition 'yadfa-status-conditions:wetting character))
-           (when (or (>= (bowels/contents-of character) bowels/maximum-limit)
-                     (and mudsport-limit
-                          (<= (- bowels/maximum-limit (bowels/contents-of character)) mudsport-limit)
-                          (< mudsport-chance 1)))
-             (format t "~a squats down and with a heavy grunt pushes a huge load into ~a already overly full diapers~%"
-                     name
-                     hisher)
-             (mess :messer character)
-             (set-status-condition 'yadfa-status-conditions:messing character))
-           t))))
+(s:defmethods diapered-skunk* (character)
+  (:method initialize-instance :after
+      (character &key (watersport-limit nil watersportp) (mudsport-limit nil mudsportp)
+                      (wear nil wearp) (description nil descriptionp) &allow-other-keys)
+    (declare (ignore watersport-limit mudsport-limit wear description))
+    (unless wearp
+      (push (let ((a (make-instance 'yadfa-items:high-capacity-diaper)))
+              (setf (sogginess-of a) (sogginess-capacity-of a))
+              (setf (messiness-of a) (messiness-capacity-of a))
+              a)
+            (wear-of character)))
+    (unless watersportp
+      (setf (watersport-limit-of character) (- (bladder/maximum-limit-of character) (bladder/potty-desperate-limit-of character))))
+    (unless mudsportp
+      (setf (mudsport-limit-of character) (- (bowels/maximum-limit-of character) (bowels/potty-desperate-limit-of character))))
+    (unless descriptionp
+      (let* ((male (malep character))
+             (hisher (if male "his" "her")))
+        (setf (description-of character) (format nil "If you thought the other skunk was stinky, that's nothing compared to this one. Apparently this skunk never changes ~a pamps at all and just continues to flood, mess, and spray ~a current one. ~a doesn't wear anything else because it just gets covered in too much of ~a own stinky juices." hisher hisher (if male "He" "She") hisher)))))
+  (:method process-battle-accident (character attack (item item) reload (selected-target base-character))
+    (declare (ignore attack item reload selected-target))
+    (let* ((watersport-chance (random (watersport-chance-of character)))
+           (mudsport-chance (random (mudsport-chance-of character)))
+           (male (malep character))
+           (hisher (if male "his" "her"))
+           (name (name-of character))
+           (bladder/maximum-limit (bladder/maximum-limit-of character))
+           (bowels/maximum-limit (bowels/maximum-limit-of character))
+           (mudsport-limit (mudsport-limit-of character))
+           (watersport-limit (watersport-limit-of character)))
+      (cond ((or (>= (bladder/contents-of character)
+                     (bladder/maximum-limit-of character))
+                 (>= (bowels/contents-of character) bowels/maximum-limit)
+                 (and watersport-limit
+                      (<= (- bladder/maximum-limit (bladder/contents-of character)) watersport-limit)
+                      (< watersport-chance 1))
+                 (and mudsport-limit
+                      (<= (- bowels/maximum-limit (bowels/contents-of character)) mudsport-limit)
+                      (< mudsport-chance 1)))
+             (when (or (>= (bladder/contents-of character) bladder/maximum-limit)
+                       (and watersport-limit
+                            (<= (- bladder/maximum-limit (bladder/contents-of character)) watersport-limit)
+                            (< watersport-chance 1)))
+               (format t "~a gets a look of relief on ~a face as ~a floods ~a already leaky and waterlogged pamps~%"
+                       name
+                       hisher
+                       (if male "he" "she")
+                       hisher)
+               (wet :wetter character)
+               (set-status-condition 'yadfa-status-conditions:wetting character))
+             (when (or (>= (bowels/contents-of character) bowels/maximum-limit)
+                       (and mudsport-limit
+                            (<= (- bowels/maximum-limit (bowels/contents-of character)) mudsport-limit)
+                            (< mudsport-chance 1)))
+               (format t "~a squats down and with a heavy grunt pushes a huge load into ~a already overly full diapers~%"
+                       name
+                       hisher)
+               (mess :messer character)
+               (set-status-condition 'yadfa-status-conditions:messing character))
+             t)))))
 (defclass diapered-dragon (potty-enemy) ()
   (:default-initargs
    :name "Diapered Dragon"

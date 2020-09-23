@@ -19,71 +19,72 @@
   (:default-initargs
    :name "Pants"
    :description "Pants the enemy"))
-(defmethod attack ((target base-character) (user base-character) (self pants))
-  (declare (ignore self))
-  (format t "~a tries to pants ~a~%" (name-of user) (name-of target))
-  (format t "The attack has no effect on ~a~%" (name-of target)))
-(defmethod attack ((target pantsable-character) (user base-character) (self pants))
-  (declare (ignore self))
-  (let* ((pants (filter-items (wear-of target) '(or pants skirt dress)))
-         (stat
-           (when pants
-             (iter (for i in (wear-of target))
-               (when (typep i '(or diaper pullup))
-                 (let ((severity (cond ((and (> (sogginess-of i) 300) (> (messiness-of i) 4000))
-                                        'both)
-                                       ((> (messiness-of i) 4000)
-                                        'messy)
-                                       ((> (sogginess-of i) 300)
-                                        'soggy)))
-                       (padding i))
-                   (leave `(padding ,padding severity ,severity)))))))
-         (old-condition (find 'yadfa-status-conditions:pantsed (getf (status-conditions-of *battle*) target)
-                              :test (lambda (o e)
-                                      (typep e o)))))
-    (if stat
-        (progn
-          (cond ((filter-items pants '(or pants skirt))
-                 (format t "~a pantses ~a~%"
-                         (name-of user)
-                         (name-of target)))
-                ((filter-items pants 'dress)
-                 (format t "~a raises ~a's ~a~%"
-                         (name-of user)
-                         (name-of target)
-                         (name-of (car (filter-items pants 'dress))))))
-          (unless old-condition
-            (push (make-instance 'yadfa-status-conditions:pantsed) (getf (status-conditions-of *battle*) target)))
-          (format t "~a gets a horrified look on ~a face as ~a ~a is exposed to the world~%"
-                  (name-of target)
-                  (if (malep target) "his" "her")
-                  (if (malep target) "his" "her")
-                  (cond ((getf stat 'both)
-                         (format nil "soggy mushy padding"))
-                        ((getf stat 'messy)
-                         "messy padding")
-                        ((getf stat 'soggy)
-                         "soggy padding")
-                        (t "padding")))
-          (let ((audience (iter (for i in (if (typep target 'enemy)
-                                              (enemies-of *battle*)
-                                              (team-of *game*)))
-                            (unless (eq target i)
-                              (collect i)))))
-            (when audience
-              (format t (if (> (list-length audience) 1)
-                            "~a's team mates start laughing at ~a~%"
-                            "~a's team mate starts laughing at ~a~%")
-                      (name-of target)
-                      (if (malep target)
-                          "him"
-                          "her"))
-              (unless old-condition
-                (iter (for i in audience)
-                  (set-status-condition 'yadfa-status-conditions:laughing i))))))
-        (progn
-          (format t "~a tries to pants ~a~%" (name-of user) (name-of target))
-          (format t "The attack has no effect on ~a~%" (name-of target))))))
+(s:defmethods pants (self)
+  (:method attack ((target base-character) (user base-character) self)
+    (declare (ignore self))
+    (format t "~a tries to pants ~a~%" (name-of user) (name-of target))
+    (format t "The attack has no effect on ~a~%" (name-of target)))
+  (:method attack ((target pantsable-character) (user base-character) self)
+    (declare (ignore self))
+    (let* ((pants (filter-items (wear-of target) '(or pants skirt dress)))
+           (stat
+             (when pants
+               (iter (for i in (wear-of target))
+                 (when (typep i '(or diaper pullup))
+                   (let ((severity (cond ((and (> (sogginess-of i) 300) (> (messiness-of i) 4000))
+                                          'both)
+                                         ((> (messiness-of i) 4000)
+                                          'messy)
+                                         ((> (sogginess-of i) 300)
+                                          'soggy)))
+                         (padding i))
+                     (leave `(padding ,padding severity ,severity)))))))
+           (old-condition (find 'yadfa-status-conditions:pantsed (getf (status-conditions-of *battle*) target)
+                                :test (lambda (o e)
+                                        (typep e o)))))
+      (if stat
+          (progn
+            (cond ((filter-items pants '(or pants skirt))
+                   (format t "~a pantses ~a~%"
+                           (name-of user)
+                           (name-of target)))
+                  ((filter-items pants 'dress)
+                   (format t "~a raises ~a's ~a~%"
+                           (name-of user)
+                           (name-of target)
+                           (name-of (car (filter-items pants 'dress))))))
+            (unless old-condition
+              (push (make-instance 'yadfa-status-conditions:pantsed) (getf (status-conditions-of *battle*) target)))
+            (format t "~a gets a horrified look on ~a face as ~a ~a is exposed to the world~%"
+                    (name-of target)
+                    (if (malep target) "his" "her")
+                    (if (malep target) "his" "her")
+                    (cond ((getf stat 'both)
+                           (format nil "soggy mushy padding"))
+                          ((getf stat 'messy)
+                           "messy padding")
+                          ((getf stat 'soggy)
+                           "soggy padding")
+                          (t "padding")))
+            (let ((audience (iter (for i in (if (typep target 'enemy)
+                                                (enemies-of *battle*)
+                                                (team-of *game*)))
+                              (unless (eq target i)
+                                (collect i)))))
+              (when audience
+                (format t (if (> (list-length audience) 1)
+                              "~a's team mates start laughing at ~a~%"
+                              "~a's team mate starts laughing at ~a~%")
+                        (name-of target)
+                        (if (malep target)
+                            "him"
+                            "her"))
+                (unless old-condition
+                  (iter (for i in audience)
+                    (set-status-condition 'yadfa-status-conditions:laughing i))))))
+          (progn
+            (format t "~a tries to pants ~a~%" (name-of user) (name-of target))
+            (format t "The attack has no effect on ~a~%" (name-of target)))))))
 (defclass spray (move debuff) ()
   (:default-initargs
    :name "Spray"
@@ -122,19 +123,20 @@
    :name "Boop"
    :description "Boops da target on da snoot"
    :energy-cost 5))
-(defmethod attack ((target base-character) (user base-character) (attack boop))
-  (let ((user-name (name-of user))
-        (target-name (name-of target)))
-    (f:fmt t target-name " blushes as " user-name " boops " target-name " on da snoot :3" #\Newline)))
-(defmethod attack ((target yadfa-enemies:skunk-boop-mixin) (user base-character) (attack boop))
-  (let* ((user-name (name-of user))
-         (target-name (name-of target))
-         (target-male-p (malep target)))
-    (f:fmt t target-name " blushes as " user-name " boops " target-name " on da snoot :3" #\Newline
-           target-name " immediately squats down and messes " (if target-male-p "his" "her") " pamps." #\Newline
-           "It's like a mess button." #\Newline)
-    (mess :force-fill-amount (bowels/maximum-limit-of target))
-    (set-status-condition 'yadfa-status-conditions:messing target)))
+(s:defmethods boop (attack)
+  (:method attack ((target base-character) (user base-character) attack)
+    (let ((user-name (name-of user))
+          (target-name (name-of target)))
+      (f:fmt t target-name " blushes as " user-name " boops " target-name " on da snoot :3" #\Newline)))
+  (:method attack ((target yadfa-enemies:skunk-boop-mixin) (user base-character) attack)
+    (let* ((user-name (name-of user))
+           (target-name (name-of target))
+           (target-male-p (malep target)))
+      (f:fmt t target-name " blushes as " user-name " boops " target-name " on da snoot :3" #\Newline
+             target-name " immediately squats down and messes " (if target-male-p "his" "her") " pamps." #\Newline
+             "It's like a mess button." #\Newline)
+      (mess :force-fill-amount (bowels/maximum-limit-of target))
+      (set-status-condition 'yadfa-status-conditions:messing target))))
 (defclass fire-breath (damage-move) ()
   (:default-initargs
    :name "Fire Breath"
@@ -187,48 +189,49 @@
    :description "Grosses out the enemies with gas. If poisoned or if desperate, you may end up messing yourself instead."
    :energy-cost 10
    :element-types '#.(coerce-element-types '(yadfa-element-types:abdl yadfa-element-types:poison))))
-(defmethod attack ((target base-character) (user base-character) (attack fart))
-  (f:fmt t "But it failed." #\Newline))
-(defmethod attack :around ((target base-character) (user bowels-character) (attack fart))
-  (let* ((padding (get-babyish-padding user))
-         (name (name-of user))
-         (malep (malep user))
-         (his/her (if malep "his" "her"))
-         (he/she (if malep "he" "she"))
-         (himherself (if malep "himself" "herself")))
-    (f:fmt t name " squats down and tries to use " (name-of attack) #\Newline)
-    (flet ((fail ()
-             (f:fmt t name " grabs the back of " (case padding
-                                                   (diaper (f:fmt nil his/her " diaper"))
-                                                   (pullup (f:fmt nil his/her " pullups"))
-                                                   (closed-bottoms (f:fmt nil his/her " pants"))
-                                                   (t (f:fmt nil himherself)))
-                    " with a bright red blush on " (if malep "his" "her") " face when " he/she " realized " he/she " just messed " himherself #\Newline)
-             (iter (for i in (if (typep user 'team-member)
-                                 (enemies-of *battle*)
-                                 (team-of *game*)))
-               (set-status-condition 'yadfa-status-conditions:laughing i)
-               (f:fmt* t (name-of i) " is laughing at " name #\Newline))))
-      (cond
-        ((and (>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
-              (find 'yadfa-status-conditions:poisoned (getf (status-conditions-of *battle*) user)
-                    :test (lambda (o e)
-                            (typep e o))))
-         (mess :messer user)
-         (f:fmt t "*SPLORCH*" #\Newline)
-         (fail))
-        (t (let ((result (fart user)))
-             (case result
-               (:cant-go (f:fmt t "Nothing happened" #\Newline))
-               (:success
-                (f:fmt t "FRRRT" #\Newline
-                       (name-of user) " sighs with relief" #\Newline)
-                (iter (for i in (if (typep user 'team-member)
-                                    (enemies-of *battle*)
-                                    (team-of *game*)))
-                  (set-status-condition 'yadfa-status-conditions:skunked i)
-                  (f:fmt* t (name-of i) " is grossed out by the smell" #\Newline)))
-               (:fail (fail)))))))))
+(s:defmethods fart (attack)
+  (:method attack ((target base-character) (user base-character) attack)
+    (f:fmt t "But it failed." #\Newline))
+  (:method attack :around ((target base-character) (user bowels-character) attack)
+    (let* ((padding (get-babyish-padding user))
+           (name (name-of user))
+           (malep (malep user))
+           (his/her (if malep "his" "her"))
+           (he/she (if malep "he" "she"))
+           (himherself (if malep "himself" "herself")))
+      (f:fmt t name " squats down and tries to use " (name-of attack) #\Newline)
+      (flet ((fail ()
+               (f:fmt t name " grabs the back of " (case padding
+                                                     (diaper (f:fmt nil his/her " diaper"))
+                                                     (pullup (f:fmt nil his/her " pullups"))
+                                                     (closed-bottoms (f:fmt nil his/her " pants"))
+                                                     (t (f:fmt nil himherself)))
+                      " with a bright red blush on " (if malep "his" "her") " face when " he/she " realized " he/she " just messed " himherself #\Newline)
+               (iter (for i in (if (typep user 'team-member)
+                                   (enemies-of *battle*)
+                                   (team-of *game*)))
+                 (set-status-condition 'yadfa-status-conditions:laughing i)
+                 (f:fmt* t (name-of i) " is laughing at " name #\Newline))))
+        (cond
+          ((and (>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
+                (find 'yadfa-status-conditions:poisoned (getf (status-conditions-of *battle*) user)
+                      :test (lambda (o e)
+                              (typep e o))))
+           (mess :messer user)
+           (f:fmt t "*SPLORCH*" #\Newline)
+           (fail))
+          (t (let ((result (fart user)))
+               (case result
+                 (:cant-go (f:fmt t "Nothing happened" #\Newline))
+                 (:success
+                  (f:fmt t "FRRRT" #\Newline
+                         (name-of user) " sighs with relief" #\Newline)
+                  (iter (for i in (if (typep user 'team-member)
+                                      (enemies-of *battle*)
+                                      (team-of *game*)))
+                    (set-status-condition 'yadfa-status-conditions:skunked i)
+                    (f:fmt* t (name-of i) " is grossed out by the smell" #\Newline)))
+                 (:fail (fail))))))))))
 (defclass spank (damage-move) ()
   (:default-initargs
    :name "Spank"

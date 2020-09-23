@@ -103,10 +103,11 @@
    :description "Use this to catch enemies"
    :value 500
    :power 0))
-(defmethod cant-use-p ((item enemy-catcher) (user base-character) (target base-character) action &key &allow-other-keys)
-  (values t `(:format-control "~a can't be used on ~a" :format-arguments `(,(name-of item) ,(name-of target)))))
-(defmethod cant-use-p ((item enemy-catcher) (user base-character) (target yadfa-enemies:catchable-enemy) action &key &allow-other-keys)
-  nil)
+(s:defmethods enemy-catcher (item)
+  (:method cant-use-p (item (user base-character) (target base-character) action &key &allow-other-keys)
+    (values t `(:format-control "~a can't be used on ~a" :format-arguments `(,(name-of item) ,(name-of target)))))
+  (:method cant-use-p (item (user base-character) (target yadfa-enemies:catchable-enemy) action &key &allow-other-keys)
+    nil))
 (defclass ghost-catcher (enemy-catcher) ()
   (:default-initargs
    :name "Ghost Catcher"
@@ -115,7 +116,8 @@
 ;;; which should get replaced later in the loading process
 (unless (find-class 'yadfa-enemies:ghost nil)
   (defclass yadfa-enemies:ghost () ()))
-(defmethod cant-use-p ((item ghost-catcher) (user base-character) (target base-character) action &key &allow-other-keys)
-  (values t `(:format-control "~a can't be used on ~a" :format-arguments `(,(name-of item) ,(name-of target)))))
-(defmethod cant-use-p ((item ghost-catcher) (user base-character) (target yadfa-enemies:ghost) action &key &allow-other-keys)
-  nil)
+(s:defmethods ghost-catcher (item)
+  (:method cant-use-p (item (user base-character) (target base-character) action &key &allow-other-keys)
+    (values t `(:format-control "~a can't be used on ~a" :format-arguments `(,(name-of item) ,(name-of target)))))
+  (:method cant-use-p (item (user base-character) (target yadfa-enemies:ghost) action &key &allow-other-keys)
+    nil))

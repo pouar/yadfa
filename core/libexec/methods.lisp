@@ -1585,7 +1585,7 @@ randomrange is @code{(random-from-range 85 100)}"
   (round (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ (u:$ 2 * (level-of user)) / 5) + 2) * attack * (u:$ (calculate-stat user :attack) / (calculate-stat target :defense)))
                         / 50)
                    + 2)
-              * (u:$ (random-from-range 85 100) / 100))))
+              * (u:$ (s:random-in-range 85 101) / 100))))
 (defmethod calculate-damage ((target base-character) (user base-character) (attack move))
   "Figures out the damage dealt, we use the formula
 
@@ -1620,7 +1620,7 @@ randomrange is @code{(random-from-range 85 100)}"
                                  (u:$ (calculate-stat user :attack) / (calculate-stat target :defense)))
                             / 50)
                        + 2)
-                  * (* (u:$ (random-from-range 85 100) / 100)
+                  * (* (u:$ (s:random-in-range 85 101) / 100)
                        (if (> no-effect 0)
                            0
                            (expt 2 (- super-effective not-very-effective)))

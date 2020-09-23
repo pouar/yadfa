@@ -243,26 +243,30 @@
                                          (collect (format-pair i))))))
                          (0
                           (:fmt (format-pair (car text))))))))))
-(defmethod describe-diaper-wear-usage ((item gem-diaper))
-  (let ((wet-gems (round (- 100 (* (/ (sogginess-of item) (sogginess-capacity-of item)) 100))))
-        (mess-gems (round (- 100 (* (/ (messiness-of item) (messiness-capacity-of item)) 100)))))
-    (declare (type fixnum wet-gems mess-gems))
-    (f:fmt t "The front of the diaper has a picture of " (describe-gems wet-gems) #\Newline
-           (:esc (when (>= (sogginess-of item) (sogginess-capacity-of item))
-                   (:fmt "Pee is dripping down your legs" #\Newline)))
-           "The back of the diaper has a picture of " (describe-gems mess-gems) #\Newline
-           (:esc (when (>= (messiness-of item) (messiness-capacity-of item))
-                   (:fmt "Poop is leaking down the leg guards" #\Newline))))))
-(defmethod describe-diaper-inventory-usage ((item gem-diaper))
-  (let ((wet-gems (round (- 100 (* (/ (sogginess-of item) (sogginess-capacity-of item)) 100))))
-        (mess-gems (round (- 100 (* (/ (messiness-of item) (messiness-capacity-of item)) 100)))))
-    (declare (type fixnum wet-gems mess-gems))
-    (f:fmt t "The front of the diaper has a picture of " (describe-gems wet-gems) #\Newline
-           (:esc (when (>= (sogginess-of item) (sogginess-capacity-of item))
-                   (:fmt "It is totally drenched" #\Newline)))
-           "The back of the diaper has a picture of " (describe-gems mess-gems) #\Newline
-           (:esc (when (>= (messiness-of item) (messiness-capacity-of item))
-                   (:fmt "Diaper is clearly full" #\Newline))))))
+(s:defmethods gem-diaper (item (sogginess #'sogginess-of)
+                               (messiness #'messiness-of)
+                               (sogginess-capacity #'sogginess-capacity-of)
+                               (messiness-capacity #'messiness-capacity-of))
+  (:method describe-diaper-wear-usage (item)
+    (let ((wet-gems (round (- 100 (* (/ sogginess sogginess-capacity) 100))))
+          (mess-gems (round (- 100 (* (/ messiness messiness-capacity) 100)))))
+      (declare (type fixnum wet-gems mess-gems))
+      (f:fmt t "The front of the diaper has a picture of " (describe-gems wet-gems) #\Newline
+             (:esc (when (>= sogginess sogginess-capacity)
+                     (:fmt "Pee is dripping down your legs" #\Newline)))
+             "The back of the diaper has a picture of " (describe-gems mess-gems) #\Newline
+             (:esc (when (>= messiness messiness-capacity)
+                     (:fmt "Poop is leaking down the leg guards" #\Newline))))))
+  (:method describe-diaper-inventory-usage (item)
+    (let ((wet-gems (round (- 100 (* (/ sogginess sogginess-capacity) 100))))
+          (mess-gems (round (- 100 (* (/ messiness messiness-capacity) 100)))))
+      (declare (type fixnum wet-gems mess-gems))
+      (f:fmt t "The front of the diaper has a picture of " (describe-gems wet-gems) #\Newline
+             (:esc (when (>= sogginess sogginess-capacity)
+                     (:fmt "It is totally drenched" #\Newline)))
+             "The back of the diaper has a picture of " (describe-gems mess-gems) #\Newline
+             (:esc (when (>= messiness messiness-capacity)
+                     (:fmt "Diaper is clearly full" #\Newline)))))))
 (defclass temple-diaper (cloth-mixin yadfa:diaper) ()
   (:default-initargs
    :name "Temple Diaper"

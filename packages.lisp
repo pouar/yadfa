@@ -11,7 +11,6 @@
    #:insert
    #:insertf
    #:substitutef
-   #:random-from-range
    #:type-specifier
    #:coerced-function
    #:removef-if

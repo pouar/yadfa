@@ -18,22 +18,27 @@
    :skin '(:fur)
    :description "Used to be one of the Diapered Raccoon Bandits. Was kicked out after he was forced to give the location of Pirate's Cove to the Navy. He was humiliated constantly by the Diapered Pirates until you rescued him. Is too embarrassed to admit when he as to go unless he's desperate"
    :level 5))
-(defmethod fart-result-text ((user slynk) (result (eql :failure)) mess &key stream)
-  (if (and (getf mess :leak-amount) (> (getf mess :leak-amount) 0))
-      (f:fmt stream (name-of user) " gets a look of horror on " (if (malep user) "his" "her") " face as "
-             (if (malep user) "he" "she") " ends up messing " (if (malep user) "himself" "herself")
-             " and has a blowout" #\Newline)
-      (f:fmt stream (name-of user) "tries to fart to relieve the pressure but ends up messing " (if (malep user) "his" "her")
-             "pamps, doesn't seem to realize it wasn't a fart and just continues on in a messy diaper" #\Newline)))
-(defmethod initialize-instance :after
-    ((c slynk) &key (bladder/contents nil bladderp) (bowels/contents nil bowelsp) &allow-other-keys)
-  (declare (ignore bladder/contents bowels/contents))
-  (unless bladderp
-    (setf (bladder/contents-of c)
-          (random (coerce (+ (bladder/potty-desperate-limit-of c) (/ (- (bladder/potty-desperate-limit-of c) (bladder/potty-dance-limit-of c)))) 'long-float))))
-  (unless bowelsp
-    (setf (bowels/contents-of c)
-          (random (coerce (+ (bowels/potty-desperate-limit-of c) (/ (- (bowels/potty-desperate-limit-of c) (bowels/potty-dance-limit-of c)))) 'long-float)))))
+(s:defmethods slynk (user)
+  (:method fart-result-text (user (result (eql :failure)) mess &key stream)
+    (if (and (getf mess :leak-amount) (> (getf mess :leak-amount) 0))
+        (f:fmt stream (name-of user) " gets a look of horror on " (if (malep user) "his" "her") " face as "
+               (if (malep user) "he" "she") " ends up messing " (if (malep user) "himself" "herself")
+               " and has a blowout" #\Newline)
+        (f:fmt stream (name-of user) "tries to fart to relieve the pressure but ends up messing " (if (malep user) "his" "her")
+               "pamps, doesn't seem to realize it wasn't a fart and just continues on in a messy diaper" #\Newline)))
+  (:method initialize-instance :after
+      (user &key (bladder/contents nil bladderp) (bowels/contents nil bowelsp) &allow-other-keys)
+    (declare (ignore bladder/contents bowels/contents))
+    (unless bladderp
+      (setf (bladder/contents-of user)
+            (random (coerce (+ (bladder/potty-desperate-limit-of user)
+                               (/ (- (bladder/potty-desperate-limit-of user) (bladder/potty-dance-limit-of user))))
+                            'long-float))))
+    (unless bowelsp
+      (setf (bowels/contents-of user)
+            (random (coerce (+ (bowels/potty-desperate-limit-of user)
+                               (/ (- (bowels/potty-desperate-limit-of user) (bowels/potty-dance-limit-of user))))
+                            'long-float))))))
 (defclass chris (playable-ally ally-rebel-potty-training) ()
   (:default-initargs
    :name "Chris"

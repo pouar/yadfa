@@ -44,20 +44,21 @@
    :description "massively mess your diapers, never fails"
    :energy-cost 5
    :element-types '#.(coerce-element-types '(yadfa-element-types:abdl yadfa-element-types:poison))))
-(defmethod attack ((target base-character) (user base-character) (attack mudbomb))
-  (write-line "But it failed."))
-(defmethod attack ((target base-character) (user bowels-character) (attack mudbomb)
+(s:defmethods mudbomb (attack)
+  (:method attack ((target base-character) (user base-character) attack)
+    (write-line "But it failed."))
+  (:method attack ((target base-character) (user bowels-character) attack
                    &aux (bowels/fill-rate (* 30 24 (bowels/fill-rate-of user))) (bowels/maximum-limit (bowels/maximum-limit-of user))
-                     (name (name-of user)))
-  (mess :force-fill-amount (if (< bowels/fill-rate bowels/maximum-limit) bowels/maximum-limit bowels/fill-rate) :messer user)
-  (format t "~a messed ~a massively~%"
-          name
-          (if (malep user) "himself" "herself"))
-  (iter (for i in (if (typep user 'team-member)
-                      (enemies-of *battle*)
-                      (team-of *game*)))
-    (set-status-condition 'yadfa-status-conditions:skunked i)
-    (format t "~a is grossed out by the smell~%" (name-of i))))
+                        (name (name-of user)))
+    (mess :force-fill-amount (if (< bowels/fill-rate bowels/maximum-limit) bowels/maximum-limit bowels/fill-rate) :messer user)
+    (format t "~a messed ~a massively~%"
+            name
+            (if (malep user) "himself" "herself"))
+    (iter (for i in (if (typep user 'team-member)
+                        (enemies-of *battle*)
+                        (team-of *game*)))
+      (set-status-condition 'yadfa-status-conditions:skunked i)
+      (format t "~a is grossed out by the smell~%" (name-of i)))))
 (defclass tickle (move debuff) ()
   (:default-initargs
    :name "Tickle"
