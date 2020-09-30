@@ -23,6 +23,7 @@ install:
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://gitlab.com/pouar/iterate/-/archive/pouar/iterate-pouar.zip" -OutFile "$env:CACHE\iterate.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/pouar/cl-marshal/archive/pouar.zip" -OutFile "$env:CACHE\marshal.zip"
 - ps: Invoke-WebRequest -UserAgent wget -Uri "https://downloads.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip" -OutFile $env:CACHE\dejavu.zip
+- ps: Invoke-WebRequest -UserAgent wget -Uri "https://github.com/Clozure/ccl/commit/8e0ef117f75011b1c79bb036b94b8ba96bc6b285.patch" -OutFile $env:CACHE\8e0ef117f75011b1c79bb036b94b8ba96bc6b285.patch
 #- cmd: 'C:\cygwin64\setup-x86_64.exe --quiet-mode --no-shortcuts --upgrade-also --packages texinfo-tex,texlive-collection-xetex,jq,patch,make,m4,mingw64-x86_64-binutils,mingw64-x86_64-gcc-core,mingw64-x86_64-headers,mingw64-x86_64-pthreads,mingw64-x86_64-runtime'
 - cmd: 'C:\cygwin64\setup-x86_64.exe --quiet-mode --no-shortcuts --upgrade-also --packages jq,patch,make,m4,mingw64-x86_64-binutils,mingw64-x86_64-gcc-core,mingw64-x86_64-headers,mingw64-x86_64-pthreads,mingw64-x86_64-runtime'
 - ps: Expand-Archive $env:CACHE\ccl.zip -DestinationPath $env:CACHE
@@ -42,6 +43,7 @@ install:
 - ps: Copy-Item $env:CACHE\dejavu-fonts-ttf-2.37\ttf\*.ttf  -destination C:\Windows\Fonts
 - cmd:  refreshenv
 # - cmd: 'start /wait msiexec /i %CACHE%\sbcl.msi /quiet /qn /norestart /log sbcl-install.log'
+- cmd: 'C:\cygwin64\bin\bash.exe -lc "patch -d /cygdrive/c/cache/ccl-1.12 -p1 -i /cygdrive/c/cache/8e0ef117f75011b1c79bb036b94b8ba96bc6b285.patch"'
 - cmd: 'C:\cygwin64\bin\bash.exe -lc "/cygdrive/c/projects/yadfa/ci/build-ccl.sh /cygdrive/c/cache/ccl-1.12"'
 - cmd: '"%CACHE%\ccl-1.12\wx86cl64.exe" -b -l "%CACHE%\quicklisp.lisp" -e "(quicklisp-quickstart:install)" -e "(ql:quickload (list :fiveam :fiveam-asdf))" -e "(uiop:quit)"'
 - ps: Copy-Item ci\ccl-init.lisp -Destination $env:USERPROFILE\ccl-init.lisp
