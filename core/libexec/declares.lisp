@@ -47,4 +47,5 @@
                 process-battle)
          (ftype (function (ally) (values (eql t) &optional)) ally-join)
          (ftype (function (simple-string boolean simple-string) (values (eql t) &optional)) set-player)
+         (ftype (function (list list) (values (member :super-effective :not-very-effective :no-effect nil) real &optional)) effective-type-effectiveness)
          (ftype (function (t) (values list &optional)) coerce-element-types))

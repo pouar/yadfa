@@ -162,7 +162,11 @@
       (a:deletef (getf (status-conditions-of *battle*) target) (statuses-cleared-of attack)
                  :test (lambda (o e) (typep e o)))))
   (:method :after ((target base-character) (user base-character) (attack damage-move))
-    (format t "~a received ~a damage~%" (name-of target) (calculate-damage target user attack)))
+    (f:fmt t (name-of target) " received "  (calculate-damage target user attack) " damage" #\Newline
+           (:esc (case (effective-type-effectiveness (element-types-of attack) (element-types-of target))
+                   (:not-very-effective (:fmt "It's not very effective" #\Newline))
+                   (:super-effective (:fmt "It's super effective" #\Newline))
+                   (:no-effect (:fmt "It had no effect" #\Newline))))))
   (:method :after ((target base-character) (user base-character) (item weapon))
     (format t "~a received ~a damage~%" (name-of target) (calculate-damage target user
                                                                            (if (first (ammo-of item))

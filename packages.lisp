@@ -90,6 +90,7 @@
    #:get-props-from-zone
    #:get-items-from-prop
    #:get-bitcoins-from-prop
+   #:effective-type-effectiveness
    #:calculate-diaper-usage
    #:calculate-diaper-usage*
    #:calculate-level-to-exp
