@@ -99,7 +99,6 @@
    #:calculate-stat-delta
    #:calculate-stat-multiplier
    #:calculate-stat
-   #:calculate-damage
    #:wash
    #:go-to-sleep
    #:shopfun
@@ -117,6 +116,7 @@
    #:resolve-enemy-spawn-list
    #:process-battle-accident
    #:process-potty-dance
+   #:calculate-damage
    #:event-attributes
    #:battle-script
    #:condition-script
