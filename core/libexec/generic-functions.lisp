@@ -168,10 +168,11 @@
                    (:super-effective (:fmt "It's super effective" #\Newline))
                    (:no-effect (:fmt "It had no effect" #\Newline))))))
   (:method :after ((target base-character) (user base-character) (item weapon))
-    (format t "~a received ~a damage~%" (name-of target) (calculate-damage target user
-                                                                           (if (first (ammo-of item))
-                                                                               (ammo-power-of (first (ammo-of item)))
-                                                                               (power-of item)))))
+    (f:fmt t (name-of target) " received " (calculate-damage target user
+                                                               (if (first (ammo-of item))
+                                                                   (ammo-power-of (first (ammo-of item)))
+                                                                   (power-of item)))
+             " damage" #\Newline))
   (:method :after ((target base-character) (user base-character) (item damage-wield))
     (format t "~a received ~a damage~%" (name-of target) (calculate-damage target user (power-of item))))
   (:method ((target base-character) (user base-character) (attack null))
