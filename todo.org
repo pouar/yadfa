@@ -19,4 +19,3 @@
 * TODO add mission capability to the event system
 * TODO change ~potty-on-toilet~ and ~potty-on-self-or-prop~ to be more extensible, possibly by defining more methods and having these return values to indicate whether it was used.
 * DONE extend props to make them placable
-* TODO add method that prints "it's super/not very/no effects" when using moves
