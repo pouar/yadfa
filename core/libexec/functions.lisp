@@ -664,6 +664,7 @@
         (process-potty i)
         (run-equip-effects i))
   (print-enter-text (position-of (player-of *game*)) old-position direction)
+  (s:run-hook (sc:find-hook 'yadfa-world:move) direction old-position)
   (cond ((continue-battle-of (get-zone (position-of (player-of *game*))))
          (set-new-battle (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :enemies)
                          :team-npcs (getf (continue-battle-of (get-zone (position-of (player-of *game*)))) :team-npcs)

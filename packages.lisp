@@ -334,7 +334,7 @@
    #:fainted-of
    #:persistentp)
   (:documentation "Yet Another Diaperfur Adventure")
-  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars)
+  (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars) (:sc :serapeum/contrib/hooks)
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands) (:ms :marshal) (:f :fmt)))
 (uiop:define-package :yadfa-bin
   (:export #:lst
