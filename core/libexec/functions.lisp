@@ -615,6 +615,8 @@
       (iter (for i in a)
             (finding i maximizing (get-diaper-expansion i)))))
 (defun move-to-zone (new-position &key ignore-lock direction old-position)
+  (declare (type list new-position old-position)
+           (type symbol direction))
   (when (iter (for i in (cons (player-of *game*) (allies-of *game*)))
               (let ((wear (typecase (must-wear-of (get-zone new-position))
                             (cons (must-wear-of (get-zone new-position)))
