@@ -275,7 +275,7 @@
     :type boolean
     :accessor persistentp
     :documentation "Whether items or moves that cure statuses cure this"))
-  (:documentation "Base class for all the status conditions "))
+  (:documentation "Base class for all the status conditions"))
 (defclass move (yadfa-class element-type-mixin)
   ((name
     :initarg :name
@@ -393,7 +393,7 @@
     :initform 1/20
     :type real
     :accessor bowels/fill-rate/cooldown-of
-    :documentation "How much  @var{BOWELS/FILL-RATE/MULTIPLIER} decreases every turn")
+    :documentation "How much @var{BOWELS/FILL-RATE/MULTIPLIER} decreases every turn")
    (bowels/need-to-potty-limit
     :initarg :bowels/need-to-potty-limit
     :initform 400
