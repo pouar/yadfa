@@ -39,6 +39,7 @@
          (ftype (function (list) (values null &optional)) wash)
          (ftype (function (base-character) (values cons &optional)) go-to-sleep%)
          (ftype (function (base-character) (values boolean &optional)) handle-faint)
+         (ftype (function (base-character boolean) (values boolean &optional)) handle-status-effects)
          (ftype (function (list symbol symbol) (values action &optional)) getf-action-from-prop)
          (ftype (function (&key (:attack (or symbol boolean)) (:item item) (:reload type-specifier) (:no-team-attack t)
                                 (:selected-target (or null enemy team-member))))
