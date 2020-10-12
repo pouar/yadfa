@@ -58,13 +58,13 @@
     :documentation "Description of the character")
    (health
     :initarg :health
-    :accessor health-of
-    :type real
+    :reader health-of
+    :type (real 0)
     :documentation "Health of the character.")
    (energy
     :initarg :energy
-    :accessor energy-of
-    :type real
+    :reader energy-of
+    :type (real 0)
     :documentation "Energy of the character.")
    (default-attack-power
     :initarg :default-attack-power
@@ -143,7 +143,13 @@
     :initform nil
     :accessor wield-of
     :type (or null item)
-    :documentation "Item the character is wielding as a weapon"))
+    :documentation "Item the character is wielding as a weapon")
+   (status-conditions
+    :initarg :status-conditions
+    :initform ()
+    :accessor status-conditions-of
+    :type list
+    :documentation "Status conditions of the character"))
   (:documentation "Base class for the characters in the game"))
 (defclass item (yadfa-class)
   ((description
@@ -269,12 +275,18 @@
     :type unsigned-byte
     :accessor priority-of
     :documentation "Unsigned integer that specifies How important this condition is to cure. Used for the AI. Lower value means more important")
+   (curable
+    :initarg :curable
+    :initform nil
+    :type boolean
+    :accessor curablep
+    :documentation "Whether items or moves that cure statuses cure this")
    (persistent
     :initarg :persistent
     :initform nil
     :type boolean
     :accessor persistentp
-    :documentation "Whether items or moves that cure statuses cure this"))
+    :documentation "Whether this lasts outside battle or not"))
   (:documentation "Base class for all the status conditions"))
 (defclass move (yadfa-class element-type-mixin)
   ((name
@@ -472,8 +484,8 @@
 (defclass playable-ally (ally) ())
 (defmethod initialize-instance :after
     ((c base-character) &key (health nil healthp) (energy nil energyp)
-                          (base-health nil base-health-p) (base-attack nil base-attack-p)
-                          (base-defense nil base-defense-p) (base-speed nil base-speed-p) (base-energy nil base-energy-p) &allow-other-keys)
+                             (base-health nil base-health-p) (base-attack nil base-attack-p)
+                             (base-defense nil base-defense-p) (base-speed nil base-speed-p) (base-energy nil base-energy-p) &allow-other-keys)
   (declare (ignore health energy))
   (when base-health-p
     (setf (getf (base-stats-of c) :health) base-health))
@@ -1074,12 +1086,6 @@
     :accessor win-events-of
     :type list
     :documentation "List of events that trigger when you've won the battle")
-   (status-conditions
-    :initarg :status-conditions
-    :initform ()
-    :accessor status-conditions-of
-    :type list
-    :documentation "plist of characters who's values are a plist of conditions that go away after battle")
    (fainted
     :initarg :fainted
     :initform ()
@@ -1094,7 +1100,7 @@
      (enter-battle-text-of c)
      (with-output-to-string (s)
        (iter (for i in (enemies-of c))
-             (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
+         (format s "A Wild ~a Appeared!!!~%" (name-of i))))))
   (setf (turn-queue-of c) (sort (append* (enemies-of c) (team-npcs-of c) (team-of *game*)) '>
                                 :key (lambda (a)
                                        (calculate-stat a :speed))))

@@ -50,9 +50,9 @@
   (:menu-bar t)
   (:layouts (default
              (c:vertically ()
-                           clim-listener::interactor-container
-                           clim-listener::doc
-                           clim-listener::wholine))))
+               clim-listener::interactor-container
+               clim-listener::doc
+               clim-listener::wholine))))
 (c:define-command (yadfa-set-eol-action :command-table yadfa-menu-commands :menu "Set EOL Action")
     ((keyword '(member :scroll :allow :wrap :wrap*)
               :prompt "Keyword"))
@@ -63,11 +63,11 @@
 (cc:define-conditional-command (com-enable-world)
     (yadfa-listener :enable-commands (yadfa-world-commands yadfa-bin-commands)
                     :disable-commands (yadfa-battle-commands))
-  ())
+    ())
 (cc:define-conditional-command (com-enable-battle)
     (yadfa-listener :enable-commands (yadfa-battle-commands yadfa-bin-commands)
                     :disable-commands (yadfa-world-commands))
-  ())
+    ())
 (c:define-command
     (com-inspect :command-table c:global-command-table :name "Inspect")
     ((obj 'c:expression
@@ -78,11 +78,11 @@
   `(multiple-value-bind (x y) (c:stream-cursor-position ,medium)
      (c:draw-rectangle* ,medium x y (+ x (* ,stat 400)) (+ y 15)
                         :ink (cond ,@(iter (for i in colors)
-                                           (collect `(,(car i) ,(intern (format nil "+~a+"
-                                                                                (if (typep (car (last i)) 'cons)
-                                                                                    (caar (last i))
-                                                                                    (car (last i))))
-                                                                        "CLIM"))))))
+                                       (collect `(,(car i) ,(intern (format nil "+~a+"
+                                                                            (if (typep (car (last i)) 'cons)
+                                                                                (caar (last i))
+                                                                                (car (last i))))
+                                                                    "CLIM"))))))
      (c:draw-rectangle* ,medium x y (+ x 400) (+ y 15)
                         :filled nil)
      (c:stream-set-cursor-position ,medium (+ x 400) y)))
@@ -116,17 +116,16 @@
                       (energy-of object)
                       (calculate-stat object :energy))
               ""))
-  (when *battle*
-    (write-string "Conditions: " stream)
-    (iter (for i in (getf (status-conditions-of *battle*) object))
-          (format stream "“~a” " (name-of i)))
-    (write-char #\Newline stream))
+  (write-string "Conditions: " stream)
+  (iter (for i in (status-conditions-of object))
+    (format stream "“~a” " (name-of i)))
+  (write-char #\Newline stream)
   (format stream "Stats: ~a~%Base-Stats: ~a~%"
           (let ((wield-stats (calculate-wield-stats object))
                 (wear-stats (calculate-wear-stats object)))
             (iter (for (a b) on (base-stats-of object) by #'cddr)
-                  (collect a)
-                  (collect (+ b (getf wield-stats a) (getf wear-stats a)))))
+              (collect a)
+              (collect (+ b (getf wield-stats a) (getf wear-stats a)))))
           (base-stats-of object))
   (let ((c (filter-items (wear-of object) 'closed-bottoms)))
     (destructuring-bind (&key (sogginess 0) (sogginess-capacity 0) (messiness 0) (messiness-capacity 0))
@@ -197,16 +196,16 @@
                          (return))
                         ((and (< old-x new-x) (= old-y new-y) (= old-z new-z) (equal old-zone new-zone))
                          (iter (for i from (1+ old-x) to new-x)
-                               (collect :east)))
+                           (collect :east)))
                         ((and (> old-x new-x) (= old-y new-y) (= old-z new-z) (equal old-zone new-zone))
                          (iter (for i from (1- old-x) downto new-x)
-                               (collect :west)))
+                           (collect :west)))
                         ((and (= old-x new-x) (< old-y new-y) (= old-z new-z) (equal old-zone new-zone))
                          (iter (for i from (1+ old-y) to new-y)
-                               (collect :south)))
+                           (collect :south)))
                         ((and (= old-x new-x) (> old-y new-y) (= old-z new-z) (equal old-zone new-zone))
                          (iter (for i from (1- old-y) downto new-y)
-                               (collect :north)))
+                           (collect :north)))
                         (t
                          (format t "You're either already on that zone or you tried specifying a path that involves turning (which this interface can't do because Pouar sucks at writing code that generates paths)~%")
                          (return))))))))
@@ -217,63 +216,63 @@
   (yadfa-bin:lst :describe-zone zone))
 (c:define-presentation-to-command-translator com-yadfa-move-translator
     (zone com-yadfa-move yadfa-world-commands
-          :documentation "Move"
-          :pointer-documentation "Move Here"
-          :gesture nil
-          :menu t
-          :tester ((object) (destructuring-bind (new-x new-y new-z new-zone) (position-of object)
-                              (destructuring-bind (old-x old-y old-z old-zone) (position-of (player-of *game*))
-                                (and (= old-z new-z) (equal old-zone new-zone) (or (and (= old-y new-y) (/= old-x new-x))
-                                                                                   (and (= old-x new-x) (/= old-y new-y))))))))
-  (object)
+     :documentation "Move"
+     :pointer-documentation "Move Here"
+     :gesture nil
+     :menu t
+     :tester ((object) (destructuring-bind (new-x new-y new-z new-zone) (position-of object)
+                         (destructuring-bind (old-x old-y old-z old-zone) (position-of (player-of *game*))
+                           (and (= old-z new-z) (equal old-zone new-zone) (or (and (= old-y new-y) (/= old-x new-x))
+                                                                              (and (= old-x new-x) (/= old-y new-y))))))))
+    (object)
   (list object))
 (c:define-presentation-to-command-translator com-yadfa-move-translator-up
     (zone com-yadfa-move yadfa-world-commands
-          :documentation "Move Up"
-          :pointer-documentation "Move Up"
-          :gesture nil
-          :menu t
-          :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
-                                 (get-zone (destructuring-bind (x y z zone) (position-of object)
-                                             `(,x ,y ,(1+ z) ,zone)))
-                                 (yadfa::travelablep (position-of (player-of *game*)) :up))))
-  (object)
+     :documentation "Move Up"
+     :pointer-documentation "Move Up"
+     :gesture nil
+     :menu t
+     :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
+                            (get-zone (destructuring-bind (x y z zone) (position-of object)
+                                        `(,x ,y ,(1+ z) ,zone)))
+                            (yadfa::travelablep (position-of (player-of *game*)) :up))))
+    (object)
   '((:up)))
 (c:define-presentation-to-command-translator com-yadfa-move-translator-down
     (zone com-yadfa-move yadfa-world-commands
-          :documentation "Move Down"
-          :pointer-documentation "Move Down"
-          :gesture nil
-          :menu t
-          :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
-                                 (get-zone (destructuring-bind (x y z zone) (position-of object)
-                                             `(,x ,y ,(1- z) ,zone)))
-                                 (yadfa::travelablep (position-of (player-of *game*)) :down))))
-  (object)
+     :documentation "Move Down"
+     :pointer-documentation "Move Down"
+     :gesture nil
+     :menu t
+     :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
+                            (get-zone (destructuring-bind (x y z zone) (position-of object)
+                                        `(,x ,y ,(1- z) ,zone)))
+                            (yadfa::travelablep (position-of (player-of *game*)) :down))))
+    (object)
   '((:down)))
 (c:define-presentation-to-command-translator com-yadfa-move-translator-warp
     (zone com-yadfa-move yadfa-world-commands
-          :documentation "Move To Waypoint"
-          :pointer-documentation "Move To Waypoint"
-          :gesture nil
-          :menu t
-          :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
-                                 (iter (for (point position) on (warp-points-of (get-zone (position-of object))) by 'cddr)
-                                       (unless (yadfa::travelablep (position-of (player-of *game*)) point)
-                                         (collect point))))))
-  (object)
+     :documentation "Move To Waypoint"
+     :pointer-documentation "Move To Waypoint"
+     :gesture nil
+     :menu t
+     :tester ((object) (and (equal (position-of (player-of *game*)) (position-of object))
+                            (iter (for (point position) on (warp-points-of (get-zone (position-of object))) by 'cddr)
+                              (unless (yadfa::travelablep (position-of (player-of *game*)) point)
+                                (collect point))))))
+    (object)
   `((,(let ((*query-io* (c:frame-query-io (c:find-application-frame 'yadfa-listener))))
         (c:accepting-values (*query-io* :resynchronize-every-pass t)
-                            (c:accept `(member-alist ,(iter (for (key position) on (warp-points-of (get-zone (position-of object))) by 'cddr)
-                                                            (unless (yadfa::travelablep (position-of (player-of *game*)) key)
-                                                              (collect (cons (write-to-string key) key))))) :view clim:+radio-box-view+ :stream *query-io*))))))
+          (c:accept `(member-alist ,(iter (for (key position) on (warp-points-of (get-zone (position-of object))) by 'cddr)
+                                      (unless (yadfa::travelablep (position-of (player-of *game*)) key)
+                                        (collect (cons (write-to-string key) key))))) :view clim:+radio-box-view+ :stream *query-io*))))))
 (c:define-presentation-to-command-translator com-yadfa-describe-zone-translator
     (zone com-yadfa-describe-zone yadfa-bin-commands
-          :documentation "Describe Zone"
-          :pointer-documentation "Print Zone Description"
-          :gesture nil
-          :menu t)
-  (object)
+     :documentation "Describe Zone"
+     :pointer-documentation "Print Zone Description"
+     :gesture nil
+     :menu t)
+    (object)
   (list object))
 (c:define-application-frame emacs-frame (c:standard-application-frame)
   ((lambda :accessor emacs-frame-lambda
@@ -286,10 +285,10 @@
    (default int)))
 (defmethod c:default-frame-top-level :around ((frame emacs-frame)
                                               &key (command-parser 'c:command-line-command-parser)
-                                                (command-unparser 'c:command-line-command-unparser)
-                                                (partial-command-parser
-                                                 'c:command-line-read-remaining-arguments-for-partial-command)
-                                                (prompt "Command: "))
+                                                   (command-unparser 'c:command-line-command-unparser)
+                                                   (partial-command-parser
+                                                    'c:command-line-read-remaining-arguments-for-partial-command)
+                                                   (prompt "Command: "))
   (declare (ignore prompt))
   (let* ((frame-query-io (c:frame-query-io frame))
          (interactorp (typep frame-query-io 'c:interactor-pane))
@@ -317,10 +316,10 @@
 (defmethod c:default-frame-top-level
     ((frame yadfa-listener)
      &key (command-parser 'c:command-line-command-parser)
-       (command-unparser 'c:command-line-command-unparser)
-       (partial-command-parser
-        'c:command-line-read-remaining-arguments-for-partial-command)
-       (prompt "Command: "))
+          (command-unparser 'c:command-line-command-unparser)
+          (partial-command-parser
+           'c:command-line-read-remaining-arguments-for-partial-command)
+          (prompt "Command: "))
   ;; Give each pane a fresh start first time through.
   (let ((needs-redisplay t)
         (first-time t))
@@ -345,9 +344,9 @@
         (restart-case
             (flet ((execute-command ()
                      (a:when-let ((command (c:read-frame-command frame :stream frame-query-io)))
-                                 (setq needs-redisplay t)
-                                 (s:run-hooks 'yadfa:*cheat-hooks*)
-                                 (c:execute-frame-command frame command))))
+                       (setq needs-redisplay t)
+                       (s:run-hooks 'yadfa:*cheat-hooks*)
+                       (c:execute-frame-command frame command))))
               (when needs-redisplay
                 (dolist (i yadfa-clim::*records*) do (c:redisplay i *standard-output*))
                 (c:redisplay-frame-panes frame :force-p first-time)
@@ -383,13 +382,13 @@
   (unwind-protect (error 'emm386-memory-manager-error)
     (call-next-method)))
 (defun run-listener (&key (new-process nil)
-                       (debugger t)
-                       (width 1024)
-                       (height 1024)
-                       port
-                       frame-manager
-                       (process-name "Yadfa")
-                       (package :yadfa-user))
+                          (debugger t)
+                          (width 1024)
+                          (height 1024)
+                          port
+                          frame-manager
+                          (process-name "Yadfa")
+                          (package :yadfa-user))
   (let* ((fm (or frame-manager (c:find-frame-manager :port (or port (c:find-port)))))
          (frame (c:make-application-frame 'yadfa-listener
                                           :frame-manager fm

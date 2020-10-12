@@ -7,7 +7,7 @@
    :description "User is currently wetting himself/herself"
    :duration 1
    :blocks-turn t))
-(defmethod condition-script ((user base-character) (self wetting))
+(defmethod condition-script ((user base-character) (self wetting) (battle (eql t)))
   (declare (ignore self))
   (format t "~a is too busy wetting ~aself to fight~%" (name-of user) (if (malep user) "his" "her"))
   (setf (bladder/contents-of user) 0))
@@ -18,7 +18,7 @@
    :description "User is currently messing himself/herself"
    :duration 1
    :blocks-turn t))
-(defmethod condition-script ((user base-character) (self messing))
+(defmethod condition-script ((user base-character) (self messing) (battle (eql t)))
   (declare (ignore self))
   (format t "~a is too busy messing ~aself to fight~%" (name-of user) (if (malep user) "his" "her"))
   (setf (bowels/contents-of user) 0))
@@ -30,9 +30,9 @@
    :duration t
    :stat-multiplier (list :speed 1/2)
    :blocks-turn t))
-(defmethod condition-script ((user base-character) (self mushed))
+(defmethod condition-script ((user base-character) (self mushed) (battle (eql t)))
   (cond ((<= (getf (calculate-diaper-usage user) :messiness) 0)
-         (setf (getf (status-conditions-of *battle*) user) (remove self (getf (status-conditions-of *battle*) user))))
+         (setf (status-conditions-of user) (remove self (status-conditions-of user))))
         ((< (random 4) 1)
          (format t "~a is too busy grabbing the back of ~a diaper trying to unmush it to fight~%" (name-of user) (if (malep user) "his" "her"))
          (setf (blocks-turn-of self) t))
@@ -42,7 +42,7 @@
   (:default-initargs
    :name "Pantsed"
    :description "The user has been pantsed revealing his padding to the world"
-   :persistent t))
+   :curable t))
 (defclass laughing (status-condition)
   ()
   (:default-initargs
@@ -50,7 +50,7 @@
    :description "User is laughing"
    :duration 1
    :blocks-turn t))
-(defmethod condition-script ((user base-character) (self laughing))
+(defmethod condition-script ((user base-character) (self laughing) (battle (eql t)))
   (declare (ignore self))
   (format t "~a is too busy laughing to fight~%" (name-of user))
   (when (or (>= (bladder/contents-of user) (bladder/potty-dance-limit-of user))

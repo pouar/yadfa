@@ -332,6 +332,7 @@
    #:action-lambda
    #:action-p
    #:fainted-of
+   #:curablep
    #:persistentp)
   (:documentation "Yet Another Diaperfur Adventure")
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars) (:sc :serapeum/contrib/hooks)
@@ -630,8 +631,8 @@
    #:werewolf
    #:domesticated-werewolf
    #:catchable-enemy
-   #:catch-chance-of
    #:catch-chance
+   #:catch-chance-rate-of
    #:raptor
    #:change-class-target
    #:change-class-text

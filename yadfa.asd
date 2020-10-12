@@ -27,7 +27,7 @@
                                            (:file "methods" :depends-on ("classes" "generic-functions" "macros" "declares" "functions" "conditions"))
                                            (:file "generic-functions" :depends-on ("classes" "macros" "declares" "functions"))
                                            (:file "classes" :depends-on ("init" "declares"))
-                                           (:file "hooks")
+                                           (:file "hooks" :depends-on ("declares" "init"))
                                            (:file "game" :depends-on ("classes" "init" "declares"))
                                            (:file "mcclim" :depends-on ("init" "declares" "functions" "generic-functions" "macros"))
                                            (:file "structs" :depends-on ("init" "declares"))

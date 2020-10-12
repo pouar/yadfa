@@ -39,7 +39,7 @@
                                           'soggy)))
                          (padding i))
                      (leave `(padding ,padding severity ,severity)))))))
-           (old-condition (find 'yadfa-status-conditions:pantsed (getf (status-conditions-of *battle*) target)
+           (old-condition (find 'yadfa-status-conditions:pantsed (status-conditions-of target)
                                 :test (lambda (o e)
                                         (typep e o)))))
       (if stat
@@ -54,7 +54,7 @@
                            (name-of target)
                            (name-of (car (filter-items pants 'dress))))))
             (unless old-condition
-              (push (make-instance 'yadfa-status-conditions:pantsed) (getf (status-conditions-of *battle*) target)))
+              (push (make-instance 'yadfa-status-conditions:pantsed) (status-conditions-of target)))
             (format t "~a gets a horrified look on ~a face as ~a ~a is exposed to the world~%"
                     (name-of target)
                     (if (malep target) "his" "her")
@@ -214,7 +214,7 @@
                  (f:fmt* t (name-of i) " is laughing at " name #\Newline))))
         (cond
           ((and (>= (bowels/contents-of user) (bowels/need-to-potty-limit-of user))
-                (find 'yadfa-status-conditions:poisoned (getf (status-conditions-of *battle*) user)
+                (find 'yadfa-status-conditions:poisoned (status-conditions-of user)
                       :test (lambda (o e)
                               (typep e o))))
            (mess :messer user)
