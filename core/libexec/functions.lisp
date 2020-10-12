@@ -623,7 +623,7 @@
           ((and (> (health-of character) 0) faintedp)
            (setf (fainted-of *battle*) (s:delq character (fainted-of *battle*)))
            nil)
-          (t (and faintedp t)))))
+          (t (not (null faintedp))))))
 (defun handle-status-effects (character battle)
   "Returns true if @var{CHARACTER} fainted and false if not, but only if in @var{BATTLE}, otherwise unspecified"
   (declare (type base-character character)
