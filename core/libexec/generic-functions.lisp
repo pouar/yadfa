@@ -222,7 +222,15 @@
                (t
                 (attack target self nil))))))))
 (defgeneric condition-script (user condition battle)
-  (:documentation #.(f:fmt nil "Function that runs at the beginning of each turn @var{USER} is the character who has the @var{CONDITION}. @var{CONDITION} is a " (ref status-condition :class) " @var{BATTLE} is whether the condition happens in battle or not"))
+  (:documentation
+   #.(f:fmt nil "Function that runs at the beginning of each turn" #\Newline #\Newline
+            "@var{USER} is the character who has the @var{CONDITION}." #\Newline #\Newline
+            "@var{CONDITION} is a " (ref status-condition :class) #\Newline #\Newline
+            " @var{BATTLE} is whether the condition happens in battle or not" #\Newline #\Newline
+            "Dumb limitation of the API: Game assumes that characters don't faint outside of battle" #\Newline #\Newline
+            "This is because most of the dialog doesn't make sense when the character is fainted," #\Newline #\Newline
+            "such as talking, walking around, and doing a potty dance and acting embarrassed when having an accident." #\Newline #\Newline
+            "Fixing this made the code way too complicated."))
   (:method ((user base-character) (condition status-condition) battle)))
 (defgeneric toggle-onesie% (onesie))
 (defgeneric toggle-onesie (onesie clothes user))

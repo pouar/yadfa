@@ -4,34 +4,36 @@
 (defconstant +stat-view+ (make-instance 'stat-view))
 (in-package :yadfa)
 (s:eval-always
- (defmacro ref (symbol type)
-   `(if (asdf:component-loaded-p "yadfa/docs")
-        (format nil "@ref{~a,@code{~a} in @code{~a},@code{~a}∶@code{~a}}"
-                (uiop:symbol-call '#:net.didierverna.declt '#:escape-anchor
-                                  (uiop:symbol-call '#:net.didierverna.declt '#:anchor-name
-                                                    (uiop:symbol-call '#:net.didierverna.declt '
-                                                                      ,(make-symbol (string-upcase (format nil "make-~a-definition" type)))
-                                                                      :symbol ',symbol)))
-                (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol)
-                (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
-                (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
-                (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol))
+  (defmacro ref (symbol type)
+    (if (asdf:component-loaded-p "yadfa/docs")
+        (let* ((package-name (uiop:symbol-call '#:net.didierverna.declt '#:escape (package-name (symbol-package symbol))))
+               (symbol-name (uiop:symbol-call '#:net.didierverna.declt '#:escape symbol))
+               (external (if (eq (nth-value 1 symbol) :external)
+                             2 1)))
+          (f:fmt nil "@ref{"
+                 (uiop:symbol-call '#:net.didierverna.declt '#:escape-anchor
+                                   (uiop:symbol-call '#:net.didierverna.declt '#:anchor-name
+                                                     (uiop:symbol-call '#:net.didierverna.declt
+                                                                       (make-symbol (string-upcase (format nil "make-~a-definition" type)))
+                                                                       :symbol symbol)))
+                 ",@code{" package-name (:times "∶" external) symbol-name "},@code{" package-name (:times ":" external) symbol-name "}}"))
         (let ((*package* (find-package :cl)))
-          (format nil "~s" ',symbol))))
- (defmacro xref (symbol type)
-   `(if (asdf:component-loaded-p "yadfa/docs")
-        (format nil "@xref{~a,@code{~a} in @code{~a},@code{~a}∶@code{~a}}"
-                (uiop:symbol-call '#:net.didierverna.declt '#:escape-anchor
-                                  (uiop:symbol-call '#:net.didierverna.declt '#:anchor-name
-                                                    (uiop:symbol-call '#:net.didierverna.declt
-                                                                      ',(make-symbol (string-upcase (format nil "make-~a-definition" type)))
-                                                                      :symbol ',symbol)))
-                (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol)
-                (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
-                (uiop:symbol-call '#:net.didierverna.declt '#:escape ,(package-name (symbol-package symbol)))
-                (uiop:symbol-call '#:net.didierverna.declt '#:escape ',symbol))
+          (format nil "~s" symbol))))
+  (defmacro xref (symbol type)
+    (if (asdf:component-loaded-p "yadfa/docs")
+        (let* ((package-name (uiop:symbol-call '#:net.didierverna.declt '#:escape (package-name (symbol-package symbol))))
+               (symbol-name (uiop:symbol-call '#:net.didierverna.declt '#:escape symbol))
+               (external (if (eq (nth-value 1 symbol) :external)
+                             2 1)))
+          (f:fmt nil "@xref{"
+                 (uiop:symbol-call '#:net.didierverna.declt '#:escape-anchor
+                                   (uiop:symbol-call '#:net.didierverna.declt '#:anchor-name
+                                                     (uiop:symbol-call '#:net.didierverna.declt
+                                                                       (make-symbol (string-upcase (format nil "make-~a-definition" type)))
+                                                                       :symbol symbol)))
+                 ",@code{" package-name (:times "∶" external) symbol-name "},@code{" package-name (:times ":" external) symbol-name "}}"))
         (let ((*package* (find-package :cl)))
-          (format nil "See ~s" ',symbol)))))
+          (format nil "See ~s" symbol)))))
 (g:define-global-var *events* (make-hash-table :test #'equal :size 100))
 (g:define-global-var yadfa-clim::*records* ())
 (g:define-global-var *battle* nil)
