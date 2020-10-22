@@ -211,22 +211,63 @@
   (remf (getf (direction-attributes-of (get-zone position)) direction) attribute)
   (unless (getf (direction-attributes-of (get-zone position)) direction)
     (remf (direction-attributes-of (get-zone position)) direction)))
-(defun set-status-condition (status-condition user &key duration test key
-                                                   &aux (status-conditions (iter (for i in (status-conditions-of user))
-                                                                             (when (eq (type-of i) status-condition)
-                                                                               (collect i))))
-                                                        (i (if (or (eq (accumulative-of (make-instance status-condition)) t)
-                                                                   (list-length-> (accumulative-of (make-instance status-condition)) status-conditions))
-                                                               (make-instance status-condition)
-                                                               (car (s:dsu-sort status-conditions (lambda (a b)
-                                                                                                    (cond ((eq b t)
-                                                                                                           nil)
-                                                                                                          ((eq a t)
-                                                                                                           t)
-                                                                                                          (t (< a b))))
-                                                                                :key #'duration-of))))
-                                                        (duration (or duration (duration-of (make-instance status-condition)))))
-  (pushnew i (status-conditions-of user) :test (or test #'eql) :key (or key #'identity))
+(defunassert status-conditions (user)
+    (user base-character)
+  (append (when *battle* (gethash user (%status-conditions-of *battle*)))
+          (%status-conditions-of user)))
+(defunassert deletef-status-conditions (item user &key (test nil testp) (key nil keyp))
+    (user base-character)
+  (let ((key (if keyp key 'identity))
+        (test (if testp test 'eql)))
+    (when *battle*
+      (a:deletef (gethash user (%status-conditions-of *battle*)) item
+                 :key key
+                 :test test))
+    (a:deletef (%status-conditions-of user) item
+               :key key
+               :test test)))
+(define-compiler-macro deletef-status-conditions (item user &key (test nil testp) (key nil keyp))
+  (let ((args `(,@(when keyp
+                    `(:key ,key))
+                ,@(when testp
+                    `(:test ,test)))))
+    `(progn
+       (when *battle*
+         (a:deletef (gethash ,user (%status-conditions-of *battle*)) ,item ,@args))
+       (a:deletef (%status-conditions-of ,user) ,item ,@args))))
+(defunassert deletef-status-conditions-if (test user &key (key nil keyp))
+    (user base-character)
+  (let ((key (if keyp key 'identity)))
+    (when *battle*
+      (deletef-if (gethash user (%status-conditions-of *battle*)) test
+                 :key key))
+    (deletef-if (%status-conditions-of user) test
+               :key key)))
+(define-compiler-macro deletef-status-conditions-if (user test &key (key nil keyp))
+  (let ((args `(,@(when keyp
+                    `(:key ,key)))))
+    `(progn
+       (when *battle*
+         (deletef-if (gethash ,user (%status-conditions-of *battle*)) ,test ,@args))
+       (deletef-if (%status-conditions-of ,user) ,test ,@args))))
+(defunassert set-status-condition (status-condition user
+                             &key duration (test nil testp) (key nil keyp)
+                             &aux (status-conditions (status-conditions user))
+                                  (i (if (or (eq (accumulative-of (make-instance status-condition)) t)
+                                             (list-length-> (accumulative-of (make-instance status-condition)) status-conditions))
+                                         (make-instance status-condition)
+                                         (car (s:dsu-sort status-conditions (lambda (a b)
+                                                                              (cond ((eq b t)
+                                                                                     nil)
+                                                                                    ((eq a t)
+                                                                                     t)
+                                                                                    (t (< a b))))
+                                                          :key #'duration-of))))
+                                  (duration (or duration (duration-of (make-instance status-condition)))))
+    (user base-character i status-condition status-conditions list)
+  (pushnew i (effective-status-conditions i user)
+           :key (if keyp key 'identity)
+           :test (if testp test 'eql))
   (when (and (not (eq (duration-of i) t)) (< (duration-of i) duration))
     (setf (duration-of i) duration))
   t)
@@ -628,14 +669,14 @@
   "Returns true if @var{CHARACTER} fainted and false if not, but only if in @var{BATTLE}, otherwise unspecified"
   (declare (type base-character character)
            (type boolean battle))
-  (iter (for i in (status-conditions-of character))
+  (iter (for i in (status-conditions character))
     (when (or (eq (duration-of i) t) (> (duration-of i) 0))
       (condition-script character i battle)
       (when (typep (duration-of i) 'real)
         (decf (duration-of i))))
-    (removef-if (status-conditions-of character)
-                (lambda (a) (and (not (eq a t)) (<= a 0)))
-                :key #'duration-of))
+    (deletef-status-conditions-if character
+                                  (lambda (a) (and (not (eq a t)) (<= a 0)))
+                                  :key #'duration-of))
   (run-equip-effects character)
   (if battle
       (let ((faintedp (handle-faint character)))
@@ -1389,7 +1430,7 @@
     (user base-character)
   (iter
     (with j = (list :health 0 :attack 0 :defense 0 :energy 0 :speed 0))
-    (for i in (status-conditions-of user))
+    (for i in (status-conditions user))
     (iter
       (for (a b) on (stat-delta-of i) by #'cddr)
       (incf (getf j a) b))
@@ -1398,7 +1439,7 @@
     (user base-character)
   (iter
     (with j = (list :health 1 :attack 1 :defense 1 :energy 1 :speed 1))
-    (for i in (status-conditions-of user))
+    (for i in (status-conditions user))
     (iter
       (for (a b) on (stat-multiplier-of i) by #'cddr)
       (declare (ignorable b))
@@ -1567,10 +1608,7 @@
     ;; and changing the game's logic and dialog to make it make sense is too complicated,
     ;; so fuck it, characters don't faint outside of battle
     (when (<= (health-of character) 0)
-      (setf (health-of character) (calculate-stat character :health)))
-    (setf (status-conditions-of character) (iter (for status-condition in (status-conditions-of character))
-                                             (when (persistentp status-condition)
-                                               (collect status-condition)))))
+      (setf (health-of character) (calculate-stat character :health))))
   (switch-user-packages))
 (defun wash (clothing)
   (declare (type list clothing))

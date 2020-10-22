@@ -16,9 +16,7 @@
      ;; prevent the enemy from going again during the battle
      (alexandria:deletef (enemies-of *battle*) target)
      (alexandria:deletef (turn-queue-of *battle*) target)
-     (setf (status-conditions-of target) (iter (for status-condition in (status-conditions-of target))
-                                           (when (persistentp status-condition)
-                                             (collect status-condition))))
+     
 
      (push target (contained-enemies-of item))
      (unless (getf (special-actions-of item) :take-items)
@@ -93,9 +91,6 @@
      ;; prevent the enemy from going again during the battle
      (alexandria:deletef (enemies-of *battle*) target)
      (alexandria:deletef (turn-queue-of *battle*) target)
-     (setf (status-conditions-of target) (iter (for status-condition in (status-conditions-of target))
-                                           (when (persistentp status-condition)
-                                             (collect status-condition))))
 
      (push target (contained-enemies-of item)))))
 (defunassert yadfa-battle-commands:catch-enemy (&optional (target 'yadfa-enemies:catchable-enemy) (item 'enemy-catcher))

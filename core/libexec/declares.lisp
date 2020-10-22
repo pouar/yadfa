@@ -5,7 +5,7 @@
          (ftype (function (integer list) (values boolean &optional)) list-length-<= list-length-< list-length-> list-length->=)
          (ftype (function ((or list symbol)) (values boolean &optional)) finished-events unfinished-events)
          (ftype (function (closed-bottoms) (values real &optional)) get-diaper-expansion)
-         (ftype (function (symbol base-character &key (:duration (or null unsigned-byte)) (:test (or symbol function)) (:key (or symbol function)))
+         (ftype (function (t base-character &key (:duration (or null unsigned-byte)) (:test (or symbol function)) (:key (or symbol function)))
                           (values (eql t) &optional))
                 set-status-condition)
          (ftype (function ((or symbol list)) (values list &optional)) trigger-event)

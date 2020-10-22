@@ -117,7 +117,7 @@
                       (calculate-stat object :energy))
               ""))
   (write-string "Conditions: " stream)
-  (iter (for i in (status-conditions-of object))
+  (iter (for i in (status-conditions object))
     (format stream "“~a” " (name-of i)))
   (write-char #\Newline stream)
   (format stream "Stats: ~a~%Base-Stats: ~a~%"

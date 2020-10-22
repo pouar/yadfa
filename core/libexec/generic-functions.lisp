@@ -158,7 +158,7 @@
   (:method :before ((target base-character) (user base-character) (attack move))
     (format t "~a used ~a~%" (name-of user) (name-of attack)))
   (:method :before ((target base-character) (user base-character) (attack clear-status-mixin))
-    (a:deletef (status-conditions-of target) (statuses-cleared-of attack)
+    (deletef-status-conditions  (statuses-cleared-of attack) target
                :test (lambda (o e) (typep e o))))
   (:method :after ((target base-character) (user base-character) (attack damage-move))
     (f:fmt t (name-of target) " received "  (calculate-damage target user attack) " damage" #\Newline
@@ -232,6 +232,17 @@
             "such as talking, walking around, and doing a potty dance and acting embarrassed when having an accident." #\Newline #\Newline
             "Fixing this made the code way too complicated."))
   (:method ((user base-character) (condition status-condition) battle)))
+(defgeneric effective-status-conditions (status-condition user)
+  (:method ((status-condition status-condition) (user base-character))
+    (gethash user (%status-conditions-of *battle*)))
+  (:method ((status-condition persistent-status-condition) (user base-character))
+    (%status-conditions-of user)))
+(defgeneric (setf effective-status-conditions) (new-value status-condition user)
+  (:method (new-value (status-condition status-condition) (user base-character))
+    (setf (gethash user (%status-conditions-of *battle*)) new-value))
+  (:method (new-value (status-condition persistent-status-condition) (user base-character))
+    (setf new-value (%status-conditions-of user))))
+
 (defgeneric toggle-onesie% (onesie))
 (defgeneric toggle-onesie (onesie clothes user))
 ;;; Wish the API I made for this wasn't so complex, but I wasn't sure how to make it simple and still retain the functionality

@@ -30,13 +30,13 @@
    :duration t
    :stat-multiplier (list :speed 1/2)
    :blocks-turn t))
-(defmethod condition-script ((user base-character) (self mushed) (battle (eql t)))
+(defmethod condition-script ((user base-character) (status-condition mushed) (battle (eql t)))
   (cond ((<= (getf (calculate-diaper-usage user) :messiness) 0)
-         (setf (status-conditions-of user) (remove self (status-conditions-of user))))
+         (deletef-status-conditions status-condition user))
         ((< (random 4) 1)
          (format t "~a is too busy grabbing the back of ~a diaper trying to unmush it to fight~%" (name-of user) (if (malep user) "his" "her"))
-         (setf (blocks-turn-of self) t))
-        (t (setf (blocks-turn-of self) nil))))
+         (setf (blocks-turn-of status-condition) t))
+        (t (setf (blocks-turn-of status-condition) nil))))
 (defclass pantsed (status-condition)
   ()
   (:default-initargs

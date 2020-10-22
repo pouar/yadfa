@@ -14,6 +14,7 @@
    #:type-specifier
    #:coerced-function
    #:removef-if
+   #:deletef-if
    #:append*
    #:appendf*
    #:collecting*
@@ -321,7 +322,6 @@
    #:enter-battle-text-of
    #:enemies-of
    #:win-events-of
-   #:status-conditions-of
    #:player-of
    #:allies-of
    #:team-of
@@ -333,7 +333,9 @@
    #:action-p
    #:fainted-of
    #:curablep
-   #:persistentp)
+   #:deletef-status-conditions
+   #:deletef-status-conditions-if
+   #:status-conditions)
   (:documentation "Yet Another Diaperfur Adventure")
   (:local-nicknames (:s :serapeum) (:a :alexandria) (:u :ugly-tiny-infix-macro) (:g :global-vars) (:sc :serapeum/contrib/hooks)
                     (:c :clim) (:ce :clim-extensions) (:cc :conditional-commands) (:ms :marshal) (:f :fmt)))

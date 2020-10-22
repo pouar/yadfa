@@ -46,6 +46,12 @@ the result of calling @code{SUSTITUTE} with @var{OLD}, @var{NEW}, place, and the
   remove-if/swapped-arguments
   "Modify-macro for @code{REMOVE-IF}. Sets place designated by the first argument to
 the result of calling @code{REMOVE-IF} with @var{TEST}, place, and the @var{KEYWORD-ARGUMENTS}.")
+(defun delete-if/swapped-arguments (sequence test &rest keyword-arguments)
+  (apply #'delete-if test sequence keyword-arguments))
+(define-modify-macro deletef-if (test &rest keyword-arguments)
+  delete-if/swapped-arguments
+  "Modify-macro for @code{DELETE-IF}. Sets place designated by the first argument to
+the result of calling @code{DELETE-IF} with @var{TEST}, place, and the @var{KEYWORD-ARGUMENTS}.")
 (defun type-specifier-p (type-specifier)
   "Returns true if @var{TYPE-SPECIFIER} is a valid type specifier."
   #+sbcl (sb-ext:valid-type-specifier-p type-specifier)

@@ -147,7 +147,7 @@
    (status-conditions
     :initarg :status-conditions
     :initform ()
-    :accessor status-conditions-of
+    :accessor %status-conditions-of
     :type list
     :documentation "Status conditions of the character"))
   (:documentation "Base class for the characters in the game"))
@@ -280,14 +280,11 @@
     :initform nil
     :type boolean
     :accessor curablep
-    :documentation "Whether items or moves that cure statuses cure this")
-   (persistent
-    :initarg :persistent
-    :initform nil
-    :type boolean
-    :accessor persistentp
-    :documentation "Whether this lasts outside battle or not"))
+    :documentation "Whether items or moves that cure statuses cure this"))
   (:documentation "Base class for all the status conditions"))
+(defclass persistent-status-condition (status-condition)
+  ()
+  (:documentation "Status condition that lasts outside of battle"))
 (defclass move (yadfa-class element-type-mixin)
   ((name
     :initarg :name
@@ -1091,7 +1088,13 @@
     :initform ()
     :type list
     :accessor fainted-of
-    :documentation "Characters that have fainted in battle, used so the \"X has fainted\" messages don't appear repeatedly"))
+    :documentation "Characters that have fainted in battle, used so the \"X has fainted\" messages don't appear repeatedly")
+   (status-conditions
+    :initarg :status-conditions
+    :initform (make-hash-table :test 'eq)
+    :type hash-table
+    :accessor %status-conditions-of
+    :documentation #.(f:fmt nil "Hash table of " (ref status-condition :class) " indexed by " (ref base-character :class) ". These only last until the battle ends")))
   (:documentation "Class that contains the information about the battle"))
 (defmethod initialize-instance :after
     ((c battle) &key &allow-other-keys)

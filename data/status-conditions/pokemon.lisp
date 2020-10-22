@@ -10,4 +10,4 @@
   (if (= 0 (random 5))
       (progn (format t "~a is hurt by the poison~%" (name-of user))
              (decf (health-of user) (/ (calculate-stat user :health))))
-      (a:deletef (status-conditions-of user) condition)))
+      (deletef-status-conditions condition user)))
