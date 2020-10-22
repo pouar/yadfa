@@ -2,6 +2,7 @@
 (in-package :yadfa)
 (defmethod documentation ((x symbol) (doc-type (eql 'event)))
   (slot-value (get-event x) 'documentation))
+
 (defmethod print-object ((o element-type) s)
   (let ((class (slot-value (class-of o) 'name)))
     (if class
@@ -34,6 +35,7 @@
           (t (write "Female" :stream stream)))
     (write-string " " stream)
     (print-slot obj 'species stream)))
+
 (defmethod (setf health-of) (new-value (character base-character))
   (let* ((max-health (calculate-stat character :health)))
     (setf (slot-value character 'health) (cond ((< new-value 0)
@@ -48,6 +50,7 @@
                                                ((> new-value max-health)
                                                 max-health)
                                                (t new-value)))))
+
 (defmethod (setf energy-of) (new-value (character base-character))
   (let ((max-energy (calculate-stat character :energy)))
     (setf (slot-value character 'energy) (cond ((< new-value 0)
@@ -55,6 +58,7 @@
                                                ((> new-value max-energy)
                                                 max-energy)
                                                (t new-value)))))
+
 (defmethod process-potty-dance ((character base-character) attack item reload (selected-target base-character))
   (declare (ignore item reload selected-target))
   (when (process-potty-dance-check character attack)
@@ -75,6 +79,7 @@
                            (collect `(defmethod (setf ,(a:format-symbol :yadfa "~a/~a" i j)) (newval (object base-character))
                                        (declare (ignore object newval))
                                        1))))))
+
 (defmethod toggle-onesie (onesie clothes user)
   (error 'invalid-user-input :format-control "That's not a onesie"))
 (defmethod toggle-onesie ((onesie onesie/opened) clothes (user base-character))
@@ -87,11 +92,13 @@
   (if (lockedp onesie)
       (error 'onesie-locked :clothes clothes :user user)
       (toggle-onesie% onesie)))
+
 (defmethod get-babyish-padding ((user team-member))
   #.`(cond ,@(iter (for i in '(diaper pullup closed-bottoms))
                (collect `((filter-items (wear-of user) ',i)
                           ',i)))
            (t nil)))
+
 (defmethod output-process-potty-text (user padding type action had-accident &key (stream *standard-output*))
   (declare (ignore user padding type action had-accident stream)))
 (defmethod output-process-potty-text ((user player) padding (type (eql :wet)) (action (eql :potty-dance)) had-accident &key (stream *standard-output*))
@@ -1587,6 +1594,7 @@
                              nil))))
       (when a
         (format stream "~a~%" a)))))
+
 (defmethod calculate-damage ((target base-character) (user base-character) (attack real))
   "Figures out the damage dealt, we use the formula
 
@@ -1641,19 +1649,8 @@ randomrange is @code{(random-from-range 85 100)}"
                                          :test 'subtypep)
                            1.5
                            1)))))))
-
+
 (defmethod describe-diaper-wear-usage (item))
-(defmethod describe-diaper-inventory-usage (item))
-(defmethod describe-diaper-usage (item))
-(defmethod describe-diaper-inventory-usage ((item closed-bottoms))
-  (iter (for (a b) on (wet-text-of item) by #'cddr)
-    (when (>= (sogginess-of item) a)
-      (f:fmt* t #\Space b #\Newline)
-      (finish)))
-  (iter (for (a b) on (mess-text-of item) by #'cddr)
-    (when (>= (messiness-of item) a)
-      (f:fmt* t #\Space b #\Newline)
-      (finish))))
 (defmethod describe-diaper-wear-usage ((item closed-bottoms))
   (iter (for (a b) on (wear-wet-text-of item) by #'cddr)
     (when (>= (sogginess-of item) a)
@@ -1667,12 +1664,26 @@ randomrange is @code{(random-from-range 85 100)}"
     (when (>= (total-thickness item) a)
       (f:fmt* t #\Space b #\Newline)
       (finish))))
+
+(defmethod describe-diaper-inventory-usage (item))
+(defmethod describe-diaper-inventory-usage ((item closed-bottoms))
+  (iter (for (a b) on (wet-text-of item) by #'cddr)
+    (when (>= (sogginess-of item) a)
+      (f:fmt* t #\Space b #\Newline)
+      (finish)))
+  (iter (for (a b) on (mess-text-of item) by #'cddr)
+    (when (>= (messiness-of item) a)
+      (f:fmt* t #\Space b #\Newline)
+      (finish))))
+
+(defmethod describe-diaper-usage (item))
 (defmethod describe-diaper-usage ((item closed-bottoms))
   (f:fmt t
          "Sogginess: " (sogginess-of item) #\Newline
          "Sogginess Capacity: " (sogginess-capacity-of item) #\Newline
          "Messiness: " (messiness-of item) #\Newline
          "Messiness Capacity: " (messiness-capacity-of item) #\Newline))
+
 (defmethod process-battle-turn ((character npc) attack item reload selected-target)
   (when (handle-status-effects character t)
     (return-from process-battle-turn))
