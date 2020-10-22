@@ -30,7 +30,7 @@
             :end-of-line-action :wrap*))
           (clim-listener::doc :pointer-documentation :default-view clim-listener::+listener-pointer-documentation-view+)
           (clim-listener::wholine (c:make-pane 'clim-listener::wholine-pane
-                                               :display-function 'clim-listener::display-wholine :scroll-bars nil
+                                               :display-function 'clim-listener::display-wholine
                                                :display-time :command-loop :end-of-line-action :allow)))
   (:top-level (c:default-frame-top-level :prompt 'clim-listener::print-listener-prompt))
   (:command-table (yadfa-listener
